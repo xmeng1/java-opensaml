@@ -31,16 +31,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
-import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
-
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.security.credential.UsageType;
 import org.opensaml.security.criteria.UsageCriterion;
 import org.opensaml.security.x509.TrustedNamesCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 /**
  * Support class for working with {@link org.apache.http.client.HttpClient} security features.
@@ -52,6 +53,15 @@ public final class HttpClientSecuritySupport {
     
     /** Constructor. */
     private HttpClientSecuritySupport() {}
+    
+    /**
+     * Get the global {@link HttpClientSecurityConfiguration}  instance.
+     * 
+     * @return the global HttpClient security configuration
+     */
+    public static HttpClientSecurityConfiguration getGlobalHttpClientSecurityConfiguration() {
+        return ConfigurationService.get(HttpClientSecurityConfiguration.class);
+    }
     
     /**
      * Add default trust engine criteria for TLS usage to the {@link HttpClientContext}.
