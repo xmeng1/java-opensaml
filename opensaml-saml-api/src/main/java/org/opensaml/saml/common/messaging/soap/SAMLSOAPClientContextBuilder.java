@@ -41,9 +41,12 @@ import org.opensaml.saml.saml2.metadata.RoleDescriptor;
 import org.opensaml.security.credential.UsageType;
 import org.opensaml.security.criteria.UsageCriterion;
 import org.opensaml.security.messaging.HttpClientSecurityContext;
+import org.opensaml.soap.client.SOAPClientContext;
+import org.opensaml.soap.client.security.SOAPClientSecurityContext;
 
 import com.google.common.base.Function;
 
+import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 //TODO when impl finished, document required vs optional data and derivation rules
@@ -77,6 +80,12 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     
     /** TLS CriteriaSet strategy. */
     private Function<MessageContext<?>, CriteriaSet> tlsCriteriaSetStrategy;
+    
+    /** SOAP client message pipeline name. */
+    private String pipelineName;
+    
+    /** SOAP client security configuration profile ID. */
+    private String securityConfigurationProfileId;
     
     /**
      * Get the outbound message.
@@ -231,7 +240,7 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     /**
      * Get the TLS CriteriaSet strategy.
      * 
-     * @return Returns the tlsCriteriaSetStrategy.
+     * @return the TLS CriteriaSet strategy, or null
      */
     @Nullable public Function<MessageContext<?>, CriteriaSet> getTLSCriteriaSetStrategy() {
         if (tlsCriteriaSetStrategy != null) {
@@ -250,6 +259,48 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     @Nonnull public SAMLSOAPClientContextBuilder<InboundMessageType, OutboundMessageType> 
             setTLSCriteriaSetStrategy(@Nullable final Function<MessageContext<?>, CriteriaSet> strategy) {
         tlsCriteriaSetStrategy = strategy;
+        return this;
+    }
+
+    /**
+     * Get the SOAP client message pipeline name to use.
+     * 
+     * @return the pipeline name, or null
+     */
+    @Nullable public String getPipelineName() {
+        return pipelineName;
+    }
+
+    /**
+     * Set the SOAP client message pipeline name to use.
+     * 
+     * @param name the pipeline name, or null
+     * @return this builder instance
+     */
+    @Nonnull public SAMLSOAPClientContextBuilder<InboundMessageType, OutboundMessageType>
+            setPipelineName(@Nullable final String name) {
+        pipelineName = StringSupport.trimOrNull(name);
+        return this;
+    }
+    
+    /**
+     * Get the SOAP client security configuration profile ID to use.
+     * 
+     * @return the client security configuration profile ID, or null
+     */
+    @Nullable public String getSecurityConfigurationProfileId() {
+        return securityConfigurationProfileId;
+    }
+
+    /**
+     * Set the SOAP client security configuration profile ID to use.
+     * 
+     * @param profileID the profile ID, or null
+     * @return this builder instance
+     */
+    @Nonnull public SAMLSOAPClientContextBuilder<InboundMessageType, OutboundMessageType>
+            setSecurityConfigurationProfileId(@Nullable final String profileId) {
+        securityConfigurationProfileId = StringSupport.trimOrNull(profileId);
         return this;
     }
 
@@ -278,6 +329,14 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
         
         // This is just so it's easy to change.
         final BaseContext parent = opContext;
+        
+        if (getPipelineName() != null) {
+            parent.getSubcontext(SOAPClientContext.class, true).setPipelineName(getPipelineName());
+        }
+        
+        if (getSecurityConfigurationProfileId() != null) {
+            parent.getSubcontext(SOAPClientSecurityContext.class, true).setSecurityConfigurationProfileId(getSecurityConfigurationProfileId());
+        }
         
         //TODO is this required always?
         final String selfID = getSelfEntityID();

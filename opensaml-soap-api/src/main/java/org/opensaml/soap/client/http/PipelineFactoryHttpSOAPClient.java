@@ -21,18 +21,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.component.ComponentSupport;
-import net.shibboleth.utilities.java.support.logic.Constraint;
-
 import org.opensaml.messaging.context.InOutOperationContext;
 import org.opensaml.messaging.pipeline.httpclient.HttpClientMessagePipeline;
 import org.opensaml.messaging.pipeline.httpclient.HttpClientMessagePipelineFactory;
+import org.opensaml.soap.client.SOAPClientContext;
 import org.opensaml.soap.common.SOAPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
+
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.component.ComponentSupport;
+import net.shibboleth.utilities.java.support.logic.Constraint;
 
 /**
  * SOAP client that is based on {@link HttpClientMessagePipeline}, produced at runtime from an instance of
@@ -86,6 +87,10 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
         if (pipelineFactory == null) {
             throw new ComponentInitializationException("HttpClientPipelineFactory cannot be null");
         } 
+        
+        if (pipelineNameStrategy == null) {
+            pipelineNameStrategy = new DefaultPipelineNameStrategy();
+        }
     }
 
     /** {@inheritDoc} */
@@ -188,6 +193,28 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
         } else {
             return null;
         }
+    }
+    
+    
+    /**
+     * Default strategy for resolving SOAP client message pipeline name from the 
+     * {@link SOAPClientContext#getPipelineName()} which is a direct child of the input operation context.
+     */
+    public static class DefaultPipelineNameStrategy implements Function<InOutOperationContext<?,?>, String> {
+
+        /** {@inheritDoc} */
+        public String apply(@Nullable final InOutOperationContext<?, ?> opContext) {
+            if (opContext == null) {
+                return null;
+            }
+            final SOAPClientContext context = opContext.getSubcontext(SOAPClientContext.class);
+            if (context != null) {
+                return context.getPipelineName();
+            } else {
+                return null;
+            }
+        }
+        
     }
 
 }

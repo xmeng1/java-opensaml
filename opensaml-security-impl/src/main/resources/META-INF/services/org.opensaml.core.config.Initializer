@@ -1,1 +1,2 @@
 org.opensaml.security.config.impl.ClientTLSValidationConfiguratonInitializer
+org.opensaml.security.config.impl.HttpClientSecurityConfigurationInitalizer

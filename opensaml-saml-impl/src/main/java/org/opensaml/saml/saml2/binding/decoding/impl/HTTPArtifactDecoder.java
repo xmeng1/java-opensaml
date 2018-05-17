@@ -59,6 +59,7 @@ import org.opensaml.saml.saml2.metadata.ArtifactResolutionService;
 import org.opensaml.saml.saml2.metadata.RoleDescriptor;
 import org.opensaml.security.SecurityException;
 import org.opensaml.soap.client.SOAPClient;
+import org.opensaml.soap.client.http.PipelineFactoryHttpSOAPClient;
 import org.opensaml.soap.common.SOAPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,6 +105,12 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
     
     /** SOAP client. */
     private SOAPClient soapClient;
+    
+    /** The SOAP client message pipeline name. */
+    private String soapPipelineName;
+    
+    /** SOAP client security configuration profile ID. */
+    private String soapClientSecurityConfigurationProfileId;
     
     /** Identifier generation strategy. */
     private IdentifierGenerationStrategy idStrategy;
@@ -305,6 +312,47 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         soapClient = client;
     }
+    
+    /**
+     * Get the name of the specific SOAP client message pipeline to use, 
+     * for example with {@link PipelineFactoryHttpSOAPClient}. 
+     * 
+     * @return the pipeline name, or null
+     */
+    @Nullable public String getSOAPPipelineName() {
+        return soapPipelineName;
+    }
+
+    /**
+     * Set the name of the specific SOAP client message pipeline to use, 
+     * for example with {@link PipelineFactoryHttpSOAPClient}. 
+     * 
+     * @param name the pipeline name, or null
+     */
+    public void setSOAPPipelineName(@Nullable final String name) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+        soapPipelineName = StringSupport.trimOrNull(name);
+    }
+    
+    /**
+     * Get the SOAP client security configuration profile ID to use.
+     * 
+     * @return the client security configuration profile ID, or null
+     */
+    @Nullable public String getSOAPClientSecurityConfigurationProfileId() {
+        return soapClientSecurityConfigurationProfileId;
+    }
+
+    /**
+     * Set the SOAP client security configuration profile ID to use.
+     * 
+     * @param profileID the profile ID, or null
+     * @return this builder instance
+     */
+    @Nonnull public void setSOAPClientSecurityConfigurationProfileId(@Nullable final String profileId) {
+        soapClientSecurityConfigurationProfileId = StringSupport.trimOrNull(profileId);
+    }
 
     /** {@inheritDoc} */
     @Nonnull @NotEmpty public String getBindingURI() {
@@ -358,6 +406,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
      */
     private void processArtifact(final MessageContext messageContext, final HttpServletRequest request) 
             throws MessageDecodingException {
+        
         final String encodedArtifact = StringSupport.trimOrNull(request.getParameter("SAMLart"));
         if (encodedArtifact == null) {
             log.error("URL SAMLart parameter was missing or did not contain a value.");
@@ -404,6 +453,8 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final InOutOperationContext<SAMLObject, ArtifactResolve> opContext = new SAMLSOAPClientContextBuilder()
                     .setOutboundMessage(buildArtifactResolveRequestMessage(
                             artifact, ars.getLocation(), peerRoleDescriptor, selfEntityID))
+                    .setPipelineName(getSOAPPipelineName())
+                    .setSecurityConfigurationProfileId(getSOAPClientSecurityConfigurationProfileId())
                     .setPeerRoleDescriptor(peerRoleDescriptor)
                     .setSelfEntityID(selfEntityID)
                     .build();

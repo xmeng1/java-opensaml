@@ -21,12 +21,18 @@ import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.BaseContext;
 import org.opensaml.soap.client.SOAPClient.SOAPRequestParameters;
+import org.opensaml.soap.client.http.PipelineFactoryHttpSOAPClient;
+
+import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 /** Message context for SOAP client messages. */
 public class SOAPClientContext extends BaseContext {
 
     /** Binding/transport-specific SOAP request parameters. */
-    private SOAPRequestParameters requestParameters;
+    @Nullable private SOAPRequestParameters requestParameters;
+    
+    /** Name of the specific SOAP client pipeline to use, for example with {@link PipelineFactoryHttpSOAPClient}. */
+    @Nullable private String pipelineName;
 
     /**
      * Gets a set of binding/transport-specific request parameters.
@@ -44,6 +50,26 @@ public class SOAPClientContext extends BaseContext {
      */
     public void setSOAPRequestParameters(@Nullable final SOAPRequestParameters parameters) {
         requestParameters = parameters;
+    }
+
+    /**
+     * Get the name of the specific SOAP client message pipeline to use, 
+     * for example with {@link PipelineFactoryHttpSOAPClient}. 
+     * 
+     * @return the pipeline name, or null
+     */
+    @Nullable public String getPipelineName() {
+        return pipelineName;
+    }
+
+    /**
+     * Set the name of the specific SOAP client message pipeline to use, 
+     * for example with {@link PipelineFactoryHttpSOAPClient}. 
+     * 
+     * @param name the pipeline name, or null
+     */
+    public void setPipelineName(@Nullable final String name) {
+        pipelineName = StringSupport.trimOrNull(name);
     }
 
 }
