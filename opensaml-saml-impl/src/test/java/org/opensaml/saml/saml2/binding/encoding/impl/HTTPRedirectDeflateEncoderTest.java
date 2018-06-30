@@ -114,6 +114,135 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
     }
     
     /**
+     * Tests encoding a SAML message to an servlet response.
+     * 
+     * @throws Exception
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testResponseEncodingWithEndpointQueryParams() throws Exception {
+        SAMLObjectBuilder<StatusCode> statusCodeBuilder = (SAMLObjectBuilder<StatusCode>) builderFactory
+                .getBuilder(StatusCode.DEFAULT_ELEMENT_NAME);
+        StatusCode statusCode = statusCodeBuilder.buildObject();
+        statusCode.setValue(StatusCode.SUCCESS);
+
+        SAMLObjectBuilder<Status> statusBuilder = (SAMLObjectBuilder<Status>) builderFactory
+                .getBuilder(Status.DEFAULT_ELEMENT_NAME);
+        Status responseStatus = statusBuilder.buildObject();
+        responseStatus.setStatusCode(statusCode);
+
+        SAMLObjectBuilder<Response> responseBuilder = (SAMLObjectBuilder<Response>) builderFactory
+                .getBuilder(Response.DEFAULT_ELEMENT_NAME);
+        Response samlMessage = responseBuilder.buildObject();
+        samlMessage.setID("foo");
+        samlMessage.setVersion(SAMLVersion.VERSION_20);
+        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setStatus(responseStatus);
+
+        SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
+                .getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
+        Endpoint samlEndpoint = endpointBuilder.buildObject();
+        samlEndpoint.setLocation("http://example.org");
+        samlEndpoint.setResponseLocation("http://example.org/response?foo=bar&abc=123");
+        
+        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        messageContext.setMessage(samlMessage);
+        SAMLBindingSupport.setRelayState(messageContext, "relay");
+        messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
+            .getSubcontext(SAMLEndpointContext.class, true).setEndpoint(samlEndpoint);
+        
+        SAMLOutboundDestinationHandler handler = new SAMLOutboundDestinationHandler();
+        handler.invoke(messageContext);
+        
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        
+        HTTPRedirectDeflateEncoder encoder = new HTTPRedirectDeflateEncoder();
+        encoder.setMessageContext(messageContext);
+        encoder.setHttpServletResponse(response);
+        
+        encoder.initialize();
+        encoder.prepareContext();
+        encoder.encode();
+        
+        Assert.assertEquals("UTF-8", response.getCharacterEncoding(), "Unexpected character encoding");
+        Assert.assertEquals(response.getHeader("Cache-control"), "no-cache, no-store", "Unexpected cache controls");
+        
+        String queryString = new URI(response.getRedirectedUrl()).getRawQuery();
+        
+        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "foo"), "foo=bar");
+        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "abc"), "abc=123");
+    }
+    
+    /**
+     * Tests encoding a SAML message to an servlet response.
+     * 
+     * @throws Exception
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testResponseEncodingWithDisallowedEndpointQueryParams() throws Exception {
+        SAMLObjectBuilder<StatusCode> statusCodeBuilder = (SAMLObjectBuilder<StatusCode>) builderFactory
+                .getBuilder(StatusCode.DEFAULT_ELEMENT_NAME);
+        StatusCode statusCode = statusCodeBuilder.buildObject();
+        statusCode.setValue(StatusCode.SUCCESS);
+
+        SAMLObjectBuilder<Status> statusBuilder = (SAMLObjectBuilder<Status>) builderFactory
+                .getBuilder(Status.DEFAULT_ELEMENT_NAME);
+        Status responseStatus = statusBuilder.buildObject();
+        responseStatus.setStatusCode(statusCode);
+
+        SAMLObjectBuilder<Response> responseBuilder = (SAMLObjectBuilder<Response>) builderFactory
+                .getBuilder(Response.DEFAULT_ELEMENT_NAME);
+        Response samlMessage = responseBuilder.buildObject();
+        samlMessage.setID("foo");
+        samlMessage.setVersion(SAMLVersion.VERSION_20);
+        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setStatus(responseStatus);
+
+        SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
+                .getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
+        Endpoint samlEndpoint = endpointBuilder.buildObject();
+        samlEndpoint.setLocation("http://example.org");
+        samlEndpoint.setResponseLocation("http://example.org/response?foo=bar&abc=123&SAMLEncoding=blah&SAMLRequest=blah&SAMLResponse=blah&RelayState=blah&SigAlg=blah&Signature=blah");
+        
+        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        messageContext.setMessage(samlMessage);
+        SAMLBindingSupport.setRelayState(messageContext, "relay");
+        messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
+            .getSubcontext(SAMLEndpointContext.class, true).setEndpoint(samlEndpoint);
+        
+        SAMLOutboundDestinationHandler handler = new SAMLOutboundDestinationHandler();
+        handler.invoke(messageContext);
+        
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        
+        HTTPRedirectDeflateEncoder encoder = new HTTPRedirectDeflateEncoder();
+        encoder.setMessageContext(messageContext);
+        encoder.setHttpServletResponse(response);
+        
+        encoder.initialize();
+        encoder.prepareContext();
+        encoder.encode();
+        
+        Assert.assertEquals("UTF-8", response.getCharacterEncoding(), "Unexpected character encoding");
+        Assert.assertEquals(response.getHeader("Cache-control"), "no-cache, no-store", "Unexpected cache controls");
+        
+        String queryString = new URI(response.getRedirectedUrl()).getRawQuery();
+        
+        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "foo"), "foo=bar");
+        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "abc"), "abc=123");
+        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "RelayState"), "RelayState=relay");
+        Assert.assertNotNull(URISupport.getRawQueryStringParameter(queryString, "SAMLResponse"));
+        Assert.assertNotEquals(URISupport.getRawQueryStringParameter(queryString, "SAMLResponse"), "blah");
+        Assert.assertFalse(queryString.contains("SAMLResponse=blah"));
+        
+        Assert.assertNull(URISupport.getRawQueryStringParameter(queryString, "SAMLEncoding"));
+        Assert.assertNull(URISupport.getRawQueryStringParameter(queryString, "SAMLRequest"));
+        Assert.assertNull(URISupport.getRawQueryStringParameter(queryString, "SigAlg"));
+        Assert.assertNull(URISupport.getRawQueryStringParameter(queryString, "Signature"));
+    }
+    
+    /**
      * Tests encoding a SAML message to an servlet response with simple sign.
      * 
      * @throws Exception

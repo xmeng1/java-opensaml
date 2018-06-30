@@ -21,16 +21,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
 
 import net.shibboleth.utilities.java.support.codec.Base64Support;
 import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.net.HttpServletSupport;
 import net.shibboleth.utilities.java.support.net.URLBuilder;
+import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
 import org.opensaml.messaging.context.MessageContext;
@@ -50,12 +54,18 @@ import org.opensaml.xmlsec.crypto.XMLSigningUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+
 /**
  * SAML 2.0 HTTP Redirect encoder using the DEFLATE encoding method.
  * 
  * This encoder only supports DEFLATE compression.
  */
 public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
+    
+    /** Params which are disallowed from appearing in the input endpoint URL. */
+    private static final Set<String> DISALLOWED_ENDPOINT_QUERY_PARAMS = 
+            Sets.newHashSet("SAMLEncoding", "SAMLRequest", "SAMLResponse", "RelayState", "SigAlg", "Signature");
 
     /** Class logger. */
     private final Logger log = LoggerFactory.getLogger(HTTPRedirectDeflateEncoder.class);
@@ -159,7 +169,7 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         }
 
         final List<Pair<String, String>> queryParams = urlBuilder.getQueryParams();
-        queryParams.clear();
+        removeDisallowedQueryParams(queryParams);
         
         final SAMLObject outboundMessage = messageContext.getMessage();
 
@@ -192,6 +202,22 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         }
         
         return urlBuilder.buildURL();
+    }
+
+    /**
+     * Remove disallowed query params from the supplied list.
+     * 
+     * @param queryParams the list of query params on which to operate
+     */
+    protected void removeDisallowedQueryParams(final @Nonnull List<Pair<String, String>> queryParams) {
+        final Iterator<Pair<String,String>> iter = queryParams.iterator();
+        while (iter.hasNext()) {
+            final String paramName = StringSupport.trimOrNull(iter.next().getFirst());
+            if (DISALLOWED_ENDPOINT_QUERY_PARAMS.contains(paramName)) {
+                log.debug("Removing disallowed query param '{}' from endpoint URL", paramName);
+                iter.remove();
+            }
+        }
     }
 
     /**
