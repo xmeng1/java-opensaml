@@ -53,6 +53,7 @@ import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.x509.extension.X509ExtensionUtil;
+import org.cryptacular.EncodingException;
 import org.cryptacular.util.CertUtil;
 import org.cryptacular.util.CodecUtil;
 import org.cryptacular.x509.GeneralNameType;
@@ -338,7 +339,11 @@ public class X509Support {
      */
     @Nullable public static Collection<X509Certificate> decodeCertificates(@Nonnull final byte[] certs)
             throws CertificateException {
-        return Arrays.asList(CertUtil.decodeCertificateChain(certs));
+        try {
+            return Arrays.asList(CertUtil.decodeCertificateChain(certs));
+        } catch (final EncodingException e) {
+            throw new CertificateException("Error deocding certificates", e);
+        }
     }
     
     /**
@@ -379,7 +384,7 @@ public class X509Support {
     @Nullable public static X509Certificate decodeCertificate(@Nonnull final byte[] cert) throws CertificateException {
         try {
             return CertUtil.decodeCertificate(cert);
-        } catch (final IllegalArgumentException e) {
+        } catch (final IllegalArgumentException | EncodingException e) {
             throw new CertificateException(e);
         }
     }
