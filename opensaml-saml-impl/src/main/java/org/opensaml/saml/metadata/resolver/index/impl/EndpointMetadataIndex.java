@@ -43,6 +43,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
+import net.shibboleth.utilities.java.support.annotation.ParameterName;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotLive;
@@ -85,7 +86,8 @@ public class EndpointMetadataIndex implements MetadataIndex {
      *
      * @param endpointPredicate the predicate which selects which endpoints to index
      */
-    public EndpointMetadataIndex(@Nonnull final Predicate<Endpoint> endpointPredicate) {
+    public EndpointMetadataIndex(@Nonnull @ParameterName(name="endpointPredicate")
+        final Predicate<Endpoint> endpointPredicate) {
         endpointSelectionPredicate = Constraint.isNotNull(endpointPredicate, 
                 "Endpoint selection predicate may not be null");
     }
