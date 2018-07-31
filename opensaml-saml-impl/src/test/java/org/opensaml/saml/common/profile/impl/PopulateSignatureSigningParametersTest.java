@@ -74,7 +74,7 @@ public class PopulateSignatureSigningParametersTest extends OpenSAMLInitBaseTest
         action.initialize();
         
         action.execute(prc);
-        ActionTestingSupport.assertEvent(prc, EventIds.MESSAGE_PROC_ERROR);
+        ActionTestingSupport.assertEvent(prc, EventIds.INVALID_SEC_CFG);
     }    
 
     @Test public void testSuccess() throws Exception {
