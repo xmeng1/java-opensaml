@@ -75,6 +75,9 @@ public class PopulateSignatureSigningParametersHandler extends AbstractMessageHa
     /** Resolver for parameters to store into context. */
     @NonnullAfterInit private SignatureSigningParametersResolver resolver;
     
+    /** Whether failure to resolve parameters should be raised as an error. */
+    private boolean noResultIsError;
+    
     /**
      * Constructor.
      */
@@ -150,6 +153,21 @@ public class PopulateSignatureSigningParametersHandler extends AbstractMessageHa
         
         resolver = Constraint.isNotNull(newResolver, "SignatureSigningParametersResolver cannot be null");
     }
+
+    /**
+     * Set whether a failure to resolve any parameters should be raised as an exception.
+     * 
+     * <p>Defaults to false.</p>
+     * 
+     * @param flag flag to set
+     * 
+     * @since 3.4.0
+     */
+    public void setNoResultIsError(final boolean flag) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
+        noResultIsError = flag;
+    }
     
     /** {@inheritDoc} */
     @Override
@@ -223,9 +241,13 @@ public class PopulateSignatureSigningParametersHandler extends AbstractMessageHa
         
         try {
             final SignatureSigningParameters params = resolver.resolveSingle(criteria);
-            paramsCtx.setSignatureSigningParameters(params);
+            if (params == null && noResultIsError) {
+                log.error("Failed to resolve SignatureSigningParameters");
+                throw new MessageHandlerException("Failed to resolve SignatureSigningParameters");
+            }
             log.debug("{} {} SignatureSigningParameters", getLogPrefix(),
                     params != null ? "Resolved" : "Failed to resolve");
+            paramsCtx.setSignatureSigningParameters(params);
         } catch (final ResolverException e) {
             log.error("{} Error resolving SignatureSigningParameters", getLogPrefix(), e);
             throw new MessageHandlerException("Error resolving SignatureSigningParameters", e);

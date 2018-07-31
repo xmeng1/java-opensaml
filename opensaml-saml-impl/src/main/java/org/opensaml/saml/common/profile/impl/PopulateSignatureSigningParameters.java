@@ -53,7 +53,7 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
  * 
  * @event {@link EventIds#PROCEED_EVENT_ID}
  * @event {@link EventIds#INVALID_MSG_CTX}
- * @event {@link EventIds#MESSAGE_PROC_ERROR}
+ * @event {@link EventIds#INVALID_SEC_CFG}
  */
 public class PopulateSignatureSigningParameters 
         extends AbstractHandlerDelegatingProfileAction<PopulateSignatureSigningParametersHandler> {
@@ -77,6 +77,9 @@ public class PopulateSignatureSigningParameters
     /** Resolver for parameters to store into context. */
     @NonnullAfterInit private SignatureSigningParametersResolver resolver;
     
+    /** Whether failure to resolve parameters should be raised as an error. */
+    private boolean noResultIsError;
+    
     /**
      * Constructor.
      */
@@ -92,6 +95,8 @@ public class PopulateSignatureSigningParameters
                 new ChildContextLookup<>(SAMLMetadataContext.class),
                 Functions.compose(new ChildContextLookup<>(SAMLPeerEntityContext.class),
                         new OutboundMessageContextLookup()));
+        
+        setErrorEvent(EventIds.INVALID_SEC_CFG);
     }
 
     /**
@@ -156,7 +161,22 @@ public class PopulateSignatureSigningParameters
         
         resolver = Constraint.isNotNull(newResolver, "SignatureSigningParametersResolver cannot be null");
     }
-    
+
+    /**
+     * Set whether a failure to resolve any parameters should be raised as an exception.
+     * 
+     * <p>Defaults to false.</p>
+     * 
+     * @param flag flag to set
+     * 
+     * @since 3.4.0
+     */
+    public void setNoResultIsError(final boolean flag) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
+        noResultIsError = flag;
+    }
+
     /** {@inheritDoc} */
     @Override
     protected void doInitialize() throws ComponentInitializationException {
@@ -174,6 +194,7 @@ public class PopulateSignatureSigningParameters
         }
 
         final PopulateSignatureSigningParametersHandler delegate = getDelegate();
+        delegate.setNoResultIsError(noResultIsError);
         delegate.setSignatureSigningParametersResolver(resolver);
         delegate.setConfigurationLookupStrategy(adapt(configurationLookupStrategy));
         delegate.setSecurityParametersContextLookupStrategy(adapt(securityParametersContextLookupStrategy));
