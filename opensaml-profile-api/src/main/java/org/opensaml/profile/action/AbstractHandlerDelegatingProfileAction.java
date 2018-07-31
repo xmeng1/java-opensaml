@@ -34,6 +34,7 @@ import com.google.common.base.Predicates;
 
 import net.shibboleth.utilities.java.support.component.DestructableComponent;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 /**
  * Base class for a profile action which just delegates to an instance of {@link MessageHandler}.
@@ -51,6 +52,9 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
     
     /** Lookup function for the message context on which to operate. */
     @Nonnull private ContextDataLookupFunction<ProfileRequestContext, MessageContext> messageContextLookup;
+
+    /** An event to signal in the event of a handler exception. */
+    @Nullable private String errorEvent;
     
     /**
      * Constructor.
@@ -84,6 +88,15 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
             @Nonnull final ContextDataLookupFunction<ProfileRequestContext, MessageContext> lookup) {
         delegate = Constraint.isNotNull(delegateInstance, "Delegate instance may not be null");
         messageContextLookup = Constraint.isNotNull(lookup, "MessageContext lookup function may not be null");
+    }
+
+    /**
+     * Set the event to signal in the event of a handler exception.
+     * 
+     * @param event event to signal
+     */
+    public void setErrorEvent(@Nullable final String event) {
+        errorEvent = StringSupport.trimOrNull(event);
     }
     
     /** {@inheritDoc} */
@@ -149,7 +162,11 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
             delegate.invoke(messageContext);
             ActionSupport.buildProceedEvent(profileRequestContext);
         } catch (final MessageHandlerException e) {
-            ActionSupport.buildEvent(profileRequestContext, EventIds.MESSAGE_PROC_ERROR);
+            if (errorEvent != null) {
+                ActionSupport.buildEvent(profileRequestContext, errorEvent);
+            } else {
+                ActionSupport.buildEvent(profileRequestContext, EventIds.MESSAGE_PROC_ERROR);
+            }
         }
     }
 
