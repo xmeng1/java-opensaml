@@ -19,6 +19,7 @@ package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObject;
@@ -30,6 +31,8 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 import net.shibboleth.utilities.java.support.codec.StringDigester;
 import net.shibboleth.utilities.java.support.codec.StringDigester.OutputFormat;
@@ -70,6 +73,8 @@ public class LocalDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         resolver = new LocalDynamicMetadataResolver(sourceManager);
         resolver.setId("abc123");
         resolver.setParserPool(parserPool);
+        // Setting this sort so can wait past it in order to test certain things 
+        resolver.setNegativeLookupCacheDuration(1000L);
         resolver.initialize();
     }
     
@@ -97,6 +102,9 @@ public class LocalDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         
         // Add it
         sourceManager.save(sha1Digester.apply(entityID2), entity2);
+        
+        // Wait for the negative lookup cache to expire
+        Uninterruptibles.sleepUninterruptibly(resolver.getNegativeLookupCacheDuration(), TimeUnit.MILLISECONDS);
         
         // Now should be resolveable
         Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(entityID2))), entity2);

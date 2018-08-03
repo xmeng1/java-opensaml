@@ -130,6 +130,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /** Maximum cache duration. */
     @Duration @Positive private Long maxCacheDuration;
     
+    /** Negative lookup cache duration. */
+    @Duration @Positive private Long negativeLookupCacheDuration;
+    
     /** Factor used to compute when the next refresh interval will occur. Default value: 0.75 */
     @Positive private Float refreshDelayFactor;
     
@@ -190,6 +193,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         maxCacheDuration = 8*60*60*1000L;
         
         refreshDelayFactor = 0.75f;
+        
+        // Default to 30 minutes.
+        negativeLookupCacheDuration = 30*60*1000L;
         
         // Default to 30 minutes.
         cleanupTaskInterval = 30*60*1000L;
@@ -379,6 +385,30 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     }
     
     /**
+     *  Get the negative lookup cache duration for metadata.
+     *  
+     *  <p>Defaults to: 30 minutes.</p>
+     *  
+     * @return the negative lookup cache duration, in milliseconds
+     */
+    @Nonnull public Long getNegativeLookupCacheDuration() {
+        return negativeLookupCacheDuration;
+    }
+
+    /**
+     *  Set the negative lookup cache duration for metadata.
+     *  
+     *  <p>Defaults to: 30 minutes.</p>
+     *  
+     * @param duration the negative lookup cache duration, in milliseconds
+     */
+    public void setNegativeLookupCacheDuration(@Nonnull final Long duration) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+        negativeLookupCacheDuration = Constraint.isNotNull(duration, "Negative lookup cache duration may not be null");
+    }
+    
+    /**
      * Gets the delay factor used to compute the next refresh time.
      * 
      * <p>Defaults to:  0.75.</p>
@@ -522,8 +552,16 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
 
                 final List<EntityDescriptor> descriptors = lookupEntityID(entityID);
                 if (descriptors.isEmpty()) {
-                    log.debug("{} Did not find requested metadata in backing store, attempting to resolve dynamically", 
-                            getLogPrefix());
+                    if (mgmtData.isNegativeLookupCacheActive()) {
+                        log.debug("{} Did not find requested metadata in backing store, " 
+                                + "and negative lookup cache is active, returning empty result", 
+                                getLogPrefix());
+                        return Collections.emptyList();
+                    } else {
+                        log.debug("{} Did not find requested metadata in backing store, " 
+                                + "attempting to resolve dynamically", 
+                                getLogPrefix());
+                    }
                 } else {
                     if (shouldAttemptRefresh(mgmtData)) {
                         log.debug("{} Metadata was indicated to be refreshed based on refresh trigger time", 
@@ -586,8 +624,11 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             }
             
             if (root == null) {
+                mgmtData.initNegativeLookupCache();
+                // TODO: recalc and set refresh time if have existing descriptor
                 log.debug("{} No metadata was fetched from the origin source", getLogPrefix());
             } else {
+                mgmtData.clearNegativeLookupCache();
                 try {
                     processNewMetadata(root, entityID);
                 } catch (final FilterException e) {
@@ -1179,6 +1220,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         /** The last time in milliseconds at which the entity's backing store data was accessed. */
         private DateTime lastAccessedTime;
         
+        /** The time at which the negative lookup cache flag expires, if set. */
+        private DateTime negativeLookupCacheExpiration;
+        
         /** Read-write lock instance which governs access to the entity's backing store data. */
         private ReadWriteLock readWriteLock;
         
@@ -1272,6 +1316,21 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          */
         public void recordEntityAccess() {
             lastAccessedTime = new DateTime(ISOChronology.getInstanceUTC());
+        }
+        
+        public boolean isNegativeLookupCacheActive() {
+            DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+            return negativeLookupCacheExpiration != null && now.isBefore(negativeLookupCacheExpiration);
+        }
+        
+        public DateTime initNegativeLookupCache() {
+            DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+            negativeLookupCacheExpiration = now.plus(getNegativeLookupCacheDuration());
+            return negativeLookupCacheExpiration;
+        }
+        
+        public void clearNegativeLookupCache() {
+            negativeLookupCacheExpiration = null;
         }
 
         /**
