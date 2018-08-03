@@ -194,8 +194,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         
         refreshDelayFactor = 0.75f;
         
-        // Default to 30 minutes.
-        negativeLookupCacheDuration = 30*60*1000L;
+        // Default to 10 minutes.
+        negativeLookupCacheDuration = 10*60*1000L;
         
         // Default to 30 minutes.
         cleanupTaskInterval = 30*60*1000L;
@@ -387,7 +387,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /**
      *  Get the negative lookup cache duration for metadata.
      *  
-     *  <p>Defaults to: 30 minutes.</p>
+     *  <p>Defaults to: 10 minutes.</p>
      *  
      * @return the negative lookup cache duration, in milliseconds
      */
@@ -398,7 +398,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /**
      *  Set the negative lookup cache duration for metadata.
      *  
-     *  <p>Defaults to: 30 minutes.</p>
+     *  <p>Defaults to: 10 minutes.</p>
      *  
      * @param duration the negative lookup cache duration, in milliseconds
      */
