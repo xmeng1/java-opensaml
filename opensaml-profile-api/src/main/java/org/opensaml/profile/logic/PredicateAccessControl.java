@@ -36,6 +36,10 @@ import com.google.common.base.Predicate;
 /**
  * Access control implementation based on a predicate over a {@link ProfileRequestContext}.
  * 
+ * <p>To bridge the two designs, this adapter populates an {@link AccessControlContext} placed
+ * beneath the {@link ProfileRequestContext} to carry the operation and resource parameters
+ * and allow access to them from the {@link Predicate}.</p>
+ * 
  * @since 3.3.0
  */
 public class PredicateAccessControl extends AbstractIdentifiableInitializableComponent
@@ -71,10 +75,12 @@ public class PredicateAccessControl extends AbstractIdentifiableInitializableCom
             acc.setOperation(operation);
             acc.setResource(resource);
             if (predicate.apply(prc)) {
+                prc.removeSubcontext(acc);
                 log.debug("{} Granted access based on predicate (Operation: {}, Resource: {})",
                         new Object[] {getLogPrefix(), operation, resource});
                 return true;
             } else {
+                prc.removeSubcontext(acc);
                 log.warn("{} Denied request based on predicate (Operation: {}, Resource: {})",
                         new Object[] {getLogPrefix(), operation, resource});
             }
