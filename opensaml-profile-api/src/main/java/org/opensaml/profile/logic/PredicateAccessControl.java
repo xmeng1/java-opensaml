@@ -71,12 +71,16 @@ public class PredicateAccessControl extends AbstractIdentifiableInitializableCom
             acc.setOperation(operation);
             acc.setResource(resource);
             if (predicate.apply(prc)) {
+                log.debug("{} Granted access based on predicate (Operation: {}, Resource: {})",
+                        new Object[] {getLogPrefix(), operation, resource});
                 return true;
             } else {
-                log.warn("{} Denied request based on predicate", getLogPrefix());
+                log.warn("{} Denied request based on predicate (Operation: {}, Resource: {})",
+                        new Object[] {getLogPrefix(), operation, resource});
             }
         } else {
-            log.warn("{} No ProfileRequestContext, access denied", getLogPrefix());
+            log.warn("{} Denied request based on predicate, missing ProfileRequestContext (Operation: {}, Resource: {})"
+                    , new Object[] {getLogPrefix(), operation, resource});
         }
         
         return false;
