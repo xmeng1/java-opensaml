@@ -93,7 +93,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
     
     /** Impending expiration warning threshold for metadata refresh, in milliseconds. 
      * Default value: 0ms (disabled). */
-    @Duration @Positive private long expirationWarningThreshold = 0;
+    @Duration @Positive private long expirationWarningThreshold;
 
     /** Last time the metadata was updated. */
     private DateTime lastUpdate;
@@ -359,11 +359,12 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
             }
         } catch (final Throwable t) {
             trackRefreshSuccess = false;
-            log.error("{} Error occurred while attempting to refresh metadata from '{}'", getLogPrefix(), mdId, t);
             nextRefresh = new DateTime(ISOChronology.getInstanceUTC()).plus(minRefreshDelay);
             if (t instanceof Exception) {
+                log.error("{} Error occurred while attempting to refresh metadata from '{}'", getLogPrefix(), mdId);
                 throw new ResolverException((Exception) t);
             } else {
+                log.error("{} Error occurred while attempting to refresh metadata from '{}'", getLogPrefix(), mdId, t);
                 throw new ResolverException(String.format("Saw an error of type '%s' with message '%s'", 
                         t.getClass().getName(), t.getMessage()));
             }
@@ -445,7 +446,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
             return unmarshallMetadata(new ByteArrayInputStream(metadataBytes));
         } catch (final UnmarshallingException e) {
             final String errorMsg = "Unable to unmarshall metadata";
-            log.error("{} " + errorMsg, getLogPrefix(), e);
+            log.error("{} " + errorMsg, getLogPrefix());
             throw new ResolverException(errorMsg, e);
         }
     }
