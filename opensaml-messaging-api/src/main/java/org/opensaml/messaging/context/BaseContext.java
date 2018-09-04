@@ -151,6 +151,12 @@ public abstract class BaseContext implements Iterable<BaseContext> {
     /**
      * Get a subcontext of the current context.
      * 
+     * <p>As of V3.4.0, if autocreate is false, this method will respond to a {@link ClassNotFoundException}
+     * by attempting to locate a matching subcontext based on the simple class name of the children and
+     * return the first match. If no match is found, it will proceed with the throw, but a future version
+     * of the API will eliminate that from the signature and simply return a null.</p>
+     * 
+     * 
      * @param className the name of the class type to obtain
      * @param autocreate flag indicating whether the subcontext instance should be auto-created
      * @return the held instance of the class, or null
@@ -158,7 +164,18 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      */ 
     @Nullable public BaseContext getSubcontext(@Nonnull @NotEmpty final String className, final boolean autocreate)
             throws ClassNotFoundException {
-        return getSubcontext(Class.forName(className).asSubclass(BaseContext.class), autocreate);
+        try {
+            return getSubcontext(Class.forName(className).asSubclass(BaseContext.class), autocreate);
+        } catch (final ClassNotFoundException e) {
+            if (!autocreate) {
+                for (final BaseContext child : this) {
+                    if (child.getClass().getSimpleName().equals(className)) {
+                        return child;
+                    }
+                }
+            }
+            throw e;
+        }
     }
     
     /**

@@ -132,6 +132,7 @@ public class BaseContextTest {
     /**
      *  Test auto creation of subcontexts.
      */
+    @SuppressWarnings("deprecation")
     public void testAutoCreateSubcontext() {
         TestContext parent = new TestContext();
         
@@ -215,6 +216,31 @@ public class BaseContextTest {
         BaseContext child = parent.getSubcontext("org.opensaml.messaging.context.TestContext");
         Assert.assertNotNull(child);
         Assert.assertTrue(child instanceof TestContext);
+    }
+
+    public void testStringAccessMissing() throws ClassNotFoundException {
+        TestContext parent = new TestContext();
+        parent.addSubcontext(new TestContext());
+        
+        BaseContext child = parent.getSubcontext("org.opensaml.messaging.context.MessageContext");
+        Assert.assertNull(child);
+    }
+
+    public void testSimpleStringAccess() throws ClassNotFoundException {
+        TestContext parent = new TestContext();
+        parent.addSubcontext(new TestContext());
+        
+        BaseContext child = parent.getSubcontext("TestContext");
+        Assert.assertNotNull(child);
+        Assert.assertTrue(child instanceof TestContext);
+    }
+
+    @Test(expectedExceptions = ClassNotFoundException.class)
+    public void testSimpleStringError() throws ClassNotFoundException {
+        TestContext parent = new TestContext();
+        parent.addSubcontext(new TestContext());
+        
+        parent.getSubcontext("NoContext");
     }
     
 }
