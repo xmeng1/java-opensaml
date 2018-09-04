@@ -277,7 +277,10 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      * Get whether the context auto-creates subcontexts by default.
      * 
      * @return true if the context auto-creates subcontexts, false otherwise
+     * 
+     * @deprecated
      */
+    @Deprecated
     public boolean isAutoCreateSubcontexts() {
         return autoCreateSubcontexts;
     }
@@ -286,7 +289,10 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      * Set whether the context auto-creates subcontexts by default.
      * 
      * @param autoCreate whether the context should auto-create subcontexts
+     * 
+     * @deprecated
      */
+    @Deprecated
     public void setAutoCreateSubcontexts(final boolean autoCreate) {
         autoCreateSubcontexts = autoCreate;
     }
