@@ -61,6 +61,9 @@ public class NameIDFormatFilter extends AbstractInitializableComponent implement
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(NameIDFormatFilter.class);
 
+    /** Whether to strip any existing Formats when adding new ones. */
+    private boolean removeExistingFormats;
+    
     /** Rules for adding formats. */
     @Nonnull @NonnullElements private Multimap<Predicate<EntityDescriptor>,String> applyMap;
 
@@ -72,6 +75,20 @@ public class NameIDFormatFilter extends AbstractInitializableComponent implement
         formatBuilder = (SAMLObjectBuilder<NameIDFormat>)
                 XMLObjectProviderRegistrySupport.getBuilderFactory().<NameIDFormat>getBuilderOrThrow(
                         NameIDFormat.DEFAULT_ELEMENT_NAME);
+    }
+    
+    /**
+     * Set whether the filter should remove any existing formats from an entity to which it adds
+     * new ones.
+     * 
+     * <p>Defaults to false (for compatibility).</p>
+     * 
+     * @param flag flag to set
+     */
+    public void setRemoveExistingFormats(final boolean flag) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
+        removeExistingFormats = flag;
     }
     
     /**
@@ -117,28 +134,49 @@ public class NameIDFormatFilter extends AbstractInitializableComponent implement
     protected void filterEntityDescriptor(@Nonnull final EntityDescriptor descriptor) {
         for (final Map.Entry<Predicate<EntityDescriptor>,Collection<String>> entry : applyMap.asMap().entrySet()) {
             if (!entry.getValue().isEmpty() && entry.getKey().apply(descriptor)) {
-                
-                for (final String format : entry.getValue()) {
-                    log.info("Adding NameIDFormat '{}' to EntityDescriptor '{}'", format,
-                            descriptor.getEntityID());
-                    for (final RoleDescriptor role : descriptor.getRoleDescriptors()) {
-                        if (role instanceof SPSSODescriptor) {
-                            final NameIDFormat nif = formatBuilder.buildObject();
-                            nif.setFormat(format);
-                            ((SPSSODescriptor) role).getNameIDFormats().add(nif);
-                        } else if (role instanceof AttributeAuthorityDescriptor) {
-                            final NameIDFormat nif = formatBuilder.buildObject();
-                            nif.setFormat(format);
-                            ((AttributeAuthorityDescriptor) role).getNameIDFormats().add(nif);
-                        } else if (role instanceof PDPDescriptor) {
-                            final NameIDFormat nif = formatBuilder.buildObject();
-                            nif.setFormat(format);
-                            ((PDPDescriptor) role).getNameIDFormats().add(nif);
-                        }
-                    }
+                for (final RoleDescriptor role : descriptor.getRoleDescriptors()) {
+                    filterRoleDescriptor(role, entry.getValue());
                 }
             }
         }
+    }
+    
+    /**
+     * 
+     * Filters role descriptor.
+     * 
+     * @param role role to modify
+     * @param formats formats to attach
+     */
+    protected void filterRoleDescriptor(@Nonnull final RoleDescriptor role,
+            @Nonnull @NonnullElements final Collection<String> formats) {
+        
+        final Collection<NameIDFormat> roleFormats;
+        
+        if (role instanceof SPSSODescriptor) {
+            roleFormats = ((SPSSODescriptor) role).getNameIDFormats();
+        } else if (role instanceof AttributeAuthorityDescriptor) {
+            roleFormats = ((AttributeAuthorityDescriptor) role).getNameIDFormats();
+        } else if (role instanceof PDPDescriptor) {
+            roleFormats = ((PDPDescriptor) role).getNameIDFormats();
+        } else {
+            return;
+        }
+        
+        if (removeExistingFormats && !roleFormats.isEmpty()) {
+            log.debug("Removing existing NameIDFormats from {} role in EntityDescriptor '{}'",
+                    role.getElementQName(), ((EntityDescriptor) role.getParent()).getEntityID());
+            roleFormats.clear();
+        }
+        
+        for (final String format : formats) {
+            final NameIDFormat nif = formatBuilder.buildObject();
+            nif.setFormat(format);
+            log.info("Adding NameIDFormat '{}' to EntityDescriptor '{}'", format,
+                    ((EntityDescriptor) role.getParent()).getEntityID());
+            roleFormats.add(nif);
+        }
+        
     }
     
     /**

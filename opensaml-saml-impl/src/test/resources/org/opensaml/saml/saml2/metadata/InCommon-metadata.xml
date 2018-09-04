@@ -1162,6 +1162,7 @@ tTupO/NdWvz8SvXU1qIOk9CTQ0D2b2OOftfUW+FuAQ==
         </ds:X509Data>
       </ds:KeyInfo>
     </md:KeyDescriptor>
+    <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
     <md:AssertionConsumerService xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" Binding="urn:oasis:names:tc:SAML:1.0:profiles:browser-post" Location="https://carmenwiki.osu.edu/Shibboleth.sso/SAML/POST" index="1"/>
     <md:AssertionConsumerService xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" Binding="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01" Location="https://carmenwiki.osu.edu/Shibboleth.sso/SAML/Artifact" index="2"/>
     <md:AssertionConsumerService xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" Binding="urn:oasis:names:tc:SAML:1.0:profiles:browser-post" Location="https://carmenwiki.it.ohio-state.edu/Shibboleth.sso/SAML/POST" index="3"/>

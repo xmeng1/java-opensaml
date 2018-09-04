@@ -78,12 +78,29 @@ public class NameIDFormatFilterTest extends XMLObjectBaseTestCase implements Pre
         EntityIdCriterion key = new EntityIdCriterion("https://carmenwiki.osu.edu/shibboleth");
         EntityDescriptor entity = metadataProvider.resolveSingle(new CriteriaSet(key));
         Assert.assertNotNull(entity);
-        Assert.assertEquals(entity.getSPSSODescriptor(SAMLConstants.SAML20P_NS).getNameIDFormats().size(), 2);
+        Assert.assertEquals(entity.getSPSSODescriptor(SAMLConstants.SAML20P_NS).getNameIDFormats().size(), 3);
         
         key = new EntityIdCriterion("https://cms.psu.edu/Shibboleth");
         entity = metadataProvider.resolveSingle(new CriteriaSet(key));
         Assert.assertNotNull(entity);
         Assert.assertEquals(entity.getSPSSODescriptor(SAMLConstants.SAML11P_NS).getNameIDFormats().size(), 1);
+    }
+
+    @Test
+    public void testWithRemoval() throws ComponentInitializationException, ResolverException {
+        
+        metadataFilter.setRules(Collections.<Predicate<EntityDescriptor>,Collection<String>>singletonMap(this, formats));
+        metadataFilter.setRemoveExistingFormats(true);
+        metadataFilter.initialize();
+        
+        metadataProvider.setMetadataFilter(metadataFilter);
+        metadataProvider.setId("test");
+        metadataProvider.initialize();
+
+        EntityIdCriterion key = new EntityIdCriterion("https://carmenwiki.osu.edu/shibboleth");
+        EntityDescriptor entity = metadataProvider.resolveSingle(new CriteriaSet(key));
+        Assert.assertNotNull(entity);
+        Assert.assertEquals(entity.getSPSSODescriptor(SAMLConstants.SAML20P_NS).getNameIDFormats().size(), 2);
     }
 
     /** {@inheritDoc} */
