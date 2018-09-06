@@ -40,6 +40,7 @@ import org.opensaml.core.xml.NamespaceManager;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.xmlsec.signature.support.ConfigurableContentReference;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
+import org.opensaml.xmlsec.signature.support.TransformsConfigurableContentReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ import com.google.common.base.Strings;
  * </p>
  * 
  */
-public class SAMLObjectContentReference implements ConfigurableContentReference {
+public class SAMLObjectContentReference implements ConfigurableContentReference, TransformsConfigurableContentReference {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(SAMLObjectContentReference.class);

@@ -58,6 +58,13 @@ public interface SignatureSigningConfiguration extends WhitelistBlacklistConfigu
     @Nonnull @NonnullElements @Unmodifiable @NotLive public List<String> getSignatureReferenceDigestMethods();
     
     /**
+     * Get a canonicalization algorithm URI suitable for use as a Signature Reference Transform value.
+     * 
+     * @return a digest method algorithm URI
+     */
+    @Nullable public String getSignatureReferenceCanonicalizationAlgorithm();
+    
+    /**
      * Get a canonicalization algorithm URI suitable for use as a Signature CanonicalizationMethod value.
      * 
      * @return a canonicalization algorithm URI

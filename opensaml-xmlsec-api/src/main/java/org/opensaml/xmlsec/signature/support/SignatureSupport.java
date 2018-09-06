@@ -17,9 +17,11 @@
 
 package org.opensaml.xmlsec.signature.support;
 
-import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Set;
 
-import net.shibboleth.utilities.java.support.logic.Constraint;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.opensaml.core.xml.XMLObjectBuilder;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -35,12 +37,25 @@ import org.opensaml.xmlsec.signature.Signature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+
+import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.StringSupport;
+
 /**
  * Helper methods for working with XML Signature.
  */
 public final class SignatureSupport {
     
-    //TODO refactor these methods to get method length and cyclomatic complexity down.
+    /** Set of known canonicalization algorithm URIs. */
+    private static final Set<String> C14N_ALGORITHMS = Sets.newHashSet(
+            SignatureConstants.ALGO_ID_C14N11_OMIT_COMMENTS,
+            SignatureConstants.ALGO_ID_C14N11_WITH_COMMENTS,
+            SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS,
+            SignatureConstants.ALGO_ID_C14N_EXCL_WITH_COMMENTS,
+            SignatureConstants.ALGO_ID_C14N_OMIT_COMMENTS,
+            SignatureConstants.ALGO_ID_C14N_WITH_COMMENTS
+            );
     
     /** Constructor. */
     private SignatureSupport() {
@@ -56,7 +71,6 @@ public final class SignatureSupport {
         return LoggerFactory.getLogger(SignatureSupport.class);
     }
     
-// Checkstyle: CyclomaticComplexity OFF
     /**
      * Prepare a {@link Signature} with necessary additional information prior to signing.
      * 
@@ -99,8 +113,6 @@ public final class SignatureSupport {
         Constraint.isNotNull(signature, "Signature cannot be null");
         Constraint.isNotNull(parameters, "Signature signing parameters cannot be null");
 
-        final Logger log = getLogger();
-        
         // Signing credential
         if (signature.getSigningCredential() == null) {
             signature.setSigningCredential(parameters.getSigningCredential());
@@ -122,7 +134,7 @@ public final class SignatureSupport {
             signature.setHMACOutputLength(parameters.getSignatureHMACOutputLength());
         }
     
-        // C14N
+        // SignedInfo C14N
         if (signature.getCanonicalizationAlgorithm() == null) {
             signature.setCanonicalizationAlgorithm(parameters.getSignatureCanonicalizationAlgorithm());
         }
@@ -130,22 +142,27 @@ public final class SignatureSupport {
             throw new SecurityException("No C14N algorithm was available on the signing parameters or Signature");
         }
     
-        // Reference(s) digest method
-        final String paramsDigestAlgo = parameters.getSignatureReferenceDigestMethod();
-        for (final ContentReference cr : signature.getContentReferences()) {
-            if (cr instanceof ConfigurableContentReference) {
-                final ConfigurableContentReference configurableReference = (ConfigurableContentReference) cr;
-                if (paramsDigestAlgo != null) {
-                    configurableReference.setDigestAlgorithm(paramsDigestAlgo);
-                }
-                if (configurableReference.getDigestAlgorithm() == null) {
-                    throw new SecurityException("No reference digest algorithm was available " 
-                            + "on the signing parameters or Signature ContentReference");
-                }
-            }
-        }
+        // Content reference(s): digest method and c14 transform
+        processContentReferences(signature, parameters);
     
         // KeyInfo
+        processKeyInfo(signature, parameters);
+    }
+
+    /**
+     * Prepare the content references.
+     * 
+     * @param signature the Signature to be updated
+     * @param parameters the signing parameters to use
+     * 
+     * @throws SecurityException thrown if a required parameter is not supplied in the parameters instance
+     *          or available on the Signature instance
+     */
+    private static void processKeyInfo(final Signature signature, 
+            final SignatureSigningParameters parameters) throws SecurityException {
+        
+        final Logger log = getLogger();
+        
         if (signature.getKeyInfo() == null) {
             final KeyInfoGenerator kiGenerator = parameters.getKeyInfoGenerator();
             if (kiGenerator != null) {
@@ -163,7 +180,93 @@ public final class SignatureSupport {
             }
         }
     }
-// Checkstyle: CyclomaticComplexity ON
+
+    /**
+     * Prepare the content references.
+     * 
+     * @param signature the Signature to be updated
+     * @param parameters the signing parameters to use
+     * 
+     * @throws SecurityException thrown if a required parameter is not supplied in the parameters instance
+     *          or available on the Signature instance
+     */
+    private static void processContentReferences(@Nonnull final Signature signature, 
+            @Nonnull final SignatureSigningParameters parameters) throws SecurityException {
+        
+        final String paramsDigestAlgo = parameters.getSignatureReferenceDigestMethod();
+        final String paramsC14NTransform = parameters.getSignatureReferenceCanonicalizationAlgorithm();
+        
+        for (final ContentReference cr : signature.getContentReferences()) {
+            if (cr instanceof ConfigurableContentReference) {
+                final ConfigurableContentReference configurableReference = (ConfigurableContentReference) cr;
+                if (paramsDigestAlgo != null) {
+                    configurableReference.setDigestAlgorithm(paramsDigestAlgo);
+                }
+                if (configurableReference.getDigestAlgorithm() == null) {
+                    throw new SecurityException("No reference digest algorithm was available " 
+                            + "on the signing parameters or Signature ContentReference");
+                }
+            }
+            
+            if (paramsC14NTransform != null) {
+                addOrReplaceReferenceCanonicalizationTransform(cr, paramsC14NTransform);
+            }
+        }
+    }
+
+    /**
+     * Process the indicated content reference and either add or replace its canonicalization Transform algorithm
+     * with the indicated algorithm.
+     * 
+     * @param cr the content reference to process
+     * @param uri the canonicalization algorithm to either add or replace
+     */
+    private static void addOrReplaceReferenceCanonicalizationTransform(@Nullable final ContentReference cr, 
+            @Nullable final String uri) {
+        
+        if (cr == null || uri == null) {
+            return;
+        }
+        
+        final Logger log = getLogger();
+        
+        log.trace("Adding or replacing content reference transform: {}", uri);
+        
+        if (cr instanceof TransformsConfigurableContentReference) {
+            final List<String> transforms = ((TransformsConfigurableContentReference)cr).getTransforms();
+            if (transforms == null) {
+                return;
+            }
+            
+            for (int i=0; i<transforms.size(); i++) {
+                if (isCanonicalizationAlgorithm(transforms.get(i))) {
+                    transforms.set(i, uri);
+                    return;
+                }
+            }
+            // Didn't see an existing one, so add it
+            transforms.add(uri);
+        } else {
+            log.warn("A non-null signature reference c14n transform was specified, " 
+                    + "but ContentReference was not configurable for transforms: {}",
+                    cr.getClass().getName());
+        }
+    }
+    
+    /**
+     * Evaluate whether the indicated algorithm URI is a canonicalization algorithm URI.
+     * 
+     * @param uri the algorithm URI to evaluate
+     * @return true if is a canonicalization algorithm, false otherwise
+     */
+    private static boolean isCanonicalizationAlgorithm(@Nullable final String uri) {
+        final String trimmed = StringSupport.trimOrNull(uri);
+        if (trimmed == null) {
+            return false;
+        } else {
+            return C14N_ALGORITHMS.contains(trimmed);
+        }
+    }
     
     /**
      * Signs a {@link SignableXMLObject}.

@@ -23,15 +23,15 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.StringSupport;
-
 import org.apache.xml.security.signature.XMLSignature;
 import org.apache.xml.security.signature.XMLSignatureException;
 import org.apache.xml.security.transforms.TransformationException;
 import org.apache.xml.security.transforms.Transforms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 /**
  * A generic content reference that uses a URI to reference the content to be signed.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * The default digest algorithm used is {@link SignatureConstants#ALGO_ID_DIGEST_SHA256}.
  * </p>
  */
-public class URIContentReference implements ConfigurableContentReference {
+public class URIContentReference implements ConfigurableContentReference, TransformsConfigurableContentReference {
 
     /** Logger. */
     private final Logger log = LoggerFactory.getLogger(URIContentReference.class);

@@ -57,6 +57,9 @@ public class BasicSignatureSigningConfiguration extends BasicWhitelistBlacklistC
     /** Digest method algorithm URIs. */
     @Nonnull @NonnullElements private List<String> signatureReferenceDigestMethods;
     
+    /** The signature reference canonicalization transform algorithm. */
+    @Nullable private String signatureReferenceCanonicalizationAlgorithm;
+    
     /** Signature canonicalization algorithm URI. */
     @Nullable private String signatureCanonicalization;
     
@@ -132,6 +135,25 @@ public class BasicSignatureSigningConfiguration extends BasicWhitelistBlacklistC
             return;
         }
         signatureReferenceDigestMethods = new ArrayList<>(StringSupport.normalizeStringCollection(algorithms));
+    }
+    
+    /**
+     * Get a canonicalization algorithm URI suitable for use as a Signature Reference Transform value.
+     * 
+     * @return a digest method algorithm URI
+     */
+    @Override
+    @Nullable public String getSignatureReferenceCanonicalizationAlgorithm() {
+        return signatureReferenceCanonicalizationAlgorithm;
+    }
+
+    /**
+     * Get a canonicalization algorithm URI suitable for use as a Signature Reference Transform value.
+     * 
+     * @param uri a canonicalization algorithm URI
+     */
+    public void setSignatureReferenceCanonicalizationAlgorithm(@Nullable final String uri) {
+        signatureReferenceCanonicalizationAlgorithm = StringSupport.trimOrNull(uri);
     }
 
     /** {@inheritDoc} */

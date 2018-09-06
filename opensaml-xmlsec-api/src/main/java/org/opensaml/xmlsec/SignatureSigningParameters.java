@@ -37,6 +37,9 @@ public class SignatureSigningParameters {
     /** The signature reference digest method URI. */
     private String signatureReferenceDigestMethod;
     
+    /** The signature reference canonicalization transform algorithm. */
+    private String signatureReferenceCanonicalizationAlgorithm;
+    
     /** The signature canonicalization algorithm URI. */
     private String signatureCanonicalizationAlgorithm;
     
@@ -100,6 +103,24 @@ public class SignatureSigningParameters {
         signatureReferenceDigestMethod = uri;
     }
     
+    /**
+     * Get a canonicalization algorithm URI suitable for use as a Signature Reference Transform value.
+     * 
+     * @return a digest method algorithm URI
+     */
+    @Nullable public String getSignatureReferenceCanonicalizationAlgorithm() {
+        return signatureReferenceCanonicalizationAlgorithm;
+    }
+
+    /**
+     * Get a canonicalization algorithm URI suitable for use as a Signature Reference Transform value.
+     * 
+     * @param uri a canonicalization algorithm URI
+     */
+    public void setSignatureReferenceCanonicalizationAlgorithm(@Nullable final String uri) {
+        signatureReferenceCanonicalizationAlgorithm = uri;
+    }
+
     /**
      * Get a canonicalization algorithm URI suitable for use as a Signature CanonicalizationMethod value.
      * 

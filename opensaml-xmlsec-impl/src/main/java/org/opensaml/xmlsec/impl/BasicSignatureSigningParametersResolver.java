@@ -122,6 +122,7 @@ public class BasicSignatureSigningParametersResolver
         resolveAndPopulateCredentialAndSignatureAlgorithm(params, criteria, whitelistBlacklistPredicate);
         
         params.setSignatureReferenceDigestMethod(resolveReferenceDigestMethod(criteria, whitelistBlacklistPredicate));
+        params.setSignatureReferenceCanonicalizationAlgorithm(resolveReferenceCanonicalizationAlgorithm(criteria));
         
         params.setSignatureCanonicalizationAlgorithm(resolveCanonicalizationAlgorithm(criteria));
         
@@ -160,6 +161,9 @@ public class BasicSignatureSigningParametersResolver
             log.debug("\tSignature KeyInfoGenerator: {}", params.getKeyInfoGenerator() != null ? "present" : "null");
             
             log.debug("\tReference digest method algorithm URI: {}", params.getSignatureReferenceDigestMethod()); 
+            log.debug("\tReference canonicalization algorithm URI: {}", 
+                    params.getSignatureReferenceCanonicalizationAlgorithm()); 
+            
             log.debug("\tCanonicalization algorithm URI: {}", params.getSignatureCanonicalizationAlgorithm()); 
             log.debug("\tHMAC output length: {}", params.getSignatureHMACOutputLength()); 
         }
@@ -337,6 +341,24 @@ public class BasicSignatureSigningParametersResolver
             
             if (config.getSignatureCanonicalizationAlgorithm() != null) {
                 return config.getSignatureCanonicalizationAlgorithm();
+            }
+            
+        }
+        return null;
+    }
+    
+    /**
+     * Resolve and return the reference canonicalization algorithm URI to use.
+     * 
+     * @param criteria the input criteria being evaluated
+     * @return the reference canonicalization algorithm URI
+     */
+    @Nullable protected String resolveReferenceCanonicalizationAlgorithm(@Nonnull final CriteriaSet criteria) {
+        for (final SignatureSigningConfiguration config : criteria.get(SignatureSigningConfigurationCriterion.class)
+                .getConfigurations()) {
+            
+            if (config.getSignatureReferenceCanonicalizationAlgorithm() != null) {
+                return config.getSignatureReferenceCanonicalizationAlgorithm();
             }
             
         }
