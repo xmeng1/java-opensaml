@@ -25,9 +25,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -80,8 +82,15 @@ public class FilesystemLoadSaveManager<T extends XMLObject> implements XMLObject
     /** Parser pool instance for deserializing XML from the filesystem. */
     private ParserPool parserPool;
     
-    /** File file used in filtering files in {@link #listKeys()} and {@link #listAll()}. */
+    /** File filter used in filtering files in {@link #listKeys()} and {@link #listAll()}. */
     private FileFilter fileFilter;
+    
+    /** Configuration flag for whether {@link #load(String)} will check and return data only if modified 
+     * since the last request for that data. */
+    private boolean checkModifyTime;
+    
+    /** Storage for last modified time of previously requested files. */
+    private Map<String, Long> lastModified;
     
     /**
      * Constructor.
@@ -137,6 +146,28 @@ public class FilesystemLoadSaveManager<T extends XMLObject> implements XMLObject
         }
         
         fileFilter = new DefaultFileFilter();
+        
+        lastModified = new HashMap<>();
+    }
+    
+    /** 
+     * Get the configuration flag for whether {@link #load(String)} will check and return data only if modified 
+     * since the last request for that data.
+     * 
+     * @return true if file modify time check is enabled, false if not
+     */
+    public boolean isCheckModifyTime() {
+        return checkModifyTime;
+    }
+    
+    /** 
+     * Set the configuration flag for whether {@link #load(String)} will check and return data only if modified 
+     * since the last request for that data.
+     * 
+     * @param flag true if file modify time check should be enabled, false if not
+     */
+    public void setCheckModifyTime(final boolean flag) {
+        checkModifyTime = flag;
     }
 
     /** {@inheritDoc} */
@@ -164,6 +195,12 @@ public class FilesystemLoadSaveManager<T extends XMLObject> implements XMLObject
         final File file = buildFile(key);
         if (!file.exists()) {
             log.debug("Target file with key '{}' does not exist, path: {}", key, file.getAbsolutePath());
+            clearCachedModified(key);
+            return null;
+        }
+        if (isCheckModifyTime() && isUnmodifiedSinceLastRequest(key)) {
+            log.debug("Target file with key '{}' has not been modified since the last request, returning null: {}", 
+                    key, file.getAbsolutePath());
             return null;
         }
         try (final FileInputStream fis = new FileInputStream(file)) {
@@ -171,6 +208,7 @@ public class FilesystemLoadSaveManager<T extends XMLObject> implements XMLObject
             try (final ByteArrayInputStream bais = new ByteArrayInputStream(source)) {
                 final XMLObject xmlObject = XMLObjectSupport.unmarshallFromInputStream(parserPool, bais);
                 xmlObject.getObjectMetadata().put(new XMLObjectSource(source));
+                updateCachedModified(key, file.lastModified());
                 //TODO via ctor, etc, does caller need to supply a Class so we can can test and throw an IOException, 
                 // rather than an unchecked ClassCastException?
                 return (T) xmlObject;
@@ -178,6 +216,64 @@ public class FilesystemLoadSaveManager<T extends XMLObject> implements XMLObject
                 throw new IOException(String.format("Error loading file from path: %s", file.getAbsolutePath()), e);
             }
         }
+    }
+    
+    /**
+     * Check whether the file corresponding to the specified key has been modified since the last time it
+     * was requested.
+     * 
+     * @param key the file key
+     * @return true if the corresponding file has been modified since the last request for it, false otherwise
+     * @throws IOException if there is a fatal error constructing or evaluating the candidate target path
+     */
+    protected synchronized boolean isUnmodifiedSinceLastRequest(@Nonnull final String key) throws IOException {
+        final File file = buildFile(key);
+        log.trace("File '{}' last modified was: {}", file.getAbsolutePath(), file.lastModified());
+        return getCachedModified(key) != null && file.lastModified() <= getCachedModified(key);
+    }
+    
+    /**
+     * Retrieve the current cached modified time for the specified key.
+     * @param key the target key
+     * @return the current cached modified time, may be null
+     */
+    protected synchronized Long getCachedModified(@Nonnull final String key) {
+        return lastModified.get(key);
+    }
+
+    /**
+     * Update the cached modified time for the specified key with the current time.
+     * @param key the target key
+     * @return the previously cached modified time, or null if did not exist
+     */
+    protected synchronized Long updateCachedModified(@Nonnull final String key) {
+        return updateCachedModified(key, System.currentTimeMillis());
+    }
+    
+    /**
+     * Update the cached modified time for the specified key with the specified time.
+     * @param key the target key
+     * @param modified the new cached modified time
+     * @return the previously cached modified time, or null if did not exist
+     */
+    protected synchronized Long updateCachedModified(@Nonnull final String key, @Nullable final Long modified) {
+        if (modified == null) {
+            return null;
+        }
+        final Long prev = lastModified.get(key);
+        lastModified.put(key, modified);
+        return prev;
+    }
+    
+    /**
+     * Clear the current cached modified time for the specified key.
+     * @param key the target key
+     * @return the previously cached modified time, or null if did not exist
+     */
+    protected synchronized Long clearCachedModified(@Nonnull final String key) {
+        final Long prev = lastModified.get(key);
+        lastModified.remove(key);
+        return prev;
     }
 
     /** {@inheritDoc} */
@@ -219,6 +315,7 @@ public class FilesystemLoadSaveManager<T extends XMLObject> implements XMLObject
         if (file.exists()) {
             final boolean success = file.delete();
             if (success) {
+                clearCachedModified(key);
                 return true;
             } else {
                 throw new IOException(String.format("Error removing target file: %s", file.getAbsolutePath()));
@@ -240,6 +337,8 @@ public class FilesystemLoadSaveManager<T extends XMLObject> implements XMLObject
             throw new IOException(String.format("Specified new key already exists: %s", newKey));
         } else {
             Files.move(currentFile, newFile);
+            updateCachedModified(newKey, getCachedModified(currentKey));
+            clearCachedModified(currentKey);
             return true;
         }
     }

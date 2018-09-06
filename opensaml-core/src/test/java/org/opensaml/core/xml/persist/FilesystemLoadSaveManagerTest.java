@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
 
@@ -43,6 +44,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
@@ -110,6 +112,9 @@ public class FilesystemLoadSaveManagerTest extends XMLObjectBaseTestCase {
         }
         testState(Sets.newHashSet("foo", "bar", "baz"));
         
+        // Test again. Since checkModifyTime=false, we should get back data even though unmodified
+        testState(Sets.newHashSet("foo", "bar", "baz"));
+        
         Assert.assertTrue(manager.updateKey("foo", "foo2"));
         testState(Sets.newHashSet("foo2", "bar", "baz"));
         
@@ -136,6 +141,52 @@ public class FilesystemLoadSaveManagerTest extends XMLObjectBaseTestCase {
         Assert.assertTrue(manager.remove("bar"));
         Assert.assertTrue(manager.remove("baz"));
         testState(Sets.<String>newHashSet());
+    }
+    
+    @Test
+    public void checkCheckModifyTimeTracking() throws IOException {
+        manager.setCheckModifyTime(true);
+        
+        Assert.assertNull(manager.load("foo"));
+        Assert.assertNull(manager.getCachedModified("foo"));
+        
+        manager.save("foo", (SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME, true));
+        
+        Assert.assertNotNull(manager.load("foo"));
+        Long initialCachedModified = manager.getCachedModified("foo");
+        Assert.assertNotNull(initialCachedModified);
+        
+        // Hasn't changed
+        Assert.assertNull(manager.load("foo"));
+        Assert.assertEquals(manager.getCachedModified("foo"), initialCachedModified);
+        
+        // We have to sleep a little to get an updated timestamp when we save a new one, 
+        // since filesystem mtime granularity is only seconds.
+        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+        
+        // Change it
+        manager.save("foo", (SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME, true), true);
+        
+        Assert.assertNotNull(manager.load("foo"));
+        Long updatedCachedModified = manager.getCachedModified("foo");
+        Assert.assertNotNull(updatedCachedModified);
+        Assert.assertNotEquals(updatedCachedModified, initialCachedModified);
+        
+        // Hasn't changed (again)
+        Assert.assertNull(manager.load("foo"));
+        Assert.assertEquals(manager.getCachedModified("foo"), updatedCachedModified);
+        
+        // Test update of key
+        manager.updateKey("foo", "bar");
+        Assert.assertNull(manager.load("foo"));
+        Assert.assertNull(manager.load("bar"));
+        Assert.assertNull(manager.getCachedModified("foo"));
+        Assert.assertNotNull(manager.getCachedModified("bar"));
+        Assert.assertEquals(manager.getCachedModified("bar"), updatedCachedModified);
+        
+        // Test removal of key
+        manager.remove("bar");
+        Assert.assertNull(manager.getCachedModified("bar"));
     }
 
     @Test
