@@ -62,7 +62,10 @@ public class EncryptAssertions extends AbstractEncryptAction {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(EncryptAssertions.class);
-    
+
+    /** Used to log protocol messages. */
+    private Logger protocolMessageLog = LoggerFactory.getLogger("PROTOCOL_MESSAGE");
+
     /** Strategy used to locate the {@link Response} to operate on. */
     @Nonnull private Function<ProfileRequestContext,StatusResponseType> responseLookupStrategy;
     
@@ -122,19 +125,20 @@ public class EncryptAssertions extends AbstractEncryptAction {
     @Override
     protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
+        if (protocolMessageLog.isDebugEnabled()) {
+            try {
+                final Element dom = XMLObjectSupport.marshall(response);
+                protocolMessageLog.debug("{} Response before assertion encryption:\n{}", getLogPrefix(),
+                        SerializeSupport.prettyPrintXML(dom));
+            } catch (final MarshallingException e) {
+                log.error("{} Unable to marshall message for logging purposes", getLogPrefix(), e);
+            }
+        }
+        
         final List<EncryptedAssertion> accumulator = new ArrayList<>(response.getAssertions().size());
         
         for (final Assertion assertion : response.getAssertions()) {
             try {
-                if (log.isDebugEnabled()) {
-                    try {
-                        final Element dom = XMLObjectSupport.marshall(assertion);
-                        log.debug("{} Assertion before encryption:\n{}", getLogPrefix(),
-                                SerializeSupport.prettyPrintXML(dom));
-                    } catch (final MarshallingException e) {
-                        log.error("{} Unable to marshall message for logging purposes", getLogPrefix(), e);
-                    }
-                }
                 accumulator.add(getEncrypter().encrypt(assertion));
             } catch (final EncryptionException e) {
                 log.warn("{} Error encrypting assertion", getLogPrefix(), e);
