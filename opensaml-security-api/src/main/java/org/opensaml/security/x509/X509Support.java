@@ -197,13 +197,20 @@ public class X509Support {
         for (int i = 0; i < nameTypes.length; i++) {
             types[i]= GeneralNameType.fromTagNumber(nameTypes[i]);
         }
-        final GeneralNames names = CertUtil.subjectAltNames(certificate, types);
-        if (names != null) {
-            for (final GeneralName name : names.getNames()) {
-                altNames.add(convertAltNameType(name.getTagNo(), name.getName().toASN1Primitive()));
+        
+        try {
+            final GeneralNames names = CertUtil.subjectAltNames(certificate, types);
+            if (names != null) {
+                for (final GeneralName name : names.getNames()) {
+                    altNames.add(convertAltNameType(name.getTagNo(), name.getName().toASN1Primitive()));
+                }
             }
+            return altNames;
+        } catch (EncodingException e) {
+            final Logger log = getLogger();
+            log.warn("Could not extract alt names from certificate", e);
+            throw e;
         }
-        return altNames;
     }
 
     /**
