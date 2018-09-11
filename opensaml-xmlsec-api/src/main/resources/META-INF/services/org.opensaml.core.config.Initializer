@@ -1,1 +1,2 @@
 org.opensaml.xmlsec.config.GlobalAlgorithmRegistryInitializer
+org.opensaml.xmlsec.config.DecryptionParserPoolInitializer

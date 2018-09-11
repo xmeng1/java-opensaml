@@ -45,6 +45,7 @@ import net.shibboleth.utilities.java.support.xml.XMLParserException;
 import org.apache.xml.security.Init;
 import org.apache.xml.security.encryption.XMLCipher;
 import org.apache.xml.security.encryption.XMLEncryptionException;
+import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLRuntimeException;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -61,6 +62,7 @@ import org.opensaml.security.criteria.KeyLengthCriterion;
 import org.opensaml.security.criteria.UsageCriterion;
 import org.opensaml.xmlsec.DecryptionParameters;
 import org.opensaml.xmlsec.algorithm.AlgorithmSupport;
+import org.opensaml.xmlsec.config.DecryptionParserPool;
 import org.opensaml.xmlsec.encryption.EncryptedData;
 import org.opensaml.xmlsec.encryption.EncryptedKey;
 import org.opensaml.xmlsec.encryption.EncryptedType;
@@ -980,29 +982,14 @@ public class Decrypter {
      * </p>
      * 
      * @return a new parser pool instance
+     * 
+     * @deprecated
      */
     protected ParserPool buildParserPool() {
-        final BasicParserPool pp = new BasicParserPool();
-        final HashMap<String, Boolean> features = new HashMap<>();
-        
-        pp.setNamespaceAware(true);
-        
-        // Note: this feature config is necessary due to an unresolved Xerces deferred DOM issue/bug
-        features.put("http://apache.org/xml/features/dom/defer-node-expansion", Boolean.FALSE);
-        
-        // The following config is to harden the parser pool against known XML security vulnerabilities
-        pp.setExpandEntityReferences(false);
-        features.put(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        features.put("http://apache.org/xml/features/disallow-doctype-decl", true);
-        
-        pp.setBuilderFeatures(features);
-        
-        try {
-            pp.initialize();
-            return pp;
-        } catch (final ComponentInitializationException e) {
-            throw new XMLRuntimeException("Problem initializing Decrypter internal ParserPool", e);
-        }
+        // Note: we don't really build this here anymore, so the method name is semantically misleading.
+        // We should remove this method in next major release and just move this call to the ctor.
+        return Constraint.isNotNull(ConfigurationService.get(DecryptionParserPool.class), 
+                "DecryptionParserPool has not been registered with the global configuration").getParserPool();
     }
     
     /**
