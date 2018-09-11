@@ -312,10 +312,10 @@ public class XMLConfigurator {
             final Class<?> clazz = classLoader.loadClass(className);
             final Constructor<?> constructor = clazz.getConstructor();
             return constructor.newInstance();
-        } catch (final Exception e) {
+        } catch (final Throwable t) {
             final String errorMsg = "Cannot create instance of " + className;
-            log.error(errorMsg, e);
-            throw new XMLConfigurationException(errorMsg, e);
+            log.error(errorMsg, t);
+            throw new XMLConfigurationException(errorMsg, t);
         }
     }
 

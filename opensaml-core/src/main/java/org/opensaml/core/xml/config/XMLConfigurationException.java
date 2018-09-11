@@ -49,7 +49,7 @@ public class XMLConfigurationException extends Exception {
      * 
      * @param wrappedException exception to be wrapped by this one
      */
-    public XMLConfigurationException(@Nullable final Exception wrappedException) {
+    public XMLConfigurationException(@Nullable final Throwable wrappedException) {
         super(wrappedException);
     }
 
@@ -59,7 +59,7 @@ public class XMLConfigurationException extends Exception {
      * @param message exception message
      * @param wrappedException exception to be wrapped by this one
      */
-    public XMLConfigurationException(@Nullable final String message, @Nullable final Exception wrappedException) {
+    public XMLConfigurationException(@Nullable final String message, @Nullable final Throwable wrappedException) {
         super(message, wrappedException);
     }
 }
