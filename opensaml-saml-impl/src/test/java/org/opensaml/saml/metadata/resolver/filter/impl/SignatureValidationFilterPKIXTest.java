@@ -31,6 +31,7 @@ import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.common.SignableSAMLObject;
+import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.security.SecurityException;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.security.crypto.KeySupport;
@@ -77,7 +78,7 @@ public class SignatureValidationFilterPKIXTest extends XMLObjectBaseTestCase {
         filter.filter(entityDescriptor);
     }
     
-    @Test()
+    @Test(expectedExceptions=FilterException.class)
     public void testEntityDescriptorInvalidEntityID() throws Exception {
         Credential signingCredential = buildSigningCredential("entity.key", "entity.crt", "ca.crt");
         // This metadata file is identical to the success case except the document entityID is changed, so
@@ -85,8 +86,7 @@ public class SignatureValidationFilterPKIXTest extends XMLObjectBaseTestCase {
         // will not match.
         XMLObject entityDescriptor = generateSignedMetadata(signingCredential, "EntityDescriptor-invalid-entityid.xml");
         
-        XMLObject filtered = filter.filter(entityDescriptor);
-        Assert.assertNull(filtered);
+        filter.filter(entityDescriptor);
     }
 
     private XMLObject generateSignedMetadata(Credential signingCredential, String unsignedMetadata) 

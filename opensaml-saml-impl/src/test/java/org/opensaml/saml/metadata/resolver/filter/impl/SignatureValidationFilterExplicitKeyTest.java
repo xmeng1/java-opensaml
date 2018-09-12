@@ -124,7 +124,7 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         }
     }
     
-    @Test
+    @Test(expectedExceptions=FilterException.class)
     public void testSWITCHStandaloneBlacklistedSignatureAlgorithm() throws UnmarshallingException, FilterException {
         XMLObject xmlObject = unmarshallerFactory.getUnmarshaller(switchMDDocumentValid
                 .getDocumentElement()).unmarshall(switchMDDocumentValid.getDocumentElement());
@@ -136,18 +136,21 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         CriteriaSet defaultCriteriaSet = new CriteriaSet(new SignatureValidationParametersCriterion(sigParams));
         filter.setDefaultCriteria(defaultCriteriaSet);
         
-        XMLObject filtered = filter.filter(xmlObject);
-        Assert.assertNull(filtered);
+        filter.filter(xmlObject);
     }
     
     @Test
-    public void testInvalidSWITCHStandalone() throws UnmarshallingException, FilterException {
+    public void testInvalidSWITCHStandalone() throws UnmarshallingException {
         XMLObject xmlObject = unmarshallerFactory.getUnmarshaller(switchMDDocumentInvalid
                 .getDocumentElement()).unmarshall(switchMDDocumentInvalid.getDocumentElement());
         
         SignatureValidationFilter filter = new SignatureValidationFilter(switchSigTrustEngine);
-        XMLObject filtered = filter.filter(xmlObject);
-        Assert.assertNull(filtered);
+        try {
+            filter.filter(xmlObject);
+            Assert.fail("Filter passed validation, should have failed");
+        } catch (FilterException e) {
+            // do nothing, should fail
+        }
     }
     
     @Test
@@ -174,7 +177,7 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
     }
     
     @Test
-    public void testEntityDescriptorInvalid() throws UnmarshallingException, CertificateException, XMLParserException, FilterException {
+    public void testEntityDescriptorInvalid() throws UnmarshallingException, CertificateException, XMLParserException {
         X509Certificate cert = X509Support.decodeCertificate(openIDCertBase64);
         X509Credential cred = CredentialSupport.getSimpleCredential(cert, null);
         StaticCredentialResolver credResolver = new StaticCredentialResolver(cred);
@@ -189,8 +192,12 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         Assert.assertNotNull(ed.getSignature(), "Signature was null");
         
         SignatureValidationFilter filter = new SignatureValidationFilter(trustEngine);
-        XMLObject filtered = filter.filter(xmlObject);
-        Assert.assertNull(filtered);
+        try {
+            filter.filter(xmlObject);
+            Assert.fail("Filter passed validation, should have failed");
+        } catch (FilterException e) {
+            // do nothing, should fail
+        }
     }
     
     @Test
@@ -218,7 +225,7 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
     }
     
     @Test
-    public void testInvalidEntityDescriptorWithProvider() throws CertificateException, XMLParserException, UnmarshallingException, ComponentInitializationException {
+    public void testInvalidEntityDescriptorWithProvider() throws CertificateException, XMLParserException, UnmarshallingException {
         X509Certificate cert = X509Support.decodeCertificate(openIDCertBase64);
         X509Credential cred = CredentialSupport.getSimpleCredential(cert, null);
         StaticCredentialResolver credResolver = new StaticCredentialResolver(cred);
@@ -234,9 +241,12 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         mdProvider.setId("test");
         mdProvider.setMetadataFilter(filter);
         
-        mdProvider.initialize();
-        
-        Assert.assertFalse(mdProvider.iterator().hasNext());
+        try {
+            mdProvider.initialize();
+            Assert.fail("Metadata signature was invalid, provider initialization should have failed");
+        } catch (ComponentInitializationException e) {
+            // do nothing, failure expected
+        }
     }
 
 }
