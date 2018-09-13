@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
 
 import org.apache.velocity.app.VelocityEngine;
+import org.opensaml.saml.metadata.resolver.impl.TemplateRequestURLBuilder.EncodingStyle;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -41,22 +42,53 @@ public class TemplateRequestURLBuilderTest {
     }
     
     @Test
-    public void testEncodedQueryParam() {
+    @SuppressWarnings("deprecation")
+    public void testEncodedQueryParamLegacy() {
         function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", true);
         
         Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/?entity=http%3A%2F%2Fexample.org%2Fidp");
     }
     
     @Test
-    public void testMDQStyle() {
+    @SuppressWarnings("deprecation")
+    public void testMDQStyleLegacy() {
         function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/entities/${entityID}", true);
         
         Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/entities/http%3A%2F%2Fexample.org%2Fidp");
     }
 
     @Test
-    public void testWellKnownLocationStyle() {
+    @SuppressWarnings("deprecation")
+    public void testWellKnownLocationStyleLegacy() {
         function = new TemplateRequestURLBuilder(engine, "${entityID}", false);
+        
+        Assert.assertEquals(function.apply("http://example.org/idp"), "http://example.org/idp");
+    }
+    
+    @Test
+    public void testEncodedQueryParam() {
+        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", EncodingStyle.form);
+        
+        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/?entity=http%3A%2F%2Fexample.org%2Fidp");
+    }
+    
+    @Test
+    public void testEncodedPath() {
+        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/entities/${entityID}", EncodingStyle.path);
+        
+        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/entities/http:%2F%2Fexample.org%2Fidp");
+    }
+
+    @Test
+    public void testEncodedFragment() {
+        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/entities#${entityID}", EncodingStyle.fragment);
+        
+        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/entities#http://example.org/idp");
+    }
+
+    @Test
+    public void testWellKnownLocationStyle() {
+        function = new TemplateRequestURLBuilder(engine, "${entityID}", EncodingStyle.none);
         
         Assert.assertEquals(function.apply("http://example.org/idp"), "http://example.org/idp");
     }
@@ -69,14 +101,14 @@ public class TemplateRequestURLBuilderTest {
             }
         };
         
-        function = new TemplateRequestURLBuilder(engine, "${entityID}", false, transformer);
+        function = new TemplateRequestURLBuilder(engine, "${entityID}", EncodingStyle.none, transformer);
         
         Assert.assertEquals(function.apply("http://example.org/idp"), "HTTP://EXAMPLE.ORG/IDP");
     }
     
     @Test(expectedExceptions=ConstraintViolationException.class)
     public void testNullEntityID() {
-        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", true);
+        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", EncodingStyle.form);
         function.apply(null);
     }
 
