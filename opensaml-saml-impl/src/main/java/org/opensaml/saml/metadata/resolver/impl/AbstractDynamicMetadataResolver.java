@@ -625,8 +625,14 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             
             if (root == null) {
                 mgmtData.initNegativeLookupCache();
-                // TODO: recalc and set refresh time if have existing descriptor
                 log.debug("{} No metadata was fetched from the origin source", getLogPrefix());
+
+                if (!descriptors.isEmpty()) {
+                    mgmtData.setRefreshTriggerTime(computeRefreshTriggerTime(mgmtData.getExpirationTime(), 
+                            new DateTime(ISOChronology.getInstanceUTC())));
+                    log.debug("{} Had existing data, recalculated refresh trigger time as: {}", 
+                            getLogPrefix(), mgmtData.getRefreshTriggerTime());
+                }
             } else {
                 mgmtData.clearNegativeLookupCache();
                 try {
@@ -1318,17 +1324,30 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             lastAccessedTime = new DateTime(ISOChronology.getInstanceUTC());
         }
         
+        /**
+         * Determine whether the negative lookup cache for the entity is in effect.
+         * 
+         * @return true if active, false otherwise
+         */
         public boolean isNegativeLookupCacheActive() {
-            DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
             return negativeLookupCacheExpiration != null && now.isBefore(negativeLookupCacheExpiration);
         }
         
+        /**
+         * Initialize the negative lookup cache for the entity.
+         * 
+         * @return the time before which no further lookups for the entity will be performed
+         */
         public DateTime initNegativeLookupCache() {
-            DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
             negativeLookupCacheExpiration = now.plus(getNegativeLookupCacheDuration());
             return negativeLookupCacheExpiration;
         }
         
+        /**
+         * Clear out the negative lookup cache.
+         */
         public void clearNegativeLookupCache() {
             negativeLookupCacheExpiration = null;
         }
