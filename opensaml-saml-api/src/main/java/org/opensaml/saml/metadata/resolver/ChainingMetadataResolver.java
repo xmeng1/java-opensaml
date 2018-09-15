@@ -51,7 +51,7 @@ import com.google.common.collect.ImmutableList;
  * the registered resolvers in resolver list order.
  */
 public class ChainingMetadataResolver extends AbstractIdentifiableInitializableComponent implements MetadataResolver,
-        RefreshableMetadataResolver {
+        RefreshableMetadataResolver, ClearableMetadataResolver {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(ChainingMetadataResolver.class);
@@ -149,6 +149,24 @@ public class ChainingMetadataResolver extends AbstractIdentifiableInitializableC
         }
 
         return Collections.emptyList();
+    }
+    
+    /** {@inheritDoc} */
+    public void clear() throws ResolverException {
+        for (final MetadataResolver resolver : resolvers) {
+            if (resolver instanceof ClearableMetadataResolver) {
+                ((ClearableMetadataResolver) resolver).clear();
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void clear(String entityID) throws ResolverException {
+        for (final MetadataResolver resolver : resolvers) {
+            if (resolver instanceof ClearableMetadataResolver) {
+                ((ClearableMetadataResolver) resolver).clear(entityID);
+            }
+        }
     }
 
     /** {@inheritDoc} */

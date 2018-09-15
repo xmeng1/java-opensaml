@@ -195,6 +195,57 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
     }
     
     @Test
+    public void testClear() throws ComponentInitializationException, ResolverException {
+        sourceMap.put(id1, ed1);
+        sourceMap.put(id2, ed2);
+        sourceMap.put(id3, ed3);
+        
+        resolver.initialize();
+        
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        
+        DynamicEntityBackingStore backingStore = resolver.getBackingStore();
+        
+        resolver.clear();
+        
+        Assert.assertFalse(backingStore.getIndexedDescriptors().containsKey(id1));
+        Assert.assertFalse(backingStore.getIndexedDescriptors().containsKey(id2));
+        Assert.assertFalse(backingStore.getIndexedDescriptors().containsKey(id3));
+        
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+    }
+    
+    @Test
+    public void testClearByEntityID() throws ComponentInitializationException, ResolverException {
+        sourceMap.put(id1, ed1);
+        sourceMap.put(id2, ed2);
+        sourceMap.put(id3, ed3);
+        
+        resolver.initialize();
+        
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        
+        DynamicEntityBackingStore backingStore = resolver.getBackingStore();
+        
+        resolver.clear(id1);
+        resolver.clear(id2);
+        
+        Assert.assertFalse(backingStore.getIndexedDescriptors().containsKey(id1));
+        Assert.assertFalse(backingStore.getIndexedDescriptors().containsKey(id2));
+        Assert.assertTrue(backingStore.getIndexedDescriptors().containsKey(id3));
+        
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
+        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+    }
+    
+    @Test
     public void testDOMDropFromFetch() throws ComponentInitializationException, ResolverException {
         sourceMap.put(id1, ed1);
         

@@ -43,7 +43,9 @@ import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.persist.XMLObjectLoadSaveManager;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.core.xml.util.XMLObjectSupport.CloneOutputOption;
+import org.opensaml.saml.metadata.resolver.ClearableMetadataResolver;
 import org.opensaml.saml.metadata.resolver.DynamicMetadataResolver;
+import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.saml2.common.SAML2Support;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -80,7 +82,7 @@ import net.shibboleth.utilities.java.support.resolver.ResolverException;
  * Abstract subclass for metadata resolvers that resolve metadata dynamically, as needed and on demand.
  */
 public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataResolver 
-        implements DynamicMetadataResolver {
+        implements DynamicMetadataResolver, ClearableMetadataResolver {
     
     /** Metric name for the timer for {@link #fetchFromOriginSource(CriteriaSet)}. */
     public static final String METRIC_TIMER_FETCH_FROM_ORIGIN_SOURCE = "timer.fetchFromOriginSource";
@@ -525,6 +527,42 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         metricsBaseName = StringSupport.trimOrNull(baseName);
+    }
+    
+    /** {@inheritDoc} */
+    public void clear() throws ResolverException {
+        final DynamicEntityBackingStore backingStore = getBackingStore();
+        final Map<String, List<EntityDescriptor>> indexedDescriptors = backingStore.getIndexedDescriptors();
+        
+        for (final String entityID : indexedDescriptors.keySet()) {
+            final EntityManagementData mgmtData = backingStore.getManagementData(entityID);
+            final Lock writeLock = mgmtData.getReadWriteLock().writeLock();
+            try {
+                writeLock.lock();
+                
+                removeByEntityID(entityID, backingStore);
+                backingStore.removeManagementData(entityID);
+                
+            } finally {
+                writeLock.unlock();
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void clear(@Nonnull final String entityID) throws ResolverException {
+        final DynamicEntityBackingStore backingStore = getBackingStore();
+        final EntityManagementData mgmtData = backingStore.getManagementData(entityID);
+        final Lock writeLock = mgmtData.getReadWriteLock().writeLock();
+        try {
+            writeLock.lock();
+
+            removeByEntityID(entityID, backingStore);
+            backingStore.removeManagementData(entityID);
+
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     /** {@inheritDoc} */

@@ -35,6 +35,7 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
 import org.joda.time.DateTime;
+import org.opensaml.saml.metadata.resolver.ClearableMetadataResolver;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.RefreshableMetadataResolver;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
@@ -52,7 +53,7 @@ import com.google.common.collect.Iterables;
  * {@link MetadataResolver}s.
  */
 public class CompositeMetadataResolver extends AbstractIdentifiedInitializableComponent implements MetadataResolver,
-        RefreshableMetadataResolver {
+        RefreshableMetadataResolver, ClearableMetadataResolver {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(CompositeMetadataResolver.class);
@@ -150,6 +151,24 @@ public class CompositeMetadataResolver extends AbstractIdentifiedInitializableCo
         super.doDestroy();
 
         resolvers = Collections.emptyList();
+    }
+    
+    /** {@inheritDoc} */
+    public void clear() throws ResolverException {
+        for (final MetadataResolver resolver : resolvers) {
+            if (resolver instanceof ClearableMetadataResolver) {
+                ((ClearableMetadataResolver) resolver).clear();
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void clear(String entityID) throws ResolverException {
+        for (final MetadataResolver resolver : resolvers) {
+            if (resolver instanceof ClearableMetadataResolver) {
+                ((ClearableMetadataResolver) resolver).clear(entityID);
+            }
+        }
     }
 
     /** {@inheritDoc} */
