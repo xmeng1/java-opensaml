@@ -53,7 +53,10 @@ public final class SAMLEventIds {
 
     /** ID of event returned if a SAML artifact cannot be resolved. */
     @Nonnull @NotEmpty public static final String UNABLE_RESOLVE_ARTIFACT = "UnableToResolveArtifact";
-    
+
+    /** ID of event returned if SAML subject-id requirement is not met. */
+    @Nonnull @NotEmpty public static final String SUBJECT_ID_REQ_FAILED = "SubjectIDReqFailed";
+
     /** Constructor. */
     private SAMLEventIds() {
         
