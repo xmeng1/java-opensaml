@@ -411,12 +411,11 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
      */
     @Nonnull protected HttpClientContext resolveClientContext(@Nonnull final InOutOperationContext operationContext) {
         final HttpClientRequestContext requestContext = 
-                operationContext.getOutboundMessageContext().getSubcontext(HttpClientRequestContext.class);
-        if (requestContext != null && requestContext.getHttpClientContext() != null) {
-            return requestContext.getHttpClientContext();
-        } else {
-            return HttpClientContext.create();
+                operationContext.getOutboundMessageContext().getSubcontext(HttpClientRequestContext.class, true);
+        if (requestContext.getHttpClientContext() == null) {
+            requestContext.setHttpClientContext(HttpClientContext.create());
         }
+        return requestContext.getHttpClientContext();
     }
 
     /**
