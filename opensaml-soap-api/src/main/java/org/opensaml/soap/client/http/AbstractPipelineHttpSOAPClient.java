@@ -19,6 +19,7 @@ package org.opensaml.soap.client.http;
 
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_CRITERIA_SET;
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE;
+import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL;
 
 import java.io.IOException;
 
@@ -356,6 +357,10 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
                     && clientContext.getAttribute(CONTEXT_KEY_CRITERIA_SET) == null) {
                 clientContext.setAttribute(CONTEXT_KEY_CRITERIA_SET, 
                         buildTLSCriteriaSet(request, operationContext));
+            }
+            if (clientContext.getAttribute(CONTEXT_KEY_TRUST_ENGINE) != null
+                    && clientContext.getAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL) == null) {
+                clientContext.setAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL, Boolean.FALSE);
             }
         }
         
