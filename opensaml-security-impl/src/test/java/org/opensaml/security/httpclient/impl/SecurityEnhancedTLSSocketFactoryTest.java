@@ -144,6 +144,42 @@ public class SecurityEnhancedTLSSocketFactoryTest {
        }
     }
     
+    @Test(expectedExceptions=SSLPeerUnverifiedException.class)
+    public void testFailUntrustedCertExplicitFatal() throws IOException {
+       X509Credential cred = getCredential("foo-1A1-good.crt");
+       List<Credential> emptyCreds = new ArrayList<>();
+       ExplicitKeyTrustEngine trustEngine = new ExplicitKeyTrustEngine(new StaticCredentialResolver(emptyCreds));
+       httpContext.setAttribute(HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE, trustEngine);
+       httpContext.setAttribute(HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL, Boolean.TRUE);
+       
+       securityEnhancedSocketFactory = new SecurityEnhancedTLSSocketFactory(buildInnerSSLFactory(
+               Collections.singletonList((Certificate)cred.getEntityCertificate()), hostname), new StrictHostnameVerifier());
+       Socket socket = securityEnhancedSocketFactory.createSocket(httpContext);
+       
+       try {
+           securityEnhancedSocketFactory.connectSocket(0, socket, new HttpHost(hostname, 443, "https"), null, null, httpContext);
+       } catch (Exception e) {
+           Assert.assertEquals(httpContext.getAttribute(HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_CREDENTIAL_TRUSTED), Boolean.FALSE);
+           throw e;
+       }
+    }
+    
+    @Test
+    public void testFailUntrustedCertNonFatal() throws IOException {
+       X509Credential cred = getCredential("foo-1A1-good.crt");
+       List<Credential> emptyCreds = new ArrayList<>();
+       ExplicitKeyTrustEngine trustEngine = new ExplicitKeyTrustEngine(new StaticCredentialResolver(emptyCreds));
+       httpContext.setAttribute(HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE, trustEngine);
+       httpContext.setAttribute(HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL, Boolean.FALSE);
+       
+       securityEnhancedSocketFactory = new SecurityEnhancedTLSSocketFactory(buildInnerSSLFactory(
+               Collections.singletonList((Certificate)cred.getEntityCertificate()), hostname), new StrictHostnameVerifier());
+       Socket socket = securityEnhancedSocketFactory.createSocket(httpContext);
+       
+       securityEnhancedSocketFactory.connectSocket(0, socket, new HttpHost(hostname, 443, "https"), null, null, httpContext);
+       Assert.assertEquals(httpContext.getAttribute(HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_CREDENTIAL_TRUSTED), Boolean.FALSE);
+    }
+    
     @Test(expectedExceptions=SSLException.class)
     public void testFailBadHostname() throws IOException {
        X509Credential cred = getCredential("foo-1A1-good.crt");

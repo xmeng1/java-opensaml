@@ -40,6 +40,10 @@ public final class HttpClientSecurityConstants {
      * of HttpClient socket factories. Type will be a {@link Boolean}. */
     public static final String CONTEXT_KEY_SERVER_TLS_CREDENTIAL_TRUSTED = "opensaml.ServerTLSCredentialTrusted";
     
+    /** Context key for indicating whether server TLS evaluation failure should be treated as a fatal error.
+     * Type will be a {@link Boolean}. */
+    public static final String CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL = "opensaml.ServerTLSFailureIsFatal";
+    
     /** HttpContext key for the client TLS credential. 
      * Must be an instance of {@link org.opensaml.security.x509.X509Credential}. */
     public static final String CONTEXT_KEY_CLIENT_TLS_CREDENTIAL = "opensaml.ClientTLSCredential";
