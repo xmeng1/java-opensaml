@@ -401,23 +401,21 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
             }
             
             final SAMLPeerEntityContext peerContext = parent.getSubcontext(SAMLPeerEntityContext.class);
-            if (peerContext == null) {
-                return criteria;
-            }
-            
-            final SAMLMetadataContext metadataContext = peerContext.getSubcontext(SAMLMetadataContext.class);
-            if (metadataContext != null && metadataContext.getRoleDescriptor() != null) {
-                criteria.add(new RoleDescriptorCriterion(metadataContext.getRoleDescriptor()));
-                return criteria;
-            } else {
+            if (peerContext != null) {
                 if (peerContext.getEntityId() != null) {
                     criteria.add(new EntityIdCriterion(peerContext.getEntityId()));
                 }
                 if (peerContext.getRole() != null) {
                     criteria.add(new EntityRoleCriterion(peerContext.getRole()));
                 }
-                return criteria;
+                
+                final SAMLMetadataContext metadataContext = peerContext.getSubcontext(SAMLMetadataContext.class);
+                if (metadataContext != null && metadataContext.getRoleDescriptor() != null) {
+                    criteria.add(new RoleDescriptorCriterion(metadataContext.getRoleDescriptor()));
+                }
             }
+            
+            return criteria;
         }
         
     }
