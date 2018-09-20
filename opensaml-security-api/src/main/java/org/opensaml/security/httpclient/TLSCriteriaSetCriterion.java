@@ -18,7 +18,6 @@
 package org.opensaml.security.httpclient;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -37,9 +36,9 @@ public final class TLSCriteriaSetCriterion implements Criterion {
     /**
     * Constructor.
      *
-     * @param usage the usage for which a credential is intended
+     * @param criteria the TLS criteria set
      */
-    public TLSCriteriaSetCriterion(@Nullable final CriteriaSet criteria) {
+    public TLSCriteriaSetCriterion(@Nonnull final CriteriaSet criteria) {
         criteriaSet = Constraint.isNotNull(criteria, "TLS CriteriaSet was null");
     }
 
