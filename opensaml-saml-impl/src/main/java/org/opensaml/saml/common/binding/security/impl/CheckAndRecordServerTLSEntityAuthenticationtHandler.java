@@ -135,6 +135,7 @@ public class CheckAndRecordServerTLSEntityAuthenticationtHandler extends Abstrac
                         log.debug("Unable to resolve authenticated entityID");
                     }
                 }
+                log.debug("Current authenticated entityID is: {}", entityContext.getEntityId());
             } else {
                 log.debug("HttpClientContext indicates non-successful server TLS");
             }
