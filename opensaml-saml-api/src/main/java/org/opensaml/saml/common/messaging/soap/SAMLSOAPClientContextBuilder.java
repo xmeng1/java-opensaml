@@ -63,13 +63,16 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     /** The outbound message. **/
     private OutboundMessageType outboundMessage;
     
+    /** The SAML protocol in use. */
+    private String protocol;
+    
     /** The SAML self entityID. **/
     private String selfEntityID;
     
     /** The SAML peer entityID. **/
     private String peerEntityID;
     
-    /** The SAML peer entity roles. **/
+    /** The SAML peer entity role. **/
     private QName peerEntityRole;
     
     /** The SAML peer EntityDescriptor. **/
@@ -105,6 +108,27 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     @Nonnull public SAMLSOAPClientContextBuilder<InboundMessageType, OutboundMessageType> setOutboundMessage(
             final OutboundMessageType message) {
         outboundMessage = message;
+        return this;
+    }
+
+    /**
+     * Get the SAML protocol URI.
+     * 
+     * @return the SAML protocol URI
+     */
+    @Nullable public String getProtocol() {
+        return protocol;
+    }
+
+    /**
+     * Set the SAML protocol URI.
+     * 
+     * @param protocol the SAML protocol.
+     * @return this builder instance
+     */
+    @Nonnull public SAMLSOAPClientContextBuilder<InboundMessageType, OutboundMessageType> setProtocol(
+            final String uri) {
+        protocol = uri;
         return this;
     }
 
@@ -295,7 +319,7 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     /**
      * Set the SOAP client security configuration profile ID to use.
      * 
-     * @param profileID the profile ID, or null
+     * @param profileId the profile ID, or null
      * @return this builder instance
      */
     @Nonnull public SAMLSOAPClientContextBuilder<InboundMessageType, OutboundMessageType>
@@ -330,12 +354,17 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
         // This is just so it's easy to change.
         final BaseContext parent = opContext;
         
+        if (getProtocol() != null) {
+            parent.getSubcontext(SAMLProtocolContext.class, true).setProtocol(getProtocol());
+        }
+        
         if (getPipelineName() != null) {
             parent.getSubcontext(SOAPClientContext.class, true).setPipelineName(getPipelineName());
         }
         
         if (getSecurityConfigurationProfileId() != null) {
-            parent.getSubcontext(SOAPClientSecurityContext.class, true).setSecurityConfigurationProfileId(getSecurityConfigurationProfileId());
+            parent.getSubcontext(SOAPClientSecurityContext.class, true).setSecurityConfigurationProfileId(
+                    getSecurityConfigurationProfileId());
         }
         
         //TODO is this required always?

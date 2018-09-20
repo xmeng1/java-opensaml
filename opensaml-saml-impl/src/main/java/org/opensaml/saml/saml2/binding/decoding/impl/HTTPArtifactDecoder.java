@@ -453,6 +453,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final InOutOperationContext<SAMLObject, ArtifactResolve> opContext = new SAMLSOAPClientContextBuilder()
                     .setOutboundMessage(buildArtifactResolveRequestMessage(
                             artifact, ars.getLocation(), peerRoleDescriptor, selfEntityID))
+                    .setProtocol(SAMLConstants.SAML20P_NS)
                     .setPipelineName(getSOAPPipelineName())
                     .setSecurityConfigurationProfileId(getSOAPClientSecurityConfigurationProfileId())
                     .setPeerRoleDescriptor(peerRoleDescriptor)
