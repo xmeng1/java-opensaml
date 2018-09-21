@@ -24,6 +24,7 @@ import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTE
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_TLS_CIPHER_SUITES;
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_TLS_PROTOCOLS;
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE;
+import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL;
 
 import java.util.Collections;
 
@@ -170,6 +171,8 @@ public final class HttpClientSecuritySupport {
         setContextValue(context, CONTEXT_KEY_CLIENT_TLS_CREDENTIAL,
                 securityParameters.getClientTLSCredential(), replace);
         
+        setContextValue(context, CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL,
+                securityParameters.isServerTLSFailureFatal(), replace);
     }
     
     /**

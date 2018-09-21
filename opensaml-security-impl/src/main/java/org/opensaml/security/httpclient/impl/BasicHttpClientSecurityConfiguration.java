@@ -57,6 +57,10 @@ public class BasicHttpClientSecurityConfiguration implements HttpClientSecurityC
     /** The X509 credential used for client TLS. */
     @Nullable private X509Credential clientTLSCredential;
     
+    /** Flag indicating whether failure of server TLS trust engine evaluation should be treated as 
+     * a fatal error. */
+    @Nullable private Boolean serverTLSFailureFatal;
+    
     /**
      * Get an instance of {@link CredentialsProvider} used for authentication by the HttpClient instance.
      * 
@@ -218,6 +222,38 @@ public class BasicHttpClientSecurityConfiguration implements HttpClientSecurityC
      */
     public void setClientTLSCredential(@Nullable final X509Credential credential) {
         clientTLSCredential = credential;
+    }
+    
+    /**
+     * Get the flag indicating whether failure of server TLS trust engine evaluation should be treated as 
+     * a fatal error.
+     * 
+     * <p>
+     * Note: a {@link Boolean} is used here rather than <code>boolean</code> to explicitly allow a 
+     * non-configured value, allowing consuming components to implement their own internal defaults.
+     * </p>
+     * 
+     * @return true if fatal, false if non-fatal, null if not explicitly configured
+     * 
+     */
+    @Nullable public Boolean isServerTLSFailureFatal() {
+        return serverTLSFailureFatal;
+    }
+
+    /**
+     * Set the flag indicating whether failure of server TLS trust engine evaluation should be treated as 
+     * a fatal error.
+     * 
+     * <p>
+     * Note: a {@link Boolean} is used here rather than <code>boolean</code> to explicitly allow a 
+     * non-configured value, allowing consuming components to implement their own internal defaults.
+     * </p>
+     * 
+     * @param flag true if fatal, false if non-fatal, null if not explicitly configured
+     * 
+     */
+    public void setServerTLSFailureFatal(@Nullable final Boolean flag) {
+        this.serverTLSFailureFatal = flag ;
     }
 
 }

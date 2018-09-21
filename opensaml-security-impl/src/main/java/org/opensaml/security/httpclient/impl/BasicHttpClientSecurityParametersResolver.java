@@ -109,6 +109,8 @@ public class BasicHttpClientSecurityParametersResolver implements HttpClientSecu
                     config.getTLSProtocols()));
             params.setTLSTrustEngine(ObjectSupport.<TrustEngine<? super X509Credential>>firstNonNull(
                     params.getTLSTrustEngine(), config.getTLSTrustEngine()));
+            params.setServerTLSFailureFatal(ObjectSupport.firstNonNull(params.isServerTLSFailureFatal(), 
+                    config.isServerTLSFailureFatal()));
         }
         
         if (criteria.contains(TLSCriteriaSetCriterion.class)) {
@@ -147,6 +149,7 @@ public class BasicHttpClientSecurityParametersResolver implements HttpClientSecu
             log.debug("\tHostnameVerifier: {}", params.getHostnameVerifier() != null ? "present" : "null");
             log.debug("\tTLS TrustEngine: {}", params.getTLSTrustEngine() != null ? "present" : "null");
             log.debug("\tTLS CriteriaSet: {}", params.getTLSCriteriaSet() != null ? "present" : "null");
+            log.debug("\tServer TLS Failure Fatal: {}", params.isServerTLSFailureFatal());
             
             log.debug("\tTLS cipher suites: {}", params.getTLSCipherSuites()); 
             log.debug("\tTLS protocols: {}", params.getTLSProtocols()); 

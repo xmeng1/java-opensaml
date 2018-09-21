@@ -24,6 +24,7 @@ import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTE
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_TLS_CIPHER_SUITES;
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_TLS_PROTOCOLS;
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE;
+import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -93,6 +94,7 @@ public class HttpClientSecuritySupportTest {
         Assert.assertNull(context.getAttribute(CONTEXT_KEY_TLS_CIPHER_SUITES));
         Assert.assertNull(context.getAttribute(CONTEXT_KEY_CLIENT_TLS_CREDENTIAL));
         Assert.assertNull(context.getAttribute(CONTEXT_KEY_HOSTNAME_VERIFIER));
+        Assert.assertNull(context.getAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL));
     }
     
     @Test
@@ -107,6 +109,7 @@ public class HttpClientSecuritySupportTest {
         params.setTLSCipherSuites(Lists.newArrayList("foo"));
         params.setClientTLSCredential(new BasicX509Credential(cert));
         params.setHostnameVerifier(new StrictHostnameVerifier());
+        params.setServerTLSFailureFatal(Boolean.TRUE);
         
         HttpClientSecuritySupport.marshalSecurityParameters(context, params, false);
         
@@ -117,6 +120,7 @@ public class HttpClientSecuritySupportTest {
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_TLS_CIPHER_SUITES), params.getTLSCipherSuites());
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_CLIENT_TLS_CREDENTIAL), params.getClientTLSCredential());
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_HOSTNAME_VERIFIER), params.getHostnameVerifier());
+        Assert.assertTrue(((Boolean)context.getAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL)));
     }
 
     
@@ -131,6 +135,7 @@ public class HttpClientSecuritySupportTest {
         context.setAttribute(CONTEXT_KEY_TLS_CIPHER_SUITES, Lists.newArrayList("foo"));
         context.setAttribute(CONTEXT_KEY_CLIENT_TLS_CREDENTIAL, new BasicX509Credential(cert));
         context.setAttribute(CONTEXT_KEY_HOSTNAME_VERIFIER, new StrictHostnameVerifier());
+        context.setAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL, Boolean.FALSE);
         
         HttpClientSecurityParameters params = new HttpClientSecurityParameters();
         params.setCredentialsProvider(new BasicCredentialsProvider());
@@ -140,6 +145,7 @@ public class HttpClientSecuritySupportTest {
         params.setTLSCipherSuites(Lists.newArrayList("foo"));
         params.setClientTLSCredential(new BasicX509Credential(cert));
         params.setHostnameVerifier(new StrictHostnameVerifier());
+        params.setServerTLSFailureFatal(Boolean.TRUE);
         
         HttpClientSecuritySupport.marshalSecurityParameters(context, params, true);
         
@@ -150,6 +156,7 @@ public class HttpClientSecuritySupportTest {
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_TLS_CIPHER_SUITES), params.getTLSCipherSuites());
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_CLIENT_TLS_CREDENTIAL), params.getClientTLSCredential());
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_HOSTNAME_VERIFIER), params.getHostnameVerifier());
+        Assert.assertTrue(((Boolean)context.getAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL)));
     }
 
     @Test
@@ -171,6 +178,7 @@ public class HttpClientSecuritySupportTest {
         context.setAttribute(CONTEXT_KEY_TLS_CIPHER_SUITES, cipherSuites);
         context.setAttribute(CONTEXT_KEY_CLIENT_TLS_CREDENTIAL, clientTLSCred);
         context.setAttribute(CONTEXT_KEY_HOSTNAME_VERIFIER, verifier);
+        context.setAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL, Boolean.FALSE);
         
         HttpClientSecurityParameters params = new HttpClientSecurityParameters();
         params.setCredentialsProvider(new BasicCredentialsProvider());
@@ -180,6 +188,7 @@ public class HttpClientSecuritySupportTest {
         params.setTLSCipherSuites(Lists.newArrayList("foo"));
         params.setClientTLSCredential(new BasicX509Credential(cert));
         params.setHostnameVerifier(new StrictHostnameVerifier());
+        params.setServerTLSFailureFatal(Boolean.TRUE);
         
         HttpClientSecuritySupport.marshalSecurityParameters(context, params, false);
         
@@ -190,6 +199,7 @@ public class HttpClientSecuritySupportTest {
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_TLS_CIPHER_SUITES), cipherSuites);
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_CLIENT_TLS_CREDENTIAL), clientTLSCred);
         Assert.assertSame(context.getAttribute(CONTEXT_KEY_HOSTNAME_VERIFIER), verifier);
+        Assert.assertFalse(((Boolean)context.getAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL)));
     }
     
     @Test

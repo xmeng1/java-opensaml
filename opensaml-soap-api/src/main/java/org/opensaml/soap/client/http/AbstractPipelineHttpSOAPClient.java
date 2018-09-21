@@ -352,14 +352,18 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
         
         HttpClientSecuritySupport.marshalSecurityParameters(clientContext, getHttpClientSecurityParameters(), false);
         
-        if ("https".equalsIgnoreCase(request.getURI().getScheme())) {
-            if (clientContext.getAttribute(CONTEXT_KEY_TRUST_ENGINE) != null
-                    && clientContext.getAttribute(CONTEXT_KEY_CRITERIA_SET) == null) {
+        if ("https".equalsIgnoreCase(request.getURI().getScheme()) 
+                && clientContext.getAttribute(CONTEXT_KEY_TRUST_ENGINE) != null) {
+            
+            if (clientContext.getAttribute(CONTEXT_KEY_CRITERIA_SET) == null) {
                 clientContext.setAttribute(CONTEXT_KEY_CRITERIA_SET, 
                         buildTLSCriteriaSet(request, operationContext));
             }
-            if (clientContext.getAttribute(CONTEXT_KEY_TRUST_ENGINE) != null
-                    && clientContext.getAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL) == null) {
+            
+            // Default this false if not explicitly set, as pipeline handlers will generally 
+            // want to evaluate the result themselves. Can set explicitly on this client's params
+            // instance if want to override.
+            if (clientContext.getAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL) == null) {
                 clientContext.setAttribute(CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL, Boolean.FALSE);
             }
         }

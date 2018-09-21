@@ -84,6 +84,7 @@ public class BasicHttpClientSecurityParametersResolverTest {
         Assert.assertNull(params.getTLSCriteriaSet());
         Assert.assertNotNull(params.getTLSProtocols());
         Assert.assertNotNull(params.getTLSTrustEngine());
+        Assert.assertNotNull(params.isServerTLSFailureFatal());
     }
     
     @Test
@@ -102,6 +103,7 @@ public class BasicHttpClientSecurityParametersResolverTest {
         Assert.assertNull(params.getTLSCriteriaSet());
         Assert.assertNull(params.getTLSProtocols());
         Assert.assertNull(params.getTLSTrustEngine());
+        Assert.assertNull(params.isServerTLSFailureFatal());
     }
     
     @Test
@@ -125,6 +127,7 @@ public class BasicHttpClientSecurityParametersResolverTest {
         Assert.assertNull(params.getTLSCriteriaSet());
         Assert.assertNotNull(params.getTLSProtocols());
         Assert.assertNotNull(params.getTLSTrustEngine());
+        Assert.assertNotNull(params.isServerTLSFailureFatal());
         
         criteria = new CriteriaSet(new HttpClientSecurityConfigurationCriterion(
                 new BasicHttpClientSecurityConfiguration(),
@@ -142,6 +145,7 @@ public class BasicHttpClientSecurityParametersResolverTest {
         Assert.assertNull(params.getTLSCriteriaSet());
         Assert.assertNotNull(params.getTLSProtocols());
         Assert.assertNotNull(params.getTLSTrustEngine());
+        Assert.assertNotNull(params.isServerTLSFailureFatal());
         
         criteria = new CriteriaSet(new HttpClientSecurityConfigurationCriterion(
                 new BasicHttpClientSecurityConfiguration(),
@@ -159,6 +163,7 @@ public class BasicHttpClientSecurityParametersResolverTest {
         Assert.assertNull(params.getTLSCriteriaSet());
         Assert.assertNotNull(params.getTLSProtocols());
         Assert.assertNotNull(params.getTLSTrustEngine());
+        Assert.assertNotNull(params.isServerTLSFailureFatal());
     }
     
     @Test
@@ -231,6 +236,7 @@ public class BasicHttpClientSecurityParametersResolverTest {
         config.setTLSCipherSuites(Lists.newArrayList("test"));
         config.setTLSProtocols(Lists.newArrayList("test"));
         config.setTLSTrustEngine(new MockTrustEngine());
+        config.setServerTLSFailureFatal(true);
         return config;
     }
     

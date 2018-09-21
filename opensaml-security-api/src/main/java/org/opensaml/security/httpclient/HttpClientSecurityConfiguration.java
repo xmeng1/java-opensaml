@@ -72,5 +72,19 @@ public interface HttpClientSecurityConfiguration {
      * @return the client TLS credential, or null
      */
     @Nullable public X509Credential getClientTLSCredential();
+    
+    /**
+     * Get the flag indicating whether failure of server TLS trust engine evaluation should be treated as 
+     * a fatal error.
+     * 
+     * <p>
+     * Note: a {@link Boolean} is used here rather than <code>boolean</code> to explicitly allow a 
+     * non-configured value, allowing consuming components to implement their own internal defaults.
+     * </p>
+     * 
+     * @return true if fatal, false if non-fatal, null if not explicitly configured
+     * 
+     */
+    @Nullable public Boolean isServerTLSFailureFatal();
 
 }
