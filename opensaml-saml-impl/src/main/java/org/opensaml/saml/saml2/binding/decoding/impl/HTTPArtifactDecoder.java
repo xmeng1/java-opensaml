@@ -487,7 +487,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
                 || artifactResponse.getStatus().getStatusCode() == null 
                 || artifactResponse.getStatus().getStatusCode().getValue() == null) {
             
-            log.warn("ArtifactResponse included no StatusCode, could not validate");
+            throw new MessageDecodingException("ArtifactResponse included no StatusCode, could not validate");
             
         } else if (!StatusCode.SUCCESS.equals(artifactResponse.getStatus().getStatusCode().getValue())){
             throw new MessageDecodingException("ArtifactResponse carried non-success StatusCode: " 
