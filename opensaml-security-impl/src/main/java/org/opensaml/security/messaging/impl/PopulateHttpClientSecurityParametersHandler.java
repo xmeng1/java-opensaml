@@ -154,10 +154,10 @@ public class PopulateHttpClientSecurityParametersHandler extends AbstractMessage
     protected boolean doPreInvoke(@Nonnull final MessageContext messageContext) throws MessageHandlerException {
         
         if (super.doPreInvoke(messageContext)) {
-            log.debug("{} HttpClient security enabled", getLogPrefix());
+            log.debug("{} HttpClientSecurityParameters resolution and population enabled", getLogPrefix());
             return true;
         } else {
-            log.debug("{} HttpClient security not enabled", getLogPrefix());
+            log.debug("{} HttpClientSecurityParameters resolution and population not enabled", getLogPrefix());
             return false;
         }
     }
