@@ -17,18 +17,31 @@
 
 package org.opensaml.security.messaging.impl;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.Collections;
+
+import javax.crypto.SecretKey;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
+import org.opensaml.security.credential.Credential;
+import org.opensaml.security.credential.CredentialContextSet;
+import org.opensaml.security.credential.UsageType;
 import org.opensaml.security.httpclient.HttpClientSecurityConfigurationCriterion;
 import org.opensaml.security.httpclient.HttpClientSecurityParameters;
 import org.opensaml.security.httpclient.HttpClientSecurityParametersResolver;
 import org.opensaml.security.messaging.HttpClientSecurityContext;
+import org.opensaml.security.x509.X509Credential;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.google.common.base.Predicates;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.logic.Constraint;
@@ -75,6 +88,27 @@ public class PopulateHttpClientSecurityParametersHandlerTest extends OpenSAMLIni
         
         handler.invoke(messageContext);
         Assert.assertNotNull(messageContext.getSubcontext(HttpClientSecurityContext.class).getSecurityParameters());
+        Assert.assertNotNull(messageContext.getSubcontext(HttpClientSecurityContext.class).getSecurityParameters().getClientTLSCredential());
+    }    
+    
+    @Test public void testSuccessIncludeClientTLS() throws Exception {
+        handler.setHttpClientSecurityParametersResolver(new MockResolver(false));
+        handler.setClientTLSPredicate(Predicates.<MessageContext>alwaysTrue());
+        handler.initialize();
+        
+        handler.invoke(messageContext);
+        Assert.assertNotNull(messageContext.getSubcontext(HttpClientSecurityContext.class).getSecurityParameters());
+        Assert.assertNotNull(messageContext.getSubcontext(HttpClientSecurityContext.class).getSecurityParameters().getClientTLSCredential());
+    }    
+    
+    @Test public void testSuccessExcludeClientTLS() throws Exception {
+        handler.setHttpClientSecurityParametersResolver(new MockResolver(false));
+        handler.setClientTLSPredicate(Predicates.<MessageContext>alwaysFalse());
+        handler.initialize();
+        
+        handler.invoke(messageContext);
+        Assert.assertNotNull(messageContext.getSubcontext(HttpClientSecurityContext.class).getSecurityParameters());
+        Assert.assertNull(messageContext.getSubcontext(HttpClientSecurityContext.class).getSecurityParameters().getClientTLSCredential());
     }    
     
     private class MockResolver implements HttpClientSecurityParametersResolver {
@@ -99,7 +133,68 @@ public class PopulateHttpClientSecurityParametersHandlerTest extends OpenSAMLIni
             }
             
             Constraint.isNotNull(criteria.get(HttpClientSecurityConfigurationCriterion.class), "Criterion was null");
-            return new HttpClientSecurityParameters();
+            HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+            params.setClientTLSCredential(new MockX509Credential());
+            return params;
+        }
+        
+    }
+    
+    private class MockX509Credential implements X509Credential {
+
+        /** {@inheritDoc} */
+        public String getEntityId() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public UsageType getUsageType() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public Collection<String> getKeyNames() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public PublicKey getPublicKey() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public PrivateKey getPrivateKey() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public SecretKey getSecretKey() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public CredentialContextSet getCredentialContextSet() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public Class<? extends Credential> getCredentialType() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public X509Certificate getEntityCertificate() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public Collection<X509Certificate> getEntityCertificateChain() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public Collection<X509CRL> getCRLs() {
+            return null;
         }
         
     }

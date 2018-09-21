@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -69,12 +70,26 @@ public class PopulateHttpClientSecurityParametersHandler extends AbstractMessage
     /** Resolver for parameters to store into context. */
     @NonnullAfterInit private HttpClientSecurityParametersResolver resolver;
     
+    /** Predicate which determines whether clientTLS credentials should be included in the resolved parameters. */
+    @Nullable private Predicate<MessageContext> clientTLSPredicate;
+    
     /**
      * Constructor.
      */
     public PopulateHttpClientSecurityParametersHandler() {
         // Create context by default.
         securityParametersContextLookupStrategy = new ChildContextLookup<>(HttpClientSecurityContext.class, true);
+    }
+    
+    /**
+     * Set the predicate which determines whether clientTLS credentials should be included in the resolved parameters.
+     * 
+     * @param predicate clientTLS predicate
+     */
+    public void setClientTLSPredicate(@Nullable final Predicate<MessageContext> predicate) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
+        clientTLSPredicate = predicate;
     }
 
     /**
@@ -204,6 +219,7 @@ public class PopulateHttpClientSecurityParametersHandler extends AbstractMessage
         
         try {
             final HttpClientSecurityParameters params = resolver.resolveSingle(criteria);
+            postProcessParams(messageContext, params);
             paramsCtx.setSecurityParameters(params);
             log.debug("{} {} HttpClientSecurityParameters", getLogPrefix(),
                     params != null ? "Resolved" : "Failed to resolve");
@@ -213,5 +229,20 @@ public class PopulateHttpClientSecurityParametersHandler extends AbstractMessage
         }
     }
 // Checkstyle: CyclomaticComplexity|ReturnCount ON
+
+    /**
+     * Post-process the resolved parameters.
+     * 
+     * @param messageContext the current message context
+     * @param params the parameters to process
+     */
+    protected void postProcessParams(@Nonnull final MessageContext messageContext, 
+            @Nonnull final HttpClientSecurityParameters params) {
+        
+        if (clientTLSPredicate != null && ! clientTLSPredicate.apply(messageContext)) {
+            log.debug("Configured client TLS predicate indicates to exclude client TLS credential");
+            params.setClientTLSCredential(null);
+        }
+    }
     
 }
