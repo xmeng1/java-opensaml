@@ -18,18 +18,20 @@
 package org.opensaml.storage;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.annotation.constraint.ThreadSafeAfterInit;
+import net.shibboleth.utilities.java.support.codec.StringDigester;
+import net.shibboleth.utilities.java.support.codec.StringDigester.OutputFormat;
 import net.shibboleth.utilities.java.support.component.AbstractIdentifiableInitializableComponent;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +48,11 @@ public class ReplayCache extends AbstractIdentifiableInitializableComponent {
     private final Logger log = LoggerFactory.getLogger(ReplayCache.class);
 
     /** Backing storage for the replay cache. */
-    private StorageService storage;
+    @NonnullAfterInit private StorageService storage;
 
+    /** Digester if key is too long. */
+    @NonnullAfterInit private StringDigester digester;
+    
     /** Flag controlling behavior on storage failure. */
     private boolean strict;
     
@@ -60,7 +65,6 @@ public class ReplayCache extends AbstractIdentifiableInitializableComponent {
         return storage;
     }
     
-
     /**
      * Set the backing store for the cache.
      * 
@@ -76,7 +80,6 @@ public class ReplayCache extends AbstractIdentifiableInitializableComponent {
         }
     }
     
-
     /**
      * Get the strictness flag.
      * 
@@ -104,6 +107,12 @@ public class ReplayCache extends AbstractIdentifiableInitializableComponent {
         if (storage == null) {
             throw new ComponentInitializationException("StorageService cannot be null");
         }
+
+        try {
+            digester = new StringDigester("SHA", OutputFormat.HEX_LOWER);
+        } catch (final NoSuchAlgorithmException e) {
+            throw new ComponentInitializationException(e);
+        }
     }
 
     /**
@@ -122,10 +131,10 @@ public class ReplayCache extends AbstractIdentifiableInitializableComponent {
         
         final StorageCapabilities caps = storage.getCapabilities();
         if (context.length() > caps.getContextSize()) {
-            log.error("context {} too long for StorageService (limit {})", context, caps.getContextSize());
+            log.error("Context '{}' too long for StorageService (limit {})", context, caps.getContextSize());
             return false;
         } else if (s.length() > caps.getKeySize()) {
-            key = DigestUtils.sha1Hex(s);
+            key = digester.apply(s);
         } else {
             key = s;
         }
