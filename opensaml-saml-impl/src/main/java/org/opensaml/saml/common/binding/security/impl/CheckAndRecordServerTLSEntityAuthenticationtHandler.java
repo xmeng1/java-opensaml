@@ -68,8 +68,10 @@ public class CheckAndRecordServerTLSEntityAuthenticationtHandler extends Abstrac
         super();
         entityContextClass = SAMLPeerEntityContext.class;
         httpClientContextLookup = new DefaultHttpClientContextLookup();
-        entityIDLookup = new DefaultEntityIDLookup();
+        entityIDLookup = new OperationContextEntityIDLookup(entityContextClass);
     }
+    
+    
     
     /**
      * Set the strategy function for resolving the {@link HttpClientContext to evaluate}.
@@ -174,34 +176,6 @@ public class CheckAndRecordServerTLSEntityAuthenticationtHandler extends Abstrac
             }
             
             return requestContext.getHttpClientContext();
-        }
-        
-    }
-    
-    /**
-     * The default entityID strategy function, which resolves from the configured 
-     * {@link AbstractAuthenticatableSAMLEntityContext} of the parent {@link InOutOperationContext}.
-     */
-    public class DefaultEntityIDLookup implements ContextDataLookupFunction<MessageContext, String> {
-
-        /** {@inheritDoc} */
-        public String apply(@Nullable final MessageContext messageContext) {
-            if (messageContext == null) {
-                return null;
-            }
-            
-            final InOutOperationContext opContext = 
-                    new RecursiveTypedParentContextLookup<>(InOutOperationContext.class).apply(messageContext);
-            if (opContext == null) {
-                return null;
-            }
-            
-            final AbstractAuthenticatableSAMLEntityContext entityContext = opContext.getSubcontext(entityContextClass);
-            if (entityContext == null) {
-                return null;
-            }
-            
-            return entityContext.getEntityId();
         }
         
     }
