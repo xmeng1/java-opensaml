@@ -17,8 +17,11 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
+import org.opensaml.core.criterion.EntityIdCriterion;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 public class RegexRequestURLBuilderTest {
     
@@ -29,14 +32,14 @@ public class RegexRequestURLBuilderTest {
         // Attempt to pluck out the domain name into match group $1.
         function = new RegexRequestURLBuilder("^https?://([a-zA-Z0-9\\.]+).*$", "http://metadata.example.org/query?domain=$1");
         
-        Assert.assertEquals(function.apply("http://example.org"), "http://metadata.example.org/query?domain=example.org");
-        Assert.assertEquals(function.apply("http://example.org/"), "http://metadata.example.org/query?domain=example.org");
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/query?domain=example.org");
-        Assert.assertEquals(function.apply("http://example.org:443/idp"), "http://metadata.example.org/query?domain=example.org");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org"))), "http://metadata.example.org/query?domain=example.org");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/"))), "http://metadata.example.org/query?domain=example.org");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/query?domain=example.org");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org:443/idp"))), "http://metadata.example.org/query?domain=example.org");
         
         // These shouldn't match, so should return null.
-        Assert.assertNull(function.apply("urn:test:foo"));
-        Assert.assertNull(function.apply("ftp://example.org"));
+        Assert.assertNull(function.apply(new CriteriaSet(new EntityIdCriterion("urn:test:foo"))));
+        Assert.assertNull(function.apply(new CriteriaSet(new EntityIdCriterion("ftp://example.org"))));
     }
 
 }

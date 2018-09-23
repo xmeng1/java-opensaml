@@ -18,7 +18,9 @@
 package org.opensaml.saml.metadata.resolver.impl;
 
 import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
+import org.opensaml.core.criterion.EntityIdCriterion;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,20 +30,20 @@ public class HTTPEntityIDRequestURLBuilderTest {
     
     @Test
     public void testHTTP() {
-        Assert.assertEquals(function.apply("http://www.example.com/sp"), "http://www.example.com/sp");
-        Assert.assertEquals(function.apply("https://www.example.com/sp"), "https://www.example.com/sp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://www.example.com/sp"))), "http://www.example.com/sp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("https://www.example.com/sp"))), "https://www.example.com/sp");
         
-        Assert.assertEquals(function.apply("HTTP://www.example.com/sp"), "HTTP://www.example.com/sp");
-        Assert.assertEquals(function.apply("HTTPS://www.example.com/sp"), "HTTPS://www.example.com/sp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("HTTP://www.example.com/sp"))), "HTTP://www.example.com/sp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("HTTPS://www.example.com/sp"))), "HTTPS://www.example.com/sp");
         
     }
     
     @Test
     public void testNonHTTP() {
-        Assert.assertNull(function.apply("urn:test:sp"));
-        Assert.assertNull(function.apply("foo"));
-        Assert.assertNull(function.apply("httpblah://not.a.url.com"));
-        Assert.assertNull(function.apply(""));
+        Assert.assertNull(function.apply(new CriteriaSet(new EntityIdCriterion("urn:test:sp"))));
+        Assert.assertNull(function.apply(new CriteriaSet(new EntityIdCriterion("foo"))));
+        Assert.assertNull(function.apply(new CriteriaSet(new EntityIdCriterion("httpblah://not.a.url.com"))));
+        Assert.assertNull(function.apply(new CriteriaSet()));
     }
     
     @Test(expectedExceptions=ConstraintViolationException.class)

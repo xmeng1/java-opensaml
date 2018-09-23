@@ -19,6 +19,8 @@ package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -37,8 +39,14 @@ import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
+import org.opensaml.saml.common.binding.artifact.SAMLSourceIDArtifact;
+import org.opensaml.saml.criterion.ArtifactCriterion;
+import org.opensaml.saml.metadata.resolver.impl.MetadataQueryProtocolRequestURLBuilder.MetadataQueryProtocolURLBuilder;
+import org.opensaml.saml.metadata.resolver.impl.TemplateRequestURLBuilder.EncodingStyle;
+import org.opensaml.saml.saml2.binding.artifact.SAML2ArtifactType0004;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.security.credential.impl.StaticCredentialResolver;
+import org.opensaml.security.crypto.JCAConstants;
 import org.opensaml.security.httpclient.impl.SecurityEnhancedTLSSocketFactory;
 import org.opensaml.security.trust.TrustEngine;
 import org.opensaml.security.trust.impl.ExplicitKeyTrustEngine;
@@ -55,6 +63,8 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.google.common.collect.Lists;
 
 public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     
@@ -86,7 +96,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         resolver = new FunctionDrivenDynamicHTTPMetadataResolver(httpClientBuilder.buildClient());
@@ -114,7 +124,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         resolver = new FunctionDrivenDynamicHTTPMetadataResolver(httpClientBuilder.buildClient());
@@ -143,7 +153,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         resolver = new FunctionDrivenDynamicHTTPMetadataResolver(httpClientBuilder.buildClient());
@@ -167,7 +177,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true);
+                EncodingStyle.form);
         
         resolver = new FunctionDrivenDynamicHTTPMetadataResolver(httpClientBuilder.buildClient());
         resolver.setId("myDynamicResolver");
@@ -190,7 +200,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true);
+                EncodingStyle.form);
         
         resolver = new FunctionDrivenDynamicHTTPMetadataResolver(httpClientBuilder.buildClient());
         resolver.setId("myDynamicResolver");
@@ -247,6 +257,35 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
     }
     
     @Test
+    public void testMDQViaArtifact() throws Exception {
+        String baseURL = "http://shibboleth.net:9000";
+        String entityID = "https://foo1.example.org/idp/shibboleth";
+        
+        MetadataQueryProtocolRequestURLBuilder requestURLBuilder = new MetadataQueryProtocolRequestURLBuilder(baseURL,
+                Lists.<MetadataQueryProtocolURLBuilder>newArrayList(new SAMLArtifactURLBuilder()));
+        
+        resolver = new FunctionDrivenDynamicHTTPMetadataResolver(httpClientBuilder.buildClient());
+        resolver.setId("myDynamicResolver");
+        resolver.setParserPool(parserPool);
+        resolver.setRequestURLBuilder(requestURLBuilder);
+        resolver.initialize();
+        
+        MessageDigest sha1Digester = MessageDigest.getInstance(JCAConstants.DIGEST_SHA1);
+        byte[] entityIDSourceID = sha1Digester.digest(entityID.getBytes("UTF-8"));
+        SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+        byte[] messageHandle = new byte[20];
+        secureRandom.nextBytes(messageHandle);
+        SAMLSourceIDArtifact sourceIDArtifact = new SAML2ArtifactType0004(new byte[] {0, 0} , entityIDSourceID, messageHandle);
+        
+        final CriteriaSet criteriaSet = new CriteriaSet( new ArtifactCriterion(sourceIDArtifact));
+        
+        EntityDescriptor ed = resolver.resolveSingle(criteriaSet);
+        Assert.assertNotNull(ed);
+        Assert.assertEquals(ed.getEntityID(), entityID);
+        Assert.assertNull(ed.getDOM());
+    }
+    
+    @Test
     public void testTrustEngineSocketFactoryNoHTTPSNoTrustEngine() throws Exception {
         String template = RepositorySupport.buildHTTPSResourceURL("java-opensaml", "opensaml-saml-impl/src/test/resources/org/opensaml/saml/metadata/resolver/impl/${entityID}.xml");
         String entityID = "https://www.example.org/sp";
@@ -255,7 +294,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory(false));
@@ -283,7 +322,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
@@ -312,7 +351,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory(false));
@@ -340,7 +379,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
@@ -369,7 +408,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
@@ -396,7 +435,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
@@ -425,7 +464,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
@@ -454,7 +493,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
@@ -481,7 +520,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
@@ -508,7 +547,7 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
         TemplateRequestURLBuilder requestURLBuilder = new TemplateRequestURLBuilder(
                 VelocityEngine.newVelocityEngine(), 
                 template, 
-                true, 
+                EncodingStyle.path, 
                 new StringDigester("SHA-1", OutputFormat.HEX_LOWER));
         
         // Trust engine set, but appropriate socket factory not set

@@ -87,25 +87,26 @@ public class EntityIDDigestGenerator implements Function<CriteriaSet, String> {
 
     /** {@inheritDoc} */
     @Override
-    public String apply(final CriteriaSet input) {
-        if (input == null) {
+    public String apply(final CriteriaSet criteria) {
+        if (criteria == null || !criteria.contains(EntityIdCriterion.class)) {
             return null;
         }
         
-        final EntityIdCriterion entityIDCrit = input.get(EntityIdCriterion.class);
-        if (entityIDCrit == null) { 
-            return null;
-        }
+        final String digested = digester.apply(criteria.get(EntityIdCriterion.class).getEntityId());
         
-        final String entityID = StringSupport.trimOrNull(entityIDCrit.getEntityId());
-        if (entityID == null) {
-            return null;
-        }
-        
-        final String digested = digester.apply(entityID);
-        
+        return buildKey(digested);
+    }
+    
+    /**
+     * Build the key by applying the configured prefix and/or suffix, if present.
+     * 
+     * @param keyValue the primary key value data being represented
+     * 
+     * @return the key value with prefix and suffix applied
+     */
+    protected String buildKey(@Nonnull final String keyValue) {
         if (prefix == null && suffix == null) {
-            return digested;
+            return keyValue;
         } else {
             final StringBuffer buffer = new StringBuffer();
             if (prefix != null) {
@@ -114,7 +115,7 @@ public class EntityIDDigestGenerator implements Function<CriteriaSet, String> {
                     buffer.append(separator);
                 }
             }
-            buffer.append(digested);
+            buffer.append(keyValue);
             if (suffix != null) {
                 if (separator != null) {
                     buffer.append(separator);

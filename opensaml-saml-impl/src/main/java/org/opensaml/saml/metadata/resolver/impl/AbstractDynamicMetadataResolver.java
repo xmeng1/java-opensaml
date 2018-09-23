@@ -19,10 +19,13 @@ package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,9 +48,11 @@ import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.core.xml.util.XMLObjectSupport.CloneOutputOption;
 import org.opensaml.saml.metadata.resolver.ClearableMetadataResolver;
 import org.opensaml.saml.metadata.resolver.DynamicMetadataResolver;
-import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
+import org.opensaml.saml.metadata.resolver.index.MetadataIndex;
+import org.opensaml.saml.metadata.resolver.index.impl.LockableMetadataIndexManager;
 import org.opensaml.saml.saml2.common.SAML2Support;
+import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.security.crypto.JCAConstants;
 import org.slf4j.Logger;
@@ -59,20 +64,26 @@ import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.Timer.Context;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 
 import net.shibboleth.utilities.java.support.annotation.Duration;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
+import net.shibboleth.utilities.java.support.annotation.constraint.NotLive;
 import net.shibboleth.utilities.java.support.annotation.constraint.Positive;
+import net.shibboleth.utilities.java.support.annotation.constraint.Unmodifiable;
 import net.shibboleth.utilities.java.support.codec.StringDigester;
 import net.shibboleth.utilities.java.support.codec.StringDigester.OutputFormat;
 import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.primitive.TimerSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -170,6 +181,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /** Object tracking metrics related to the persistent cache initialization. */
     @NonnullAfterInit private PersistentCacheInitializationMetrics persistentCacheInitMetrics;
     
+    /** The set of indexes configured. */
+    private Set<MetadataIndex> indexes;
+    
     /** Flag used to track state of whether currently initializing or not. */
     private boolean initializing;
     
@@ -180,6 +194,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      */
     public AbstractDynamicMetadataResolver(@Nullable final Timer backgroundTaskTimer) {
         super();
+        
+        indexes = Collections.emptySet();
         
         if (backgroundTaskTimer == null) {
             taskTimer = new Timer(TimerSupport.getTimerName(this), true);
@@ -529,6 +545,34 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         metricsBaseName = StringSupport.trimOrNull(baseName);
     }
     
+    /**
+     * Get the configured indexes.
+     * 
+     * @return the set of configured indexes
+     */
+    @Nonnull @NonnullElements @Unmodifiable @NotLive public Set<MetadataIndex> getIndexes() {
+        return ImmutableSet.copyOf(indexes);
+    }
+
+    /**
+     * Set the configured indexes.
+     * 
+     * @param newIndexes the new indexes to set
+     */
+    public void setIndexes(@Nullable final Set<MetadataIndex> newIndexes) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        if (newIndexes == null) {
+            indexes = Collections.emptySet();
+        } else {
+            indexes = new HashSet<>();
+            indexes.addAll(Collections2.filter(newIndexes, Predicates.notNull()));
+        }
+    }
+    
+    protected boolean indexesEnabled() {
+        return ! getBackingStore().getSecondaryIndexManager().getIndexes().isEmpty();
+    }
+    
     /** {@inheritDoc} */
     public void clear() throws ResolverException {
         final DynamicEntityBackingStore backingStore = getBackingStore();
@@ -573,53 +617,130 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         
         final Context contextResolve = MetricsSupport.startTimer(timerResolve);
         try {
-            final EntityIdCriterion entityIdCriterion = criteria.get(EntityIdCriterion.class);
-            if (entityIdCriterion == null || Strings.isNullOrEmpty(entityIdCriterion.getEntityId())) {
-                log.info("{} Entity Id was not supplied in criteria set, skipping resolution", getLogPrefix());
-                return Collections.emptySet();
-            }
-
-            final String entityID = StringSupport.trimOrNull(criteria.get(EntityIdCriterion.class).getEntityId());
-            log.debug("{} Attempting to resolve metadata for entityID: {}", getLogPrefix(), entityID);
-
-            final EntityManagementData mgmtData = getBackingStore().getManagementData(entityID);
-            final Lock readLock = mgmtData.getReadWriteLock().readLock();
             Iterable<EntityDescriptor> candidates = null;
-            try {
-                readLock.lock();
+            
+            final String entityID = resolveEntityID(criteria);
+            if (entityID != null) {
+                log.debug("{} Resolved criteria to entityID: {}", getLogPrefix(), entityID);
 
-                final List<EntityDescriptor> descriptors = lookupEntityID(entityID);
-                if (descriptors.isEmpty()) {
-                    if (mgmtData.isNegativeLookupCacheActive()) {
-                        log.debug("{} Did not find requested metadata in backing store, " 
-                                + "and negative lookup cache is active, returning empty result", 
-                                getLogPrefix());
-                        return Collections.emptyList();
+                final EntityManagementData mgmtData = getBackingStore().getManagementData(entityID);
+                final Lock readLock = mgmtData.getReadWriteLock().readLock();
+                try {
+                    readLock.lock();
+
+                    final List<EntityDescriptor> descriptors = lookupEntityID(entityID);
+                    if (descriptors.isEmpty()) {
+                        if (mgmtData.isNegativeLookupCacheActive()) {
+                            log.debug("{} Did not find requested metadata in backing store, " 
+                                    + "and negative lookup cache is active, returning empty result", 
+                                    getLogPrefix());
+                            return Collections.emptyList();
+                        } else {
+                            log.debug("{} Did not find requested metadata in backing store, " 
+                                    + "attempting to resolve dynamically", 
+                                    getLogPrefix());
+                        }
                     } else {
-                        log.debug("{} Did not find requested metadata in backing store, " 
-                                + "attempting to resolve dynamically", 
-                                getLogPrefix());
+                        if (shouldAttemptRefresh(mgmtData)) {
+                            log.debug("{} Metadata was indicated to be refreshed based on refresh trigger time", 
+                                    getLogPrefix());
+                        } else {
+                            log.debug("{} Found requested metadata in backing store", getLogPrefix());
+                            candidates = descriptors;
+                        }
                     }
-                } else {
-                    if (shouldAttemptRefresh(mgmtData)) {
-                        log.debug("{} Metadata was indicated to be refreshed based on refresh trigger time", 
-                                getLogPrefix());
-                    } else {
-                        log.debug("{} Found requested metadata in backing store", getLogPrefix());
-                        candidates = descriptors;
-                    }
+                } finally {
+                    readLock.unlock();
                 }
-            } finally {
-                readLock.unlock();
+            } else {
+                log.debug("{} Single entityID unresolveable from criteria, will resolve from origin by criteria only",
+                        getLogPrefix());
             }
 
             if (candidates == null) {
-                candidates = resolveFromOriginSource(criteria);
+                candidates = resolveFromOriginSource(criteria, entityID);
             }
 
             return predicateFilterCandidates(candidates, criteria, false);
         } finally {
             MetricsSupport.stopTimer(contextResolve);
+        }
+    }
+    
+    /**
+    * Attempt to resolve the single entityID for the operation from the criteria set.
+    * 
+    * <p>
+    * If an {@link EntityIdCriterion} is present, that will be used. If not present, then a single
+    * entityID will be resolved via the secondary index manager of the backing store.
+    * </p>
+    * 
+    * @param criteria the criteria set on which to operate
+    * @return the resolve entityID, or null if a single entityID could not be resolved
+    */
+    @Nullable protected String resolveEntityID(@Nonnull final CriteriaSet criteria) {
+        final Set<String> entityIDs = resolveEntityIDs(criteria);
+        if (entityIDs.size() == 1) {
+            return entityIDs.iterator().next();
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+    * 
+    * Attempt to resolve all the entityIDs represented by the criteria set.
+    * 
+    * <p>
+    * If an {@link EntityIdCriterion} is present, that will be used. If not present, then 
+    * entityIDs will be resolved via the secondary index manager of the backing store.
+    * </p>
+    * 
+    * @param criteria the criteria set on which to operate
+    * @return the resolved entityIDs, may be empty
+    */
+    @Nonnull protected Set<String> resolveEntityIDs(@Nonnull final CriteriaSet criteria) {
+        final EntityIdCriterion entityIdCriterion = criteria.get(EntityIdCriterion.class);
+        if (entityIdCriterion != null) {
+            log.debug("{} Found entityID in criteria: {}", getLogPrefix(), entityIdCriterion.getEntityId());
+            return Collections.singleton(entityIdCriterion.getEntityId());
+        } else {
+            log.debug("{} EntityID was not supplied in criteria, processing criteria with secondary indexes",
+                    getLogPrefix());
+        }
+        
+        if (!indexesEnabled()) {
+            log.trace("Indexes not enabled, skipping secondary index processing");
+            return Collections.emptySet();
+        }
+
+        Optional<Set<String>> indexedResult = null;
+        final Lock readLock = getBackingStore().getSecondaryIndexManager().getReadWriteLock().readLock();
+        try {
+            readLock.lock();
+            indexedResult = getBackingStore().getSecondaryIndexManager().lookupIndexedItems(criteria);
+        } finally {
+            readLock.unlock();
+        }
+
+        if (indexedResult.isPresent()) {
+            final Set<String> entityIDs = indexedResult.get();
+            if (entityIDs.isEmpty()) {
+                log.debug("{} No entityIDs resolved from secondary indexes (Optional 'present' with empty set)",
+                        getLogPrefix());
+                return Collections.emptySet();
+            } else if (entityIDs.size() > 1) {
+                log.debug("{} Multiple entityIDs resolved from secondary indexes: {}", 
+                        getLogPrefix(), entityIDs);
+                return new HashSet<>(entityIDs);
+            } else {
+                final String entityID = entityIDs.iterator().next();
+                log.debug("{} Resolved 1 entityID from secondary indexes: {}", getLogPrefix(), entityID);
+                return Collections.singleton(entityID);
+            }
+        } else {
+            log.debug("{} No entityIDs resolved from secondary indexes (Optional 'absent').", getLogPrefix());
+            return null;
         }
     }
     
@@ -630,11 +751,54 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * @param criteria the input criteria set
      * @return the resolved metadata
      * @throws ResolverException  if there is a fatal error attempting to resolve the metadata
+     * 
+     * @deprecated instead use {@link #resolveFromOriginSource(CriteriaSet, String)}
      */
-    @Nonnull @NonnullElements protected Iterable<EntityDescriptor> resolveFromOriginSource(
+    @Deprecated
+    @Nonnull @NonnullElements 
+    protected Iterable<EntityDescriptor> resolveFromOriginSource(
             @Nonnull final CriteriaSet criteria) throws ResolverException {
         
-        final String entityID = StringSupport.trimOrNull(criteria.get(EntityIdCriterion.class).getEntityId());
+        DeprecationSupport.warnOnce(ObjectType.METHOD, "resolveFromOriginSource", null, "2-arg same-named method");
+        
+        return resolveFromOriginSource(criteria, resolveEntityID(criteria));
+    }
+    
+    /**
+     * Fetch metadata from an origin source based on the input criteria, store it in the backing store 
+     * and then return it.
+     * 
+     * @param criteria the input criteria set
+     * @param entityID the previously resolved single entityID
+     * @return the resolved metadata
+     * @throws ResolverException  if there is a fatal error attempting to resolve the metadata
+     */
+    @Nonnull @NonnullElements protected Iterable<EntityDescriptor> resolveFromOriginSource(
+            @Nonnull final CriteriaSet criteria, @Nullable final String entityID) throws ResolverException {
+        
+        if (entityID != null) {
+            log.debug("{} Resolving from origin source based on entityID: {}", getLogPrefix(), entityID);
+            return resolveFromOriginSourceWithEntityID(criteria, entityID);
+        } else {
+            log.debug("{} Resolving from origin source based on non-entityID criteria", getLogPrefix());
+            return resolveFromOriginSourceWithoutEntityID(criteria);
+        }
+        
+    }
+ 
+    /**
+     * Fetch metadata from an origin source based on the input criteria when the entityID is known,
+     * store it in the backing store and then return it.
+     * 
+     * @param criteria the input criteria set
+     * @param entityID the entityID known to be represented by the criteria set
+     * @return the resolved metadata
+     * @throws ResolverException  if there is a fatal error attempting to resolve the metadata
+     */
+    @Nonnull @NonnullElements
+    protected Iterable<EntityDescriptor> resolveFromOriginSourceWithEntityID(
+            @Nonnull final CriteriaSet criteria, @Nonnull final String entityID) throws ResolverException {
+        
         final EntityManagementData mgmtData = getBackingStore().getManagementData(entityID);
         final Lock writeLock = mgmtData.getReadWriteLock().writeLock(); 
         
@@ -689,6 +853,120 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             writeLock.unlock();
         }
         
+    }
+    
+    /**
+     * Fetch metadata from an origin source based on the input criteria when the entityID is not known,
+     * store it in the backing store and then return it.
+     * 
+     * @param criteria the input criteria set
+     * @return the resolved metadata
+     * @throws ResolverException if there is a fatal error attempting to resolve the metadata
+     */
+    @Nonnull @NonnullElements 
+    protected Iterable<EntityDescriptor> resolveFromOriginSourceWithoutEntityID(@Nonnull final CriteriaSet criteria) 
+            throws ResolverException {
+        
+        XMLObject root = null;
+        final Context contextFetchFromOriginSource = MetricsSupport.startTimer(timerFetchFromOriginSource);
+        try {
+            root = fetchFromOriginSource(criteria);
+        } catch (final IOException e) {
+            log.error("{} Error fetching metadata from origin source", getLogPrefix(), e);
+            return lookupCriteria(criteria);
+        } finally {
+            MetricsSupport.stopTimer(contextFetchFromOriginSource);
+        }
+        
+        if (root == null) {
+            log.debug("{} No metadata was fetched from the origin source", getLogPrefix());
+            return lookupCriteria(criteria);
+        } else if (root instanceof EntityDescriptor){
+            log.debug("{} Fetched EntityDescriptor from the origin source", getLogPrefix());
+            return processNonEntityIDFetchedEntityDescriptor((EntityDescriptor) root);
+        } else if (root instanceof EntitiesDescriptor) {
+            log.debug("{} Fetched EntitiesDescriptor from the origin source", getLogPrefix());
+            return processNonEntityIDFetchedEntittiesDescriptor((EntitiesDescriptor) root);
+        } else {
+            log.warn("{} Fetched metadata was of an unsupported type: {}", getLogPrefix(), root.getClass().getName());
+            return lookupCriteria(criteria);
+        }
+    }
+    
+    /**
+     * Lookup and return all EntityDescriptors currently available in the resolver cache 
+     * which match either entityID or secondary-indexed criteria.
+     * 
+     * @param criteria the input criteria set
+     * @return the resolved metadata
+     * @throws ResolverException if there is a fatal error attempting to resolve the metadata
+     */
+    @Nonnull @NonnullElements 
+    protected Iterable<EntityDescriptor> lookupCriteria(@Nonnull final CriteriaSet criteria) throws ResolverException {
+        final List<EntityDescriptor> entities = new ArrayList<>();
+        final Set<String> entityIDs = resolveEntityIDs(criteria);
+        for (final String entityID : entityIDs) {
+            final EntityManagementData mgmtData = getBackingStore().getManagementData(entityID);
+            final Lock readLock = mgmtData.getReadWriteLock().readLock();
+            try {
+                readLock.lock();
+                
+                entities.addAll(lookupEntityID(entityID));
+            } finally {
+               readLock.unlock(); 
+            }
+        }
+        return entities;
+    }
+    
+    /**
+     * Process an EntitiesDescriptor received from a non-entityID-based fetch.
+     * 
+     * @param entities the metadata to process
+     * @return the resolved descriptor(s)
+     * @throws ResolverException if there is a fatal error attempting to resolve the metadata
+     */
+    @Nullable protected List<EntityDescriptor> processNonEntityIDFetchedEntittiesDescriptor(
+            @Nonnull final EntitiesDescriptor entities) throws ResolverException {
+        
+        final List<EntityDescriptor> returnedEntities = new ArrayList<>();
+        
+        for (final EntitiesDescriptor childEntities : entities.getEntitiesDescriptors()) {
+            returnedEntities.addAll(processNonEntityIDFetchedEntittiesDescriptor(childEntities));
+        }
+        
+        for (final EntityDescriptor entity : entities.getEntityDescriptors()) {
+            returnedEntities.addAll(processNonEntityIDFetchedEntityDescriptor(entity));
+        }
+        
+        return returnedEntities;
+    }
+    
+    /**
+     * Process an EntityDescriptor received from a non-entityID-based fetch.
+     * 
+     * @param entity the metadata to process
+     * @return the resolved descriptor(s)
+     * @throws ResolverException if there is a fatal error attempting to resolve the metadata
+     */
+    @Nullable protected List<EntityDescriptor> processNonEntityIDFetchedEntityDescriptor(
+            @Nonnull final EntityDescriptor entity) throws ResolverException {
+        
+        final String entityID = entity.getEntityID();
+        final EntityManagementData mgmtData = getBackingStore().getManagementData(entityID);
+        final Lock writeLock = mgmtData.getReadWriteLock().writeLock(); 
+        try {
+            writeLock.lock();            
+            mgmtData.clearNegativeLookupCache();
+            processNewMetadata(entity, entityID);
+            return lookupEntityID(entityID);
+        } catch (final FilterException e) {
+            log.error("{} Metadata filtering problem processing non-entityID fetched EntityDescriptor", 
+                    getLogPrefix(), e);
+            return lookupEntityID(entityID);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     /**
@@ -928,7 +1206,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /** {@inheritDoc} */
     @Override
     @Nonnull protected DynamicEntityBackingStore createNewBackingStore() {
-        return new DynamicEntityBackingStore();
+        return new DynamicEntityBackingStore(getIndexes());
     }
     
     /** {@inheritDoc} */
@@ -1137,10 +1415,23 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /** {@inheritDoc} */
     @Override
     protected void removeByEntityID(final String entityID, final EntityBackingStore backingStore) {
-        if (isPersistentCachingEnabled()) {
-            final List<EntityDescriptor> descriptors = backingStore.getIndexedDescriptors().get(entityID);
-            if (descriptors != null) {
-                for (final EntityDescriptor descriptor : descriptors) {
+        final List<EntityDescriptor> descriptors = backingStore.getIndexedDescriptors().get(entityID);
+        if (descriptors != null) {
+            for (final EntityDescriptor descriptor : descriptors) {
+
+                if (indexesEnabled()) {
+                    final DynamicEntityBackingStore dynamicStore = (DynamicEntityBackingStore) backingStore;
+
+                    final Lock writeLock = dynamicStore.getSecondaryIndexManager().getReadWriteLock().writeLock();
+                    try {
+                        writeLock.lock();
+                        dynamicStore.getSecondaryIndexManager().deindexEntityDescriptor(descriptor);
+                    } finally {
+                        writeLock.unlock();
+                    }
+                }
+                
+                if (isPersistentCachingEnabled()) {
                     final String key = getPersistentCacheKeyGenerator().apply(descriptor);
                     try {
                         getPersistentCacheManager().remove(key);
@@ -1149,6 +1440,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                                 getLogPrefix(), descriptor.getEntityID(), key);
                     }
                 }
+                    
             }
         }
         
@@ -1188,6 +1480,24 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         super.doDestroy();
     }
     
+    /** {@inheritDoc} */
+    @Override protected void indexEntityDescriptor(@Nonnull final EntityDescriptor entityDescriptor, 
+            @Nonnull final EntityBackingStore backingStore) {
+        super.indexEntityDescriptor(entityDescriptor, backingStore);
+        
+        if (indexesEnabled()) {
+            final DynamicEntityBackingStore dynamicStore = (DynamicEntityBackingStore) backingStore;
+
+            final Lock writeLock = dynamicStore.getSecondaryIndexManager().getReadWriteLock().writeLock();
+            try {
+                writeLock.lock();
+                dynamicStore.getSecondaryIndexManager().indexEntityDescriptor(entityDescriptor);
+            } finally {
+                writeLock.unlock();
+            }
+        }
+    }
+
     /**
      * Specialized entity backing store implementation for dynamic metadata resolvers.
      */
@@ -1196,10 +1506,30 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         /** Map holding management data for each entityID. */
         private Map<String, EntityManagementData> mgmtDataMap;
         
-        /** Constructor. */
-        protected DynamicEntityBackingStore() {
+        /** Manager for secondary indexes. */
+        private LockableMetadataIndexManager<String> secondaryIndexManager;
+        
+        /** 
+         * Constructor.
+         * 
+         *  @param initIndexes secondary indexes for which to initialize storage
+         */
+        protected DynamicEntityBackingStore(
+                @Nullable @NonnullElements @Unmodifiable @NotLive final Set<MetadataIndex> initIndexes) {
             super();
             mgmtDataMap = new ConcurrentHashMap<>();
+            secondaryIndexManager = new LockableMetadataIndexManager(initIndexes, 
+                    new LockableMetadataIndexManager.EntityIDExtractionFunction()); 
+
+        }
+        
+        /**
+         * Get the secondary index manager.
+         * 
+         * @return the manager for secondary indexes
+         */
+        public LockableMetadataIndexManager<String> getSecondaryIndexManager() {
+            return secondaryIndexManager;
         }
         
         /**

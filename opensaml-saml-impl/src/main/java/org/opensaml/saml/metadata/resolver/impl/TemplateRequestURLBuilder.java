@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.opensaml.core.criterion.EntityIdCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +36,12 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.velocity.Template;
 
 /**
- * Function which produces a URL by substituting an entity ID value into a Velocity template string.
+ * Function which produces a URL by substituting an entity ID value from criteria into a Velocity template string.
  * 
  * <p>
  * The entity ID will be replaced in the template string according to the template variable <code>entityID</code>, 
@@ -54,7 +56,7 @@ import net.shibboleth.utilities.java.support.velocity.Template;
  * </p>
  * 
  */
-public class TemplateRequestURLBuilder implements Function<String, String> {
+public class TemplateRequestURLBuilder implements Function<CriteriaSet, String> {
     
     /** EntityID Encoding style. */
     public enum EncodingStyle {
@@ -213,8 +215,13 @@ public class TemplateRequestURLBuilder implements Function<String, String> {
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public String apply(@Nonnull final String input) {
-        String entityID = Constraint.isNotNull(input, "Entity ID was null");
+    @Nullable public String apply(@Nonnull final CriteriaSet criteria) {
+        Constraint.isNotNull(criteria, "Criteria was null");
+        if (!criteria.contains(EntityIdCriterion.class)) {
+            log.trace("Criteria did not contain entity ID, unable to build request URL");
+            return null;
+        }
+        String entityID = criteria.get(EntityIdCriterion.class).getEntityId();
         
         log.debug("Saw input entityID '{}'", entityID);
         

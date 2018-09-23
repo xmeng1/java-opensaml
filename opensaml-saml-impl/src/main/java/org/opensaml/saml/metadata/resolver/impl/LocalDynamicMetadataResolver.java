@@ -54,7 +54,7 @@ public class LocalDynamicMetadataResolver extends AbstractDynamicMetadataResolve
      * Constructor.
      * 
      * <p>
-     * Source key generator will be an internal instance of {@link EntityIDDigestGenerator},
+     * Source key generator will be an internal instance of {@link DefaultLocalDynamicSourceKeyGenerator},
      * with all default parameters.
      * </p>
      *
@@ -79,7 +79,8 @@ public class LocalDynamicMetadataResolver extends AbstractDynamicMetadataResolve
      * Constructor.
      *
      * <p>
-     * If the supplied source key generator is null, an internal instance of {@link EntityIDDigestGenerator}
+     * If the supplied source key generator is null, an internal instance of 
+     * {@link DefaultLocalDynamicSourceKeyGenerator}
      * will be used, with all default parameters.
      * </p>
      * @param backgroundTaskTimer timer for management of background tasks
@@ -96,7 +97,7 @@ public class LocalDynamicMetadataResolver extends AbstractDynamicMetadataResolve
         
         sourceKeyGenerator = keyGenerator;
         if (sourceKeyGenerator == null) {
-            sourceKeyGenerator = new EntityIDDigestGenerator();
+            sourceKeyGenerator = new DefaultLocalDynamicSourceKeyGenerator();
         }
     }
     

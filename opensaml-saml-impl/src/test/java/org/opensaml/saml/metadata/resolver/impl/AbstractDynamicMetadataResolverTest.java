@@ -23,7 +23,9 @@ import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 
 import org.opensaml.core.criterion.EntityIdCriterion;
@@ -34,9 +36,19 @@ import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.persist.MapLoadSaveManager;
 import org.opensaml.core.xml.persist.XMLObjectLoadSaveManager;
 import org.opensaml.core.xml.util.XMLObjectSupport;
+import org.opensaml.saml.criterion.EntityRoleCriterion;
 import org.opensaml.saml.metadata.resolver.filter.impl.SignatureValidationFilter;
 import org.opensaml.saml.metadata.resolver.impl.AbstractDynamicMetadataResolver.DynamicEntityBackingStore;
+import org.opensaml.saml.metadata.resolver.index.MetadataIndex;
+import org.opensaml.saml.metadata.resolver.index.impl.FunctionDrivenMetadataIndex;
+import org.opensaml.saml.metadata.resolver.index.impl.RoleMetadataIndex;
+import org.opensaml.saml.metadata.resolver.index.impl.SimpleStringCriteriaFunction;
+import org.opensaml.saml.metadata.resolver.index.impl.SimpleStringCriterion;
+import org.opensaml.saml.metadata.resolver.index.impl.UppercaseEntityIdDescriptorFunction;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
+import org.opensaml.saml.saml2.metadata.RoleDescriptor;
+import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.security.SecurityException;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.security.credential.CredentialSupport;
@@ -58,8 +70,11 @@ import org.testng.annotations.Test;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -109,6 +124,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         id1 = "urn:test:entity:1";
         ed1 = buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
         ed1.setEntityID(id1);
+        ed1.getRoleDescriptors().add((RoleDescriptor) buildXMLObject(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
         SignatureSupport.signObject(ed1, signingParams);
         Assert.assertTrue(ed1.isSigned());
         baos = new ByteArrayOutputStream();
@@ -120,6 +136,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         id2 = "urn:test:entity:2";
         ed2 = buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
         ed2.setEntityID(id2);
+        ed2.getRoleDescriptors().add((RoleDescriptor) buildXMLObject(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
         SignatureSupport.signObject(ed2, signingParams);
         Assert.assertTrue(ed2.isSigned());
         baos = new ByteArrayOutputStream();
@@ -131,6 +148,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         id3 = "urn:test:entity:3";
         ed3 = buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
         ed3.setEntityID(id3);
+        ed3.getRoleDescriptors().add((RoleDescriptor) buildXMLObject(IDPSSODescriptor.DEFAULT_ELEMENT_NAME));
         SignatureSupport.signObject(ed3, signingParams);
         Assert.assertTrue(ed3.isSigned());
         baos = new ByteArrayOutputStream();
@@ -178,9 +196,9 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         
         resolver.initialize();
         
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed3);
         
         DynamicEntityBackingStore backingStore = resolver.getBackingStore();
         
@@ -202,9 +220,9 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         
         resolver.initialize();
         
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed3);
         
         DynamicEntityBackingStore backingStore = resolver.getBackingStore();
         
@@ -214,9 +232,9 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertFalse(backingStore.getIndexedDescriptors().containsKey(id2));
         Assert.assertFalse(backingStore.getIndexedDescriptors().containsKey(id3));
         
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed3);
     }
     
     @Test
@@ -227,9 +245,9 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         
         resolver.initialize();
         
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed3);
         
         DynamicEntityBackingStore backingStore = resolver.getBackingStore();
         
@@ -240,9 +258,9 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertFalse(backingStore.getIndexedDescriptors().containsKey(id2));
         Assert.assertTrue(backingStore.getIndexedDescriptors().containsKey(id3));
         
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed3);
     }
     
     @Test
@@ -269,7 +287,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         
         Assert.assertEquals(persistentCacheMap.size(), 0);
         
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
         
         Assert.assertEquals(persistentCacheMap.size(), 1);
         
@@ -277,8 +295,44 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertTrue(persistentCacheMap.containsKey(cacheKey));
         Assert.assertSame(persistentCacheMap.get(cacheKey), ed1);
         
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed2);
+        
+        Assert.assertEquals(persistentCacheMap.size(), 3);
+        
+        cacheKey = resolver.getPersistentCacheKeyGenerator().apply(ed2);
+        Assert.assertTrue(persistentCacheMap.containsKey(cacheKey));
+        Assert.assertSame(persistentCacheMap.get(cacheKey), ed2);
+        
+        cacheKey = resolver.getPersistentCacheKeyGenerator().apply(ed3);
+        Assert.assertTrue(persistentCacheMap.containsKey(cacheKey));
+        Assert.assertSame(persistentCacheMap.get(cacheKey), ed3);
+        
+    }
+    
+    @Test
+    public void testWithPersistentCache() throws ComponentInitializationException, ResolverException {
+        sourceMap.put(id1, ed1);
+        sourceMap.put(id2, ed2);
+        sourceMap.put(id3, ed3);
+        
+        resolver.setPersistentCacheManager(persistentCacheManager);
+        resolver.initialize();
+        
+        Assert.assertTrue(resolver.isPersistentCachingEnabled());
+        
+        Assert.assertEquals(persistentCacheMap.size(), 0);
+        
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        
+        Assert.assertEquals(persistentCacheMap.size(), 1);
+        
+        String cacheKey = resolver.getPersistentCacheKeyGenerator().apply(ed1);
+        Assert.assertTrue(persistentCacheMap.containsKey(cacheKey));
+        Assert.assertSame(persistentCacheMap.get(cacheKey), ed1);
+        
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed3);
         
         Assert.assertEquals(persistentCacheMap.size(), 3);
         
@@ -307,6 +361,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertEquals(persistentCacheMap.size(), 0);
         
         Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
+        Assert.assertEquals(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))).getEntityID(), id1);
         
         Assert.assertEquals(persistentCacheMap.size(), 1);
         
@@ -315,7 +370,9 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertSame(persistentCacheMap.get(cacheKey), ed1);
         
         Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
+        Assert.assertEquals(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))).getEntityID(), id2);
         Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        Assert.assertEquals(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))).getEntityID(), id3);
         
         Assert.assertEquals(persistentCacheMap.size(), 3);
         
@@ -359,6 +416,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         for (String entityID : Lists.newArrayList(id1, id2, id3)) {
             EntityDescriptor ed = resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(entityID)));
             Assert.assertNotNull(ed);
+            Assert.assertEquals(ed.getEntityID(), entityID);
             Assert.assertNull(ed.getDOM());
         }
     }
@@ -399,7 +457,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         
         
         Assert.assertTrue(sourceMap.isEmpty());
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
         Assert.assertNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
         Assert.assertNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
     }
@@ -440,9 +498,106 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertEquals(backingStore.getIndexedDescriptors().get(id3).size(), 1);
         
         Assert.assertTrue(sourceMap.isEmpty());
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))));
-        Assert.assertNotNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))));
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed3);
+    }
+    
+    @Test
+    public void testSecondaryIndexAfterEntityIDResolution() throws ComponentInitializationException, ResolverException {
+        sourceMap.put(id1, ed1);
+        
+        HashSet<MetadataIndex> indexes = new HashSet<>();
+        indexes.add(new FunctionDrivenMetadataIndex(new UppercaseEntityIdDescriptorFunction(), new SimpleStringCriteriaFunction()));
+        resolver.setIndexes(indexes);
+        
+        resolver.initialize();
+        
+        DynamicEntityBackingStore backingStore = resolver.getBackingStore();
+        Optional<Set<String>> indexedData = null;
+        
+        Assert.assertNull(resolver.resolveSingle(new CriteriaSet(new SimpleStringCriterion(id1.toUpperCase()))));
+        
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        
+        indexedData = backingStore.getSecondaryIndexManager().lookupIndexedItems(new CriteriaSet(new SimpleStringCriterion(id1.toUpperCase())));
+        Assert.assertTrue(indexedData.isPresent());
+        Assert.assertEquals(indexedData.get(), Sets.newHashSet(id1));
+        
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new SimpleStringCriterion(id1.toUpperCase()))), ed1);
+    }
+        
+    @Test
+    public void testSecondaryIndexAfterEntityIDResolutionMultipleResults() throws ComponentInitializationException, ResolverException {
+        sourceMap.put(id1, ed1);
+        sourceMap.put(id2, ed2);
+        sourceMap.put(id3, ed3);
+        
+        HashSet<MetadataIndex> indexes = new HashSet<>();
+        indexes.add(new RoleMetadataIndex());
+        resolver.setIndexes(indexes);
+        
+        resolver.initialize();
+        
+        DynamicEntityBackingStore backingStore = resolver.getBackingStore();
+        Optional<Set<String>> indexedData = null;
+        
+        Set<EntityDescriptor> results = new HashSet<>();
+        
+        results.clear();
+        Iterables.addAll(results, resolver.resolve(new CriteriaSet(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME))));
+        Assert.assertEquals(results.size(), 0);
+        
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
+        
+        indexedData = backingStore.getSecondaryIndexManager().lookupIndexedItems(new CriteriaSet(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME)));
+        Assert.assertTrue(indexedData.isPresent());
+        Assert.assertEquals(indexedData.get(), Sets.newHashSet(id1));
+        
+        results.clear();
+        Iterables.addAll(results, resolver.resolve(new CriteriaSet(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME))));
+        Assert.assertEquals(results.size(), 1);
+        Assert.assertEquals(results, Sets.newHashSet(ed1));
+        
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id2))), ed2);
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id3))), ed3);
+        
+        indexedData = backingStore.getSecondaryIndexManager().lookupIndexedItems(new CriteriaSet(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME)));
+        Assert.assertTrue(indexedData.isPresent());
+        Assert.assertEquals(indexedData.get(), Sets.newHashSet(id1, id2));
+        
+        results.clear();
+        Iterables.addAll(results, resolver.resolve(new CriteriaSet(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME))));
+        Assert.assertEquals(results.size(), 2);
+        Assert.assertEquals(results, Sets.newHashSet(ed1, ed2));
+    }
+    
+    @Test
+    public void testSecondaryLookupThenEntityID() throws ComponentInitializationException, ResolverException {
+        sourceMap.put(id1.toUpperCase(), ed1);
+        
+        resolver.setSecondaryLookup(true);
+        
+        HashSet<MetadataIndex> indexes = new HashSet<>();
+        indexes.add(new FunctionDrivenMetadataIndex(new UppercaseEntityIdDescriptorFunction(), new SimpleStringCriteriaFunction()));
+        resolver.setIndexes(indexes);
+        
+        resolver.initialize();
+        
+        DynamicEntityBackingStore backingStore = resolver.getBackingStore();
+        Optional<Set<String>> indexedData = null;
+        
+        Assert.assertNull(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))));
+        
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new SimpleStringCriterion(id1.toUpperCase()))), ed1);
+        
+        backingStore.getIndexedDescriptors().containsKey(id1);
+        
+        indexedData = backingStore.getSecondaryIndexManager().lookupIndexedItems(new CriteriaSet(new SimpleStringCriterion(id1.toUpperCase())));
+        Assert.assertTrue(indexedData.isPresent());
+        Assert.assertEquals(indexedData.get(), Sets.newHashSet(id1));
+        
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(id1))), ed1);
     }
     
     // Helper classes
@@ -450,9 +605,15 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
     private static class MockDynamicResolver extends AbstractDynamicMetadataResolver {
         
         private Map<String,EntityDescriptor> originSourceMap;
+        
+        private boolean secondaryLookup;
 
         public MockDynamicResolver(Map<String, EntityDescriptor> map) {
             this(map, null);
+        }
+        
+        public void setSecondaryLookup(boolean flag) {
+            secondaryLookup = flag;
         }
         
         public MockDynamicResolver(Map<String, EntityDescriptor> map, Timer backgroundTaskTimer) {
@@ -461,14 +622,15 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         }
 
         protected XMLObject fetchFromOriginSource(CriteriaSet criteria) throws IOException {
-            EntityIdCriterion entityIdCriterion = criteria.get(EntityIdCriterion.class);
-            if (entityIdCriterion != null) {
-                return originSourceMap.get(entityIdCriterion.getEntityId());
+            if (criteria.contains(EntityIdCriterion.class)) {
+                return originSourceMap.get(criteria.get(EntityIdCriterion.class).getEntityId());
+            } else if (secondaryLookup && criteria.contains(SimpleStringCriterion.class)) {
+                return originSourceMap.get(criteria.get(SimpleStringCriterion.class).getValue());
             } else {
                 return null;
             }
         }
-        
+
     }
     
 }

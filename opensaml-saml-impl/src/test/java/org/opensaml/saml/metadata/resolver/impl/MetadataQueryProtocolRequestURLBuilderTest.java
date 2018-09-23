@@ -17,10 +17,16 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
-import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
-
+import org.opensaml.core.criterion.EntityIdCriterion;
+import org.opensaml.saml.metadata.resolver.impl.MetadataQueryProtocolRequestURLBuilder.MetadataQueryProtocolURLBuilder;
+import org.opensaml.saml.metadata.resolver.index.impl.SimpleStringCriterion;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import com.google.common.collect.Lists;
+
+import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 public class MetadataQueryProtocolRequestURLBuilderTest {
     
@@ -30,29 +36,60 @@ public class MetadataQueryProtocolRequestURLBuilderTest {
     public void testWithoutTrailingSlash() {
         function = new MetadataQueryProtocolRequestURLBuilder("http://metadata.example.org/service");
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/service/entities/http:%2F%2Fexample.org%2Fidp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/service/entities/http:%2F%2Fexample.org%2Fidp");
     }
 
     @Test
     public void testWithTrailingSlash() {
         function = new MetadataQueryProtocolRequestURLBuilder("http://metadata.example.org/service/");
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/service/entities/http:%2F%2Fexample.org%2Fidp");
-    }
-    
-    @Test
-    public void testWithSHA1Transformer() {
-        function = new MetadataQueryProtocolRequestURLBuilder("http://metadata.example.org/service/", 
-                new MetadataQueryProtocolSHA1Transformer());
-        
-        Assert.assertEquals(function.apply("http://example.org/service"), "http://metadata.example.org/service/entities/%7Bsha1%7D11d72e8cf351eb6c75c721e838f469677ab41bdb");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/service/entities/http:%2F%2Fexample.org%2Fidp");
     }
     
     @Test(expectedExceptions=ConstraintViolationException.class)
-    public void testNullEntityID() {
+    public void testNullCriteria() {
         function = new MetadataQueryProtocolRequestURLBuilder("http://metadata.example.org/service/");
         function.apply(null);
     }
     
+    @Test
+    public void testSecondaryURLBuilders() {
+        MetadataQueryProtocolURLBuilder foo = new MockURLBuilder("tags/foo");
+        MetadataQueryProtocolURLBuilder bar = new MockURLBuilder("tags/bar");
+        MetadataQueryProtocolURLBuilder noValue = new MockURLBuilder(null);
+        
+        function = new MetadataQueryProtocolRequestURLBuilder("http://metadata.example.org/service", Lists.newArrayList(foo,bar));
+        Assert.assertEquals(function.apply(new CriteriaSet(new SimpleStringCriterion("will-be-ignored"))), "http://metadata.example.org/service/tags/foo");
+        
+        function = new MetadataQueryProtocolRequestURLBuilder("http://metadata.example.org/service", Lists.newArrayList(bar,foo));
+        Assert.assertEquals(function.apply(new CriteriaSet(new SimpleStringCriterion("will-be-ignored"))), "http://metadata.example.org/service/tags/bar");
+        
+        function = new MetadataQueryProtocolRequestURLBuilder("http://metadata.example.org/service", Lists.newArrayList(null, null, foo, bar));
+        Assert.assertEquals(function.apply(new CriteriaSet(new SimpleStringCriterion("will-be-ignored"))), "http://metadata.example.org/service/tags/foo");
+        
+        function = new MetadataQueryProtocolRequestURLBuilder("http://metadata.example.org/service", Lists.newArrayList(noValue, foo, bar));
+        Assert.assertEquals(function.apply(new CriteriaSet(new SimpleStringCriterion("will-be-ignored"))), "http://metadata.example.org/service/tags/foo");
+    }
+    
+    // Test helpers
+    
+    public static class MockURLBuilder implements MetadataQueryProtocolURLBuilder {
+        
+        private String suffix;
+        
+        public MockURLBuilder(String suffix) {
+            this.suffix = suffix;
+        }
+
+        /** {@inheritDoc} */
+        public String buildURL(String baseURL, CriteriaSet criteria) {
+            if (suffix == null) {
+                return null;
+            } else {
+                return baseURL + suffix;
+            }
+        }
+        
+    }
 
 }

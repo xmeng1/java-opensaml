@@ -85,9 +85,9 @@ public class AbstractDynamicHTTPMetadataResolverTest extends XMLObjectBaseTestCa
         // Test uses MDQ protocol
         String baseURL = "http://shibboleth.net:9000";
         String entityID = "https://foo1.example.org/idp/shibboleth";
-        String requestURL = new MetadataQueryProtocolRequestURLBuilder(baseURL).apply(entityID);
+        String requestURL = new MetadataQueryProtocolRequestURLBuilder(baseURL).apply(new CriteriaSet(new EntityIdCriterion(entityID)));
         
-        CriteriaSet criteriaSet = new CriteriaSet(new EntityIdCriterion(entityID), new RequestURLCriterion(requestURL));
+        CriteriaSet criteriaSet = new CriteriaSet(new RequestURLCriterion(requestURL));
         
         EntityDescriptor ed = resolver.resolveSingle(criteriaSet);
         Assert.assertNotNull(ed);

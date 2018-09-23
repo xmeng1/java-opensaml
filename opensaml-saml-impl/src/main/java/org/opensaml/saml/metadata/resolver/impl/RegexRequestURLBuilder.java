@@ -26,15 +26,17 @@ import javax.annotation.Nullable;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
+import org.opensaml.core.criterion.EntityIdCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 
 /**
- * Function which produces a URL by evaluating a supplied regular expression against the entity ID, and applying the
- * result to a supplied replacement string.
+ * Function which produces a URL by evaluating a supplied regular expression against the criteria entity ID, 
+ * and applying the result to a supplied replacement string.
  * 
  * <p>
  * The function uses standard Java regular expression components from the <code>java.util.regex</code> package.
@@ -70,7 +72,7 @@ import com.google.common.base.Function;
  * </p>
  * 
  */
-public class RegexRequestURLBuilder implements Function<String, String> {
+public class RegexRequestURLBuilder implements Function<CriteriaSet, String> {
     
     /** Logger. */
     private final Logger log = LoggerFactory.getLogger(RegexRequestURLBuilder.class);
@@ -106,8 +108,13 @@ public class RegexRequestURLBuilder implements Function<String, String> {
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public String apply(@Nonnull final String entityID) {
-        Constraint.isNotNull(entityID, "Entity ID was null");
+    @Nullable public String apply(@Nonnull final CriteriaSet criteria) {
+        Constraint.isNotNull(criteria, "Criteria was null");
+        if (!criteria.contains(EntityIdCriterion.class)) {
+            log.trace("Criteria did not contain entity ID, unable to build request URL");
+            return null;
+        }
+        final String entityID = criteria.get(EntityIdCriterion.class).getEntityId();
         
         try {
             final Matcher matcher = pattern.matcher(entityID);

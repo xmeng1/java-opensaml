@@ -21,23 +21,32 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
+import org.opensaml.core.criterion.EntityIdCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 
 /**
- * Function which examines an entity ID and returns it as a metadata request URL if and only if the entity ID 
- * is an HTTP or HTTPS URL.
+ * Function which examines an entity ID from supplied criteria and returns it as a metadata request URL 
+ * if and only if the entity ID is an HTTP or HTTPS URL.
  */
-public class HTTPEntityIDRequestURLBuilder implements Function<String, String> {
+public class HTTPEntityIDRequestURLBuilder implements Function<CriteriaSet, String> {
     
     /** Logger. */
     private final Logger log = LoggerFactory.getLogger(HTTPEntityIDRequestURLBuilder.class);
 
     /** {@inheritDoc} */
-    @Override @Nullable public String apply(@Nonnull final String entityID) {
+    @Override @Nullable public String apply(@Nonnull final CriteriaSet criteria) {
+        Constraint.isNotNull(criteria, "Criteria was null");
+        if (!criteria.contains(EntityIdCriterion.class)) {
+            log.trace("Criteria did not contain entity ID, unable to build request URL");
+            return null;
+        }
+        final String entityID = criteria.get(EntityIdCriterion.class).getEntityId();
+        
         Constraint.isNotNull(entityID, "Entity ID was null");
         
         if (entityID.toLowerCase().startsWith("http:") || entityID.toLowerCase().startsWith("https:")) {

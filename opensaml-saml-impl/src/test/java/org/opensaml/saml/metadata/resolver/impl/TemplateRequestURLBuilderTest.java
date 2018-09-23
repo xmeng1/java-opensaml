@@ -20,8 +20,10 @@ package org.opensaml.saml.metadata.resolver.impl;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 import org.apache.velocity.app.VelocityEngine;
+import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.saml.metadata.resolver.impl.TemplateRequestURLBuilder.EncodingStyle;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -46,7 +48,7 @@ public class TemplateRequestURLBuilderTest {
     public void testEncodedQueryParamLegacy() {
         function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", true);
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/?entity=http%3A%2F%2Fexample.org%2Fidp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/?entity=http%3A%2F%2Fexample.org%2Fidp");
     }
     
     @Test
@@ -54,7 +56,7 @@ public class TemplateRequestURLBuilderTest {
     public void testMDQStyleLegacy() {
         function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/entities/${entityID}", true);
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/entities/http%3A%2F%2Fexample.org%2Fidp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/entities/http%3A%2F%2Fexample.org%2Fidp");
     }
 
     @Test
@@ -62,35 +64,35 @@ public class TemplateRequestURLBuilderTest {
     public void testWellKnownLocationStyleLegacy() {
         function = new TemplateRequestURLBuilder(engine, "${entityID}", false);
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://example.org/idp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://example.org/idp");
     }
     
     @Test
     public void testEncodedQueryParam() {
         function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", EncodingStyle.form);
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/?entity=http%3A%2F%2Fexample.org%2Fidp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/?entity=http%3A%2F%2Fexample.org%2Fidp");
     }
     
     @Test
     public void testEncodedPath() {
         function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/entities/${entityID}", EncodingStyle.path);
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/entities/http:%2F%2Fexample.org%2Fidp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/entities/http:%2F%2Fexample.org%2Fidp");
     }
 
     @Test
     public void testEncodedFragment() {
         function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/entities#${entityID}", EncodingStyle.fragment);
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://metadata.example.org/entities#http://example.org/idp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/entities#http://example.org/idp");
     }
 
     @Test
     public void testWellKnownLocationStyle() {
         function = new TemplateRequestURLBuilder(engine, "${entityID}", EncodingStyle.none);
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "http://example.org/idp");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://example.org/idp");
     }
     
     @Test
@@ -103,7 +105,7 @@ public class TemplateRequestURLBuilderTest {
         
         function = new TemplateRequestURLBuilder(engine, "${entityID}", EncodingStyle.none, transformer);
         
-        Assert.assertEquals(function.apply("http://example.org/idp"), "HTTP://EXAMPLE.ORG/IDP");
+        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "HTTP://EXAMPLE.ORG/IDP");
     }
     
     @Test(expectedExceptions=ConstraintViolationException.class)
