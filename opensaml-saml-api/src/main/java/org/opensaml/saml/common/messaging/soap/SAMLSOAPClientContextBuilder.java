@@ -123,7 +123,7 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     /**
      * Set the SAML protocol URI.
      * 
-     * @param protocol the SAML protocol.
+     * @param uri the SAML protocol.
      * @return this builder instance
      */
     @Nonnull public SAMLSOAPClientContextBuilder<InboundMessageType, OutboundMessageType> setProtocol(
