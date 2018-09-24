@@ -347,8 +347,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
     /**
      * Set the SOAP client security configuration profile ID to use.
      * 
-     * @param profileID the profile ID, or null
-     * @return this builder instance
+     * @param profileId the profile ID, or null
      */
     @Nonnull public void setSOAPClientSecurityConfigurationProfileId(@Nullable final String profileId) {
         soapClientSecurityConfigurationProfileId = StringSupport.trimOrNull(profileId);
