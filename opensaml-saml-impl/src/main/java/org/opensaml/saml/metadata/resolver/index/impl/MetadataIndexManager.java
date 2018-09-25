@@ -181,6 +181,30 @@ public class MetadataIndexManager<T> {
         }
     }
     
+    /**
+     * Remove from the index the specified {@link EntityDescriptor} based on the indexes currently held.
+     * 
+     * @param descriptor the entity descriptor to index
+     */
+    public void deindexEntityDescriptor(@Nonnull final EntityDescriptor descriptor) {
+        final T item = entityDescriptorFunction.apply(descriptor);
+        if (item != null) {
+            for (final MetadataIndex index : indexes.keySet()) {
+                final Set<MetadataIndexKey> keys = index.generateKeys(descriptor);
+                if (keys != null && !keys.isEmpty()) {
+                    final MetadataIndexStore<T> store = getStore(index);
+                    for (final MetadataIndexKey key : keys) {
+                        log.trace("De-indexing metadata: index '{}', key '{}', data item '{}'", 
+                                index, key, item);
+                        store.remove(key, item);
+                    }
+                }
+            }
+        } else {
+            log.trace("Unable to extract indexed data item from EntityDescriptor");
+        }
+    }
+    
     
     /** Extraction function which simply returns the input {@link EntityDescriptor}. */
     public static class IdentityExtractionFunction implements Function<EntityDescriptor, EntityDescriptor> {

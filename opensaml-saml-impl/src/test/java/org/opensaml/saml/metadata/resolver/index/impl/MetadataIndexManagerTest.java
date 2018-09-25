@@ -132,6 +132,52 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
         Assert.assertFalse(result.get().isEmpty());
         Assert.assertEquals(result.get().size(), 1);
         Assert.assertTrue(result.get().contains(c));
+        
+        // Now test de-indexing
+        manager.deindexEntityDescriptor(a);
+        
+        criteriaSet.clear();
+        criteriaSet.add(critAEntity);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertTrue(result.get().isEmpty());
+        
+        criteriaSet.clear();
+        criteriaSet.add(critBEntity);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertFalse(result.get().isEmpty());
+        Assert.assertEquals(result.get().size(), 1);
+        Assert.assertTrue(result.get().contains(b));
+        
+        criteriaSet.clear();
+        criteriaSet.add(critCEntity);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertFalse(result.get().isEmpty());
+        Assert.assertEquals(result.get().size(), 1);
+        Assert.assertTrue(result.get().contains(c));
+        
+        manager.deindexEntityDescriptor(b);
+        manager.deindexEntityDescriptor(c);
+        
+        criteriaSet.clear();
+        criteriaSet.add(critAEntity);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertTrue(result.get().isEmpty());
+        
+        criteriaSet.clear();
+        criteriaSet.add(critBEntity);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertTrue(result.get().isEmpty());
+        
+        criteriaSet.clear();
+        criteriaSet.add(critCEntity);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertTrue(result.get().isEmpty());
     }
     
     @Test
@@ -181,6 +227,41 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
         Assert.assertTrue(result.get().contains(b));
         Assert.assertTrue(result.get().contains(c));
         
+        // Now test de-indexing
+        manager.deindexEntityDescriptor(a);
+        
+        criteriaSet.clear();
+        criteriaSet.add(roleCritSP);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertFalse(result.get().isEmpty());
+        Assert.assertEquals(result.get().size(), 1);
+        Assert.assertTrue(result.get().contains(b));
+        
+        criteriaSet.clear();
+        criteriaSet.add(roleCritIDP);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertFalse(result.get().isEmpty());
+        Assert.assertEquals(result.get().size(), 2);
+        Assert.assertTrue(result.get().contains(b));
+        Assert.assertTrue(result.get().contains(c));
+        
+        manager.deindexEntityDescriptor(b);
+        
+        criteriaSet.clear();
+        criteriaSet.add(roleCritSP);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertTrue(result.get().isEmpty());
+        
+        criteriaSet.clear();
+        criteriaSet.add(roleCritIDP);
+        result = manager.lookupIndexedItems(criteriaSet);
+        Assert.assertTrue(result.isPresent());
+        Assert.assertFalse(result.get().isEmpty());
+        Assert.assertEquals(result.get().size(), 1);
+        Assert.assertTrue(result.get().contains(c));
     }
 
     @Test
