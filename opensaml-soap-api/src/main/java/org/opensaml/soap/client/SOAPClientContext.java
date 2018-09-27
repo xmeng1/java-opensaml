@@ -33,6 +33,9 @@ public class SOAPClientContext extends BaseContext {
     
     /** Name of the specific SOAP client pipeline to use, for example with {@link PipelineFactoryHttpSOAPClient}. */
     @Nullable private String pipelineName;
+    
+    /** The destination URI for the SOAP message being sent. */
+    @Nullable private String destinationURI;
 
     /**
      * Gets a set of binding/transport-specific request parameters.
@@ -70,6 +73,24 @@ public class SOAPClientContext extends BaseContext {
      */
     public void setPipelineName(@Nullable final String name) {
         pipelineName = StringSupport.trimOrNull(name);
+    }
+    
+    /**
+     * Get the the destination URI for the SOAP message being sent.
+     * 
+     * @return the destination URI, or null
+     */
+    @Nullable public String getDestinationURI() {
+        return destinationURI;
+    }
+
+    /**
+     * Set the destination URI for the SOAP message being sent.
+     * 
+     * @param uri the destination URI, or null
+     */
+    public void setDestinationURI(@Nullable final String uri) {
+        destinationURI = StringSupport.trimOrNull(uri);
     }
 
 }

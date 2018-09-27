@@ -60,6 +60,7 @@ import org.opensaml.security.httpclient.HttpClientSecurityParameters;
 import org.opensaml.security.httpclient.HttpClientSecuritySupport;
 import org.opensaml.security.messaging.HttpClientSecurityContext;
 import org.opensaml.soap.client.SOAPClient;
+import org.opensaml.soap.client.SOAPClientContext;
 import org.opensaml.soap.client.SOAPFaultException;
 import org.opensaml.soap.common.SOAP11FaultDecodingException;
 import org.opensaml.soap.common.SOAPException;
@@ -185,7 +186,7 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
     }
     
     /** {@inheritDoc} */
-    // Checkstyle: CyclomaticComplexity OFF
+    // Checkstyle: CyclomaticComplexity|MethodLength OFF
     public void send(@Nonnull @NotEmpty final String endpoint, @Nonnull final InOutOperationContext operationContext)
             throws SOAPException, SecurityException {
         Constraint.isNotNull(endpoint, "Endpoint cannot be null");
@@ -193,6 +194,9 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
         
         HttpClientMessagePipeline<InboundMessageType, OutboundMessageType> pipeline = null;
         try {
+            // Store the endpoint URI
+            operationContext.getSubcontext(SOAPClientContext.class, true).setDestinationURI(endpoint);
+            
             // Pipeline resolution
             pipeline = resolvePipeline(operationContext);
             
@@ -256,7 +260,7 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
             }
         }
     }
-    // Checkstyle: CyclomaticComplexity ON
+    // Checkstyle: CyclomaticComplexity|MethodLength ON
     
     /**
      * Resolve and return a new instance of the {@link HttpClientMessagePipeline} to be processed.

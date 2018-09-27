@@ -239,9 +239,16 @@ public class PopulateHttpClientSecurityParametersHandler extends AbstractMessage
     protected void postProcessParams(@Nonnull final MessageContext messageContext, 
             @Nonnull final HttpClientSecurityParameters params) {
         
-        if (clientTLSPredicate != null && ! clientTLSPredicate.apply(messageContext)) {
-            log.debug("Configured client TLS predicate indicates to exclude client TLS credential");
-            params.setClientTLSCredential(null);
+        if (clientTLSPredicate != null) { 
+            if (!clientTLSPredicate.apply(messageContext)) {
+                log.debug("Configured client TLS predicate indicates to exclude client TLS credential");
+                params.setClientTLSCredential(null);
+            } else {
+                if (params.getClientTLSCredential() == null) {
+                    log.warn("Configured client TLS predicate indicates to include client TLS credential, " +
+                            "but no client TLS credential was present in resolved parameters");
+                }
+            }
         }
     }
     
