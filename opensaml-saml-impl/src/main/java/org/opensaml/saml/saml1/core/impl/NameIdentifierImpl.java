@@ -23,6 +23,9 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.NameIdentifier;
 
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
+
 /**
  * Complete implementation of {@link org.opensaml.saml.saml1.core.NameIdentifier}.
  */
@@ -62,6 +65,7 @@ public class NameIdentifierImpl extends AbstractSAMLObject implements NameIdenti
     /** {@inheritDoc} */
     @Deprecated
     public String getNameIdentifier() {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".getNameIdentifier", null, "getValue");
         return getValue();
     }
 
@@ -83,6 +87,7 @@ public class NameIdentifierImpl extends AbstractSAMLObject implements NameIdenti
     /** {@inheritDoc} */
     @Deprecated
     public void setNameIdentifier(final String id) {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setNameIdentifier", null, "setValue");
         setValue(id);
     }
 

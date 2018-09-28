@@ -154,6 +154,8 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
      * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
      */
     public void setTLSTrustEngine(@Nullable final TrustEngine<? super X509Credential> engine) {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setTLSTrustEngine", 
+                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
         tlsTrustEngine = engine;
     }
 
@@ -168,6 +170,8 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
      * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
      */
     public void setBasicCredentials(@Nullable final UsernamePasswordCredentials credentials) {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentials", 
+                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
         setBasicCredentialsWithScope(credentials, null);
     }
 
@@ -189,6 +193,9 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
             @Nullable final AuthScope scope) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+        
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentialsWithScope", 
+                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
 
         if (credentials != null) {
             AuthScope authScope = scope;
@@ -334,6 +341,8 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
      */
     @Deprecated
     protected void checkTLSCredentialTrusted(final HttpClientContext context) throws SSLPeerUnverifiedException {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName()+ ".checkTLSCredentialTrusted", 
+                null, "HttpClientSecuritySupport.checkTLSCredentialEvaluated(..)");
         HttpClientSecuritySupport.checkTLSCredentialEvaluated(context, metadataURI.getScheme());
     }
 

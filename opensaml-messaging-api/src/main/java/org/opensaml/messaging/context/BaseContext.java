@@ -28,6 +28,8 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElemen
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.collection.ClassIndexedSet;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 
 import org.opensaml.messaging.MessageRuntimeException;
 import org.slf4j.Logger;
@@ -299,6 +301,8 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      */
     @Deprecated
     public boolean isAutoCreateSubcontexts() {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".isAutoCreateSubcontexts", 
+                null, "no replacement");
         return autoCreateSubcontexts;
     }
     
@@ -311,6 +315,8 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      */
     @Deprecated
     public void setAutoCreateSubcontexts(final boolean autoCreate) {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setAutoCreateSubcontexts", 
+                null, "no replacement");
         autoCreateSubcontexts = autoCreate;
     }
     

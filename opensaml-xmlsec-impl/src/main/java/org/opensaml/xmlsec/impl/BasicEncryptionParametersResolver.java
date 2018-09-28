@@ -49,6 +49,8 @@ import com.google.common.collect.Collections2;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
@@ -229,6 +231,8 @@ public class BasicEncryptionParametersResolver extends AbstractSecurityParameter
      * @deprecated use {@link #validate(EncryptionParameters, boolean)}.
      */
     protected boolean validate(@Nonnull final EncryptionParameters params) {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".validate(EncryptionParameters)", 
+                null, "validate(EncryptionParameters, boolean)");
         return validate(params, false);
     }
     

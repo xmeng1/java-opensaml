@@ -159,6 +159,8 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
      * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
      */
     public void setTLSTrustEngine(@Nullable final TrustEngine<? super X509Credential> engine) {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setTLSTrustEngine", 
+                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
         tlsTrustEngine = engine;
     }
     
@@ -172,6 +174,8 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
     public void setCredentialsProvider(@Nullable final CredentialsProvider provider) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setCredentialsProvider", 
+                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
 
         credentialsProvider = provider;
     }
@@ -192,6 +196,8 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
      * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
      */
     public void setBasicCredentials(@Nullable final UsernamePasswordCredentials credentials) {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentials", 
+                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
         setBasicCredentialsWithScope(credentials, null);
     }
 
@@ -216,6 +222,8 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
             @Nullable final AuthScope scope) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentialsWithScope", 
+                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
 
         if (credentials != null) {
             AuthScope authScope = scope;
@@ -398,6 +406,8 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
     @Deprecated
     protected void checkTLSCredentialTrusted(final HttpClientContext context, final HttpUriRequest request) 
             throws SSLPeerUnverifiedException {
+        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".checkTLSCredentialTrusted", 
+                null, "HttpClientSecuritySupport.checkTLSCredentialEvaluated(HttpClientContext, String)");
         HttpClientSecuritySupport.checkTLSCredentialEvaluated(context, request.getURI().getScheme());
     }
     

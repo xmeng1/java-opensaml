@@ -31,6 +31,8 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElemen
 import net.shibboleth.utilities.java.support.component.AbstractIdentifiedInitializableComponent;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
@@ -74,6 +76,8 @@ public class BasicRoleDescriptorResolver extends AbstractIdentifiedInitializable
      * @param mdResolver the resolver of EntityDescriptors
      */
     public BasicRoleDescriptorResolver(@Nonnull final MetadataResolver mdResolver) {
+        DeprecationSupport.warnOnce(ObjectType.CLASS, getClass().getName(), null, 
+                PredicateRoleDescriptorResolver.class.getName());
         entityDescriptorResolver = Constraint.isNotNull(mdResolver, "Resolver for EntityDescriptors may not be null");
         setId(UUID.randomUUID().toString()); 
     }
