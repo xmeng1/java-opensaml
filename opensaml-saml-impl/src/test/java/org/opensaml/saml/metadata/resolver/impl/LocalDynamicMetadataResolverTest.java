@@ -121,6 +121,31 @@ public class LocalDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
     }
     
     @Test
+    public void testConditionalLoadManagerWithClearEntityID() throws IOException, ResolverException {
+        sourceManager.setLoadConditionally(true);
+        
+        sourceManager.save(sha1Digester.apply(entityID1), entity1);
+        
+        // This will resolve from source manager directly
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(entityID1))), entity1);
+        
+        // This will be from in-memory cache
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(entityID1))), entity1);
+        
+        // Clear from in-memory cache
+        resolver.clear(entityID1);
+        Assert.assertNull(resolver.getBackingStore().getIndexedDescriptors().get(entityID1));
+        Assert.assertFalse(resolver.getBackingStore().getOrderedDescriptors().contains(entity1));
+        
+        // This should re-resolve from source manager directly
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(entityID1))), entity1);
+        
+        // This will be from in-memory cache (again)
+        Assert.assertSame(resolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(entityID1))), entity1);
+        
+    }
+
+    @Test
     public void testCtorSourceKeyGenerator() throws ComponentInitializationException, IOException, ResolverException {
         resolver.destroy();
         

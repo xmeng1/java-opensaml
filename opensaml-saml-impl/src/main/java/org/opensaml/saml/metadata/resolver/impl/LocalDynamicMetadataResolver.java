@@ -23,7 +23,9 @@ import java.util.Timer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObject;
+import org.opensaml.core.xml.persist.ConditionalLoadXMLObjectLoadSaveManager;
 import org.opensaml.core.xml.persist.XMLObjectLoadSaveManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +100,18 @@ public class LocalDynamicMetadataResolver extends AbstractDynamicMetadataResolve
         }
     }
     
+    /** {@inheritDoc} */
+    protected void removeByEntityID(final String entityID, final EntityBackingStore backingStore) {
+        if (sourceManager instanceof ConditionalLoadXMLObjectLoadSaveManager) {
+            final String key = sourceKeyGenerator.apply(new CriteriaSet(new EntityIdCriterion(entityID)));
+            if (key != null) {
+                ((ConditionalLoadXMLObjectLoadSaveManager)sourceManager).clearLoadLastModified(key);
+            }
+        }
+        
+        super.removeByEntityID(entityID, backingStore);
+    }
+
     /** {@inheritDoc} */
     @Override
     protected XMLObject fetchFromOriginSource(final CriteriaSet criteria) throws IOException {

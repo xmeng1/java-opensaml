@@ -27,6 +27,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.opensaml.core.xml.XMLObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.logic.Constraint;
@@ -37,10 +39,16 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
  * @param <T> the specific base XML object type being managed
  */
 @NotThreadSafe
-public class MapLoadSaveManager<T extends XMLObject> implements XMLObjectLoadSaveManager<T> {
+public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditionalLoadXMLObjectLoadSaveManager<T> {
+    
+    /** Logger. */
+    private Logger log = LoggerFactory.getLogger(MapLoadSaveManager.class);
     
     /** The backing map. */
     private Map<String,T> backingMap;
+    
+    /** Storage to track last modified time of data. */
+    private Map<String,Long> dataLastModified;
     
     /** Constructor. */
     public MapLoadSaveManager() {
@@ -54,6 +62,7 @@ public class MapLoadSaveManager<T extends XMLObject> implements XMLObjectLoadSav
      */
     public MapLoadSaveManager(@Nonnull final Map<String, T> map) {
         backingMap = Constraint.isNotNull(map, "Backing map was null");
+        dataLastModified = new HashMap<>();
     }
 
     /** {@inheritDoc} */
@@ -77,6 +86,16 @@ public class MapLoadSaveManager<T extends XMLObject> implements XMLObjectLoadSav
 
     /** {@inheritDoc} */
     public T load(final String key) throws IOException {
+        if (!exists(key)) {
+            log.debug("Target data with key '{}' does not exist", key);
+            clearLoadLastModified(key);
+            return null;
+        }
+        if (isLoadConditionally() && isUnmodifiedSinceLastLoad(key)) {
+            log.debug("Target data with key '{}' has not been modified since the last request, returning null", key);
+            return null;
+        }
+        updateLoadLastModified(key, dataLastModified.get(key));
         return backingMap.get(key);
     }
 
@@ -91,24 +110,44 @@ public class MapLoadSaveManager<T extends XMLObject> implements XMLObjectLoadSav
             throw new IOException(String.format("Value already exists for key '%s'", key));
         } else {
             backingMap.put(key, xmlObject);
+            dataLastModified.put(key, System.currentTimeMillis());
         }
     }
 
     /** {@inheritDoc} */
     public boolean remove(final String key) throws IOException {
-        return backingMap.remove(key) != null;
+        final T removed = backingMap.remove(key);
+        dataLastModified.remove(key);
+        clearLoadLastModified(key);
+        return removed != null;
     }
 
     /** {@inheritDoc} */
     public boolean updateKey(final String currentKey, final String newKey) throws IOException {
-        final T value = load(currentKey);
-        if (value != null) {
-            save(newKey, value, false);
-            remove(currentKey);
-            return true;
-        } else {
+        final T value = backingMap.get(currentKey);
+        if (value == null) {
             return false;
         }
+        if (backingMap.containsKey(newKey)) {
+            throw new IOException(String.format("Specified new key already exists: %s", newKey));
+        } else {
+            backingMap.put(newKey, value);
+            backingMap.remove(currentKey);
+            
+            dataLastModified.put(newKey, dataLastModified.get(currentKey));
+            dataLastModified.remove(currentKey);
+            
+            updateLoadLastModified(newKey, getLoadLastModified(currentKey));
+            clearLoadLastModified(currentKey);
+            return true;
+        }
+    }
+
+    /** {@inheritDoc} */
+    protected boolean isUnmodifiedSinceLastLoad(@Nonnull final String key) throws IOException {
+        final Long lastModified = dataLastModified.get(key);
+        log.trace("Key '{}' last modified was: {}", key, lastModified);
+        return getLoadLastModified(key) != null && lastModified != null && lastModified <= getLoadLastModified(key);
     }
 
 }
