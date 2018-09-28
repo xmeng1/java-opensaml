@@ -50,11 +50,13 @@ import org.w3c.dom.Text;
  * <li>Delegating to child classes element, text, and attribute processing</li>
  * </ul>
  * 
- * <strong>WARNING:</strong> In the case of Text nodes this unmarshaller will use {@link org.w3c.dom.Text#getWholeText()}
- * to retrieve the content. This is acceptable if and only if our XML parsing classes are used in their default (safe)
- * configuration on the Java platforms we officially support. If you need to deal with elements that contain multiple
- * text node children, or you intend to rely on your own XML parser and/or JAXP implementation, you will need to override
- * {@link #unmarshallTextContent(XMLObject, Text)} and do "the right thing" for your implementation.
+ * <strong>WARNING:</strong> In the case of Text nodes this unmarshaller will use
+ * {@link org.w3c.dom.Text#getWholeText()} * to retrieve the content. This is acceptable
+ * if and only if our XML parsing classes are used in their default (safe) configuration
+ * on the Java platforms we officially support. If you need to deal with elements that contain multiple
+ * text node children, or you intend to rely on your own XML parser and/or JAXP implementation,
+ * you will need to override {@link #unmarshallTextContent(XMLObject, Text)} and do "the right thing"
+ * for your implementation.
  * 
  * Failure to adhere to this warning will very likely lead to security bugs.
  */
@@ -78,6 +80,7 @@ public abstract class AbstractXMLObjectUnmarshaller implements Unmarshaller {
     }
 
     /** {@inheritDoc} */
+    // Checkstyle: CyclomaticComplexity OFF
     @Override
     @Nonnull public XMLObject unmarshall(@Nonnull final Element domElement) throws UnmarshallingException {
         log.trace("Starting to unmarshall DOM element {}", QNameSupport.getNodeQName(domElement));
@@ -107,9 +110,14 @@ public abstract class AbstractXMLObjectUnmarshaller implements Unmarshaller {
                 unmarshallAttribute(xmlObject, (Attr) childNode);
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 unmarshallChildElement(xmlObject, (Element) childNode);
-            } else if (childNode.getNodeType() == Node.TEXT_NODE 
-                    || childNode.getNodeType() == Node.CDATA_SECTION_NODE) {
+            } else if (childNode.getNodeType() == Node.TEXT_NODE) {
                 unmarshallTextContent(xmlObject, (Text) childNode);
+            } else if (childNode.getNodeType() == Node.CDATA_SECTION_NODE) {
+                throw new UnmarshallingException("Saw illegal CDATA node in parsed DOM, "
+                        + "likely due to improper parser configuration");
+            } else if (childNode.getNodeType() == Node.COMMENT_NODE) {
+                throw new UnmarshallingException("Saw illegal Comment node in parsed DOM, "
+                        + "likely due to improper parser configuration");
             }
             
             childNode = childNode.getNextSibling();
@@ -118,6 +126,7 @@ public abstract class AbstractXMLObjectUnmarshaller implements Unmarshaller {
         xmlObject.setDOM(domElement);
         return xmlObject;
     }
+    // Checkstyle: CyclomaticComplexity ON
 
     /**
      * Constructs the XMLObject that the given DOM Element will be unmarshalled into. If the DOM element has an XML
