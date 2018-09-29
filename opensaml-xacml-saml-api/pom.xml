@@ -16,6 +16,10 @@
     <artifactId>opensaml-xacml-saml-api</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <automatic.module.name>org.opensaml.xacml.profile.saml</automatic.module.name>
+    </properties>
+
     <dependencies>
         <!-- Compile Dependencies -->
         <dependency>

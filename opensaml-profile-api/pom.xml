@@ -16,6 +16,10 @@
     <artifactId>opensaml-profile-api</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <automatic.module.name>org.opensaml.profile</automatic.module.name>
+    </properties>
+
     <dependencies>
         <!-- Compile Dependencies -->
         <dependency>

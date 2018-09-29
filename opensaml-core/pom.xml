@@ -16,6 +16,10 @@
     <artifactId>opensaml-core</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <automatic.module.name>org.opensaml.core</automatic.module.name>
+    </properties>
+
     <dependencies>
         <!-- Compile Dependencies -->
         <dependency>

@@ -16,6 +16,10 @@
     <artifactId>opensaml-security-api</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <automatic.module.name>org.opensaml.security</automatic.module.name>
+    </properties>
+
     <dependencies>
         <!-- Compile Dependencies -->
         <dependency>
