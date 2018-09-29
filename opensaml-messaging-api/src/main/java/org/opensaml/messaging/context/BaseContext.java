@@ -76,8 +76,6 @@ public abstract class BaseContext implements Iterable<BaseContext> {
     /** Constructor. Generates a random context id. */
     public BaseContext() {
         subcontexts = new ClassIndexedSet<>();
-        
-        setAutoCreateSubcontexts(false);
     }
     
     /**
@@ -106,7 +104,7 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      * @return the held instance of the class, or null
      */
     @Nullable public <T extends BaseContext> T getSubcontext(@Nonnull final Class<T> clazz) {
-        return getSubcontext(clazz, isAutoCreateSubcontexts());
+        return getSubcontext(clazz, autoCreateSubcontexts);
     }
     
     /**
@@ -147,7 +145,7 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      */ 
     @Nullable public BaseContext getSubcontext(@Nonnull @NotEmpty final String className)
             throws ClassNotFoundException {
-        return getSubcontext(className, isAutoCreateSubcontexts());
+        return getSubcontext(className, autoCreateSubcontexts);
     }
     
     /**
