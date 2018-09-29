@@ -17,15 +17,39 @@
 
 package org.opensaml.security.credential;
 
+import javax.annotation.Nonnull;
+
 /** Credential usage types. */
 public enum UsageType {
     
     /** Key used for encryption processes. */
-    ENCRYPTION,
+    ENCRYPTION("encryption"),
     
     /** Key used for signature processes including TLS/SSL. */
-    SIGNING,
+    SIGNING("signing"),
     
     /** Denotes that the purpose of the key was not specified. */
-    UNSPECIFIED
+    UNSPECIFIED("unspecified");
+    
+    /** Enum string value. */
+    private String value;
+    
+    /**
+     * Constructor.
+     *
+     * @param v the enum string value
+     */
+    private UsageType(@Nonnull final String v) {
+        value = v;
+    }
+    
+    /**
+     * Get the enum string value.
+     * 
+     * @return the enum string value
+     */
+    @Nonnull public String getValue() {
+        return value;
+    }
+   
 }

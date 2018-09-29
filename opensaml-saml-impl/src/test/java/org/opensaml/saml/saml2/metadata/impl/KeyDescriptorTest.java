@@ -77,20 +77,38 @@ public class KeyDescriptorTest extends XMLObjectProviderBaseTestCase {
     }
     
     @Test
-    public void testSingleElementBadAttributesUnmarshall() {
+    public void testSingleElementUnknownAttribute() {
+        unmarshallElement("/org/opensaml/saml/saml2/metadata/impl/KeyDescriptorUnknownAttribute.xml");
+    }
+    
+    @Test
+    public void testUsageEnum() {
+        KeyDescriptor keyDescriptor = null;
+        
+        keyDescriptor = unmarshallElement("/org/opensaml/saml/saml2/metadata/impl/KeyDescriptorUseNotPresent.xml");
+        Assert.assertEquals(keyDescriptor.getUse(), UsageType.UNSPECIFIED);
+            
+        keyDescriptor = unmarshallElement("/org/opensaml/saml/saml2/metadata/impl/KeyDescriptorUseSigning.xml");
+        Assert.assertEquals(keyDescriptor.getUse(), UsageType.SIGNING);
+        
+        keyDescriptor = unmarshallElement("/org/opensaml/saml/saml2/metadata/impl/KeyDescriptorUseEncryption.xml");
+        Assert.assertEquals(keyDescriptor.getUse(), UsageType.ENCRYPTION);
+        
         try {
-            unmarshallElement("/org/opensaml/saml/saml2/metadata/impl/KeyDescriptorBadAttributes1.xml");
+            keyDescriptor = unmarshallElement("/org/opensaml/saml/saml2/metadata/impl/KeyDescriptorUseUnspecified.xml");
             Assert.fail();
         } catch (AssertionError e) {
+            //Expected
         }
+        
         try {
-            unmarshallElement("/org/opensaml/saml/saml2/metadata/impl/KeyDescriptorBadAttributes2.xml");
+            keyDescriptor = unmarshallElement("/org/opensaml/saml/saml2/metadata/impl/KeyDescriptorUseValueIllegal.xml");
             Assert.fail();
         } catch (AssertionError e) {
+            //Expected
         }
        
     }
-    
 
     /** {@inheritDoc} */
     @Test
