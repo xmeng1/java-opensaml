@@ -121,8 +121,12 @@ public class LocalDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
     }
     
     @Test
-    public void testConditionalLoadManagerWithClearEntityID() throws IOException, ResolverException {
-        sourceManager.setLoadConditionally(true);
+    public void testConditionalLoadManagerWithClearEntityID() throws IOException, ResolverException, ComponentInitializationException {
+        sourceManager = new MapLoadSaveManager<>(true);
+        resolver = new LocalDynamicMetadataResolver(sourceManager);
+        resolver.setId("abc123");
+        resolver.setParserPool(parserPool);
+        resolver.initialize();
         
         sourceManager.save(sha1Digester.apply(entityID1), entity1);
         

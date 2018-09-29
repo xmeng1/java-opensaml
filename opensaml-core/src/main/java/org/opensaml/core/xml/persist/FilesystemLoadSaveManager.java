@@ -49,6 +49,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
+import net.shibboleth.utilities.java.support.annotation.ParameterName;
 import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
@@ -88,19 +89,51 @@ public class FilesystemLoadSaveManager<T extends XMLObject> extends AbstractCond
      *
      * @param baseDir the base directory, must be an absolute path
      */
-    public FilesystemLoadSaveManager(@Nonnull final String baseDir) {
+    public FilesystemLoadSaveManager(
+            @ParameterName(name="baseDir") @Nonnull final String baseDir) {
         this(new File(Constraint.isNotNull(StringSupport.trimOrNull(baseDir), 
                 "Base directory string instance was null or empty")),
-                null);
+                null,
+                false);
     }
 
     /**
      * Constructor.
      *
      * @param baseDir the base directory, must be an absolute path
+     * @param conditionalLoad whether {@link #load(String)} should behave 
+     *      as defined in {@link ConditionalLoadXMLObjectLoadSaveManager}
      */
-    public FilesystemLoadSaveManager(@Nonnull final File baseDir) {
-        this(baseDir, null);
+    public FilesystemLoadSaveManager(
+            @ParameterName(name="baseDir") @Nonnull final String baseDir, 
+            @ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
+        this(new File(Constraint.isNotNull(StringSupport.trimOrNull(baseDir), 
+                "Base directory string instance was null or empty")),
+                null,
+                conditionalLoad);
+    }
+    
+    /**
+     * Constructor.
+     *
+     * @param baseDir the base directory, must be an absolute path
+     */
+    public FilesystemLoadSaveManager(
+            @ParameterName(name="baseDirFile") @Nonnull final File baseDir) {
+        this(baseDir, null, false);
+    }
+    
+    /**
+     * Constructor.
+     *
+     * @param baseDir the base directory, must be an absolute path
+     * @param conditionalLoad whether {@link #load(String)} should behave 
+     *      as defined in {@link ConditionalLoadXMLObjectLoadSaveManager}
+     */
+    public FilesystemLoadSaveManager(
+            @ParameterName(name="baseDirFile") @Nonnull final File baseDir, 
+            @ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
+        this(baseDir, null, conditionalLoad);
     }
     
     /**
@@ -109,10 +142,13 @@ public class FilesystemLoadSaveManager<T extends XMLObject> extends AbstractCond
      * @param baseDir the base directory, must be an absolute path
      * @param pp the parser pool instance to use
      */
-    public FilesystemLoadSaveManager(@Nonnull final String baseDir, @Nullable final ParserPool pp) {
+    public FilesystemLoadSaveManager(
+            @ParameterName(name="baseDir") @Nonnull final String baseDir, 
+            @ParameterName(name="parserPool") @Nullable final ParserPool pp) {
         this(new File(Constraint.isNotNull(StringSupport.trimOrNull(baseDir), 
                 "Base directory string instance was null or empty")),
-                pp);
+                pp, 
+                false);
     }
 
     /**
@@ -120,9 +156,44 @@ public class FilesystemLoadSaveManager<T extends XMLObject> extends AbstractCond
      *
      * @param baseDir the base directory, must be an absolute path
      * @param pp the parser pool instance to use
+     * @param conditionalLoad whether {@link #load(String)} should behave 
+     *      as defined in {@link ConditionalLoadXMLObjectLoadSaveManager}
      */
-    public FilesystemLoadSaveManager(@Nonnull final File baseDir, @Nullable final ParserPool pp) {
-        super();
+    public FilesystemLoadSaveManager(
+            @ParameterName(name="baseDir") @Nonnull final String baseDir, 
+            @ParameterName(name="parserPool") @Nullable final ParserPool pp,
+            @ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
+        this(new File(Constraint.isNotNull(StringSupport.trimOrNull(baseDir), 
+                "Base directory string instance was null or empty")),
+                pp, conditionalLoad);
+    }
+    /**
+     * Constructor.
+     *
+     * @param baseDir the base directory, must be an absolute path
+     * @param pp the parser pool instance to use
+     */
+    public FilesystemLoadSaveManager(
+            @ParameterName(name="baseDirFile") @Nonnull final File baseDir, 
+            @ParameterName(name="parserPool") @Nullable final ParserPool pp) {
+        this(baseDir, pp, false);
+    }
+    
+    /**
+     * Constructor.
+     *
+     * @param baseDir the base directory, must be an absolute path
+     * @param pp the parser pool instance to use
+     * @param conditionalLoad whether {@link #load(String)} should behave 
+     *      as defined in {@link ConditionalLoadXMLObjectLoadSaveManager}
+     */
+    public FilesystemLoadSaveManager(
+            @ParameterName(name="baseDirFile") @Nonnull final File baseDir, 
+            @ParameterName(name="parserPool") @Nullable final ParserPool pp,
+            @ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
+        
+        super(conditionalLoad);
+        
         baseDirectory = Constraint.isNotNull(baseDir, "Base directory File instance was null");
         Constraint.isTrue(baseDirectory.isAbsolute(), "Base directory specified was not an absolute path");
         if (baseDirectory.exists()) {

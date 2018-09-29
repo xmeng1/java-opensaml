@@ -145,7 +145,7 @@ public class FilesystemLoadSaveManagerTest extends XMLObjectBaseTestCase {
     
     @Test
     public void checkCheckModifyTimeTracking() throws IOException {
-        manager.setLoadConditionally(true);
+        manager = new FilesystemLoadSaveManager<>(baseDir, true);
         
         Assert.assertNull(manager.load("foo"));
         Assert.assertNull(manager.getLoadLastModified("foo"));

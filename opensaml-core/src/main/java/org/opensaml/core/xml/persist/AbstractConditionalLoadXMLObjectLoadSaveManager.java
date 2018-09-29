@@ -26,6 +26,8 @@ import javax.annotation.Nullable;
 
 import org.opensaml.core.xml.XMLObject;
 
+import net.shibboleth.utilities.java.support.annotation.ParameterName;
+
 /**
  * Abstract base class for {@link XMLObjectLoadSaveManager} implementations which 
  * track the modify times of requested data such that {@link #load(String)} returns
@@ -44,19 +46,21 @@ public abstract class AbstractConditionalLoadXMLObjectLoadSaveManager<T extends 
     /** Storage for last modified time of requested data. */
     private Map<String, Long> loadLastModified;
     
-    /** Constructor. */
-    protected AbstractConditionalLoadXMLObjectLoadSaveManager() {
+    /** 
+     * Constructor. 
+     * 
+     * @param conditionalLoad whether {@link #load(String)} should behave 
+     *      as defined in {@link ConditionalLoadXMLObjectLoadSaveManager}
+     */
+    protected AbstractConditionalLoadXMLObjectLoadSaveManager(
+            @ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
         loadLastModified = new HashMap<>();
+        loadConditionally = conditionalLoad;
     }
     
     /** {@inheritDoc} */
     public boolean isLoadConditionally() {
         return loadConditionally;
-    }
-    
-    /** {@inheritDoc} */
-    public void setLoadConditionally(final boolean flag) {
-        loadConditionally = flag;
     }
     
     /** {@inheritDoc} */

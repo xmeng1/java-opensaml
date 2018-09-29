@@ -30,6 +30,7 @@ import org.opensaml.core.xml.XMLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.shibboleth.utilities.java.support.annotation.ParameterName;
 import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
@@ -52,17 +53,49 @@ public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditional
     
     /** Constructor. */
     public MapLoadSaveManager() {
-        this(new HashMap<String,T>());
+        this(new HashMap<String,T>(), new HashMap<String,Long>(), false);
+    }
+
+    /** 
+     * Constructor.
+     * 
+     * @param conditionalLoad whether {@link #load(String)} should behave 
+     *      as defined in {@link ConditionalLoadXMLObjectLoadSaveManager}
+     * */
+    public MapLoadSaveManager(@ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
+        this(new HashMap<String,T>(), new HashMap<String,Long>(), conditionalLoad);
     }
 
     /**
      * Constructor.
+     * 
+     * <p>
+     * Note: conditional load is not supported with this option, because of the need to track
+     * modify times of items stored in the backing map.
+     * Use instead {@link MapLoadSaveManager#MapLoadSaveManager(boolean)}.
+     * </p>
      *
      * @param map the backing map 
      */
-    public MapLoadSaveManager(@Nonnull final Map<String, T> map) {
+    public MapLoadSaveManager(@ParameterName(name="map") @Nonnull final Map<String, T> map) {
+        this(map, new HashMap<String,Long>(), false);
+    }
+    
+    /**
+     * Constructor.
+     * 
+     * @param map the backing map 
+     * @param lastModifiedMap the storage for data last modified times
+     * @param conditionalLoad whether {@link #load(String)} should behave 
+     *      as defined in {@link ConditionalLoadXMLObjectLoadSaveManager}
+     */
+    protected MapLoadSaveManager(
+            @ParameterName(name="map") @Nonnull final Map<String, T> map,
+            @ParameterName(name="dataLastModified") @Nonnull final Map<String,Long> lastModifiedMap,
+            @ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
+        super(conditionalLoad);
         backingMap = Constraint.isNotNull(map, "Backing map was null");
-        dataLastModified = new HashMap<>();
+        dataLastModified = Constraint.isNotNull(lastModifiedMap, "Data last modified map was null");
     }
 
     /** {@inheritDoc} */

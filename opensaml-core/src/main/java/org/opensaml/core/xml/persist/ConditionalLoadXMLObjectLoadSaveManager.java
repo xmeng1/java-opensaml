@@ -33,20 +33,12 @@ import org.opensaml.core.xml.XMLObject;
 public interface ConditionalLoadXMLObjectLoadSaveManager<T extends XMLObject> extends XMLObjectLoadSaveManager<T> {
     
     /** 
-     * Get the configuration flag for whether {@link #load(String)} will check and return data only if modified 
+     * Get whether {@link #load(String)} will check and return data only if modified 
      * since the last request for that data.
      * 
      * @return true if data modify time check is enabled, false if not
      */
     public boolean isLoadConditionally();
-    
-    /** 
-     * Set the configuration flag for whether {@link #load(String)} will check and return data only if modified 
-     * since the last request for that data.
-     * 
-     * @param flag true if data modify time check should be enabled, false if not
-     */
-    public void setLoadConditionally(final boolean flag);
     
     /**
      * Retrieve the cached modified time for the last load of the specified key.
@@ -54,7 +46,7 @@ public interface ConditionalLoadXMLObjectLoadSaveManager<T extends XMLObject> ex
      * <p>
      * Note that this will be null if {@link #load(String)} has not been called
      * for the specified key since construction or since the last call to 
-     * {@link #clearLoadLastModified(String)}.
+     * {@link #clearLoadLastModified(String)} or {@link #clearAllLoadLastModified()}.
      * </p> 
      * 
      * @param key the target key

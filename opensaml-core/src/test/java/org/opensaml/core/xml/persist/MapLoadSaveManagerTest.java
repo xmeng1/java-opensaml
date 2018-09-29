@@ -110,7 +110,7 @@ public class MapLoadSaveManagerTest extends XMLObjectBaseTestCase {
     
     @Test
     public void checkCheckModifyTimeTracking() throws IOException {
-        manager.setLoadConditionally(true);
+        manager = new MapLoadSaveManager<>(true);
         
         Assert.assertNull(manager.load("foo"));
         Assert.assertNull(manager.getLoadLastModified("foo"));
