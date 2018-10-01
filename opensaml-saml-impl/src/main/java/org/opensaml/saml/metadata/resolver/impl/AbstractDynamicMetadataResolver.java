@@ -603,6 +603,11 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         }
     }
     
+    /**
+     * Return whether secondary indexing is effectively active.
+     * 
+     * @return true if active, false if not.
+     */
     protected boolean indexesEnabled() {
         return ! getBackingStore().getSecondaryIndexManager().getIndexes().isEmpty();
     }
