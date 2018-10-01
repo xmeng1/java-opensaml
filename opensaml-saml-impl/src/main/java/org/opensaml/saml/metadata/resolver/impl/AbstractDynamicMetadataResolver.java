@@ -156,6 +156,10 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /** Flag indicating whether idle entity data should be removed. */
     private boolean removeIdleEntityData;
     
+    /** Impending expiration warning threshold for metadata refresh, in milliseconds. 
+     * Default value: 0ms (disabled). */
+    @Duration @Positive private Long expirationWarningThreshold;
+    
     /** The interval in milliseconds at which the cleanup task should run. */
     @Duration @Positive private Long cleanupTaskInterval;
     
@@ -203,6 +207,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         } else {
             taskTimer = backgroundTaskTimer;
         }
+        
+        // Default to 0ms
+        expirationWarningThreshold = 0L;
         
         // Default to 10 minutes.
         minCacheDuration = 10*60*1000L;
@@ -499,6 +506,33 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         maxIdleEntityData = Constraint.isNotNull(max, "Max idle entity data may not be null");
+    }
+    
+    /**
+     * Gets the impending expiration warning threshold used at refresh time.
+     * 
+     * @return threshold for logging a warning if live metadata will soon expire
+     */
+    @Duration @Nonnull public Long getExpirationWarningThreshold() {
+        return expirationWarningThreshold;
+    }
+
+    /**
+     * Sets the impending expiration warning threshold used at refresh time.
+     * 
+     * @param threshold the threshold for logging a warning if live metadata will soon expire
+     */
+    @Duration public void setExpirationWarningThreshold(@Nullable @Duration @Positive final Long threshold) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+        
+        if (threshold == null) {
+            expirationWarningThreshold = 0L;
+        }
+        if (threshold < 0) {
+            throw new IllegalArgumentException("Expiration warning threshold must be greater than or equal to 0");
+        }
+        expirationWarningThreshold = threshold;
     }
 
     /**
@@ -1139,6 +1173,36 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         
         mgmtData.setRefreshTriggerTime(computeRefreshTriggerTime(mgmtData.getExpirationTime(), now));
         log.debug("{} Computed refresh trigger time: {}", getLogPrefix(), mgmtData.getRefreshTriggerTime());
+        
+        logMetadataExpiration(entityDescriptor, now, mgmtData.getRefreshTriggerTime());
+    }
+    
+    /**
+     * Check metadata for expiration or pending expiration and log appropriately.
+     *
+     * @param descriptor the entity descriptor being processes
+     * @param now the current date/time
+     * @param nextRefresh  the next refresh trigger time for the entity descriptor
+     */
+    private void logMetadataExpiration(@Nonnull final EntityDescriptor descriptor,
+            @Nonnull final DateTime now, @Nonnull final DateTime nextRefresh) {
+        if (!isValid(descriptor)) {
+            log.warn("{} Metadata with ID '{}' currently live is expired or otherwise invalid",
+                    getLogPrefix(), descriptor.getEntityID());
+        } else {
+            if (isRequireValidMetadata() && descriptor.getValidUntil() != null) {
+                if (getExpirationWarningThreshold() > 0 
+                        && descriptor.getValidUntil().isBefore(now.plus(getExpirationWarningThreshold()))) {
+                    log.warn("{} Metadata with ID '{}' currently live will expire "
+                            + "within the configured threshhold at '{}'",
+                            getLogPrefix(), descriptor.getEntityID(), descriptor.getValidUntil());
+                } else if (descriptor.getValidUntil().isBefore(nextRefresh)) {
+                    log.warn("{} Metadata with ID '{}' currently live will expire "
+                            + "at '{}' before the next refresh scheduled for {}'",
+                            getLogPrefix(), descriptor.getEntityID(), descriptor.getValidUntil(), nextRefresh);
+                }
+            }
+        }
     }
 
     /**
