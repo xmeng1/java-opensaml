@@ -243,7 +243,8 @@ public class EndpointMetadataIndex implements MetadataIndex {
          *
          * @param indexableTypes a map controlling the types of endpoints to index
          */
-        public DefaultEndpointSelectionPredicate(@Nonnull final Map<QName, Set<QName>> indexableTypes) {
+        public DefaultEndpointSelectionPredicate(
+                @ParameterName(name="indexableTypes") @Nonnull final Map<QName, Set<QName>> indexableTypes) {
             endpointTypes = Constraint.isNotNull(indexableTypes, "Indexable endpoint types map was null");
         }
 
