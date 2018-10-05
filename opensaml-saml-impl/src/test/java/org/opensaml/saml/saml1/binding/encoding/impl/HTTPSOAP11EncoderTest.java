@@ -17,8 +17,12 @@
 
 package org.opensaml.saml.saml1.binding.encoding.impl;
 
+import java.io.ByteArrayInputStream;
+
 import org.joda.time.DateTime;
+import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
+import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
@@ -26,15 +30,13 @@ import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
-import org.opensaml.saml.saml1.binding.encoding.impl.HTTPSOAP11Encoder;
 import org.opensaml.saml.saml1.core.Request;
 import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
 import org.opensaml.saml.saml2.metadata.Endpoint;
+import org.opensaml.soap.soap11.Envelope;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import net.shibboleth.utilities.java.support.testing.TestSupport;
 
 /**
  * Test case for SAML 1.X HTTP SOAP 1.1 binding encoding.
@@ -78,10 +80,20 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         Assert.assertEquals("UTF-8", response.getCharacterEncoding(), "Unexpected character encoding");
         Assert.assertEquals(response.getHeader("Cache-control"), "no-cache, no-store", "Unexpected cache controls");
         Assert.assertEquals(response.getHeader("SOAPAction"), "http://www.oasis-open.org/committees/security");
-        // TODO: this hashes differently for endorsed Xerces and Java 9
-        if (TestSupport.isJavaV9OrLater()) {
-            return;
+        
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(response.getContentAsByteArray())) {
+            XMLObject xmlObject = XMLObjectSupport.unmarshallFromInputStream(parserPool, inputStream);
+            Assert.assertNotNull(xmlObject);
+            Assert.assertTrue(xmlObject instanceof Envelope);
+            Envelope envelope = (Envelope) xmlObject;
+            Assert.assertNull(envelope.getHeader());
+            Assert.assertNotNull(envelope.getBody());
+            Assert.assertEquals(envelope.getBody().getUnknownXMLObjects().size(), 1);
+            Request outboundRequest = (Request) envelope.getBody().getUnknownXMLObjects().get(0);
+            outboundRequest.releaseDOM();
+            outboundRequest.releaseChildrenDOM(true);
+            outboundRequest.setParent(null);
+            assertXMLEquals(XMLObjectSupport.marshall(outboundRequest).getOwnerDocument(), request);
         }
-        Assert.assertEquals(response.getContentAsString().hashCode(), 259113724);
     }
 }

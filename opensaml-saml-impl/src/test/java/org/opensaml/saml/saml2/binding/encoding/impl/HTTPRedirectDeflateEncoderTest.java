@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.saml2.binding.encoding.impl;
 
-import java.net.URI;
+import java.io.ByteArrayInputStream;
 import java.security.KeyPair;
-
-import net.shibboleth.utilities.java.support.net.URISupport;
-import net.shibboleth.utilities.java.support.testing.TestSupport;
+import java.util.Map;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
@@ -33,7 +33,6 @@ import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.binding.impl.SAMLOutboundDestinationHandler;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
-import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
 import org.opensaml.saml.saml2.core.StatusCode;
@@ -47,6 +46,11 @@ import org.opensaml.xmlsec.signature.support.SignatureConstants;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.w3c.dom.Document;
+
+import net.shibboleth.utilities.java.support.codec.Base64Support;
+import net.shibboleth.utilities.java.support.net.URISupport;
+import net.shibboleth.utilities.java.support.net.URLBuilder;
 
 /**
  * Unit test for redirect encoding.
@@ -106,11 +110,28 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         
         Assert.assertEquals("UTF-8", response.getCharacterEncoding(), "Unexpected character encoding");
         Assert.assertEquals(response.getHeader("Cache-control"), "no-cache, no-store", "Unexpected cache controls");
-        // TODO: this hashes differently for endorsed Xerces and Java 9
-        if (TestSupport.isJavaV9OrLater()) {
-            return;
+        
+        Assert.assertNotNull(response.getRedirectedUrl());
+        URLBuilder urlBuilder = new URLBuilder(response.getRedirectedUrl());
+        Assert.assertEquals(urlBuilder.getScheme(), "http");
+        Assert.assertEquals(urlBuilder.getHost(), "example.org");
+        Assert.assertEquals(urlBuilder.getPath(), "/response");
+        
+        Map<String,String> queryParams = URISupport.buildQueryMap(urlBuilder.getQueryParams());
+        Assert.assertFalse(queryParams.containsKey("Signature"));
+        Assert.assertFalse(queryParams.containsKey("SigAlg"));
+        Assert.assertTrue(queryParams.containsKey("RelayState"));
+        Assert.assertEquals(queryParams.get("RelayState"), "relay");
+        Assert.assertTrue(queryParams.containsKey("SAMLResponse"));
+        try (InflaterInputStream inflater = 
+                new InflaterInputStream(
+                        new ByteArrayInputStream(
+                                Base64Support.decode(queryParams.get("SAMLResponse"))), new Inflater(true))) {
+           
+            Document outboundResponse = parserPool.parse(inflater);
+            assertXMLEquals(outboundResponse, samlMessage);
         }
-        Assert.assertEquals(response.getRedirectedUrl().hashCode(), -178096905);
+        
     }
     
     /**
@@ -167,10 +188,31 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         Assert.assertEquals("UTF-8", response.getCharacterEncoding(), "Unexpected character encoding");
         Assert.assertEquals(response.getHeader("Cache-control"), "no-cache, no-store", "Unexpected cache controls");
         
-        String queryString = new URI(response.getRedirectedUrl()).getRawQuery();
+        Assert.assertNotNull(response.getRedirectedUrl());
+        URLBuilder urlBuilder = new URLBuilder(response.getRedirectedUrl());
+        Assert.assertEquals(urlBuilder.getScheme(), "http");
+        Assert.assertEquals(urlBuilder.getHost(), "example.org");
+        Assert.assertEquals(urlBuilder.getPath(), "/response");
         
-        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "foo"), "foo=bar");
-        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "abc"), "abc=123");
+        Map<String,String> queryParams = URISupport.buildQueryMap(urlBuilder.getQueryParams());
+        Assert.assertTrue(queryParams.containsKey("foo"));
+        Assert.assertEquals(queryParams.get("foo"), "bar");
+        Assert.assertTrue(queryParams.containsKey("abc"));
+        Assert.assertEquals(queryParams.get("abc"), "123");
+        
+        Assert.assertFalse(queryParams.containsKey("Signature"));
+        Assert.assertFalse(queryParams.containsKey("SigAlg"));
+        Assert.assertTrue(queryParams.containsKey("RelayState"));
+        Assert.assertEquals(queryParams.get("RelayState"), "relay");
+        Assert.assertTrue(queryParams.containsKey("SAMLResponse"));
+        try (InflaterInputStream inflater = 
+                new InflaterInputStream(
+                        new ByteArrayInputStream(
+                                Base64Support.decode(queryParams.get("SAMLResponse"))), new Inflater(true))) {
+           
+            Document outboundResponse = parserPool.parse(inflater);
+            assertXMLEquals(outboundResponse, samlMessage);
+        }
     }
     
     /**
@@ -227,19 +269,35 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         Assert.assertEquals("UTF-8", response.getCharacterEncoding(), "Unexpected character encoding");
         Assert.assertEquals(response.getHeader("Cache-control"), "no-cache, no-store", "Unexpected cache controls");
         
-        String queryString = new URI(response.getRedirectedUrl()).getRawQuery();
+        Assert.assertNotNull(response.getRedirectedUrl());
+        URLBuilder urlBuilder = new URLBuilder(response.getRedirectedUrl());
+        Assert.assertEquals(urlBuilder.getScheme(), "http");
+        Assert.assertEquals(urlBuilder.getHost(), "example.org");
+        Assert.assertEquals(urlBuilder.getPath(), "/response");
         
-        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "foo"), "foo=bar");
-        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "abc"), "abc=123");
-        Assert.assertEquals(URISupport.getRawQueryStringParameter(queryString, "RelayState"), "RelayState=relay");
-        Assert.assertNotNull(URISupport.getRawQueryStringParameter(queryString, "SAMLResponse"));
-        Assert.assertNotEquals(URISupport.getRawQueryStringParameter(queryString, "SAMLResponse"), "blah");
-        Assert.assertFalse(queryString.contains("SAMLResponse=blah"));
+        Map<String,String> queryParams = URISupport.buildQueryMap(urlBuilder.getQueryParams());
+        Assert.assertTrue(queryParams.containsKey("foo"));
+        Assert.assertEquals(queryParams.get("foo"), "bar");
+        Assert.assertTrue(queryParams.containsKey("abc"));
+        Assert.assertEquals(queryParams.get("abc"), "123");
         
-        Assert.assertNull(URISupport.getRawQueryStringParameter(queryString, "SAMLEncoding"));
-        Assert.assertNull(URISupport.getRawQueryStringParameter(queryString, "SAMLRequest"));
-        Assert.assertNull(URISupport.getRawQueryStringParameter(queryString, "SigAlg"));
-        Assert.assertNull(URISupport.getRawQueryStringParameter(queryString, "Signature"));
+        Assert.assertFalse(queryParams.containsKey("SAMLEncoding"));
+        Assert.assertFalse(queryParams.containsKey("SAMLRequest"));
+        Assert.assertFalse(queryParams.containsKey("SigAlg"));
+        Assert.assertFalse(queryParams.containsKey("Signature"));
+        Assert.assertTrue(queryParams.containsKey("RelayState"));
+        Assert.assertEquals(queryParams.get("RelayState"), "relay");
+        
+        Assert.assertTrue(queryParams.containsKey("SAMLResponse"));
+        Assert.assertNotEquals(queryParams.get("SAMLResponse"), "blah");
+        try (InflaterInputStream inflater = 
+                new InflaterInputStream(
+                        new ByteArrayInputStream(
+                                Base64Support.decode(queryParams.get("SAMLResponse"))), new Inflater(true))) {
+           
+            Document outboundResponse = parserPool.parse(inflater);
+            assertXMLEquals(outboundResponse, samlMessage);
+        }
     }
     
     /**
@@ -299,12 +357,28 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         encoder.prepareContext();
         encoder.encode();
         
-        String queryString = new URI(response.getRedirectedUrl()).getRawQuery();
+        Assert.assertNotNull(response.getRedirectedUrl());
+        URLBuilder urlBuilder = new URLBuilder(response.getRedirectedUrl());
+        Assert.assertEquals(urlBuilder.getScheme(), "http");
+        Assert.assertEquals(urlBuilder.getHost(), "example.org");
+        Assert.assertEquals(urlBuilder.getPath(), "/response");
         
-        Assert.assertNotNull(URISupport.getRawQueryStringParameter(queryString, "Signature"), 
-                "Signature parameter was not found");
-        Assert.assertNotNull(URISupport.getRawQueryStringParameter(queryString, "SigAlg"), 
-                "SigAlg parameter was not found");
+        Map<String,String> queryParams = URISupport.buildQueryMap(urlBuilder.getQueryParams());
+        Assert.assertTrue(queryParams.containsKey("Signature"));
+        Assert.assertNotNull(queryParams.get("Signature"));
+        Assert.assertTrue(queryParams.containsKey("SigAlg"));
+        Assert.assertEquals(queryParams.get("SigAlg"), SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
+        Assert.assertTrue(queryParams.containsKey("RelayState"));
+        Assert.assertEquals(queryParams.get("RelayState"), "relay");
+        Assert.assertTrue(queryParams.containsKey("SAMLResponse"));
+        try (InflaterInputStream inflater = 
+                new InflaterInputStream(
+                        new ByteArrayInputStream(
+                                Base64Support.decode(queryParams.get("SAMLResponse"))), new Inflater(true))) {
+           
+            Document outboundResponse = parserPool.parse(inflater);
+            assertXMLEquals(outboundResponse, samlMessage);
+        }
         
         // Note: to test that actual signature is cryptographically correct, really need a known good test vector.
         // Need to verify that we're signing over the right data in the right byte[] encoded form.

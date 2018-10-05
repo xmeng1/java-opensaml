@@ -17,10 +17,20 @@
 
 package org.opensaml.saml.saml2.binding.encoding.impl;
 
+import java.io.ByteArrayInputStream;
+import java.util.List;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.joda.time.DateTime;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.DocumentType;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
+import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
@@ -29,7 +39,6 @@ import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.binding.impl.SAMLOutboundDestinationHandler;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
-import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostEncoder;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
@@ -41,7 +50,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import net.shibboleth.utilities.java.support.testing.TestSupport;
+import net.shibboleth.utilities.java.support.codec.Base64Support;
 
 /**
  * Test case for {@link HTTPPostEncoder}.
@@ -119,11 +128,58 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
         Assert.assertEquals(response.getContentType(), "text/html", "Unexpected content type");
         Assert.assertEquals("UTF-8", response.getCharacterEncoding(), "Unexpected character encoding");
         Assert.assertEquals(response.getHeader("Cache-control"), "no-cache, no-store", "Unexpected cache controls");
-        // TODO: this hashes differently for endorsed Xerces and Java 9
-        if (TestSupport.isJavaV9OrLater()) {
-            return;
+        
+        Document webDoc = Jsoup.parse(response.getContentAsString());
+        
+        boolean sawDocType = false;
+        List<Node>nods = webDoc.childNodes();
+        for (Node node : nods) {
+           if (node instanceof DocumentType) {
+               sawDocType = true;
+               DocumentType documentType = (DocumentType)node;
+               Assert.assertEquals(documentType.attr("name"), "html");
+               Assert.assertEquals(documentType.attr("publicId"), "");
+               Assert.assertEquals(documentType.attr("systemId"), "");
+           }
         }
-        Assert.assertEquals(response.getContentAsString().hashCode(), -1584370770);
+        Assert.assertTrue(sawDocType);
+        
+        Element head = webDoc.selectFirst("html > head");
+        Assert.assertNotNull(head);
+        Element metaCharSet = head.selectFirst("meta[charset]");
+        Assert.assertNotNull(metaCharSet);
+        Assert.assertEquals(metaCharSet.attr("charset").toLowerCase(), "utf-8");
+        
+        Element body = webDoc.selectFirst("html > body");
+        Assert.assertNotNull(body);
+        Assert.assertEquals(body.attr("onload"), "document.forms[0].submit()");
+        
+        Element form = body.selectFirst("form");
+        Assert.assertNotNull(form);
+        Assert.assertEquals(form.attr("method").toLowerCase(), "post");
+        Assert.assertEquals(form.attr("action"), "http://example.org/response");
+        
+        Element relayState = form.selectFirst("input[name=RelayState]");
+        Assert.assertNotNull(relayState);
+        Assert.assertEquals(relayState.val(), "relay");
+        
+        Element noscriptMsg = body.selectFirst("noscript > p");
+        Assert.assertNotNull(noscriptMsg);
+        Assert.assertTrue(noscriptMsg.text().contains("Since your browser does not support JavaScript"));
+        
+        Element samlResponse = form.selectFirst("input[name=SAMLResponse]");
+        Assert.assertNotNull(samlResponse);
+        Assert.assertNotNull(samlResponse.val());
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Support.decode(samlResponse.val()))) {
+            XMLObject xmlObject = XMLObjectSupport.unmarshallFromInputStream(parserPool, inputStream);
+            Assert.assertTrue(xmlObject instanceof Response);
+            assertXMLEquals(xmlObject.getDOM().getOwnerDocument(), samlMessage);
+        }
+        
+        Element submit = body.selectFirst("noscript > div > input[type=submit]");
+        Assert.assertNotNull(submit);
+        Assert.assertEquals(submit.val(), "Continue");
+        
     }
 
     @Test
@@ -166,11 +222,57 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
         Assert.assertEquals(response.getContentType(), "text/html", "Unexpected content type");
         Assert.assertEquals("UTF-8", response.getCharacterEncoding(), "Unexpected character encoding");
         Assert.assertEquals(response.getHeader("Cache-control"), "no-cache, no-store", "Unexpected cache controls");
-        // TODO: this hashes differently for endorsed Xerces and Java 9
-        if (TestSupport.isJavaV9OrLater()) {
-            return;
+        
+        Document webDoc = Jsoup.parse(response.getContentAsString());
+        
+        boolean sawDocType = false;
+        List<Node>nods = webDoc.childNodes();
+        for (Node node : nods) {
+           if (node instanceof DocumentType) {
+               sawDocType = true;
+               DocumentType documentType = (DocumentType)node;
+               Assert.assertEquals(documentType.attr("name"), "html");
+               Assert.assertEquals(documentType.attr("publicId"), "");
+               Assert.assertEquals(documentType.attr("systemId"), "");
+           }
         }
-        Assert.assertEquals(response.getContentAsString().hashCode(), 1585035273);
+        Assert.assertTrue(sawDocType);
+        
+        Element head = webDoc.selectFirst("html > head");
+        Assert.assertNotNull(head);
+        Element metaCharSet = head.selectFirst("meta[charset]");
+        Assert.assertNotNull(metaCharSet);
+        Assert.assertEquals(metaCharSet.attr("charset").toLowerCase(), "utf-8");
+        
+        Element body = webDoc.selectFirst("html > body");
+        Assert.assertNotNull(body);
+        Assert.assertEquals(body.attr("onload"), "document.forms[0].submit()");
+        
+        Element form = body.selectFirst("form");
+        Assert.assertNotNull(form);
+        Assert.assertEquals(form.attr("method").toLowerCase(), "post");
+        Assert.assertEquals(form.attr("action"), "http://example.org");
+        
+        Element relayState = form.selectFirst("input[name=RelayState]");
+        Assert.assertNotNull(relayState);
+        Assert.assertEquals(relayState.val(), "relay");
+        
+        Element noscriptMsg = body.selectFirst("noscript > p");
+        Assert.assertNotNull(noscriptMsg);
+        Assert.assertTrue(noscriptMsg.text().contains("Since your browser does not support JavaScript"));
+        
+        Element samlResponse = form.selectFirst("input[name=SAMLRequest]");
+        Assert.assertNotNull(samlResponse);
+        Assert.assertNotNull(samlResponse.val());
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Support.decode(samlResponse.val()))) {
+            XMLObject xmlObject = XMLObjectSupport.unmarshallFromInputStream(parserPool, inputStream);
+            Assert.assertTrue(xmlObject instanceof AuthnRequest);
+            assertXMLEquals(xmlObject.getDOM().getOwnerDocument(), samlMessage);
+        }
+        
+        Element submit = body.selectFirst("noscript > div > input[type=submit]");
+        Assert.assertNotNull(submit);
+        Assert.assertEquals(submit.val(), "Continue");
         
     }
 }
