@@ -36,7 +36,7 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
  */
 public class SOAPClientSecurityProfileIdLookupFunction implements ContextDataLookupFunction<MessageContext, String> {
     
-    /** Lookup function for {@link SOAPClientSecurityContext. */
+    /** Lookup function for {@link SOAPClientSecurityContext}. */
     private Function<MessageContext, SOAPClientSecurityContext> soapContextLookup;
     
     /**

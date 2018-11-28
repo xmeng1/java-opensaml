@@ -147,7 +147,7 @@ public class CheckAndRecordServerTLSEntityAuthenticationtHandler extends Abstrac
 
     /**
      * The default {@link HttpClientContext} strategy function, which resolves from the {@link HttpClientRequestContext}
-     * of the outbound {@link MessageContext} of the parent {@link InOutOperationContext.
+     * of the outbound {@link MessageContext} of the parent {@link InOutOperationContext}.
      */
     public class DefaultHttpClientContextLookup 
             implements ContextDataLookupFunction<MessageContext, HttpClientContext> {

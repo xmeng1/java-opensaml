@@ -28,7 +28,7 @@ import com.google.common.base.Function;
 /**
  * Function which resolves and returns the intended SOAP client message destination URI
  * via the {@link SOAPClientContext#getDestinationURI()} of the message context's
- * parent {@link {@link InOutOperationContext}.
+ * parent {@link InOutOperationContext}.
  */
 public class SOAPClientDestinationURILookup implements Function<MessageContext, String> {
 

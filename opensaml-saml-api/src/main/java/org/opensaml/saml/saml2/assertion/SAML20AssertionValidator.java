@@ -70,8 +70,8 @@ import org.w3c.dom.Element;
  * <li>
  * {@link SAML2AssertionValidationParameters#SIGNATURE_VALIDATION_CRITERIA_SET}:
  * Optional.
- * If not supplied, a minimal criteria set will be constructed which contains an {@link EntityIDCriteria} 
- * containing the Assertion Issuer entityID, and a {@link UsageCriteria} of {@link UsageType#SIGNING}.
+ * If not supplied, a minimal criteria set will be constructed which contains an {@link EntityIdCriterion} 
+ * containing the Assertion Issuer entityID, and a {@link UsageCriterion} of {@link UsageType#SIGNING}.
  * If it is supplied, but either of those criteria are absent from the criteria set, they will be added 
  * with the above values.
  * </li>
