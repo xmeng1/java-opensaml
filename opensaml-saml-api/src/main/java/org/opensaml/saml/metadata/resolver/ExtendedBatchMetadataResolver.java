@@ -20,7 +20,6 @@ package org.opensaml.saml.metadata.resolver;
 import javax.annotation.Nullable;
 
 import org.joda.time.DateTime;
-import org.opensaml.core.xml.XMLObject;
 
 /**
  * Extended {@link BatchMetadataResolver}.
@@ -37,7 +36,7 @@ public interface ExtendedBatchMetadataResolver extends BatchMetadataResolver {
     @Nullable public DateTime getRootValidUntil();
 
     /**
-     * Get the validity state of the metadata batch root element, as determined by {@link #isValid(XMLObject)}.
+     * Get the validity state of the metadata batch root element, as determined in an implementation-specific manner.
      *
      * @return true if root element is valid, false if not valid, null if indeterminate
      */
