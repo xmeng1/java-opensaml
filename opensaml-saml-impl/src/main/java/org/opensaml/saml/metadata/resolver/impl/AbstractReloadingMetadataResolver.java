@@ -506,7 +506,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
      */
     protected void processPreExpiredMetadata(final String metadataIdentifier, final DateTime refreshStart,
             final byte[] metadataBytes, final XMLObject metadata) {
-        log.warn("{} Entire metadata document from '{}' was expired at time of loading, existing metadata retained",
+        log.warn("{} Entire metadata document from '{}' was expired at time of loading, previous metadata retained, if any",
                 getLogPrefix(), metadataIdentifier);
 
         nextRefresh = new DateTime(ISOChronology.getInstanceUTC()).plus(getMinRefreshDelay());
