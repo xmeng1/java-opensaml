@@ -48,8 +48,6 @@ import net.shibboleth.utilities.java.support.resolver.ResolverException;
  */
 public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     
-    static final String DATA_PATH = "/org/opensaml/saml/metadata/resolver/impl/";
-    
     private HttpClientBuilder httpClientBuilder;
 
     private String relativeMDResource;

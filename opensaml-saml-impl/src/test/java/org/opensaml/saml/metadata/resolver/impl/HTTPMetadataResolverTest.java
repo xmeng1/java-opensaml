@@ -18,6 +18,8 @@
 package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -48,6 +50,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.google.common.io.ByteStreams;
+
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
 import net.shibboleth.utilities.java.support.httpclient.HttpClientSupport;
@@ -68,6 +72,8 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     private String entityID;
     private HTTPMetadataResolver metadataProvider;
     private CriteriaSet criteriaSet;
+
+    static final String DATA_PATH = "/org/opensaml/saml/metadata/resolver/impl/";
     
     @BeforeClass
     protected void setUpClass() {
@@ -321,27 +327,26 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertNotNull(descriptor, "Retrieved entity descriptor was null");
         Assert.assertEquals(descriptor.getEntityID(), entityID, "Entity's ID does not match requested ID");
     }
-    
-    
-    
     // Helpers
     
-    public static TrustEngine<? super X509Credential> buildPKIXTrustEngine(String cert, String name, boolean nameCheckEnabled) throws URISyntaxException, CertificateException {
-        File certFile = new File(FileBackedHTTPMetadataResolver.class.getResource(FileBackedHTTPMetadataResolverTest.DATA_PATH + cert).toURI());
-        X509Certificate rootCert = X509Support.decodeCertificate(certFile);
-        PKIXValidationInformation info = new BasicPKIXValidationInformation(Collections.singletonList(rootCert), null, 5);
-        Set<String> trustedNames = (Set<String>) (name != null ? Collections.singleton(name) : Collections.emptySet());
-        StaticPKIXValidationInformationResolver resolver = new StaticPKIXValidationInformationResolver(Collections.singletonList(info), trustedNames);
+    public static TrustEngine<? super X509Credential> buildPKIXTrustEngine(String cert, String name, boolean nameCheckEnabled) throws URISyntaxException, CertificateException, IOException {
+        final InputStream certStream = FileBackedHTTPMetadataResolver.class.getResourceAsStream((HTTPMetadataResolverTest.DATA_PATH + cert));
+        final X509Certificate rootCert = X509Support.decodeCertificate(ByteStreams.toByteArray(certStream));
+        final PKIXValidationInformation info = new BasicPKIXValidationInformation(Collections.singletonList(rootCert), null, 5);
+        final Set<String> trustedNames = (Set<String>) (name != null ? Collections.singleton(name) : Collections.emptySet());
+        final StaticPKIXValidationInformationResolver resolver = new StaticPKIXValidationInformationResolver(Collections.singletonList(info), trustedNames);
         return new PKIXX509CredentialTrustEngine(resolver,
                 new CertPathPKIXTrustEvaluator(),
                 (nameCheckEnabled ? new BasicX509CredentialNameEvaluator() : null));
     }
 
-    public static TrustEngine<? super X509Credential> buildExplicitKeyTrustEngine(String cert) throws URISyntaxException, CertificateException {
-        File certFile = new File(FileBackedHTTPMetadataResolver.class.getResource(FileBackedHTTPMetadataResolverTest.DATA_PATH + cert).toURI());
-        X509Certificate entityCert = X509Support.decodeCertificate(certFile);
-        X509Credential entityCredential = new BasicX509Credential(entityCert);
+    public static TrustEngine<? super X509Credential> buildExplicitKeyTrustEngine(String cert) throws URISyntaxException, CertificateException, IOException {
+        
+        final InputStream certStream = FileBackedHTTPMetadataResolver.class.getResourceAsStream(HTTPMetadataResolverTest.DATA_PATH + cert);
+        final X509Certificate entityCert = X509Support.decodeCertificate(ByteStreams.toByteArray(certStream));
+        final X509Credential entityCredential = new BasicX509Credential(entityCert);
         return new ExplicitKeyTrustEngine(new StaticCredentialResolver(entityCredential));
+        
     }
 
     public static LayeredConnectionSocketFactory buildTrustEngineSocketFactory() {

@@ -46,7 +46,7 @@ import static org.testng.Assert.*;
  * <code>localhost:11211</code>. This test may be executed by running the test goal with the <code>all</code> maven
  * profile if a local memcached service is available.
  */
-@Test(groups = {"needs-external-fixture"})
+@Test(groups = {"needs-external-fixture"}, enabled=false)
 public class MemcachedStorageServiceTest {
 
     private MemcachedStorageService service;
