@@ -44,7 +44,7 @@ public class SchemaValidationFilterTest extends XMLObjectBaseTestCase {
         httpClient = new DefaultHttpClient();
         httpClient.getParams().setIntParameter(AllClientPNames.CONNECTION_TIMEOUT, 1000 * 5);
         
-        inCommonMDURL = RepositorySupport.buildHTTPSResourceURL("java-opensaml", "opensaml-saml-impl/src/test/resources/org/opensaml/saml/saml2/metadata/InCommon-metadata.xml");
+        inCommonMDURL = RepositorySupport.buildHTTPResourceURL("java-opensaml", "opensaml-saml-impl/src/test/resources/org/opensaml/saml/saml2/metadata/InCommon-metadata.xml", false);
     }
 
     @Test

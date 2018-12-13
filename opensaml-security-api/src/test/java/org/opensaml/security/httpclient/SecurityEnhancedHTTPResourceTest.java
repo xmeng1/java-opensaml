@@ -29,6 +29,7 @@ import net.shibboleth.ext.spring.resource.HTTPResource;
 import net.shibboleth.ext.spring.resource.ResourceTestHelper;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
+import net.shibboleth.utilities.java.support.repository.RepositorySupport;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
@@ -43,8 +44,10 @@ import org.testng.annotations.Test;
  */
 public class SecurityEnhancedHTTPResourceTest {
 
-    private final String existsURL =
-            "https://git.shibboleth.net/view/?p=spring-extensions.git;a=blob_plain;f=src/test/resources/data/document.xml;h=e8ec7c0d20c7a6b8193e1868398cda0c28df45ed;hb=HEAD";
+    private final String path = "net/shibboleth/ext/spring/resource/document.xml";
+    private final String pathPrefix = "src/test/resources/";
+    private final String existsHttps = RepositorySupport.buildHTTPSResourceURL("spring-extensions", pathPrefix+ path);
+    private final String existsHttp = RepositorySupport.buildHTTPResourceURL("spring-extensions", pathPrefix+ path, false);
 
     private HttpClient client;
     private HttpClientSecurityParameters params;
@@ -62,14 +65,14 @@ public class SecurityEnhancedHTTPResourceTest {
     }
 
     @Test public void testNoSecurityAdded() throws IOException, ComponentInitializationException {
-        final HTTPResource existsResource = new HTTPResource(client, existsURL);
+        final HTTPResource existsResource = new HTTPResource(client, existsHttp);
         existsResource.setHttpClientContextHandler(handler);
         
         Assert.assertTrue(ResourceTestHelper.compare(existsResource, new ClassPathResource("net/shibboleth/ext/spring/resource/document.xml")));
     }
 
     @Test public void testHostnameRejected() throws IOException, ComponentInitializationException {
-        final HTTPResource existsResource = new HTTPResource(client, existsURL);
+        final HTTPResource existsResource = new HTTPResource(client, existsHttps);
         existsResource.setHttpClientContextHandler(handler);
         
         params.setHostnameVerifier(new X509HostnameVerifier() {
@@ -91,7 +94,7 @@ public class SecurityEnhancedHTTPResourceTest {
     }
 
     @Test public void testBadSSLProtocol() throws IOException, ComponentInitializationException {
-        final HTTPResource existsResource = new HTTPResource(client, existsURL);
+        final HTTPResource existsResource = new HTTPResource(client, existsHttps);
         existsResource.setHttpClientContextHandler(handler);
         
         params.setTLSProtocols(Collections.singletonList("SSLv3"));
