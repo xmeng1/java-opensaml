@@ -359,7 +359,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
             }
         } catch (final Throwable t) {
             trackRefreshSuccess = false;
-            nextRefresh = new DateTime(ISOChronology.getInstanceUTC()).plus(minRefreshDelay);
+            nextRefresh = new DateTime(ISOChronology.getInstanceUTC()).plus(computeNextRefreshDelay(null));
             if (t instanceof Exception) {
                 log.error("{} Error occurred while attempting to refresh metadata from '{}'", getLogPrefix(), mdId);
                 throw new ResolverException((Exception) t);
@@ -509,7 +509,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
         log.warn("{} Entire metadata document from '{}' was expired at time of loading, " 
                 + "previous metadata retained, if any", getLogPrefix(), metadataIdentifier);
 
-        nextRefresh = new DateTime(ISOChronology.getInstanceUTC()).plus(getMinRefreshDelay());
+        nextRefresh = new DateTime(ISOChronology.getInstanceUTC()).plus(computeNextRefreshDelay(null));
         trackRefreshSuccess = false;
     }
 

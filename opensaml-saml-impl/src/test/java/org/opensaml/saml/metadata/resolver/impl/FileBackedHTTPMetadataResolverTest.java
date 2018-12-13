@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.joda.time.DateTime;
+import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -50,9 +51,11 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     
     private HttpClientBuilder httpClientBuilder;
 
-    private String relativeMDResource;
     private String metadataURLHttps;
     private String metadataURLHttp;
+    private String relativeMDResource;
+    private String relativeMDResourceExpired;
+    private String relativeMDResourceBad;
     private String badMDURL;
     private String backupFilePath;
     private FileBackedHTTPMetadataResolver metadataProvider;
@@ -64,6 +67,8 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         httpClientBuilder = new HttpClientBuilder();
         
         relativeMDResource = "org/opensaml/saml/metadata/resolver/impl/08ced64cddc9f1578598b2cf71ae747b11d11472.xml";
+        relativeMDResourceExpired = "org/opensaml/saml/metadata/resolver/impl/08ced64cddc9f1578598b2cf71ae747b11d11473-expired.xml";
+        relativeMDResourceBad = "org/opensaml/saml/metadata/resolver/impl/08ced64cddc9f1578598b2cf71ae747b11d11473-bad.xml";
         metadataURLHttps = RepositorySupport.buildHTTPSResourceURL("java-opensaml", String.format("opensaml-saml-impl/src/test/resources/%s", relativeMDResource));
         metadataURLHttp = RepositorySupport.buildHTTPResourceURL("java-opensaml", String.format("opensaml-saml-impl/src/test/resources/%s", relativeMDResource), false);
         
@@ -225,6 +230,98 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         
         Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
         Assert.assertTrue(initUpdate.isBefore(metadataProvider.getLastUpdate()));
+        
+        Assert.assertNotNull(metadataProvider.resolveSingle(criteriaSet), "Metadata retrieved from HTTP refreshed metadata was null");
+    }
+    
+    /**
+     * Tests initialization from backup file, followed shortly by real refresh via HTTP, for the special case
+     * of a backup file that is already expired. See OSJ-261.  Issue there was the backupFileInitNextRefreshDelay
+     * wasn't being honored.
+     * @throws ComponentInitializationException 
+     * 
+     * @throws ResolverException, ComponentInitializationException
+     */
+    @Test
+    public void testInitFromExpiredBackupFile() throws Exception {
+        File backupFile = new File(backupFilePath);
+        try (FileOutputStream backupFileOutputStream = new FileOutputStream(backupFile)) {
+            Resources.copy(Resources.getResource(relativeMDResourceExpired), backupFileOutputStream);
+        }
+        
+        Assert.assertTrue(backupFile.exists(), "Backup file was not created");
+        Assert.assertTrue(backupFile.length() > 0, "Backup file contains no data");
+        
+        metadataProvider = new FileBackedHTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttp, backupFilePath);
+        metadataProvider.setParserPool(parserPool);
+        metadataProvider.setFailFastInitialization(true);
+        metadataProvider.setId("test");
+        metadataProvider.setBackupFileInitNextRefreshDelay(1000);
+        metadataProvider.initialize();
+        
+        Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
+        
+        DateTime postInit = new DateTime(ISOChronology.getInstanceUTC());
+        DateTime initRefresh = metadataProvider.getLastRefresh();
+        DateTime initUpdate = metadataProvider.getLastUpdate();
+        
+        // Metadata was expired, so have no live metadata at this point
+        Assert.assertNull(initUpdate);
+        Assert.assertNull(metadataProvider.resolveSingle(criteriaSet), "Metadata inited from backing file was non-null");
+        
+        // Sleep past the artificial next refresh delay on init from backup file.
+        Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay() + 5000);
+        
+        Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
+        DateTime refreshUpdate = metadataProvider.getLastUpdate();
+        Assert.assertNotNull(refreshUpdate);
+        Assert.assertTrue(refreshUpdate.isAfter(postInit));
+        
+        Assert.assertNotNull(metadataProvider.resolveSingle(criteriaSet), "Metadata retrieved from HTTP refreshed metadata was null");
+    }
+    
+    /**
+     * Tests initialization from backup file, followed shortly by real refresh via HTTP, for the special case
+     * of a backup file that throws during processing when fail-fast=false. See OSJ-261.
+     * Issue there was the backupFileInitNextRefreshDelay wasn't being honored.
+     * @throws ComponentInitializationException 
+     * 
+     * @throws ResolverException, ComponentInitializationException
+     */
+    @Test
+    public void testInitFromBadBackupFileNonFailFast() throws Exception {
+        File backupFile = new File(backupFilePath);
+        try (FileOutputStream backupFileOutputStream = new FileOutputStream(backupFile)) {
+            Resources.copy(Resources.getResource(relativeMDResourceBad), backupFileOutputStream);
+        }
+        
+        Assert.assertTrue(backupFile.exists(), "Backup file was not created");
+        Assert.assertTrue(backupFile.length() > 0, "Backup file contains no data");
+        
+        metadataProvider = new FileBackedHTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttp, backupFilePath);
+        metadataProvider.setParserPool(parserPool);
+        metadataProvider.setFailFastInitialization(false);
+        metadataProvider.setId("test");
+        metadataProvider.setBackupFileInitNextRefreshDelay(1000);
+        metadataProvider.initialize();
+        
+        Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
+        
+        DateTime postInit = new DateTime(ISOChronology.getInstanceUTC());
+        DateTime initRefresh = metadataProvider.getLastRefresh();
+        DateTime initUpdate = metadataProvider.getLastUpdate();
+        
+        // Metadata was fundamentally not able to be processed, so have no live metadata at this point
+        Assert.assertNull(initUpdate);
+        Assert.assertNull(metadataProvider.resolveSingle(criteriaSet), "Metadata inited from backing file was non-null");
+        
+        // Sleep past the artificial next refresh delay on init from backup file.
+        Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay() + 5000);
+        
+        Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
+        DateTime refreshUpdate = metadataProvider.getLastUpdate();
+        Assert.assertNotNull(refreshUpdate);
+        Assert.assertTrue(refreshUpdate.isAfter(postInit));
         
         Assert.assertNotNull(metadataProvider.resolveSingle(criteriaSet), "Metadata retrieved from HTTP refreshed metadata was null");
     }
