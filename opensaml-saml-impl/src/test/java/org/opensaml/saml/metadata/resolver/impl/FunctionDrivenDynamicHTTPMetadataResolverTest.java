@@ -193,10 +193,11 @@ public class FunctionDrivenDynamicHTTPMetadataResolverTest extends XMLObjectBase
     
     @Test
     public void testWellKnownLocation() throws Exception {
-        //TODO update with permanent test target, if there is a better one.
-        String entityID = "https://issues.shibboleth.net/shibboleth";
+        String entityID = "https://test.shibboleth.net/shibboleth";
         
         HTTPEntityIDRequestURLBuilder requestURLBuilder = new HTTPEntityIDRequestURLBuilder();
+        
+        httpClientBuilder.setTLSSocketFactory(HTTPMetadataResolverTest.buildTrustEngineSocketFactory(false));
         
         resolver = new FunctionDrivenDynamicHTTPMetadataResolver(httpClientBuilder.buildClient());
         resolver.setId("myDynamicResolver");
