@@ -68,6 +68,12 @@
             <scope>test</scope>
         </dependency>
         
+        <dependency>
+            <groupId>${slf4j.groupId}</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
     </dependencies>
     
     <distributionManagement>
