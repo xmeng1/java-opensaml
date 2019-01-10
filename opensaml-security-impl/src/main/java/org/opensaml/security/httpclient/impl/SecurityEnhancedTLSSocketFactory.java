@@ -321,8 +321,8 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
             } else {
                 context.setAttribute(HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_CREDENTIAL_TRUSTED, 
                         Boolean.FALSE);
-                final Boolean fatal = 
-                        (Boolean)context.getAttribute(HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL);
+                final Boolean fatal = (Boolean)context.getAttribute(
+                        HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL);
                 if (fatal == null || fatal) {
                     log.debug("Credential evaluated as untrusted, failure indicated as fatal");
                     throw new SSLPeerUnverifiedException(

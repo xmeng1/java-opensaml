@@ -161,7 +161,7 @@ public class ChainingMetadataResolver extends AbstractIdentifiableInitializableC
     }
 
     /** {@inheritDoc} */
-    public void clear(String entityID) throws ResolverException {
+    public void clear(final String entityID) throws ResolverException {
         for (final MetadataResolver resolver : resolvers) {
             if (resolver instanceof ClearableMetadataResolver) {
                 ((ClearableMetadataResolver) resolver).clear(entityID);
