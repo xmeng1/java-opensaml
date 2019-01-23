@@ -64,8 +64,6 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         velocityEngine = new VelocityEngine();
-        velocityEngine.setProperty(RuntimeConstants.INPUT_ENCODING, "UTF-8");
-        velocityEngine.setProperty(RuntimeConstants.OUTPUT_ENCODING, "UTF-8");
         velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         velocityEngine.setProperty("classpath.resource.loader.class",
                 "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
