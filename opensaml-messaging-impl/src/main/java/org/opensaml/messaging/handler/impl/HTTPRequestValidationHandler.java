@@ -17,8 +17,11 @@
 
 package org.opensaml.messaging.handler.impl;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
@@ -36,19 +39,19 @@ import org.slf4j.LoggerFactory;
 public class HTTPRequestValidationHandler extends AbstractMessageHandler {
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(HTTPRequestValidationHandler.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(HTTPRequestValidationHandler.class);
 
     /** Expected content type of the request. */
-    private String requiredContentType;
+    @Nullable private String requiredContentType;
 
     /** Expected method of the request. */
-    private String requiredRequestMethod;
+    @Nullable private String requiredRequestMethod;
 
     /** Whether the request must be secure. */
     private boolean requireSecured;
     
     /** The HTTP servlet request being evaluated. */
-    private HttpServletRequest httpServletRequest;
+    @NonnullAfterInit private HttpServletRequest httpServletRequest;
 
     /**
      * Get the required content type.
@@ -67,7 +70,6 @@ public class HTTPRequestValidationHandler extends AbstractMessageHandler {
     public void setRequiredContentType(final String contentType) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         requiredContentType = contentType;
-        requiredRequestMethod = StringSupport.trimOrNull(contentType);
     }
 
     /**

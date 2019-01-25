@@ -49,8 +49,8 @@ public class HTTPRequestValidationHandlerTest {
         
         handler = new HTTPRequestValidationHandler();
         handler.setHttpServletRequest(httpRequest);
-        handler.setRequiredContentType(contentType);
         handler.setRequiredRequestMethod(method);
+        handler.setRequiredContentType(contentType);
         handler.setRequireSecured(true);
         handler.initialize();
     }
