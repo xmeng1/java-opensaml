@@ -21,6 +21,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Predicate;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -43,8 +44,6 @@ import org.opensaml.saml.saml2.metadata.Extensions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Predicate;
 
 public class EntityAttributesFilterTest extends XMLObjectBaseTestCase implements Predicate<EntityDescriptor> {
     
@@ -123,11 +122,7 @@ public class EntityAttributesFilterTest extends XMLObjectBaseTestCase implements
         
         final EntityAttributesFilter filter = new EntityAttributesFilter();
         filter.setRules(Collections.<Predicate<EntityDescriptor>,Collection<Attribute>>singletonMap(this, tags));
-        filter.setAttributeFilter(new Predicate<Attribute>() {
-            public boolean apply(Attribute input) {
-                return "foo".equals(input.getName());
-            }
-        });
+        filter.setAttributeFilter(input -> "foo".equals(input.getName()));
         filter.initialize();
         
         metadataProvider.setMetadataFilter(filter);
@@ -148,7 +143,7 @@ public class EntityAttributesFilterTest extends XMLObjectBaseTestCase implements
     }
 
     /** {@inheritDoc} */
-    public boolean apply(final EntityDescriptor input) {
+    public boolean test(final EntityDescriptor input) {
         return input.getEntityID().equals("https://carmenwiki.osu.edu/shibboleth");
     }
 

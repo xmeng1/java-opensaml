@@ -31,7 +31,6 @@ public class RootContextLookup<StartContext extends BaseContext, RootContext ext
         ContextDataLookupFunction<StartContext, RootContext> {
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public RootContext apply(@Nullable final BaseContext input) {
         if (input == null) {
             return null;
@@ -43,4 +42,5 @@ public class RootContextLookup<StartContext extends BaseContext, RootContext ext
             return apply(input.getParent());
         }
     }
+    
 }

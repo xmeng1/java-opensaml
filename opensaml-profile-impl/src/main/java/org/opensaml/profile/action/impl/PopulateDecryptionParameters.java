@@ -19,6 +19,7 @@ package org.opensaml.profile.action.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -44,9 +45,6 @@ import net.shibboleth.utilities.java.support.resolver.ResolverException;
 import org.opensaml.messaging.context.navigate.ChildContextLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that resolves and populates {@link DecryptionParameters} on a {@link SecurityParametersContext}
@@ -75,8 +73,9 @@ public class PopulateDecryptionParameters extends AbstractConditionalProfileActi
      */
     public PopulateDecryptionParameters() {
         // Create context by default.
-        securityParametersContextLookupStrategy = Functions.compose(
-                new ChildContextLookup<>(SecurityParametersContext.class, true), new InboundMessageContextLookup());
+        securityParametersContextLookupStrategy =
+                new ChildContextLookup<>(SecurityParametersContext.class, true).compose(
+                        new InboundMessageContextLookup());
     }
 
     /**

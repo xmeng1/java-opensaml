@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Timer;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
@@ -68,7 +69,7 @@ import org.slf4j.LoggerFactory;
 public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(HTTPMetadataResolver.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(HTTPMetadataResolver.class);
 
     /** HTTP Client used to pull the metadata. */
     private HttpClient httpClient;

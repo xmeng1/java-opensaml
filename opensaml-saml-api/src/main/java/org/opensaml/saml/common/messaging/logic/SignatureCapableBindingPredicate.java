@@ -17,11 +17,13 @@
 
 package org.opensaml.saml.common.messaging.logic;
 
+import javax.annotation.Nullable;
+
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 
-import com.google.common.base.Predicate;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 
 /**
  * Predicate that determines whether the binding associated with a message context is
@@ -30,7 +32,7 @@ import com.google.common.base.Predicate;
 public class SignatureCapableBindingPredicate implements Predicate<MessageContext<SAMLObject>> {
 
     /** {@inheritDoc} */
-    public boolean apply(final MessageContext<SAMLObject> input) {
+    public boolean test(@Nullable final MessageContext<SAMLObject> input) {
         return input != null && SAMLBindingSupport.isSigningCapableBinding(input);
     }
 

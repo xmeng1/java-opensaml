@@ -55,7 +55,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.io.ByteStreams;
@@ -324,13 +323,7 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
         } else {
             supportedContentTypes = new ArrayList<>(Collections2.transform(
                     StringSupport.normalizeStringCollection(types),
-                    new Function<String,String>() {
-                        @Override
-                        @Nullable public String apply(@Nullable final String input) {
-                            return input == null ? null : input.toLowerCase();
-                        }
-                    }
-                    ));
+                    s -> s == null ? null : s.toLowerCase()));
         }
     }
     

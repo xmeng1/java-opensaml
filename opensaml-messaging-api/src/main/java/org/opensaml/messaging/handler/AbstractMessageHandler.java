@@ -17,6 +17,8 @@
 
 package org.opensaml.messaging.handler;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.annotation.Prototype;
@@ -29,7 +31,6 @@ import org.opensaml.messaging.context.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
@@ -144,7 +145,7 @@ public abstract class AbstractMessageHandler<MessageType> extends AbstractInitia
      */
     protected boolean doPreInvoke(@Nonnull final MessageContext<MessageType> messageContext)
             throws MessageHandlerException {
-        if (activationCondition.apply(messageContext)) {
+        if (activationCondition.test(messageContext)) {
             log.debug("{} Activation condition for handler returned true", getLogPrefix());
             return true;
         } else {

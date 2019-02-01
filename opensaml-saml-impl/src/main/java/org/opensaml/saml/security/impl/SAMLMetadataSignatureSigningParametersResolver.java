@@ -19,6 +19,7 @@ package org.opensaml.saml.security.impl;
 
 import java.security.Key;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,8 +42,6 @@ import org.opensaml.xmlsec.SignatureSigningParameters;
 import org.opensaml.xmlsec.impl.BasicSignatureSigningParametersResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
 
 /**
  * A specialization of {@link BasicSignatureSigningParametersResolver} which also supports input of SAML metadata, 
@@ -89,8 +88,8 @@ public class SAMLMetadataSignatureSigningParametersResolver extends BasicSignatu
                     signingMethod.getAlgorithm(), signingMethod.getMinKeySize(), signingMethod.getMaxKeySize());
             
             if (signingMethod.getAlgorithm() == null 
-                    || !getAlgorithmRuntimeSupportedPredicate().apply(signingMethod.getAlgorithm())
-                    || !whitelistBlacklistPredicate.apply(signingMethod.getAlgorithm())) {
+                    || !getAlgorithmRuntimeSupportedPredicate().test(signingMethod.getAlgorithm())
+                    || !whitelistBlacklistPredicate.test(signingMethod.getAlgorithm())) {
                 continue;
             }
             
@@ -184,8 +183,8 @@ public class SAMLMetadataSignatureSigningParametersResolver extends BasicSignatu
             log.trace("Evaluating SAML metadata DigestMethod with algorithm: {}", digestMethod.getAlgorithm());
             
             if (digestMethod.getAlgorithm() != null 
-                    && getAlgorithmRuntimeSupportedPredicate().apply(digestMethod.getAlgorithm())
-                    && whitelistBlacklistPredicate.apply(digestMethod.getAlgorithm())) {
+                    && getAlgorithmRuntimeSupportedPredicate().test(digestMethod.getAlgorithm())
+                    && whitelistBlacklistPredicate.test(digestMethod.getAlgorithm())) {
                 log.debug("Resolved reference digest method algorithm URI from SAML metadata DigestMethod: {}",
                         digestMethod.getAlgorithm());
                 return digestMethod.getAlgorithm();

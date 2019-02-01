@@ -20,6 +20,7 @@ package org.opensaml.saml.metadata.resolver.filter.impl;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,8 +33,6 @@ import org.opensaml.saml.saml2.metadata.AffiliationDescriptor;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.RoleDescriptor;
-
-import com.google.common.base.Function;
 
 /**
  * Function which implements a basic strategy for extracting trusted names for PKIX trust engine evaluation.
@@ -53,7 +52,6 @@ import com.google.common.base.Function;
 public class BasicDynamicTrustedNamesStrategy implements Function<XMLObject, Set<String>> {
 
     /** {@inheritDoc} */
-    @Override
     @Nonnull @NonnullElements public Set<String> apply(@Nullable final XMLObject input) {
         if (input == null) {
             return Collections.emptySet();

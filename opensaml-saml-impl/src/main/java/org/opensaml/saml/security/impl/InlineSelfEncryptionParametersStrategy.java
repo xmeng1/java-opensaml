@@ -20,6 +20,7 @@ package org.opensaml.saml.security.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,7 +44,6 @@ import org.opensaml.xmlsec.impl.BasicEncryptionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 
 /**
@@ -53,7 +53,7 @@ public class InlineSelfEncryptionParametersStrategy
         implements Function<Pair<ProfileRequestContext, EncryptionParameters>, List<EncryptionParameters>> {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(InlineSelfEncryptionParametersStrategy.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(InlineSelfEncryptionParametersStrategy.class);
     
     /** Credential resolver for self-encryption. */
     @Nonnull private CredentialResolver credentialResolver;

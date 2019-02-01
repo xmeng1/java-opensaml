@@ -17,7 +17,7 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
-import javax.annotation.Nullable;
+import java.util.function.Function;
 
 import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -28,9 +28,6 @@ import org.opensaml.saml.metadata.resolver.impl.TemplateRequestURLBuilder.Encodi
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Function;
-
 
 public class TemplateRequestURLBuilderTest {
     
@@ -97,11 +94,7 @@ public class TemplateRequestURLBuilderTest {
     
     @Test
     public void testTransformer() {
-        Function<String,String> transformer = new Function<String, String>() {
-            @Nullable public String apply(@Nullable String input) {
-                return input.toUpperCase();
-            }
-        };
+        Function<String,String> transformer = String::toUpperCase;
         
         function = new TemplateRequestURLBuilder(engine, "${entityID}", EncodingStyle.none, transformer);
         

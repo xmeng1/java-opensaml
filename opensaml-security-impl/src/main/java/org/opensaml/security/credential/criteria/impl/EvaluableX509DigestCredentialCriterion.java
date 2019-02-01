@@ -79,7 +79,7 @@ public final class EvaluableX509DigestCredentialCriterion extends AbstractTriSta
     }
 
     /** {@inheritDoc} */
-    @Nullable public boolean apply(@Nullable final Credential target) {
+    public boolean test(@Nullable final Credential target) {
         if (target == null) {
             log.error("Credential target was null");
             return isNullInputSatisfies();

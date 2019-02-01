@@ -17,9 +17,11 @@
 
 package org.opensaml.saml.saml2.common;
 
-import org.opensaml.core.xml.XMLObject;
+import java.util.function.Predicate;
 
-import com.google.common.base.Predicate;
+import javax.annotation.Nullable;
+
+import org.opensaml.core.xml.XMLObject;
 
 /**
  * Predicate which applies {@link SAML2Support#isValid(XMLObject)} to the target input.
@@ -27,7 +29,7 @@ import com.google.common.base.Predicate;
 public class IsTimeboundSAMLObjectValidPredicate implements Predicate<XMLObject> {
 
     /** {@inheritDoc} */
-    public boolean apply(final XMLObject input) {
+    public boolean test(@Nullable final XMLObject input) {
         if (input == null) {
             return false;
         }

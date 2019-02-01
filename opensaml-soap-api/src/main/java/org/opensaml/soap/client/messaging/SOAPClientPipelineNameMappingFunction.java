@@ -19,6 +19,7 @@ package org.opensaml.soap.client.messaging;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,8 +33,6 @@ import org.opensaml.soap.client.SOAPClientContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 
@@ -44,6 +43,8 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
  * Function implementation which resolves a delegate function based on the 
  * SOAP client pipeline name, obtained via a lookup of {@link SOAPClientContext},
  * by default a direct child of the parent {@link InOutOperationContext}.
+ * 
+ * @param <T> delegate function type
  */
 public class SOAPClientPipelineNameMappingFunction<T> implements Function<MessageContext, T> {
     
@@ -85,9 +86,9 @@ public class SOAPClientPipelineNameMappingFunction<T> implements Function<Messag
         if (lookupStrategy != null) {
             soapClientContextLookup = lookupStrategy;
         } else {
-            soapClientContextLookup = Functions.compose(
-                    new ChildContextLookup(SOAPClientContext.class), 
-                    new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
+            soapClientContextLookup =
+                    new ChildContextLookup(SOAPClientContext.class).compose( 
+                            new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
         }
     }
     

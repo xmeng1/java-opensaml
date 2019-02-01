@@ -20,10 +20,12 @@ package org.opensaml.security.credential.impl;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.shibboleth.utilities.java.support.logic.PredicateSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.Criterion;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
@@ -33,8 +35,6 @@ import org.opensaml.security.credential.Credential;
 import org.opensaml.security.credential.criteria.impl.EvaluableCredentialCriteriaRegistry;
 import org.opensaml.security.credential.criteria.impl.EvaluableCredentialCriterion;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 
 /**
@@ -66,11 +66,11 @@ public abstract class AbstractCriteriaFilteringCredentialResolver extends Abstra
         } else {
             Predicate<Credential> aggregatePredicate = null;
             if (isSatisfyAllPredicates()) {
-                aggregatePredicate = Predicates.and(predicates);
+                aggregatePredicate = PredicateSupport.and(predicates);
             } else {
-                aggregatePredicate = Predicates.or(predicates);
+                aggregatePredicate = PredicateSupport.or(predicates);
             }
-            return Iterables.filter(storeCandidates, aggregatePredicate);
+            return Iterables.filter(storeCandidates, aggregatePredicate::test);
         }
     }
     

@@ -37,7 +37,7 @@ public class RecursiveTypedParentContextLookup<StartContext extends BaseContext,
         implements ContextDataLookupFunction<StartContext, ParentContext> {
     
     /** The target parent class. */
-    private Class<ParentContext> parentClass;
+    @Nonnull private Class<ParentContext> parentClass;
     
     /**
      * Constructor.
@@ -50,7 +50,6 @@ public class RecursiveTypedParentContextLookup<StartContext extends BaseContext,
     }
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public ParentContext apply(@Nullable final StartContext input) {
         if (input == null) {
             return null;
@@ -66,4 +65,5 @@ public class RecursiveTypedParentContextLookup<StartContext extends BaseContext,
         
         return null;
     }
+    
 }

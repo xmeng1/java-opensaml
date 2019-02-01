@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +32,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.opensaml.saml.saml1.binding.artifact.SAML1ArtifactBuilderFactory;
 import org.opensaml.saml.saml2.binding.artifact.SAML2ArtifactBuilderFactory;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
@@ -178,7 +178,7 @@ public class SAMLConfiguration {
             allowedBindingURLSchemes = Collections.emptyList();
         } else {
             final Collection<String> normalized = Collections2.transform(
-                    StringSupport.normalizeStringCollection(schemes), lowercaseFunction);
+                    StringSupport.normalizeStringCollection(schemes), lowercaseFunction::apply);
             allowedBindingURLSchemes = new ArrayList<>(normalized);
         }
     }

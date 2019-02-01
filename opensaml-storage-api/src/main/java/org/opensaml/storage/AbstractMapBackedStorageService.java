@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,9 +37,7 @@ import net.shibboleth.utilities.java.support.collection.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-
 
 /**
  * Partial implementation of {@link StorageService} that stores data in-memory with no persistence
@@ -474,11 +473,11 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
             final long expiration) {
         
         return Iterables.removeIf(dataMap.entrySet(), new Predicate<Entry<String, MutableStorageRecord>>() {
-                public boolean apply(@Nullable final Entry<String, MutableStorageRecord> entry) {
+                public boolean test(@Nullable final Entry<String, MutableStorageRecord> entry) {
                     final Long exp = entry.getValue().getExpiration();
                     return exp != null && exp <= expiration;
                 }
-            }
+            }::test
         );
     }
     

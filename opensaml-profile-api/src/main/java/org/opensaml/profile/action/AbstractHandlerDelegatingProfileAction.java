@@ -17,6 +17,9 @@
 
 package org.opensaml.profile.action;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -27,9 +30,6 @@ import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.profile.context.navigate.ParentProfileRequestContextLookup;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 import net.shibboleth.utilities.java.support.component.DestructableComponent;
@@ -45,7 +45,8 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
         extends AbstractConditionalProfileAction {
     
     /** Lookup function for parent ProfileRequestContext. */
-    private static final ParentProfileRequestContextLookup PRC_LOOKUP = new ParentProfileRequestContextLookup();
+    @Nonnull private static final ParentProfileRequestContextLookup<MessageContext> PRC_LOOKUP
+        = new ParentProfileRequestContextLookup<>();
     
     /** The message handler delegate. */
     @Nonnull private DelegateType delegate;
@@ -127,7 +128,7 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
         if (predicate == null) {
             return null;
         } else {
-            return Predicates.compose(predicate, PRC_LOOKUP);
+            return Predicates.compose(predicate::test, PRC_LOOKUP::apply);
         }
     }
 
@@ -145,7 +146,7 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
         if (function == null) {
             return null;
         } else {
-            return Functions.compose(function, PRC_LOOKUP);
+            return function.compose(PRC_LOOKUP);
         }
     }
 

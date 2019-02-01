@@ -19,6 +19,7 @@ package org.opensaml.saml.saml2.profile.impl;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,9 +38,6 @@ import org.opensaml.saml.common.messaging.context.ECPContext;
 import org.opensaml.saml.saml2.profile.context.EncryptionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action to create and populate an {@link ECPContext} based on the request and, when encryption is in use,
@@ -71,11 +69,11 @@ public class PopulateECPContext extends AbstractConditionalProfileAction {
      * @throws NoSuchAlgorithmException if unable to construct default random generator
      */
     public PopulateECPContext() throws NoSuchAlgorithmException {
-        ecpContextCreationStrategy = Functions.compose(new ChildContextLookup<>(ECPContext.class, true),
-                new OutboundMessageContextLookup());
+        ecpContextCreationStrategy =
+                new ChildContextLookup<>(ECPContext.class, true).compose(new OutboundMessageContextLookup());
         
-        encryptionContextLookupStrategy = Functions.compose(new ChildContextLookup<>(EncryptionContext.class),
-                new OutboundMessageContextLookup());
+        encryptionContextLookupStrategy =
+                new ChildContextLookup<>(EncryptionContext.class).compose(new OutboundMessageContextLookup());
         
         try {
             randomGenerator = SecureRandom.getInstance("SHA1PRNG");

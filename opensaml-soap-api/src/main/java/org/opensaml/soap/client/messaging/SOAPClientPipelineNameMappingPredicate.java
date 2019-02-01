@@ -19,6 +19,8 @@ package org.opensaml.soap.client.messaging;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,9 +34,6 @@ import org.opensaml.soap.client.SOAPClientContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 
@@ -86,14 +85,14 @@ public class SOAPClientPipelineNameMappingPredicate implements Predicate<Message
         if (lookupStrategy != null) {
             soapClientContextLookup = lookupStrategy;
         } else {
-            soapClientContextLookup = Functions.compose(
-                    new ChildContextLookup(SOAPClientContext.class), 
-                    new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
+            soapClientContextLookup =
+                    new ChildContextLookup(SOAPClientContext.class).compose( 
+                            new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
         }
     }
     
     /** {@inheritDoc} */
-    public boolean apply(@Nullable final MessageContext input) {
+    public boolean test(@Nullable final MessageContext input) {
         if (input == null) {
             return false;
         }
@@ -104,7 +103,7 @@ public class SOAPClientPipelineNameMappingPredicate implements Predicate<Message
             final Predicate<MessageContext> delegate = delegateMap.get(clientContext.getPipelineName());
             log.debug("Resolved delegate predicate: {}", delegate != null ? delegate.getClass().getName() : "null");
             if (delegate != null) {
-                return delegate.apply(input);
+                return delegate.test(input);
             }
         }
         

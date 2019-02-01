@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.common.binding.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -37,8 +39,6 @@ import org.opensaml.soap.util.SOAPSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-
 /**
  * MessageHandler to add {@link ChannelBindings} headers to an outgoing SOAP envelope.
  */
@@ -55,7 +55,6 @@ public class AddChannelBindingsHeaderHandler extends AbstractMessageHandler {
     
     /** Constructor. */
     public AddChannelBindingsHeaderHandler() {
-        super();
         channelBindingsContextLookupStrategy = new ChildContextLookup<>(ChannelBindingsContext.class);
     }
     

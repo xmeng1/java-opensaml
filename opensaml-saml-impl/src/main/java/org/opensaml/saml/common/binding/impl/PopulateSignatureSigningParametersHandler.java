@@ -19,6 +19,7 @@ package org.opensaml.saml.common.binding.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,9 +39,6 @@ import org.opensaml.xmlsec.context.SecurityParametersContext;
 import org.opensaml.xmlsec.criterion.SignatureSigningConfigurationCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -86,9 +84,9 @@ public class PopulateSignatureSigningParametersHandler extends AbstractMessageHa
         securityParametersContextLookupStrategy = new ChildContextLookup<>(SecurityParametersContext.class, true);
 
         // Default: msg context -> SAMLPeerEntityContext -> SAMLMetadataContext
-        metadataContextLookupStrategy = Functions.compose(
-                new ChildContextLookup<SAMLPeerEntityContext,SAMLMetadataContext>(SAMLMetadataContext.class),
-                new ChildContextLookup<MessageContext,SAMLPeerEntityContext>(SAMLPeerEntityContext.class));
+        metadataContextLookupStrategy =
+                new ChildContextLookup<>(SAMLMetadataContext.class).compose(
+                        new ChildContextLookup<>(SAMLPeerEntityContext.class));
     }
 
     /**

@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,8 +32,6 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * Function which produces a URL by evaluating a supplied regular expression against the criteria entity ID, 
@@ -75,7 +74,7 @@ import com.google.common.base.Function;
 public class RegexRequestURLBuilder implements Function<CriteriaSet, String> {
     
     /** Logger. */
-    private final Logger log = LoggerFactory.getLogger(RegexRequestURLBuilder.class);
+    @Nullable private final Logger log = LoggerFactory.getLogger(RegexRequestURLBuilder.class);
     
     /** The compiled pattern. */
     private Pattern pattern;
@@ -107,8 +106,7 @@ public class RegexRequestURLBuilder implements Function<CriteriaSet, String> {
     }
 
     /** {@inheritDoc} */
-    @Override
-    @Nullable public String apply(@Nonnull final CriteriaSet criteria) {
+    @Nullable public String apply(@Nullable final CriteriaSet criteria) {
         Constraint.isNotNull(criteria, "Criteria was null");
         if (!criteria.contains(EntityIdCriterion.class)) {
             log.trace("Criteria did not contain entity ID, unable to build request URL");

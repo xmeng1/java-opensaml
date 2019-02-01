@@ -18,6 +18,7 @@
 package org.opensaml.saml.metadata.resolver.index.impl;
 
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,8 +32,6 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import org.opensaml.saml.metadata.resolver.index.MetadataIndex;
 import org.opensaml.saml.metadata.resolver.index.MetadataIndexKey;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
-
-import com.google.common.base.Function;
 
 /**
  * Implementation of {@link MetadataIndex} which is based on injected strategy functions.

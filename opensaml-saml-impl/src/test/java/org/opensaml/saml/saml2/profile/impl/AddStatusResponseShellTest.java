@@ -36,8 +36,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
-
 /** {@link AddStatusResponseShell} unit test. */
 public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
 
@@ -50,11 +48,7 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         issuer = null;
 
         action = new AddStatusResponseShell();
-        action.setIssuerLookupStrategy(new Function<ProfileRequestContext,String>() {
-            public String apply(ProfileRequestContext input) {
-                return issuer;
-            }
-        });
+        action.setIssuerLookupStrategy(prc -> issuer);
     }
 
     @Test public void testAddResponse() throws ComponentInitializationException {

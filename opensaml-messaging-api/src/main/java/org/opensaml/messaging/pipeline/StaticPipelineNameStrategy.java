@@ -17,13 +17,13 @@
 
 package org.opensaml.messaging.pipeline;
 
+import java.util.function.Function;
+
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.messaging.context.InOutOperationContext;
-
-import com.google.common.base.Function;
 
 /**
  * Static strategy function for resolving a pipeline name.

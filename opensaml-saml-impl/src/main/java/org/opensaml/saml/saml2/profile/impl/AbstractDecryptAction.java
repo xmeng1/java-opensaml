@@ -17,6 +17,9 @@
 
 package org.opensaml.saml.saml2.profile.impl;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -39,9 +42,6 @@ import org.opensaml.xmlsec.context.SecurityParametersContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
@@ -81,9 +81,10 @@ public abstract class AbstractDecryptAction extends AbstractProfileAction {
     /** Constructor. */
     public AbstractDecryptAction() {
         errorFatal = true;
-        securityParamsLookupStrategy = Functions.compose(new ChildContextLookup<>(SecurityParametersContext.class),
-                new InboundMessageContextLookup());
-        messageLookupStrategy = Functions.compose(new MessageLookup<>(Object.class), new InboundMessageContextLookup());
+        securityParamsLookupStrategy =
+                new ChildContextLookup<>(SecurityParametersContext.class).compose(
+                        new InboundMessageContextLookup());
+        messageLookupStrategy = new MessageLookup<>(Object.class).compose(new InboundMessageContextLookup());
         decryptionPredicate = Predicates.alwaysTrue();
     }
     

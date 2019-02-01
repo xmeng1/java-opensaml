@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.saml2.binding.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
@@ -28,8 +30,6 @@ import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.saml.common.messaging.context.SAMLConsentContext;
 import org.opensaml.saml.saml2.core.RequestAbstractType;
 
-import com.google.common.base.Function;
-
 /**
  * MessageHandler to get the Consent attribute from a {@link RequestAbstractType} message.
  */
@@ -40,7 +40,6 @@ public class ExtractConsentFromRequestHandler extends AbstractMessageHandler {
 
     /** Constructor. */
     public ExtractConsentFromRequestHandler() {
-        super();
         consentContextStrategy = new ChildContextLookup<>(SAMLConsentContext.class, true);
     }
     

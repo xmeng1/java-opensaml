@@ -17,16 +17,13 @@
 
 package org.opensaml.messaging.handler.impl;
 
-import javax.annotation.Nullable;
-
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.messaging.handler.impl.CheckMandatoryIssuer;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
-
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 /** Unit test for {@link CheckMandatoryIssuer}. */
 public class CheckExpectedIssuerTest {
@@ -34,8 +31,8 @@ public class CheckExpectedIssuerTest {
     @Test
     public void testMatch() throws Exception {
         final CheckExpectedIssuer action = new CheckExpectedIssuer();
-        action.setIssuerLookupStrategy(new MockIssuer("issuer"));
-        action.setExpectedIssuerLookupStrategy(new MockIssuer("issuer"));
+        action.setIssuerLookupStrategy(FunctionSupport.constant("issuer"));
+        action.setExpectedIssuerLookupStrategy(FunctionSupport.constant("issuer"));
         action.initialize();
 
         final MessageContext mc = new MessageContext();
@@ -45,8 +42,8 @@ public class CheckExpectedIssuerTest {
     @Test(expectedExceptions=MessageHandlerException.class)
     public void testNotMatch() throws Exception {
         final CheckExpectedIssuer action = new CheckExpectedIssuer();
-        action.setIssuerLookupStrategy(new MockIssuer("issuer"));
-        action.setExpectedIssuerLookupStrategy(new MockIssuer("issuerNOT"));
+        action.setIssuerLookupStrategy(FunctionSupport.constant("issuer"));
+        action.setExpectedIssuerLookupStrategy(FunctionSupport.constant("issuerNOT"));
         action.initialize();
 
         final MessageContext mc = new MessageContext();
@@ -56,8 +53,8 @@ public class CheckExpectedIssuerTest {
     @Test(expectedExceptions=MessageHandlerException.class)
     public void testNoIssuer() throws Exception {
         final CheckExpectedIssuer action = new CheckExpectedIssuer();
-        action.setIssuerLookupStrategy(new MockIssuer(null));
-        action.setExpectedIssuerLookupStrategy(new MockIssuer("issuer"));
+        action.setIssuerLookupStrategy(FunctionSupport.constant(null));
+        action.setExpectedIssuerLookupStrategy(FunctionSupport.constant("issuer"));
         action.initialize();
 
         final MessageContext mc = new MessageContext();
@@ -67,8 +64,8 @@ public class CheckExpectedIssuerTest {
     @Test(expectedExceptions=MessageHandlerException.class)
     public void testNoExpectedIssuer() throws Exception {
         final CheckExpectedIssuer action = new CheckExpectedIssuer();
-        action.setIssuerLookupStrategy(new MockIssuer("issuer"));
-        action.setExpectedIssuerLookupStrategy(new MockIssuer("null"));
+        action.setIssuerLookupStrategy(FunctionSupport.constant("issuer"));
+        action.setExpectedIssuerLookupStrategy(FunctionSupport.constant("null"));
         action.initialize();
 
         final MessageContext mc = new MessageContext();
@@ -78,29 +75,15 @@ public class CheckExpectedIssuerTest {
     @Test(expectedExceptions=ComponentInitializationException.class)
     public void testMissingIssuerStrategy() throws Exception {
         final CheckExpectedIssuer action = new CheckExpectedIssuer();
-        action.setExpectedIssuerLookupStrategy(new MockIssuer("issuer"));
+        action.setExpectedIssuerLookupStrategy(FunctionSupport.constant("issuer"));
         action.initialize();
     }
     
     @Test(expectedExceptions=ComponentInitializationException.class)
     public void testMissingExpectedIssuerStrategy() throws Exception {
         final CheckExpectedIssuer action = new CheckExpectedIssuer();
-        action.setIssuerLookupStrategy(new MockIssuer("issuer"));
+        action.setIssuerLookupStrategy(FunctionSupport.constant("issuer"));
         action.initialize();
     }
     
-    private class MockIssuer implements Function<MessageContext,String> {
-
-        final String issuer;
-        
-        MockIssuer(@Nullable final String s) {
-            issuer = s;
-        }
-        
-        /** {@inheritDoc} */
-        public String apply(MessageContext input) {
-            return issuer;
-        }
-        
-    }
 }

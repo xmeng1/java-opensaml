@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +50,6 @@ import org.opensaml.saml.saml2.metadata.Extensions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
@@ -153,7 +153,7 @@ public class EntityAttributesFilter extends AbstractInitializableComponent imple
         }
         
         for (final Map.Entry<Predicate<EntityDescriptor>,Collection<Attribute>> entry : applyMap.asMap().entrySet()) {
-            if (!entry.getValue().isEmpty() && entry.getKey().apply(descriptor)) {
+            if (!entry.getValue().isEmpty() && entry.getKey().test(descriptor)) {
                 
                 // Put extension objects in place.
                 Extensions extensions = descriptor.getExtensions();
@@ -222,7 +222,7 @@ public class EntityAttributesFilter extends AbstractInitializableComponent imple
                     while (iter.hasNext()) {
                         final SAMLObject attribute = iter.next();
                         if (attribute instanceof Attribute) {
-                            if (!attributeFilter.apply((Attribute) attribute)) {
+                            if (!attributeFilter.test((Attribute) attribute)) {
                                 log.warn("Filtering pre-existing attribute '{}' from entity '{}'",
                                         ((Attribute) attribute).getName(), descriptor.getEntityID());
                                 iter.remove();

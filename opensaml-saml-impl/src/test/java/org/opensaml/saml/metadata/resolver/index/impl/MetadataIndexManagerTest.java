@@ -19,6 +19,7 @@ package org.opensaml.saml.metadata.resolver.index.impl;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
@@ -33,7 +34,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 

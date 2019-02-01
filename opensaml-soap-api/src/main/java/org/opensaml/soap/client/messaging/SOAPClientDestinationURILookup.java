@@ -17,13 +17,13 @@
 
 package org.opensaml.soap.client.messaging;
 
+import java.util.function.Function;
+
 import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.InOutOperationContext;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.soap.client.SOAPClientContext;
-
-import com.google.common.base.Function;
 
 /**
  * Function which resolves and returns the intended SOAP client message destination URI
@@ -33,7 +33,7 @@ import com.google.common.base.Function;
 public class SOAPClientDestinationURILookup implements Function<MessageContext, String> {
 
     /** {@inheritDoc} */
-    public String apply(@Nullable final MessageContext messageContext) {
+    @Nullable public String apply(@Nullable final MessageContext messageContext) {
         if (messageContext == null) {
             return null;
         }

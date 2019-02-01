@@ -17,9 +17,9 @@
 
 package org.opensaml.saml.metadata.criteria.role;
 
-import org.opensaml.saml.saml2.metadata.RoleDescriptor;
+import java.util.function.Predicate;
 
-import com.google.common.base.Predicate;
+import org.opensaml.saml.saml2.metadata.RoleDescriptor;
 
 import net.shibboleth.utilities.java.support.resolver.Criterion;
 

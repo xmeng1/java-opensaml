@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,8 +67,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-import com.google.common.base.Function;
-
 /**
  * SOAP client that uses HTTP as the underlying transport and POST as the binding.
  */
@@ -97,10 +96,8 @@ public class HttpSOAPClient extends AbstractInitializableComponent implements SO
     
     /** Constructor. */
     public HttpSOAPClient() {
-        soapClientContextLookupStrategy =
-                new ChildContextLookup<>(SOAPClientContext.class, false);
-        soap11ContextLookupStrategy =
-                new ChildContextLookup<>(SOAP11Context.class, false);
+        soapClientContextLookupStrategy = new ChildContextLookup<>(SOAPClientContext.class);
+        soap11ContextLookupStrategy = new ChildContextLookup<>(SOAP11Context.class);
     }
 
     /** {@inheritDoc} */

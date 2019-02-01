@@ -27,6 +27,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObject;
@@ -68,10 +70,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -435,7 +435,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         // Only load id1 from the cache
         resolver.setInitializationFromCachePredicate(
                 new Predicate<EntityDescriptor>() {
-                    public boolean apply(EntityDescriptor input) {
+                    public boolean test(EntityDescriptor input) {
                         if (input == null) {
                             return false;
                         }

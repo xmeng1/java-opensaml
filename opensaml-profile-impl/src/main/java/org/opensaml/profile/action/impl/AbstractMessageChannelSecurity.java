@@ -17,6 +17,8 @@
 
 package org.opensaml.profile.action.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -26,8 +28,6 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 import org.opensaml.messaging.context.BaseContext;
 import org.opensaml.profile.action.AbstractProfileAction;
 import org.opensaml.profile.context.ProfileRequestContext;
-
-import com.google.common.base.Function;
 
 /**
  * Abstract base class for profile actions which populate a
@@ -40,7 +40,7 @@ public abstract class AbstractMessageChannelSecurity extends AbstractProfileActi
      * Strategy used to look up the parent {@link BaseContext} on which the
      * {@link org.opensaml.messaging.context.MessageChannelSecurityContext} will be populated.
      */
-    @Nonnull private Function<ProfileRequestContext, BaseContext> parentContextLookupStrategy;
+    @Nonnull private Function<ProfileRequestContext,BaseContext> parentContextLookupStrategy;
     
     /** Parent for eventual context. */
     @Nullable private BaseContext parentContext;
@@ -48,11 +48,7 @@ public abstract class AbstractMessageChannelSecurity extends AbstractProfileActi
     /** Constructor. */
     public AbstractMessageChannelSecurity() {
         //TODO this just returns the input PRC - need better default?
-        parentContextLookupStrategy = new Function<ProfileRequestContext, BaseContext>() {
-            @Nullable public BaseContext apply(@Nullable final ProfileRequestContext input) {
-                return input;
-            }
-        };
+        parentContextLookupStrategy = input -> input;
     }
     
     /**
@@ -63,7 +59,7 @@ public abstract class AbstractMessageChannelSecurity extends AbstractProfileActi
      *          the {@link org.opensaml.messaging.context.MessageChannelSecurityContext}
      */
     public void setParentContextLookupStrategy(
-            @Nonnull final Function<ProfileRequestContext, BaseContext> strategy) {
+            @Nonnull final Function<ProfileRequestContext,BaseContext> strategy) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
 
         parentContextLookupStrategy = Constraint.isNotNull(strategy, "Parent context lookup strategy cannot be null");
@@ -73,11 +69,12 @@ public abstract class AbstractMessageChannelSecurity extends AbstractProfileActi
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
-        parentContext = parentContextLookupStrategy.apply(profileRequestContext);
-        if (parentContext != null) {
-            return super.doPreExecute(profileRequestContext);
+        if (!super.doPreExecute(profileRequestContext)) {
+            return false;
         }
-        return false;
+        
+        parentContext = parentContextLookupStrategy.apply(profileRequestContext);
+        return parentContext != null;
     }
     
     /**
@@ -86,7 +83,7 @@ public abstract class AbstractMessageChannelSecurity extends AbstractProfileActi
      * 
      * @return the parent context
      */
-    protected BaseContext getParentContext() {
+    @Nullable protected BaseContext getParentContext() {
         return parentContext;
     }
 

@@ -18,6 +18,7 @@
 package org.opensaml.saml.common.profile.impl;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,9 +39,6 @@ import org.opensaml.saml.ext.saml2cb.ChannelBindings;
 import org.opensaml.soap.messaging.context.SOAP11Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that verifies two sets of {@link ChannelBindings} from two different {@link ChannelBindingsContext}
@@ -82,14 +80,18 @@ public class VerifyChannelBindings extends AbstractProfileAction {
 
     /** Constructor. */
     public VerifyChannelBindings() {
-        channelBindingsLookupStrategy1 = Functions.compose(new ChildContextLookup<>(ChannelBindingsContext.class),
-                new InboundMessageContextLookup());
-        channelBindingsLookupStrategy2 = Functions.compose(new ChildContextLookup<>(ChannelBindingsContext.class),
-                Functions.compose(new ChildContextLookup<>(SOAP11Context.class), new InboundMessageContextLookup()));
+        channelBindingsLookupStrategy1 =
+                new ChildContextLookup<>(ChannelBindingsContext.class).compose(
+                        new InboundMessageContextLookup());
+        
+        channelBindingsLookupStrategy2 =
+                new ChildContextLookup<>(ChannelBindingsContext.class).compose(
+                        new ChildContextLookup<>(SOAP11Context.class).compose(
+                                new InboundMessageContextLookup()));
                 
         channelBindingsCreationStrategy =
-                Functions.compose(new ChildContextLookup<>(ChannelBindingsContext.class, true),
-                                new OutboundMessageContextLookup());
+                new ChildContextLookup<>(ChannelBindingsContext.class, true).compose(
+                        new OutboundMessageContextLookup());
     }
     
     /**

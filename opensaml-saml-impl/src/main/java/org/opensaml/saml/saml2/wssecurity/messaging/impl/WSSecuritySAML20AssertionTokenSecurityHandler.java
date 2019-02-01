@@ -19,6 +19,7 @@ package org.opensaml.saml.saml2.wssecurity.messaging.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,7 +53,6 @@ import org.opensaml.soap.wssecurity.messaging.WSSecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 
 /**
@@ -84,7 +84,6 @@ public class WSSecuritySAML20AssertionTokenSecurityHandler extends AbstractMessa
     
     /** Constructor. */
     public WSSecuritySAML20AssertionTokenSecurityHandler() {
-        super();
         setInvalidFatal(true);
         setValidationContextBuilder(new DefaultSAML20AssertionValidationContextBuilder());
     }

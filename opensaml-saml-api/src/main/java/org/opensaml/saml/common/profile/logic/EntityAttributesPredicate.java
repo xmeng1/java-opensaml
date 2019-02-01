@@ -43,7 +43,6 @@ import org.opensaml.saml.saml2.metadata.Extensions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
@@ -55,6 +54,7 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotLive;
 import net.shibboleth.utilities.java.support.annotation.constraint.Unmodifiable;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 /**
@@ -149,8 +149,7 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
 
 // Checkstyle: CyclomaticComplexity OFF
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final EntityDescriptor input) {
+    public boolean test(@Nullable final EntityDescriptor input) {
         if (input == null) {
             return false;
         }
@@ -193,9 +192,9 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
         final EntityAttributesMatcher matcher = new EntityAttributesMatcher(entityAttributes);
         
         if (matchAll) {
-            return Iterables.all(candidateSet, matcher);
+            return Iterables.all(candidateSet, matcher::test);
         } else {
-            if (Iterables.tryFind(candidateSet, matcher).isPresent()) {
+            if (Iterables.tryFind(candidateSet, matcher::test).isPresent()) {
                 return true;
             }
         }
@@ -337,8 +336,7 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
         }
                 
         /** {@inheritDoc} */
-        @Override
-        public boolean apply(@Nonnull final Candidate input) {
+        public boolean test(@Nonnull final Candidate input) {
             final List<String> tagvals = input.values;
             final List<Pattern> tagexps = input.regexps;
 

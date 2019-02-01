@@ -18,14 +18,13 @@
 package org.opensaml.saml.metadata.resolver.impl;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.security.crypto.JCAConstants;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.codec.StringDigester;
 import net.shibboleth.utilities.java.support.codec.StringDigester.OutputFormat;
@@ -86,8 +85,7 @@ public class EntityIDDigestGenerator implements Function<CriteriaSet, String> {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public String apply(final CriteriaSet criteria) {
+    @Nullable public String apply(@Nullable final CriteriaSet criteria) {
         if (criteria == null || !criteria.contains(EntityIdCriterion.class)) {
             return null;
         }

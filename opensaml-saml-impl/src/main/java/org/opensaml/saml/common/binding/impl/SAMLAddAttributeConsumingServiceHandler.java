@@ -18,6 +18,7 @@
 package org.opensaml.saml.common.binding.impl;
 
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,9 +46,6 @@ import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-
 /**
  * SAML {@link org.opensaml.messaging.handler.MessageHandler} that attaches an {@link AttributeConsumingServiceContext}
  * to the {@link SAMLMetadataContext} based on the content of an {@link AuthnRequest} in the message context.
@@ -74,11 +72,9 @@ public class SAMLAddAttributeConsumingServiceHandler extends AbstractMessageHand
      * Constructor.
      */
     public SAMLAddAttributeConsumingServiceHandler() {
-        super();
         metadataContextLookupStrategy =
-                Functions.compose(
-                        new ChildContextLookup<SAMLPeerEntityContext,SAMLMetadataContext>(SAMLMetadataContext.class),
-                        new ChildContextLookup<MessageContext,SAMLPeerEntityContext>(SAMLPeerEntityContext.class));
+                new ChildContextLookup<>(SAMLMetadataContext.class).compose(
+                        new ChildContextLookup<>(SAMLPeerEntityContext.class));
         authnRequestLookupStrategy = new AuthnRequestLookup();
     }
 

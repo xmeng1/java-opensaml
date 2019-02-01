@@ -19,6 +19,7 @@ package org.opensaml.saml.saml2.profile.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,9 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-
 /**
  * Action that encrypts all attributes in a {@link Response} message obtained from a lookup strategy,
  * by default the outbound message context.
@@ -76,7 +74,8 @@ public class EncryptAttributes extends AbstractEncryptAction {
     /** Constructor. */
     public EncryptAttributes() {
         responseLookupStrategy =
-                Functions.compose(new MessageLookup<>(StatusResponseType.class), new OutboundMessageContextLookup());
+                new MessageLookup<>(StatusResponseType.class).compose(
+                        new OutboundMessageContextLookup());
     }
 
     /**

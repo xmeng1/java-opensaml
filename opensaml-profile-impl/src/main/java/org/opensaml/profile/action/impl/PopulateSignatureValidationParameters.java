@@ -19,6 +19,7 @@ package org.opensaml.profile.action.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -35,9 +36,6 @@ import org.opensaml.xmlsec.context.SecurityParametersContext;
 import org.opensaml.xmlsec.messaging.impl.PopulateSignatureValidationParametersHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -75,8 +73,9 @@ public class PopulateSignatureValidationParameters
         super(PopulateSignatureValidationParametersHandler.class, new InboundMessageContextLookup());
         
         // Create context by default.
-        securityParametersContextLookupStrategy = Functions.compose(
-                new ChildContextLookup<>(SecurityParametersContext.class, true), new InboundMessageContextLookup());
+        securityParametersContextLookupStrategy =
+                new ChildContextLookup<>(SecurityParametersContext.class, true).compose(
+                        new InboundMessageContextLookup());
     }
 
     /**
@@ -138,8 +137,6 @@ public class PopulateSignatureValidationParameters
         delegate.setConfigurationLookupStrategy(adapt(configurationLookupStrategy));
         delegate.setSecurityParametersContextLookupStrategy(adapt(securityParametersContextLookupStrategy));
         delegate.initialize();
-        
     }
-
     
 }

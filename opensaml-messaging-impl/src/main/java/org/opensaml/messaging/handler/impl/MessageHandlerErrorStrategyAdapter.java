@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
 import org.opensaml.messaging.context.MessageContext;
@@ -64,13 +65,13 @@ import com.google.common.collect.Collections2;
 public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMessageHandler<MessageType> {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(MessageHandlerErrorStrategyAdapter.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(MessageHandlerErrorStrategyAdapter.class);
     
     /** The wrapped message handler. */
-    private MessageHandler<MessageType> wrappedHandler;
+    @Nonnull private MessageHandler<MessageType> wrappedHandler;
     
     /** The list of typed error handlers. */
-    private List<TypedMessageErrorHandler> errorHandlers;
+    @Nonnull @NonnullElements private List<TypedMessageErrorHandler> errorHandlers;
     
     /** Flag indicating whether the wrapped handler's exception should be rethrown after being handled successfully. */
     private boolean rethrowIfHandled;
@@ -86,7 +87,7 @@ public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMes
      * @param typedErrorHandlers the list of typed error handlers to apply
      */
     public MessageHandlerErrorStrategyAdapter(@Nonnull final MessageHandler<MessageType> messageHandler, 
-            @Nonnull final List<TypedMessageErrorHandler> typedErrorHandlers) {
+            @Nonnull @NonnullElements final List<TypedMessageErrorHandler> typedErrorHandlers) {
         wrappedHandler = Constraint.isNotNull(messageHandler, "Wrapped MessageHandler cannot be null");
         errorHandlers = new ArrayList<>(Collections2.filter(
                 Constraint.isNotNull(typedErrorHandlers, "List of TypedMessageErroHandlers cannot be null"), 

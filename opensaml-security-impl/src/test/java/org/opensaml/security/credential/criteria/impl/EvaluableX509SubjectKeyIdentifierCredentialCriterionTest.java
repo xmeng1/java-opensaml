@@ -105,34 +105,34 @@ public class EvaluableX509SubjectKeyIdentifierCredentialCriterionTest {
     @Test
     public void testSatisfy() {
         EvaluableX509SubjectKeyIdentifierCredentialCriterion evalCrit = new EvaluableX509SubjectKeyIdentifierCredentialCriterion(criteria);
-        Assert.assertTrue(evalCrit.apply(credential), "Credential should have matched the evaluable criteria");
+        Assert.assertTrue(evalCrit.test(credential), "Credential should have matched the evaluable criteria");
     }
 
     @Test
     public void testNotSatisfy() {
         criteria.setSubjectKeyIdentifier("abcdef123456".getBytes());
         EvaluableX509SubjectKeyIdentifierCredentialCriterion evalCrit = new EvaluableX509SubjectKeyIdentifierCredentialCriterion(criteria);
-        Assert.assertFalse(evalCrit.apply(credential), "Credential should NOT have matched the evaluable criteria");
+        Assert.assertFalse(evalCrit.test(credential), "Credential should NOT have matched the evaluable criteria");
     }
     
     @Test
     public void testNotSatisfyWrongCredType() throws NoSuchAlgorithmException, NoSuchProviderException {
         BasicCredential basicCred = new BasicCredential(KeySupport.generateKey("AES", 128, null));
         EvaluableX509SubjectKeyIdentifierCredentialCriterion evalCrit = new EvaluableX509SubjectKeyIdentifierCredentialCriterion(criteria);
-        Assert.assertFalse(evalCrit.apply(basicCred), "Credential should NOT have matched the evaluable criteria");
+        Assert.assertFalse(evalCrit.test(basicCred), "Credential should NOT have matched the evaluable criteria");
     }
     
     @Test
     public void testCanNotEvaluate() {
         credential.setEntityCertificate(entityCertNoSKI);
         EvaluableX509SubjectKeyIdentifierCredentialCriterion evalCrit = new EvaluableX509SubjectKeyIdentifierCredentialCriterion(criteria);
-        Assert.assertEquals(evalCrit.apply(credential), evalCrit.isUnevaluableSatisfies(), "Credential should have been unevaluable against the criteria");
+        Assert.assertEquals(evalCrit.test(credential), evalCrit.isUnevaluableSatisfies(), "Credential should have been unevaluable against the criteria");
     }
     
     @Test
     public void testRegistry() throws Exception {
         EvaluableCredentialCriterion evalCrit = EvaluableCredentialCriteriaRegistry.getEvaluator(criteria);
         Assert.assertNotNull(evalCrit, "Evaluable criteria was unavailable from the registry");
-        Assert.assertTrue(evalCrit.apply(credential), "Credential should have matched the evaluable criteria");
+        Assert.assertTrue(evalCrit.test(credential), "Credential should have matched the evaluable criteria");
     }
 }

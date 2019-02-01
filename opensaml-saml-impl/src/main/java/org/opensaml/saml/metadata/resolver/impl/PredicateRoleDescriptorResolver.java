@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,7 +41,6 @@ import org.opensaml.saml.saml2.metadata.RoleDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 
@@ -277,14 +277,14 @@ public class PredicateRoleDescriptorResolver extends AbstractIdentifiedInitializ
                 log.debug("Resolved {} RoleDescriptor candidates via role criteria, performing predicate filtering", 
                         Iterables.size(candidates));
             }
-            return predicateFilterCandidates(Iterables.filter(candidates, predicate), criteria, false);
+            return predicateFilterCandidates(Iterables.filter(candidates, predicate::test), criteria, false);
         } else if (isResolveViaPredicatesOnly()) {
             final Iterable<RoleDescriptor> candidates = getAllCandidates(entityDescriptorsSource);
             if (log.isDebugEnabled()) {
                 log.debug("Resolved {} RoleDescriptor total candidates for predicate-only resolution", 
                         Iterables.size(candidates));
             }
-            return predicateFilterCandidates(Iterables.filter(candidates, predicate), criteria, true);
+            return predicateFilterCandidates(Iterables.filter(candidates, predicate::test), criteria, true);
         } else {
             log.debug("Found no role criteria and predicate-only resolution is disabled, returning empty collection");
             return Collections.emptySet();

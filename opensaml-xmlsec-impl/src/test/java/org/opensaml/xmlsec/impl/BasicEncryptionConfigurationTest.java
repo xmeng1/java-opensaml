@@ -233,7 +233,7 @@ public class BasicEncryptionConfigurationTest {
         Assert.assertNull(config.getKeyTransportAlgorithmPredicate());
         
         KeyTransportAlgorithmPredicate predicate = new KeyTransportAlgorithmPredicate() {
-            public boolean apply(@Nullable SelectionInput input) {
+            public boolean test(@Nullable SelectionInput input) {
                 return true;
             }
         };

@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.common.messaging.soap;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
@@ -43,8 +45,6 @@ import org.opensaml.security.criteria.UsageCriterion;
 import org.opensaml.security.messaging.HttpClientSecurityContext;
 import org.opensaml.soap.client.SOAPClientContext;
 import org.opensaml.soap.client.security.SOAPClientSecurityContext;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -409,7 +409,7 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     public static class DefaultTLSCriteriaSetStrategy implements Function<MessageContext<?>, CriteriaSet> {
 
         /** {@inheritDoc} */
-        public CriteriaSet apply(@Nullable final MessageContext<?> messageContext) {
+        @Nullable public CriteriaSet apply(@Nullable final MessageContext<?> messageContext) {
             final CriteriaSet criteria = new CriteriaSet();
             criteria.add(new UsageCriterion(UsageType.SIGNING));
             

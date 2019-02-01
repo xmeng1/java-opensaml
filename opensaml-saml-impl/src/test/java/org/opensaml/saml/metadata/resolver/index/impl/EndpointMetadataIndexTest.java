@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.xml.namespace.QName;
 
@@ -44,7 +45,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
 
@@ -246,26 +246,26 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
         role.getAssertionConsumerServices().add(endpoint);
         
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate();
-        Assert.assertFalse(predicate.apply(endpoint));
+        Assert.assertFalse(predicate.test(endpoint));
         
         indexableEndpoints = Collections.emptyMap();
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate(indexableEndpoints);
-        Assert.assertFalse(predicate.apply(endpoint));
+        Assert.assertFalse(predicate.test(endpoint));
         
         indexableEndpoints = new HashMap<>();
         indexableEndpoints.put(SPSSODescriptor.DEFAULT_ELEMENT_NAME, Sets.newHashSet(ArtifactResolutionService.DEFAULT_ELEMENT_NAME));
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate(indexableEndpoints);
-        Assert.assertFalse(predicate.apply(endpoint));
+        Assert.assertFalse(predicate.test(endpoint));
         
         indexableEndpoints = new HashMap<>();
         indexableEndpoints.put(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, Sets.newHashSet(ArtifactResolutionService.DEFAULT_ELEMENT_NAME));
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate(indexableEndpoints);
-        Assert.assertFalse(predicate.apply(endpoint));
+        Assert.assertFalse(predicate.test(endpoint));
         
         indexableEndpoints = new HashMap<>();
         indexableEndpoints.put(SPSSODescriptor.DEFAULT_ELEMENT_NAME, Sets.newHashSet(AssertionConsumerService.DEFAULT_ELEMENT_NAME));
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate(indexableEndpoints);
-        Assert.assertTrue(predicate.apply(endpoint));
+        Assert.assertTrue(predicate.test(endpoint));
     }
     
     @Test

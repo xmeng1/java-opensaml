@@ -17,9 +17,9 @@
 
 package org.opensaml.messaging.context.navigate;
 
-import org.opensaml.messaging.context.BaseContext;
+import java.util.function.Function;
 
-import com.google.common.base.Function;
+import org.opensaml.messaging.context.BaseContext;
 
 /**
  * A {@link Function} that is used to navigate a {@link BaseContext} tree and extract data from it.

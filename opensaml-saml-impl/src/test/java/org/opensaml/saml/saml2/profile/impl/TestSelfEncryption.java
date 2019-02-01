@@ -20,12 +20,9 @@ package org.opensaml.saml.saml2.profile.impl;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Collections;
-import java.util.List;
 
-import javax.annotation.Nullable;
-
-import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -46,7 +43,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -104,16 +100,8 @@ public class TestSelfEncryption extends OpenSAMLInitBaseTestCase {
         response.getAssertions().get(0).setSubject(SAML2ActionTestingSupport.buildSubject("morpheus"));
         
         action.setEncryptToSelf(Predicates.<ProfileRequestContext>alwaysTrue());
-        action.setEncryptToSelfParametersStrategy(new Function<Pair<ProfileRequestContext,EncryptionParameters>, List<EncryptionParameters>>() {
-            public List<EncryptionParameters> apply(@Nullable Pair<ProfileRequestContext, EncryptionParameters> input) {
-                return Lists.newArrayList(encParamsSelf1, encParamsSelf2);
-            }
-        });
-        action.setSelfRecipientLookupStrategy(new Function<ProfileRequestContext, String>() {
-            public String apply(@Nullable ProfileRequestContext input) {
-                return "https://idp.example.org";
-            }
-        });
+        action.setEncryptToSelfParametersStrategy(FunctionSupport.constant(Lists.newArrayList(encParamsSelf1, encParamsSelf2)));
+        action.setSelfRecipientLookupStrategy(FunctionSupport.constant("https://idp.example.org"));
         
         action.initialize();
         
@@ -144,16 +132,8 @@ public class TestSelfEncryption extends OpenSAMLInitBaseTestCase {
         response.getAssertions().get(0).setSubject(SAML2ActionTestingSupport.buildSubject("morpheus"));
         
         action.setEncryptToSelf(Predicates.<ProfileRequestContext>alwaysTrue());
-        action.setEncryptToSelfParametersStrategy(new Function<Pair<ProfileRequestContext,EncryptionParameters>, List<EncryptionParameters>>() {
-            public List<EncryptionParameters> apply(@Nullable Pair<ProfileRequestContext, EncryptionParameters> input) {
-                return Collections.emptyList();
-            }
-        });
-        action.setSelfRecipientLookupStrategy(new Function<ProfileRequestContext, String>() {
-            public String apply(@Nullable ProfileRequestContext input) {
-                return "https://idp.example.org";
-            }
-        });
+        action.setEncryptToSelfParametersStrategy(FunctionSupport.constant(Collections.emptyList()));
+        action.setSelfRecipientLookupStrategy(FunctionSupport.constant("https://idp.example.org"));
         
         action.initialize();
         

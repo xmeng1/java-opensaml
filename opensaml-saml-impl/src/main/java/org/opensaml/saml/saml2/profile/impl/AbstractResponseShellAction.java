@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.saml2.profile.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
@@ -43,8 +45,6 @@ import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.StatusResponseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * Abstract action that creates an empty object derived from {@link StatusResponseType},
@@ -86,11 +86,7 @@ public abstract class AbstractResponseShellAction<MessageType extends StatusResp
     /** Constructor. */
     public AbstractResponseShellAction() {
         // Default strategy is a 16-byte secure random source.
-        idGeneratorLookupStrategy = new Function<ProfileRequestContext,IdentifierGenerationStrategy>() {
-            public IdentifierGenerationStrategy apply(final ProfileRequestContext input) {
-                return new SecureRandomIdentifierGenerationStrategy();
-            }
-        };
+        idGeneratorLookupStrategy = prc -> new SecureRandomIdentifierGenerationStrategy();
     }
     
     /**

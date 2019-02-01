@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import org.opensaml.messaging.context.MessageChannelSecurityContext;
 import org.opensaml.messaging.context.MessageContext;
 
-import com.google.common.base.Predicate;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 
 /**
  * A predicate implementation that indicates whether the message channel does
@@ -33,8 +33,7 @@ import com.google.common.base.Predicate;
 public class NoIntegrityMessageChannelPredicate implements Predicate<MessageContext> {
 
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final MessageContext input) {
+    public boolean test(@Nullable final MessageContext input) {
         return input == null || !input.getSubcontext(MessageChannelSecurityContext.class, true).isIntegrityActive();
     }
     

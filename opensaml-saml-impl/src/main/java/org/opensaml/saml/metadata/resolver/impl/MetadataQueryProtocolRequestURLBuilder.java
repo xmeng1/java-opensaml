@@ -19,6 +19,7 @@ package org.opensaml.saml.metadata.resolver.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +28,6 @@ import org.opensaml.core.criterion.EntityIdCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.escape.Escaper;
@@ -134,7 +134,7 @@ public class MetadataQueryProtocolRequestURLBuilder implements Function<Criteria
     }
 
     /** {@inheritDoc} */
-    @Override @Nullable public String apply(@Nonnull final CriteriaSet criteria) {
+    @Nullable public String apply(@Nullable final CriteriaSet criteria) {
         Constraint.isNotNull(criteria, "Criteria was null");
         if (criteria.contains(EntityIdCriterion.class)) {
             log.debug("Criteria contained entity ID, building on that basis");

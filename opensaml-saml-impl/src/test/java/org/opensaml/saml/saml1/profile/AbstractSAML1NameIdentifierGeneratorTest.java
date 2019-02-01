@@ -18,6 +18,7 @@
 package org.opensaml.saml.saml1.profile;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.profile.context.ProfileRequestContext;
@@ -25,8 +26,6 @@ import org.opensaml.saml.common.SAMLException;
 import org.opensaml.saml.saml1.core.NameIdentifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Function;
 
 /** Test for {@link AbstractSAML1NameIdentifierGenerator}. */
 public class AbstractSAML1NameIdentifierGeneratorTest extends OpenSAMLInitBaseTestCase {
@@ -95,11 +94,7 @@ public class AbstractSAML1NameIdentifierGeneratorTest extends OpenSAMLInitBaseTe
 
         public MockSAML1NameIdentifierGenerator() {
             setId("test");
-            setDefaultIdPNameQualifierLookupStrategy(new Function<ProfileRequestContext,String>() {
-                public String apply(ProfileRequestContext input) {
-                    return NAME_QUALIFIER;
-                }
-            });
+            setDefaultIdPNameQualifierLookupStrategy(FunctionSupport.constant(NAME_QUALIFIER));
         }
         
         /** {@inheritDoc} */

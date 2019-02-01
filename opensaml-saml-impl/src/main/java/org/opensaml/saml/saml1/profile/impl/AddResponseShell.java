@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.saml1.profile.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -41,8 +43,6 @@ import org.opensaml.saml.saml1.core.Status;
 import org.opensaml.saml.saml1.core.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * Action that creates an empty {@link Response}, and sets it as the
@@ -74,11 +74,7 @@ public class AddResponseShell extends AbstractProfileAction {
     /** Constructor. */
     public AddResponseShell() {
         // Default strategy is a 16-byte secure random source.
-        idGeneratorLookupStrategy = new Function<ProfileRequestContext,IdentifierGenerationStrategy>() {
-            public IdentifierGenerationStrategy apply(final ProfileRequestContext input) {
-                return new SecureRandomIdentifierGenerationStrategy();
-            }
-        };
+        idGeneratorLookupStrategy = prc -> new SecureRandomIdentifierGenerationStrategy();
     }
     
     /**

@@ -27,10 +27,9 @@ import org.opensaml.profile.context.ProfileRequestContext;
  * A {@link ContextDataLookupFunction} that returns the inbound {@link MessageContext}
  * for a {@link ProfileRequestContext}.
  */
-public class InboundMessageContextLookup implements ContextDataLookupFunction<ProfileRequestContext, MessageContext> {
+public class InboundMessageContextLookup implements ContextDataLookupFunction<ProfileRequestContext,MessageContext> {
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public MessageContext apply(@Nullable final ProfileRequestContext input) {
         if (input != null) {
             return input.getInboundMessageContext();

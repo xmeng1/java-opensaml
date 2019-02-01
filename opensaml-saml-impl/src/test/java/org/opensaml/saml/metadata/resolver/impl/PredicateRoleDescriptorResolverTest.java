@@ -434,7 +434,7 @@ public class PredicateRoleDescriptorResolverTest extends XMLObjectBaseTestCase {
         }
 
         /** {@inheritDoc} */
-        public boolean apply(RoleDescriptor input) {
+        public boolean test(RoleDescriptor input) {
             return result;
         }
         

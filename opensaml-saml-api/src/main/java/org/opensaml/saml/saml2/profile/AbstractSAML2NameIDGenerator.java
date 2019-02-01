@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.saml2.profile;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -35,8 +37,6 @@ import org.opensaml.saml.saml2.core.NameID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 import com.google.common.base.Strings;
 
 /**
@@ -65,8 +65,7 @@ public abstract class AbstractSAML2NameIDGenerator extends AbstractNameIdentifie
         nameBuilder = (SAMLObjectBuilder<NameID>)
                 XMLObjectProviderRegistrySupport.getBuilderFactory().<NameID>getBuilderOrThrow(
                         NameID.DEFAULT_ELEMENT_NAME);
-        requestLookupStrategy =
-                Functions.compose(new MessageLookup<>(AuthnRequest.class), new InboundMessageContextLookup());
+        requestLookupStrategy = new MessageLookup<>(AuthnRequest.class).compose(new InboundMessageContextLookup());
     }
     
     /**

@@ -18,6 +18,7 @@
 package org.opensaml.messaging.handler.impl;
 
 import java.net.MalformedURLException;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,8 +28,6 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -42,13 +41,13 @@ import net.shibboleth.utilities.java.support.net.URLBuilder;
 public class URLEvaluatingMessageChannelSecurity extends AbstractMessageChannelSecurity {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(URLEvaluatingMessageChannelSecurity.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(URLEvaluatingMessageChannelSecurity.class);
 
     /** Flag controlling whether traffic on the default TLS port is "secure". */
     private boolean defaultPortInsecure;
     
     /** Function which looks up the URL to evaluate. */
-    @NonnullAfterInit private Function<MessageContext, String> urlLookup;
+    @NonnullAfterInit private Function<MessageContext,String> urlLookup;
     
     /** The target resolved URL. */
     @Nullable private String url;
@@ -98,7 +97,12 @@ public class URLEvaluatingMessageChannelSecurity extends AbstractMessageChannelS
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean doPreInvoke(@Nonnull final MessageContext messageContext) throws MessageHandlerException {
+        if (!super.doPreInvoke(messageContext)) {
+            return false;
+        }
+
         url = urlLookup.apply(messageContext);
         if (url != null) {
             try {
@@ -116,7 +120,7 @@ public class URLEvaluatingMessageChannelSecurity extends AbstractMessageChannelS
 
     /** {@inheritDoc} */
     @Override
-    protected void doInvoke(final MessageContext messageContext) {
+    protected void doInvoke(@Nonnull final MessageContext messageContext) {
         final MessageChannelSecurityContext channelContext =
                 getParentContext().getSubcontext(MessageChannelSecurityContext.class, true);
         

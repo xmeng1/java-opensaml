@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
@@ -48,8 +49,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Function;
 
 /**
  *

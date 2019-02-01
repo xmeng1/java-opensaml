@@ -20,6 +20,7 @@ package org.opensaml.saml.metadata.resolver.filter.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,8 +33,6 @@ import net.shibboleth.utilities.java.support.scripting.AbstractScriptEvaluator;
 import net.shibboleth.utilities.java.support.scripting.EvaluableScript;
 
 import org.opensaml.core.xml.XMLObject;
-
-import com.google.common.base.Function;
 
 /**
  * A scripted {@link Function} which can be injected into
@@ -73,7 +72,6 @@ public class ScriptedTrustedNamesFunction extends AbstractScriptEvaluator implem
     }
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public Set<String> apply(@Nullable final XMLObject context) {
         return (Set<String>) evaluate(context);
     }

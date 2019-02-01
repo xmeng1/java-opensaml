@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -27,8 +29,6 @@ import org.opensaml.core.criterion.EntityIdCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-
 /**
  * Function which examines an entity ID from supplied criteria and returns it as a metadata request URL 
  * if and only if the entity ID is an HTTP or HTTPS URL.
@@ -36,10 +36,10 @@ import com.google.common.base.Function;
 public class HTTPEntityIDRequestURLBuilder implements Function<CriteriaSet, String> {
     
     /** Logger. */
-    private final Logger log = LoggerFactory.getLogger(HTTPEntityIDRequestURLBuilder.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(HTTPEntityIDRequestURLBuilder.class);
 
     /** {@inheritDoc} */
-    @Override @Nullable public String apply(@Nonnull final CriteriaSet criteria) {
+    @Nullable public String apply(@Nullable final CriteriaSet criteria) {
         Constraint.isNotNull(criteria, "Criteria was null");
         if (!criteria.contains(EntityIdCriterion.class)) {
             log.trace("Criteria did not contain entity ID, unable to build request URL");

@@ -18,6 +18,7 @@
 package org.opensaml.messaging.handler.impl;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -32,15 +33,13 @@ import org.opensaml.messaging.handler.MessageHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-
 /**
  * Message handler that checks that a message context has an issuer.
  */
 public final class CheckExpectedIssuer extends AbstractMessageHandler {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(CheckExpectedIssuer.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(CheckExpectedIssuer.class);
 
     /** Strategy used to look up the issuer associated with the message context. */
     @NonnullAfterInit private Function<MessageContext,String> issuerLookupStrategy;

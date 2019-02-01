@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
@@ -193,11 +192,9 @@ public class LoadClientStorageServices<InboundMessageType, OutboundMessageType>
         // Search for our cookie.
         final Cookie[] cookies = getHttpServletRequest().getCookies();
         if (cookies != null) {
-            cookie = Iterables.tryFind(Arrays.asList(cookies), new Predicate<Cookie>() {
-                public boolean apply(@Nullable final Cookie c) {
-                    return c != null && c.getName().equals(storageService.getStorageName());
-                }
-            });
+            cookie = Iterables.tryFind(
+                    Arrays.asList(cookies),
+                        c -> c != null && c.getName().equals(storageService.getStorageName()));
         }
 
         if (!cookie.isPresent() || Strings.isNullOrEmpty(cookie.get().getValue())) {

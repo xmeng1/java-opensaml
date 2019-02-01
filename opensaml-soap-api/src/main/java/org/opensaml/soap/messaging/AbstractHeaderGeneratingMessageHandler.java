@@ -17,6 +17,9 @@
 
 package org.opensaml.soap.messaging;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -27,9 +30,6 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 
 /**
  * Abstract base class for message handlers that generate SOAP headers.
@@ -125,7 +125,7 @@ public abstract class AbstractHeaderGeneratingMessageHandler<MessageType> extend
         }
         
         if (mustUnderstandStrategy != null) {
-            effectiveMustUnderstand = mustUnderstandStrategy.apply(messageContext);
+            effectiveMustUnderstand = mustUnderstandStrategy.test(messageContext);
         } else {
             effectiveMustUnderstand = mustUnderstand;
         }

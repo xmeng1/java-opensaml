@@ -28,10 +28,9 @@ import javax.annotation.Nullable;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.profile.context.ProxiedRequesterContext;
 
-import com.google.common.base.Predicate;
-
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 /**
@@ -57,7 +56,7 @@ public class ProxiedRequesterPredicate implements Predicate<MessageContext<?>> {
     }
     
     /** {@inheritDoc} */
-    @Nullable public boolean apply(@Nullable final MessageContext<?> input) {
+    @Nullable public boolean test(@Nullable final MessageContext<?> input) {
         
         final ProxiedRequesterContext ctx = input != null ? input.getSubcontext(ProxiedRequesterContext.class) : null;
         if (ctx != null) {

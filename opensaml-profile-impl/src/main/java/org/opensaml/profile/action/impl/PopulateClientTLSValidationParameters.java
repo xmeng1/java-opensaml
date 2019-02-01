@@ -19,6 +19,7 @@ package org.opensaml.profile.action.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -43,9 +44,6 @@ import org.opensaml.security.x509.tls.ClientTLSValidationParameters;
 import org.opensaml.security.x509.tls.ClientTLSValidationParametersResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that resolves and populates {@link ClientTLSValidationParameters} on a 
@@ -77,9 +75,9 @@ public class PopulateClientTLSValidationParameters extends AbstractProfileAction
      */
     public PopulateClientTLSValidationParameters() {
         // Create context by default.
-        securityParametersContextLookupStrategy = Functions.compose(
-                new ChildContextLookup<>(ClientTLSSecurityParametersContext.class, true), 
-                new InboundMessageContextLookup());
+        securityParametersContextLookupStrategy =
+                new ChildContextLookup<>(ClientTLSSecurityParametersContext.class, true).compose(
+                        new InboundMessageContextLookup());
     }
 
     /**

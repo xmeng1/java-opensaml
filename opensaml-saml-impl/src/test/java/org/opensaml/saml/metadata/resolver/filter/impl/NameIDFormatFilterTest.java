@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Predicate;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -37,8 +38,6 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Predicate;
 
 public class NameIDFormatFilterTest extends XMLObjectBaseTestCase implements Predicate<EntityDescriptor> {
     
@@ -104,7 +103,7 @@ public class NameIDFormatFilterTest extends XMLObjectBaseTestCase implements Pre
     }
 
     /** {@inheritDoc} */
-    public boolean apply(EntityDescriptor input) {
+    public boolean test(EntityDescriptor input) {
         return input.getEntityID().equals("https://carmenwiki.osu.edu/shibboleth");
     }
 

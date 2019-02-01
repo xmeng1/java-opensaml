@@ -17,6 +17,8 @@
 
 package org.opensaml.profile.logic;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
@@ -26,8 +28,6 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Predicate;
 
 /**
  *
@@ -45,21 +45,21 @@ public class MessageContextPredicateAdapterTest {
         mc.addSubcontext(new MockContext());
         prc.setOutboundMessageContext(mc);
         
-        Assert.assertTrue(adapter.apply(mc));
+        Assert.assertTrue(adapter.test(mc));
         
         mc.clearSubcontexts();
-        Assert.assertFalse(adapter.apply(mc));
+        Assert.assertFalse(adapter.test(mc));
         
-        Assert.assertFalse(adapter.apply(null));
+        Assert.assertFalse(adapter.test(null));
         
         // No parent, unresolved PRC doesn't satisfy (default)
         mc = new MessageContext<>();
         mc.addSubcontext(new MockContext());
-        Assert.assertFalse(adapter.apply(mc));
+        Assert.assertFalse(adapter.test(mc));
         
         // No parent, unresolved PRC does satisfy
         adapter = new MessageContextPredicateAdapter(wrapped, true);
-        Assert.assertTrue(adapter.apply(mc));
+        Assert.assertTrue(adapter.test(mc));
     }
     
     @Test(expectedExceptions=ConstraintViolationException.class)
@@ -75,7 +75,7 @@ public class MessageContextPredicateAdapterTest {
     }
     
     public static class MockPredicate implements Predicate<ProfileRequestContext> {
-        public boolean apply(@Nullable ProfileRequestContext input) {
+        public boolean test(@Nullable ProfileRequestContext input) {
             if (input == null || input.getOutboundMessageContext() == null) {
                 return false;
             }

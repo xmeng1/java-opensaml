@@ -33,7 +33,7 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 public class MessageLookup<T> implements ContextDataLookupFunction<MessageContext, T> {
 
     /** Child context type to look up. */
-    private final Class<T> messageType;
+    @Nonnull private final Class<T> messageType;
     
     /**
      * Constructor.
@@ -45,7 +45,6 @@ public class MessageLookup<T> implements ContextDataLookupFunction<MessageContex
     }
     
     /** {@inheritDoc} */
-    @Override
     @Nullable public T apply(@Nullable final MessageContext input) {
         if (input != null && messageType.isInstance(input.getMessage())) {
             return (T) input.getMessage();

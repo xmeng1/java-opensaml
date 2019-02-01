@@ -18,6 +18,7 @@
 package org.opensaml.saml.common.profile.impl;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -35,8 +36,6 @@ import org.opensaml.saml.saml2.profile.SAML2ActionTestingSupport;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Function;
 
 /** {@link AddNotOnOrAfterConditionToAssertions} unit test. */
 public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseTestCase {
@@ -135,13 +134,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         response.getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
 
         final AddNotOnOrAfterConditionToAssertions action = new AddNotOnOrAfterConditionToAssertions();
-        action.setAssertionLifetimeStrategy(
-                new Function<ProfileRequestContext,Long>() {
-                    public Long apply(ProfileRequestContext input) {
-                        return 3L * 60 * 1000;
-                    }
-                }
-                );
+        action.setAssertionLifetimeStrategy(FunctionSupport.constant(3L * 60 * 1000));
         action.initialize();
 
         action.execute(prc);

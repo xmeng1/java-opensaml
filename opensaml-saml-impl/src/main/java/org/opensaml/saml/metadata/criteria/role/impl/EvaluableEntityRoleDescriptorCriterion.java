@@ -60,7 +60,7 @@ public class EvaluableEntityRoleDescriptorCriterion implements EvaluableRoleDesc
     }
     
     /** {@inheritDoc} */
-    public boolean apply(final RoleDescriptor input) {
+    public boolean test(final RoleDescriptor input) {
         if (input == null) {
             return false;
         }

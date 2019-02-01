@@ -35,7 +35,7 @@ public class ChildContextLookup<ParentContext extends BaseContext, ChildContext 
         ContextDataLookupFunction<ParentContext, ChildContext> {
 
     /** Child context type to look up. */
-    private final Class<ChildContext> childType;
+    @Nonnull private final Class<ChildContext> childType;
 
     /**
      * Whether the child context should be created if it doesn't exist. This requires that the child context has a
@@ -66,7 +66,6 @@ public class ChildContextLookup<ParentContext extends BaseContext, ChildContext 
     }
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public ChildContext apply(@Nullable final ParentContext input) {
         if (input == null) {
             return null;
@@ -74,4 +73,5 @@ public class ChildContextLookup<ParentContext extends BaseContext, ChildContext 
 
         return input.getSubcontext(childType, autocreate);
     }
+    
 }

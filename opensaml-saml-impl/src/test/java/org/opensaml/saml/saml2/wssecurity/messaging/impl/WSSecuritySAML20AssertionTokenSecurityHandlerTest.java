@@ -20,6 +20,7 @@ package org.opensaml.saml.saml2.wssecurity.messaging.impl;
 import java.net.URISyntaxException;
 import java.security.KeyException;
 import java.security.cert.CertificateException;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,8 +60,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Function;
 
 /**
  *

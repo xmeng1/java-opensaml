@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.saml2.profile.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
@@ -46,8 +48,6 @@ import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.StatusResponseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * Action that creates an empty object derived from {@link StatusResponseType},
@@ -89,11 +89,7 @@ public class AddStatusResponseShell extends AbstractProfileAction {
     /** Constructor. */
     public AddStatusResponseShell() {
         // Default strategy is a 16-byte secure random source.
-        idGeneratorLookupStrategy = new Function<ProfileRequestContext,IdentifierGenerationStrategy>() {
-            public IdentifierGenerationStrategy apply(final ProfileRequestContext input) {
-                return new SecureRandomIdentifierGenerationStrategy();
-            }
-        };
+        idGeneratorLookupStrategy = prc -> new SecureRandomIdentifierGenerationStrategy();
     }
     
     /**
@@ -153,6 +149,10 @@ public class AddStatusResponseShell extends AbstractProfileAction {
     /** {@inheritDoc} */
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
+        
+        if (!super.doPreExecute(profileRequestContext)) {
+            return false;
+        }
 
         final MessageContext outboundMessageCtx = profileRequestContext.getOutboundMessageContext();
         if (outboundMessageCtx == null) {
@@ -178,7 +178,7 @@ public class AddStatusResponseShell extends AbstractProfileAction {
 
         outboundMessageCtx.setMessage(null);
         
-        return super.doPreExecute(profileRequestContext);
+        return true;
     }
 
     /** {@inheritDoc} */

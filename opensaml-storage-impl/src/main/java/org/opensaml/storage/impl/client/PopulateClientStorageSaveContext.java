@@ -29,7 +29,6 @@ import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 
@@ -118,12 +117,9 @@ public class PopulateClientStorageSaveContext<InboundMessageType, OutboundMessag
             profileRequestContext.addSubcontext(saveCtx, true);
             
             if (log.isDebugEnabled()) {
-                final Collection<String> ids = Collections2.transform(saveCtx.getStorageOperations(),
-                        new Function<ClientStorageServiceOperation,String>() {
-                    public String apply(final ClientStorageServiceOperation input) {
-                        return input.getStorageServiceID();
-                    }
-                });
+                final Collection<String> ids =
+                        Collections2.transform(saveCtx.getStorageOperations(),
+                                ClientStorageServiceOperation::getStorageServiceID);
                 log.debug("{} ClientStorageServices requiring save: {}", getLogPrefix(), ids);
             }
         }

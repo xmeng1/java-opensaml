@@ -19,6 +19,8 @@ package org.opensaml.security.messaging.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,9 +38,6 @@ import org.opensaml.security.httpclient.impl.BasicHttpClientSecurityConfiguratio
 import org.opensaml.security.messaging.HttpClientSecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -240,7 +239,7 @@ public class PopulateHttpClientSecurityParametersHandler extends AbstractMessage
             @Nonnull final HttpClientSecurityParameters params) {
         
         if (clientTLSPredicate != null) { 
-            if (!clientTLSPredicate.apply(messageContext)) {
+            if (!clientTLSPredicate.test(messageContext)) {
                 log.debug("Configured client TLS predicate indicates to exclude client TLS credential");
                 params.setClientTLSCredential(null);
             } else {

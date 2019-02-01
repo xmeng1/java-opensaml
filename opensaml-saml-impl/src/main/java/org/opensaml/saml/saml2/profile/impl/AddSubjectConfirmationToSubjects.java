@@ -18,6 +18,7 @@
 package org.opensaml.saml.saml2.profile.impl;
 
 import java.net.URI;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,9 +49,6 @@ import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that builds {@link SubjectConfirmation} and adds it to the {@link Subject} of all the assertions
@@ -117,8 +115,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
                 XMLObjectProviderRegistrySupport.getBuilderFactory().<SubjectConfirmationData>getBuilderOrThrow(
                         SubjectConfirmationData.DEFAULT_ELEMENT_NAME);
         overwriteExisting = true;
-        responseLookupStrategy =
-                Functions.compose(new MessageLookup<>(Response.class), new OutboundMessageContextLookup());
+        responseLookupStrategy = new MessageLookup<>(Response.class).compose(new OutboundMessageContextLookup());
         
         // Default pulls from servlet request.
         addressLookupStrategy = new Function<ProfileRequestContext,String>() {

@@ -28,7 +28,6 @@ import org.opensaml.profile.context.ProfileRequestContext;
 public class ProfileIdLookup implements ContextDataLookupFunction<ProfileRequestContext,String> {
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public String apply(@Nullable final ProfileRequestContext input) {
         if (input != null) {
             return input.getProfileId();

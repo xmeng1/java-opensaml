@@ -25,7 +25,6 @@ import javax.annotation.Nonnull;
 import org.opensaml.messaging.context.BaseContext;
 import org.opensaml.storage.impl.client.ClientStorageService.ClientStorageSource;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.Live;
@@ -61,11 +60,7 @@ public class ClientStorageSaveContext extends BaseContext {
      * @return true iff the operations include at least one against the specified source
      */
     public boolean isSourceRequired(@Nonnull final ClientStorageSource source) {
-        return Iterables.any(storageOperations, new Predicate<ClientStorageServiceOperation>() {
-            public boolean apply(final ClientStorageServiceOperation input) {
-                return input.getStorageSource() == source;
-            }
-        });
+        return Iterables.any(storageOperations, op -> op.getStorageSource() == source);
     }
     
 }

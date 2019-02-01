@@ -34,8 +34,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Functions;
-
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
@@ -92,7 +90,7 @@ public class PopulateSignatureSigningParametersHandlerTest extends OpenSAMLInitB
         // Test copy from PRC to MessageContext
         handler.setSignatureSigningParametersResolver(new MockResolver(true));
         handler.setExistingParametersContextLookupStrategy(
-                Functions.compose(new ChildContextLookup(SecurityParametersContext.class),
+                new ChildContextLookup(SecurityParametersContext.class).compose(
                         new ParentProfileRequestContextLookup()));
         handler.setSecurityParametersContextLookupStrategy(
                 new ChildContextLookup<MessageContext,SecurityParametersContext>(SecurityParametersContext.class, true));

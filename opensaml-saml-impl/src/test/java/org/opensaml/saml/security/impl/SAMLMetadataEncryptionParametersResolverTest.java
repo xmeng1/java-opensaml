@@ -753,7 +753,7 @@ public class SAMLMetadataEncryptionParametersResolverTest extends XMLObjectBaseT
             this.algoMap = algoMap;
         }
         
-        public boolean apply(@Nullable SelectionInput input) {
+        public boolean test(@Nullable SelectionInput input) {
             return this.algoMap.get(input.getDataEncryptionAlgorithm()).equals(input.getKeyTransportAlgorithm());
         }
     }

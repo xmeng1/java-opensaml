@@ -22,6 +22,7 @@ import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTE
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,8 +67,6 @@ import org.opensaml.soap.common.SOAP11FaultDecodingException;
 import org.opensaml.soap.common.SOAPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * SOAP client that is based on {@link HttpClientMessagePipeline}.

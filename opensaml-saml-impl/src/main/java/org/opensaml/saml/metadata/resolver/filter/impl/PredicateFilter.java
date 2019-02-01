@@ -20,6 +20,7 @@ package org.opensaml.saml.metadata.resolver.filter.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,8 +34,6 @@ import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
 
 /**
  * A filter that removes any {@link EntityDescriptor} that does or does not match a {@link Predicate}, thus
@@ -127,7 +126,7 @@ public class PredicateFilter implements MetadataFilter {
         } else if (metadata instanceof EntityDescriptor) {
             final EntityDescriptor entity = (EntityDescriptor) metadata;
             
-            if (Direction.EXCLUDE.equals(direction) == condition.apply(entity)) {
+            if (Direction.EXCLUDE.equals(direction) == condition.test(entity)) {
                 log.trace("Filtering out entity {} ", entity.getEntityID());
                 return null;
             } else {
@@ -153,7 +152,7 @@ public class PredicateFilter implements MetadataFilter {
             final Iterator<EntityDescriptor> entityDescriptorsItr = entityDescriptors.iterator();
             while (entityDescriptorsItr.hasNext()) {
                 final EntityDescriptor entityDescriptor = entityDescriptorsItr.next();
-                if (Direction.EXCLUDE.equals(direction) == condition.apply(entityDescriptor)) {
+                if (Direction.EXCLUDE.equals(direction) == condition.test(entityDescriptor)) {
                     log.trace("Filtering out entity {} from group {}", entityDescriptor.getEntityID(),
                             descriptor.getName());
                     emptyEntityDescriptors.add(entityDescriptor);

@@ -32,6 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,10 +64,8 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.Timer.Context;
-import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
@@ -170,7 +170,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     private XMLObjectLoadSaveManager<EntityDescriptor> persistentCacheManager;
     
     /** Function for generating the String key used with the cache manager. */
-    private Function<EntityDescriptor, String> persistentCacheKeyGenerator;
+    private Function<EntityDescriptor,String> persistentCacheKeyGenerator;
     
     /** Flag indicating whether should initialize from the persistent cache in the background. */
     private boolean initializeFromPersistentCacheInBackground;
@@ -1435,7 +1435,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             @Nonnull final EntityDescriptor descriptor) {
         
         if (isValid(descriptor)) {
-            if (getInitializationFromCachePredicate().apply(descriptor)) {
+            if (getInitializationFromCachePredicate().test(descriptor)) {
                 try {
                     processNewMetadata(descriptor, descriptor.getEntityID(), true);
                     log.trace("{} Successfully processed EntityDescriptor with entityID '{}' from cache", 

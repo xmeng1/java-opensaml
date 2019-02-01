@@ -20,14 +20,13 @@ package org.opensaml.saml.metadata.resolver.index.impl;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
 import org.opensaml.saml.metadata.resolver.index.MetadataIndexKey;
 import org.opensaml.saml.metadata.resolver.index.SimpleStringMetadataIndexKey;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;

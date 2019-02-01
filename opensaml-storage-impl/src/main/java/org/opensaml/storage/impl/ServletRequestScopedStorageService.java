@@ -76,7 +76,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.escape.Escaper;
@@ -311,11 +310,8 @@ public class ServletRequestScopedStorageService extends AbstractMapBackedStorage
             return;
         }
 
-        final Optional<Cookie> cookie = Iterables.tryFind(Arrays.asList(cookies), new Predicate<Cookie>() {
-            public boolean apply(@Nullable final Cookie c) {
-                return c != null && c.getName().equals(cookieName);
-            }
-        });
+        final Optional<Cookie> cookie =
+                Iterables.tryFind(Arrays.asList(cookies), c -> c != null && c.getName().equals(cookieName));
         
         if (!cookie.isPresent() || Strings.isNullOrEmpty(cookie.get().getValue())) {
             return;

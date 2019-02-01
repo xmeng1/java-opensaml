@@ -17,13 +17,13 @@
 
 package org.opensaml.security.messaging;
 
+import java.util.function.Function;
+
 import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.BaseContext;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.security.httpclient.HttpClientSecurityParameters;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 

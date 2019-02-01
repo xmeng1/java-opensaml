@@ -17,6 +17,8 @@
 
 package org.opensaml.messaging.handler.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -24,8 +26,6 @@ import org.opensaml.messaging.context.BaseContext;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
@@ -43,7 +43,7 @@ public abstract class AbstractMessageChannelSecurity<MessageType> extends Abstra
      * Strategy used to look up the parent {@link BaseContext} on which the
      * {@link org.opensaml.messaging.context.MessageChannelSecurityContext} will be populated.
      */
-    @Nonnull private Function<MessageContext, BaseContext> parentContextLookupStrategy;
+    @Nonnull private Function<MessageContext,BaseContext> parentContextLookupStrategy;
     
     /** Parent for eventual context. */
     @Nullable private BaseContext parentContext;
@@ -75,11 +75,12 @@ public abstract class AbstractMessageChannelSecurity<MessageType> extends Abstra
     @Override
     protected boolean doPreInvoke(@Nonnull final MessageContext messageContext) throws MessageHandlerException {
 
-        parentContext = parentContextLookupStrategy.apply(messageContext);
-        if (parentContext != null) {
-            return super.doPreInvoke(messageContext);
+        if (!super.doPreInvoke(messageContext)) {
+            return false;
         }
-        return false;
+        
+        parentContext = parentContextLookupStrategy.apply(messageContext);
+        return parentContext != null;
     }
     
     /**

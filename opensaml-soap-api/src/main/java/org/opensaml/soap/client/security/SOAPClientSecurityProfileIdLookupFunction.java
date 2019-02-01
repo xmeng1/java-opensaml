@@ -17,6 +17,8 @@
 
 package org.opensaml.soap.client.security;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -25,9 +27,6 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.context.navigate.ChildContextLookup;
 import org.opensaml.messaging.context.navigate.ContextDataLookupFunction;
 import org.opensaml.messaging.context.navigate.RecursiveTypedParentContextLookup;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
@@ -43,10 +42,9 @@ public class SOAPClientSecurityProfileIdLookupFunction implements ContextDataLoo
      * Constructor.
      */
     public SOAPClientSecurityProfileIdLookupFunction() {
-        soapContextLookup = Functions.compose(
-                new ChildContextLookup<>(SOAPClientSecurityContext.class),
-                new RecursiveTypedParentContextLookup(InOutOperationContext.class)
-                );
+        soapContextLookup =
+                new ChildContextLookup<>(SOAPClientSecurityContext.class).compose(
+                        new RecursiveTypedParentContextLookup(InOutOperationContext.class));
     }
     
     /**

@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.common.profile.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -43,9 +45,6 @@ import org.opensaml.xmlsec.signature.support.SignatureSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that signs assertions in a SAML 1/2 Response returned by a lookup strategy,
@@ -76,8 +75,7 @@ public class SignAssertions extends AbstractProfileAction {
 
     /** Constructor. */
     public SignAssertions() {
-        responseLookupStrategy =
-                Functions.compose(new MessageLookup<>(SAMLObject.class), new OutboundMessageContextLookup());
+        responseLookupStrategy = new MessageLookup<>(SAMLObject.class).compose(new OutboundMessageContextLookup());
         securityParametersLookupStrategy = new ChildContextLookup<>(SecurityParametersContext.class);
     }
     

@@ -25,7 +25,6 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
-import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.context.navigate.ChildContextLookup;
 import org.opensaml.profile.RequestContextBuilder;
 import org.opensaml.profile.action.ActionTestingSupport;
@@ -39,8 +38,6 @@ import org.opensaml.xmlsec.criterion.SignatureSigningConfigurationCriterion;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Functions;
 
 /** Unit test for {@link PopulateSignatureSigningParameters}. */
 public class PopulateSignatureSigningParametersTest extends OpenSAMLInitBaseTestCase {
@@ -92,8 +89,7 @@ public class PopulateSignatureSigningParametersTest extends OpenSAMLInitBaseTest
         action.setSignatureSigningParametersResolver(new MockResolver(true));
         action.setExistingParametersContextLookupStrategy(new ChildContextLookup(SecurityParametersContext.class));
         action.setSecurityParametersContextLookupStrategy(
-                Functions.compose(
-                        new ChildContextLookup<MessageContext,SecurityParametersContext>(SecurityParametersContext.class, true),
+                new ChildContextLookup<>(SecurityParametersContext.class, true).compose(
                         new OutboundMessageContextLookup()));
         action.initialize();
         

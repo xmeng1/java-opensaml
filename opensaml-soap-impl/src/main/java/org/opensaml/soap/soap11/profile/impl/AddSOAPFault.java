@@ -19,6 +19,8 @@ package org.opensaml.soap.soap11.profile.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,8 +46,6 @@ import org.opensaml.soap.soap11.FaultString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
@@ -187,7 +187,7 @@ public class AddSOAPFault extends AbstractProfileAction {
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         ComponentSupport.ifNotInitializedThrowUninitializedComponentException(this);
 
-        detailedErrors = detailedErrorsCondition.apply(profileRequestContext);
+        detailedErrors = detailedErrorsCondition.test(profileRequestContext);
         
         log.debug("{} Detailed errors are {}", getLogPrefix(), detailedErrors ? "enabled" : "disabled");
 

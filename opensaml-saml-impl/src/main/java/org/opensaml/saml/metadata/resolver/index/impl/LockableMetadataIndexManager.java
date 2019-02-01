@@ -20,14 +20,13 @@ package org.opensaml.saml.metadata.resolver.index.impl;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.opensaml.saml.metadata.resolver.index.MetadataIndex;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotLive;

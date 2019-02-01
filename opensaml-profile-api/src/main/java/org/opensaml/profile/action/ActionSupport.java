@@ -38,7 +38,7 @@ public final class ActionSupport {
      * 
      * @param profileRequestContext the context to carry the event
      */
-    public static void buildProceedEvent(@Nonnull final ProfileRequestContext profileRequestContext) {
+    public static void buildProceedEvent(@Nonnull final ProfileRequestContext<?,?> profileRequestContext) {
         profileRequestContext.removeSubcontext(EventContext.class);
     }
 
@@ -49,7 +49,7 @@ public final class ActionSupport {
      * @param eventId the ID of the event
      * 
      */
-    public static void buildEvent(@Nonnull final ProfileRequestContext profileRequestContext,
+    public static void buildEvent(@Nonnull final ProfileRequestContext<?,?> profileRequestContext,
             @Nonnull @NotEmpty final String eventId) {
         
         Constraint.isNotNull(profileRequestContext, "Profile request context cannot be null");
@@ -58,4 +58,5 @@ public final class ActionSupport {
         
         profileRequestContext.getSubcontext(EventContext.class, true).setEvent(trimmedEventId);
     }
+    
 }

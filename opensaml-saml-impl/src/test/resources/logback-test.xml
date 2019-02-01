@@ -9,30 +9,30 @@
     </appender>
     
     <logger name="org.opensaml.messaging">
-        <level value="TRACE"/>
+        <level value="DEBUG"/>
     </logger>
     
     <logger name="org.opensaml.core.xml.persist">
-        <level value="TRACE"/>
+        <level value="DEBUG"/>
     </logger>
     
     <logger name="org.opensaml.saml.metadata">
-        <level value="TRACE"/>
+        <level value="DEBUG"/>
     </logger>
     
     <logger name="org.opensaml.saml.saml2.assertion">
-        <level value="TRACE"/>
+        <level value="DEBUG"/>
     </logger>
     
     <logger name="org.opensaml.storage">
-        <level value="TRACE"/>
+        <level value="DEBUG"/>
     </logger>
     
     <logger name="org.opensaml.xmlsec.impl">
-        <level value="TRACE"/>
+        <level value="DEBUG"/>
     </logger>
     <logger name="org.opensaml.saml.security.impl">
-        <level value="TRACE"/>
+        <level value="DEBUG"/>
     </logger>
     
     <logger name="org.opensaml">

@@ -23,11 +23,10 @@ import javax.annotation.Nullable;
 import net.shibboleth.utilities.java.support.annotation.ParameterName;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.profile.context.ProfileRequestContext;
-
-import com.google.common.base.Predicate;
 
 /**
  * A predicate implementation that tests whether a profile request's profile ID matches an expected value.
@@ -47,8 +46,7 @@ public class ProfileIdPredicate implements Predicate<ProfileRequestContext> {
     }
     
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final ProfileRequestContext input) {
+    public boolean test(@Nullable final ProfileRequestContext input) {
         return input != null && profileId.equals(input.getProfileId());
     }
     
