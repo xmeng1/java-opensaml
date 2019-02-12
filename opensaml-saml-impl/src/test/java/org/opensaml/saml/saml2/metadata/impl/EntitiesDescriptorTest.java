@@ -143,7 +143,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
 
         entitiesDescriptor.setName(expectedName);
         entitiesDescriptor.setID(expectedID);
-        entitiesDescriptor.setCacheDuration(new Long(expectedCacheDuration));
+        entitiesDescriptor.setCacheDuration(Long.valueOf(expectedCacheDuration));
         entitiesDescriptor.setValidUntil(expectedValidUntil);
 
         assertXMLEquals(expectedOptionalAttributesDOM, entitiesDescriptor);
