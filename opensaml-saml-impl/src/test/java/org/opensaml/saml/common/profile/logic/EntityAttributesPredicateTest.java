@@ -65,7 +65,7 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertFalse(condition.apply(entity));
+        Assert.assertFalse(condition.test(entity));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertFalse(condition.apply(entity));
+        Assert.assertFalse(condition.test(entity));
     }
     
     @Test
@@ -95,7 +95,7 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertTrue(condition.apply(entity));
+        Assert.assertTrue(condition.test(entity));
     }
     
     @Test
@@ -110,7 +110,7 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertTrue(condition.apply(entity));
+        Assert.assertTrue(condition.test(entity));
     }
     
     @Test
@@ -125,11 +125,11 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
         final EntityDescriptor entity =
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
-        Assert.assertFalse(condition.apply(entity));
+        Assert.assertFalse(condition.test(entity));
 
         final EntityDescriptor entity2 =
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-sub1.example.org")));
         Assert.assertNotNull(entity2);
-        Assert.assertTrue(condition.apply(entity2));
+        Assert.assertTrue(condition.test(entity2));
     }
 }

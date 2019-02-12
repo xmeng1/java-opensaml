@@ -79,7 +79,7 @@ public class EntityGroupNamePredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertFalse(condition.apply(entity));
+        Assert.assertFalse(condition.test(entity));
     }
     
     @Test
@@ -92,7 +92,7 @@ public class EntityGroupNamePredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertTrue(condition.apply(entity));
+        Assert.assertTrue(condition.test(entity));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class EntityGroupNamePredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-sub2a.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertTrue(condition.apply(entity));
+        Assert.assertTrue(condition.test(entity));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class EntityGroupNamePredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-sub2a.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertTrue(condition.apply(entity));
+        Assert.assertTrue(condition.test(entity));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class EntityGroupNamePredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertFalse(condition.apply(entity));
+        Assert.assertFalse(condition.test(entity));
     }
 
 }
