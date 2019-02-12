@@ -51,8 +51,8 @@ public class LogoTest extends XMLObjectProviderBaseTestCase {
         singleElementFile = "/org/opensaml/saml/ext/saml2mdui/Logo.xml";
         singleElementOptionalAttributesFile = "/org/opensaml/saml/ext/saml2mdui/LogoWithLang.xml";
         expectedURL = "http://exaple.org/Logo";
-        expectedHeight = new Integer(10);
-        expectedWidth = new Integer(23);
+        expectedHeight = Integer.valueOf(10);
+        expectedWidth = Integer.valueOf(23);
         expectedLang = "logoLang";
     }
 

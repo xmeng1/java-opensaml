@@ -73,7 +73,7 @@ public class ScopingTest extends XMLObjectProviderBaseTestCase {
     public void testSingleElementOptionalAttributesMarshall() {
         Scoping scoping = (Scoping) buildXMLObject(Scoping.DEFAULT_ELEMENT_NAME);
         
-        scoping.setProxyCount(new Integer(expectedProxyCount));
+        scoping.setProxyCount(Integer.valueOf(expectedProxyCount));
         
         assertXMLEquals(expectedOptionalAttributesDOM, scoping);
     }

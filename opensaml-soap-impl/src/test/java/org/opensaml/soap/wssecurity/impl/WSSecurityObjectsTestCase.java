@@ -110,7 +110,7 @@ public class WSSecurityObjectsTestCase extends WSBaseTestCase {
     @Test
     public void testIteration() throws Exception {
         Iteration iteration= buildXMLObject(Iteration.ELEMENT_NAME);
-        iteration.setValue(new Integer(1000));
+        iteration.setValue(Integer.valueOf(1000));
         marshallAndUnmarshall(iteration);
     }
     

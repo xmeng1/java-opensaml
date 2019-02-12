@@ -81,7 +81,7 @@ public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
         SOAP11Context soapContext = messageContext.getSubcontext(SOAP11Context.class, false);
         Assert.assertNotNull(soapContext);
         Assert.assertNotNull(soapContext.getEnvelope());
-        Assert.assertEquals(soapContext.getHTTPResponseStatus(), new Integer(HttpStatus.SC_OK));
+        Assert.assertEquals(soapContext.getHTTPResponseStatus(), Integer.valueOf(HttpStatus.SC_OK));
     }
     
     @Test
@@ -105,7 +105,7 @@ public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
         SOAP11Context soapContext = messageContext.getSubcontext(SOAP11Context.class, false);
         Assert.assertNotNull(soapContext);
         Assert.assertNotNull(soapContext.getEnvelope());
-        Assert.assertEquals(soapContext.getHTTPResponseStatus(), new Integer(HttpStatus.SC_OK));
+        Assert.assertEquals(soapContext.getHTTPResponseStatus(), Integer.valueOf(HttpStatus.SC_OK));
     }
     
     @Test(expectedExceptions=SOAP11FaultDecodingException.class)

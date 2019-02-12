@@ -292,7 +292,7 @@ public class SAMLMetadataEncryptionParametersResolverTest extends XMLObjectBaseT
         Assert.assertNotNull(params.getDataEncryptionCredential());
         Assert.assertNotNull(params.getDataEncryptionCredential().getSecretKey());
         Assert.assertEquals(params.getDataEncryptionAlgorithm(), defaultAES128DataAlgo);
-        Assert.assertEquals(KeySupport.getKeyLength(params.getDataEncryptionCredential().getSecretKey()), new Integer(128));
+        Assert.assertEquals(KeySupport.getKeyLength(params.getDataEncryptionCredential().getSecretKey()), Integer.valueOf(128));
         Assert.assertNotNull(params.getDataKeyInfoGenerator());
     }
     

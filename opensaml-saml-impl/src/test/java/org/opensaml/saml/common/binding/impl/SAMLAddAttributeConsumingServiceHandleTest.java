@@ -97,7 +97,7 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
         metadataContext.setRoleDescriptor(withACS);
         
         final AuthnRequest request = SAML2ActionTestingSupport.buildAuthnRequest();
-        request.setAttributeConsumingServiceIndex(new Integer(1));
+        request.setAttributeConsumingServiceIndex(Integer.valueOf(1));
         
         messageContext.setMessage(request);
         
@@ -114,7 +114,7 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
         metadataContext.setRoleDescriptor(withACS);
         
         final AuthnRequest request = SAML2ActionTestingSupport.buildAuthnRequest();
-        request.setAttributeConsumingServiceIndex(new Integer(9));
+        request.setAttributeConsumingServiceIndex(Integer.valueOf(9));
         
         messageContext.setMessage(request);
         
@@ -162,7 +162,7 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
         metadataContext.setRoleDescriptor(withACS);
         
         final AuthnRequest request = SAML2ActionTestingSupport.buildAuthnRequest();
-        request.setAttributeConsumingServiceIndex(new Integer(1));
+        request.setAttributeConsumingServiceIndex(Integer.valueOf(1));
         navigatedHandler.initialize();
         
         messageContext.setMessage(request);

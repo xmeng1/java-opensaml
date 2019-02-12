@@ -49,8 +49,8 @@ public class SigningMethodTest extends XMLObjectProviderBaseTestCase {
         SigningMethod signingMethod = (SigningMethod) unmarshallElement(singleElementOptionalAttributesFile);
         Assert.assertNotNull(signingMethod);
         Assert.assertEquals(signingMethod.getAlgorithm(), SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
-        Assert.assertEquals(signingMethod.getMinKeySize(), new Integer(2048));
-        Assert.assertEquals(signingMethod.getMaxKeySize(), new Integer(4096));
+        Assert.assertEquals(signingMethod.getMinKeySize(), Integer.valueOf(2048));
+        Assert.assertEquals(signingMethod.getMaxKeySize(), Integer.valueOf(4096));
     }
 
     /** {@inheritDoc} */
