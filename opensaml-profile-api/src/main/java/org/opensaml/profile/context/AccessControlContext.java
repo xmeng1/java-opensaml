@@ -29,7 +29,7 @@ import org.opensaml.messaging.context.BaseContext;
  * 
  * @since 3.3.0
  */
-public class AccessControlContext extends BaseContext {
+public final class AccessControlContext extends BaseContext {
 
     /** The operation. */
     @Nullable private String operation;

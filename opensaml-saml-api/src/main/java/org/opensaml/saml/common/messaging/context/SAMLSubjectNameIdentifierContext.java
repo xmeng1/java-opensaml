@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  */
-public class SAMLSubjectNameIdentifierContext extends BaseContext {
+public final class SAMLSubjectNameIdentifierContext extends BaseContext {
     
     /** Logger. */
     @Nullable private Logger log = LoggerFactory.getLogger(SAMLSubjectNameIdentifierContext.class);

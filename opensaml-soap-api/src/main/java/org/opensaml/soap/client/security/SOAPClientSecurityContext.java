@@ -24,7 +24,7 @@ import org.opensaml.messaging.context.BaseContext;
 /**
  * Context class for holding security information related to SOAP client operations.
  */
-public class SOAPClientSecurityContext extends BaseContext {
+public final class SOAPClientSecurityContext extends BaseContext {
     
     /** Security configuration profile ID. */
     @Nullable private String securityConfigurationProfileId;

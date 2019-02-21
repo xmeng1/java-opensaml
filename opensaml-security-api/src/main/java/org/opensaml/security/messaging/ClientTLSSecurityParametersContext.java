@@ -26,7 +26,7 @@ import org.opensaml.security.x509.tls.ClientTLSValidationParameters;
  * Messaging context implementation for holding parameters related to validating client TLS 
  * {@link org.opensaml.security.x509.X509Credential} instances.
  */
-public class ClientTLSSecurityParametersContext extends BaseContext {
+public final class ClientTLSSecurityParametersContext extends BaseContext {
     
     /** A {@link ClientTLSValidationParameters} instance. */
     @Nullable private ClientTLSValidationParameters validationParameters;

@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * context instance is an immediate child of the message context, as returned by {@link #getParent()}.
  * </p>
  */
-public class SAMLPeerEntityContext extends AbstractAuthenticatableSAMLEntityContext {
+public final class SAMLPeerEntityContext extends AbstractAuthenticatableSAMLEntityContext {
     
     /** Logger. */
     @Nonnull private Logger log = LoggerFactory.getLogger(SAMLPeerEntityContext.class);

@@ -32,7 +32,7 @@ import org.opensaml.saml.ext.saml2cb.ChannelBindings;
  * Context, usually attached to a {@link org.opensaml.messaging.context.MessageContext}
  * that carries a collection of {@link ChannelBindings} objects supplied with a message.
  */
-public class ChannelBindingsContext extends BaseContext {
+public final class ChannelBindingsContext extends BaseContext {
 
     /** The set of ChannelBindings. */
     @Nonnull @NonnullElements private Collection<ChannelBindings> channelBindings;

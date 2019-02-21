@@ -27,7 +27,7 @@ import org.opensaml.saml.saml2.metadata.AttributeConsumingService;
  * Context, usually attached to {@link org.opensaml.saml.common.messaging.context.SAMLMetadataContext}
  * that carries a SAML {@link AttributeConsumingService} for use in later stages.
  */
-public class AttributeConsumingServiceContext extends BaseContext {
+public final class AttributeConsumingServiceContext extends BaseContext {
 
     /** The AttributeConsumingService. */
     @Nullable private AttributeConsumingService attributeConsumingService;

@@ -26,7 +26,7 @@ import org.opensaml.soap.client.http.PipelineFactoryHttpSOAPClient;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 /** Message context for SOAP client messages. */
-public class SOAPClientContext extends BaseContext {
+public final class SOAPClientContext extends BaseContext {
 
     /** Binding/transport-specific SOAP request parameters. */
     @Nullable private SOAPRequestParameters requestParameters;

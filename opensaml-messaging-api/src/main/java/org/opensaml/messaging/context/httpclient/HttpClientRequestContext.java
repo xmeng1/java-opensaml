@@ -25,7 +25,7 @@ import org.opensaml.messaging.context.BaseContext;
 /**
  * A context impl holding data related to the execution of an {@link org.apache.http.client.HttpClient} request.
  */
-public class HttpClientRequestContext extends BaseContext {
+public final class HttpClientRequestContext extends BaseContext {
     
     /** The HttpClientContext instance. */
     private HttpClientContext httpClientContext;

@@ -30,7 +30,7 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 /**
  * A context implementation holding parameters related to {@link org.apache.http.client.HttpClient} security features.
  */
-public class HttpClientSecurityContext extends BaseContext {
+public final class HttpClientSecurityContext extends BaseContext {
     
     /** The HttpClient security parameters instance. */
     private HttpClientSecurityParameters securityParameters;

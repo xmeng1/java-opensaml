@@ -26,7 +26,7 @@ import org.opensaml.soap.soap11.Fault;
 /**
  * Subcontext that carries information about the SOAP 1.1 message transport.
  */
-public class SOAP11Context extends BaseContext {
+public final class SOAP11Context extends BaseContext {
     
     /** The SAML protocol in use. */
     private Envelope envelope;

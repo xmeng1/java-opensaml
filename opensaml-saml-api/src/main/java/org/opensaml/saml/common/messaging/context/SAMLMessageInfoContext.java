@@ -40,7 +40,7 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
  * </p>
  *
  */
-public class SAMLMessageInfoContext extends BaseContext {
+public final class SAMLMessageInfoContext extends BaseContext {
 
     /** The ID of the message. */
     @Nullable @NotEmpty private String messageId;

@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  *
  * @param <MessageType> the message type of the message context 
  */
-public class MessageContext<MessageType> extends BaseContext {
+public final class MessageContext<MessageType> extends BaseContext {
 
     /** The message represented. */
     @Nullable private MessageType msg;

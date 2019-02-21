@@ -29,7 +29,7 @@ import org.opensaml.messaging.context.BaseContext;
 /**
  * A subcontext holding information related to processing of an inbound SOAP message.
  */
-public class InboundSOAPContext extends BaseContext {
+public final class InboundSOAPContext extends BaseContext {
     
     /** The set of actor URI's under which this SOAP node is operating. */
     private LazySet<String> nodeActors;

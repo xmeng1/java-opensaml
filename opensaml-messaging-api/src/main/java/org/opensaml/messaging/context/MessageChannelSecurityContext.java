@@ -26,7 +26,7 @@ package org.opensaml.messaging.context;
  * and/or encryption operations are necessary.
  * </p>
  */
-public class MessageChannelSecurityContext extends BaseContext {
+public final class MessageChannelSecurityContext extends BaseContext {
     
     /** Message channel confidentiality flag. */
     private boolean confidentialityActive;
