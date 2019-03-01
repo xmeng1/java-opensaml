@@ -17,10 +17,10 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdrpi.Publication;
@@ -34,7 +34,7 @@ public class PublicationImpl extends AbstractSAMLObject implements Publication {
     private String publisher;
 
     /** The creation instant. */
-    private DateTime creationInstant;
+    private Instant creationInstant;
 
     /** The publicationId. */
     private String publicationId;
@@ -62,12 +62,12 @@ public class PublicationImpl extends AbstractSAMLObject implements Publication {
     }
 
     /** {@inheritDoc} */
-    public DateTime getCreationInstant() {
+    public Instant getCreationInstant() {
         return creationInstant;
     }
 
     /** {@inheritDoc} */
-    public void setCreationInstant(final DateTime dateTime) {
+    public void setCreationInstant(final Instant dateTime) {
         creationInstant = prepareForAssignment(creationInstant, dateTime);
     }
 

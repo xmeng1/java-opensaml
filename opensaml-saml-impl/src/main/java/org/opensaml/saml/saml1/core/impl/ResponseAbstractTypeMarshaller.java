@@ -52,7 +52,7 @@ public abstract class ResponseAbstractTypeMarshaller extends AbstractSAMLObjectM
         }
 
         if (response.getIssueInstant() != null) {
-            final String date = SAMLConfigurationSupport.getSAMLDateFormatter().print(response.getIssueInstant());
+            final String date = SAMLConfigurationSupport.getSAMLDateFormatter().format(response.getIssueInstant());
             domElement.setAttributeNS(null, ResponseAbstractType.ISSUEINSTANT_ATTRIB_NAME, date);
         }
 

@@ -23,10 +23,11 @@ import net.shibboleth.utilities.java.support.xml.XMLParserException;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.SAMLVersion;
@@ -49,7 +50,7 @@ public class AssertionTest extends XMLObjectProviderBaseTestCase {
     private SAMLVersion expectedVersion;
     
     /** Expected IssueInstant value */
-    private DateTime expectedIssueInstant;
+    private Instant expectedIssueInstant;
 
     /** Expected ID value */
     private String expectedID;
@@ -76,7 +77,7 @@ public class AssertionTest extends XMLObjectProviderBaseTestCase {
     @BeforeMethod
     protected void setUp() throws Exception {
         expectedVersion = SAMLVersion.VERSION_20;
-        expectedIssueInstant = new DateTime(1984, 8, 26, 10, 01, 30, 43, ISOChronology.getInstanceUTC());
+        expectedIssueInstant = Instant.parse("1984-08-26T10:01:30.043Z");
         expectedID = "id";
     }
 
@@ -85,7 +86,7 @@ public class AssertionTest extends XMLObjectProviderBaseTestCase {
     public void testSingleElementUnmarshall() {
         Assertion assertion = (Assertion) unmarshallElement(singleElementFile);
 
-        DateTime notBefore = assertion.getIssueInstant();
+        Instant notBefore = assertion.getIssueInstant();
         Assert.assertEquals(notBefore, expectedIssueInstant,
                 "IssueInstant was " + notBefore + ", expected " + expectedIssueInstant);
     }
@@ -95,7 +96,7 @@ public class AssertionTest extends XMLObjectProviderBaseTestCase {
     public void testSingleElementOptionalAttributesUnmarshall() {
         Assertion assertion = (Assertion) unmarshallElement(singleElementOptionalAttributesFile);
 
-        DateTime issueInstant = assertion.getIssueInstant();
+        Instant issueInstant = assertion.getIssueInstant();
         Assert.assertEquals(issueInstant, expectedIssueInstant,
                 "IssueInstant was " + issueInstant + ", expected " + expectedIssueInstant);
 

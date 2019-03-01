@@ -56,7 +56,7 @@ public abstract class StatusResponseTypeMarshaller extends AbstractSAMLObjectMar
         }
 
         if (sr.getIssueInstant() != null) {
-            final String iiStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(sr.getIssueInstant());
+            final String iiStr = SAMLConfigurationSupport.getSAMLDateFormatter().format(sr.getIssueInstant());
             domElement.setAttributeNS(null, StatusResponseType.ISSUE_INSTANT_ATTRIB_NAME, iiStr);
         }
 

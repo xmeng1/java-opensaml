@@ -17,9 +17,10 @@
 
 package org.opensaml.saml.saml2.common;
 
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
@@ -48,13 +49,13 @@ public interface TimeBoundSAMLObject extends SAMLObject{
      * 
      * @return the date until which this descriptor is valid
      */
-    public DateTime getValidUntil();
+    public Instant getValidUntil();
 
     /**
      * Sets the date until which this descriptor is valid.
      * 
      * @param validUntil the date until which this descriptor is valid
      */
-    public void setValidUntil(DateTime validUntil);
+    public void setValidUntil(Instant validUntil);
 
 }

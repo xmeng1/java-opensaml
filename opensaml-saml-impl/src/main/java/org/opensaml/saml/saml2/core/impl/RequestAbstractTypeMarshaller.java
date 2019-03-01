@@ -52,7 +52,7 @@ public abstract class RequestAbstractTypeMarshaller extends AbstractSAMLObjectMa
         }
 
         if (req.getIssueInstant() != null) {
-            final String iiStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(req.getIssueInstant());
+            final String iiStr = SAMLConfigurationSupport.getSAMLDateFormatter().format(req.getIssueInstant());
             domElement.setAttributeNS(null, RequestAbstractType.ISSUE_INSTANT_ATTRIB_NAME, iiStr);
         }
 

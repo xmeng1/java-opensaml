@@ -20,6 +20,7 @@ package org.opensaml.saml.metadata.resolver.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Timer;
 
 import javax.annotation.Nonnull;
@@ -29,8 +30,6 @@ import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,8 +115,7 @@ public class FilesystemMetadataResolver extends AbstractReloadingMetadataResolve
     protected byte[] fetchMetadata() throws ResolverException {
         try {
             validateMetadataFile(metadataFile);
-            final DateTime metadataUpdateTime =
-                     new DateTime(metadataFile.lastModified(), ISOChronology.getInstanceUTC());
+            final Instant metadataUpdateTime = Instant.ofEpochMilli(metadataFile.lastModified());
             if (getLastRefresh() == null || getLastUpdate() == null || metadataUpdateTime.isAfter(getLastUpdate())) {
                 return inputstreamToByteArray(new FileInputStream(metadataFile));
             }

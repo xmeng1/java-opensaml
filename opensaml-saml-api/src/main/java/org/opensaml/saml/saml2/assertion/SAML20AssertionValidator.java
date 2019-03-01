@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.saml2.assertion;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,8 +30,6 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
@@ -473,22 +472,22 @@ public class SAML20AssertionValidator {
             return ValidationResult.VALID;
         }
         
-        final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+        final Instant now = Instant.now();
         final long clockSkew = getClockSkew(context);
 
-        final DateTime notBefore = conditions.getNotBefore();
+        final Instant notBefore = conditions.getNotBefore();
         log.debug("Evaluating Conditions NotBefore '{}' against 'skewed now' time '{}'",
-                notBefore, now.plus(clockSkew));
-        if (notBefore != null && notBefore.isAfter(now.plus(clockSkew))) {
+                notBefore, now.plusMillis(clockSkew));
+        if (notBefore != null && notBefore.isAfter(now.plusMillis(clockSkew))) {
             context.setValidationFailureMessage(String.format(
                     "Assertion '%s' with NotBefore condition of '%s' is not yet valid", assertion.getID(), notBefore));
             return ValidationResult.INVALID;
         }
 
-        final DateTime notOnOrAfter = conditions.getNotOnOrAfter();
+        final Instant notOnOrAfter = conditions.getNotOnOrAfter();
         log.debug("Evaluating Conditions NotOnOrAfter '{}' against 'skewed now' time '{}'",
-                notOnOrAfter, now.minus(clockSkew));
-        if (notOnOrAfter != null && notOnOrAfter.isBefore(now.minus(clockSkew))) {
+                notOnOrAfter, now.minusMillis(clockSkew));
+        if (notOnOrAfter != null && notOnOrAfter.isBefore(now.minusMillis(clockSkew))) {
             context.setValidationFailureMessage(String.format(
                     "Assertion '%s' with NotOnOrAfter condition of '%s' is no longer valid", assertion.getID(),
                     notOnOrAfter));

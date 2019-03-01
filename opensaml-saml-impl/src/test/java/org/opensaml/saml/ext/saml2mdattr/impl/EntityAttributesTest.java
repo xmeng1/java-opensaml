@@ -19,8 +19,9 @@ package org.opensaml.saml.ext.saml2mdattr.impl;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.ext.saml2mdattr.EntityAttributes;
 import org.opensaml.saml.saml2.core.Assertion;
@@ -66,9 +67,9 @@ public class EntityAttributesTest extends XMLObjectProviderBaseTestCase {
     @Test
     public void testChildElementsMarshall() {
         Assertion assertion1 = (Assertion) buildXMLObject(Assertion.DEFAULT_ELEMENT_NAME);
-        assertion1.setIssueInstant(new DateTime(1984, 8, 26, 10, 01, 30, 0, DateTimeZone.UTC));
+        assertion1.setIssueInstant(Instant.parse("1984-08-26T10:01:30Z"));
         Assertion assertion2 = (Assertion) buildXMLObject(Assertion.DEFAULT_ELEMENT_NAME);
-        assertion2.setIssueInstant(new DateTime(1984, 8, 26, 10, 01, 30, 0, DateTimeZone.UTC));
+        assertion2.setIssueInstant(Instant.parse("1984-08-26T10:01:30Z"));
         
         Attribute attrib1 = (Attribute) buildXMLObject(Attribute.DEFAULT_ELEMENT_NAME);
         attrib1.setName("attrib1");

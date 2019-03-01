@@ -17,12 +17,12 @@
 
 package org.opensaml.saml.saml2.common;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 
 /**
@@ -69,9 +69,8 @@ public final class SAML2Support {
      * 
      * @return the earliest expiration time
      */
-    @Nullable public static DateTime getEarliestExpiration(@Nullable final XMLObject xmlObject) {
-        final DateTime now = new DateTime();
-        return getEarliestExpiration(xmlObject, null, now);
+    @Nullable public static Instant getEarliestExpiration(@Nullable final XMLObject xmlObject) {
+        return getEarliestExpiration(xmlObject, null, Instant.now());
     }
 
     /**
@@ -84,10 +83,10 @@ public final class SAML2Support {
      * @return the earliest expiration instant within a metadata tree. May be null if the input candiateTime 
      *          was null, otherwise will always be non-null.
      */
-    @Nullable public static DateTime getEarliestExpiration(@Nullable final XMLObject xmlObject, 
-            @Nullable final DateTime candidateTime, @Nonnull final DateTime now) {
+    @Nullable public static Instant getEarliestExpiration(@Nullable final XMLObject xmlObject, 
+            @Nullable final Instant candidateTime, @Nonnull final Instant now) {
         
-        DateTime earliestExpiration = candidateTime;
+        Instant earliestExpiration = candidateTime;
 
         // Test duration based times
         if (xmlObject instanceof CacheableSAMLObject) {
@@ -126,14 +125,14 @@ public final class SAML2Support {
      * @return the earliest effective expiration instant of the 2 targets. May be null if the input candiateTime 
      *          was null, otherwise will always be non-null.
      */
-    @Nullable public static DateTime getEarliestExpirationFromCacheable(
-            @Nonnull final CacheableSAMLObject cacheableObject, @Nullable final DateTime candidateTime,
-            @Nonnull final DateTime now) {
+    @Nullable public static Instant getEarliestExpirationFromCacheable(
+            @Nonnull final CacheableSAMLObject cacheableObject, @Nullable final Instant candidateTime,
+            @Nonnull final Instant now) {
         
-        DateTime earliestExpiration = candidateTime;
+        Instant earliestExpiration = candidateTime;
 
-        if (cacheableObject.getCacheDuration() != null && cacheableObject.getCacheDuration().longValue() > 0) {
-            final DateTime elementExpirationTime = now.plus(cacheableObject.getCacheDuration().longValue());
+        if (cacheableObject.getCacheDuration() != null && cacheableObject.getCacheDuration() > 0) {
+            final Instant elementExpirationTime = now.plusMillis(cacheableObject.getCacheDuration());
             if (earliestExpiration == null) {
                 earliestExpiration = elementExpirationTime;
             } else {
@@ -156,12 +155,12 @@ public final class SAML2Support {
      * @return the earliest effective expiration instant of the 2 targets. May be null if the input candiateTime 
      *          was null, otherwise will always be non-null.
      */
-    @Nullable public static DateTime getEarliestExpirationFromTimeBound(
-            @Nonnull final TimeBoundSAMLObject timeBoundObject, @Nullable final DateTime candidateTime) {
+    @Nullable public static Instant getEarliestExpirationFromTimeBound(
+            @Nonnull final TimeBoundSAMLObject timeBoundObject, @Nullable final Instant candidateTime) {
         
-        DateTime earliestExpiration = candidateTime;
+        Instant earliestExpiration = candidateTime;
         
-        final DateTime elementExpirationTime = timeBoundObject.getValidUntil();
+        final Instant elementExpirationTime = timeBoundObject.getValidUntil();
         if (earliestExpiration == null) {
             earliestExpiration = elementExpirationTime;
         } else {

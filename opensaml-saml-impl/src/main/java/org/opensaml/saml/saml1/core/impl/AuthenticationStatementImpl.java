@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.saml1.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
 import org.opensaml.saml.saml1.core.AuthenticationStatement;
@@ -37,7 +37,7 @@ public class AuthenticationStatementImpl extends SubjectStatementImpl implements
     private String authenticationMethod;
 
     /** Contains the AuthenticationMethod attribute contents. */
-    private DateTime authenticationInstant;
+    private Instant authenticationInstant;
 
     /** Contains the SubjectLocality subelement. */
     private SubjectLocality subjectLocality;
@@ -69,12 +69,12 @@ public class AuthenticationStatementImpl extends SubjectStatementImpl implements
     }
 
     /** {@inheritDoc} */
-    public DateTime getAuthenticationInstant() {
+    public Instant getAuthenticationInstant() {
         return authenticationInstant;
     }
 
     /** {@inheritDoc} */
-    public void setAuthenticationInstant(final DateTime instant) {
+    public void setAuthenticationInstant(final Instant instant) {
         authenticationInstant = prepareForAssignment(authenticationInstant, instant);
     }
 

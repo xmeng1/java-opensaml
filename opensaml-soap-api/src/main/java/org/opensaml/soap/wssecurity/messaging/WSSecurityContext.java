@@ -17,6 +17,7 @@
 
 package org.opensaml.soap.wssecurity.messaging;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -24,13 +25,12 @@ import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.collection.LazyList;
 
-import org.joda.time.DateTime;
 import org.opensaml.messaging.context.BaseContext;
 
 /**
  * A subcontext that carries information related to WS-Security processing.
  */
-public class WSSecurityContext extends BaseContext {
+public final class WSSecurityContext extends BaseContext {
     
     //TODO implement support for remaining items of WS-Security data model
     
@@ -38,10 +38,10 @@ public class WSSecurityContext extends BaseContext {
     private LazyList<Token> tokens;
     
     /** Value for Timestamp Created. */
-    private DateTime timestampCreated;
+    private Instant timestampCreated;
  
     /** Value for Timestamp Expires. */
-    private DateTime timestampExpires;
+    private Instant timestampExpires;
     
     /** Constructor. */
     public WSSecurityContext() {
@@ -63,7 +63,7 @@ public class WSSecurityContext extends BaseContext {
      * 
      * @return the Timestamp Created value
      */
-    @Nullable public DateTime getTimestampCreated() {
+    @Nullable public Instant getTimestampCreated() {
         return timestampCreated;
     }
 
@@ -72,7 +72,7 @@ public class WSSecurityContext extends BaseContext {
      * 
      * @param value the Timestamp Created value
      */
-    public void setTimestampCreated(@Nullable final DateTime value) {
+    public void setTimestampCreated(@Nullable final Instant value) {
         timestampCreated = value;
     }
 
@@ -81,7 +81,7 @@ public class WSSecurityContext extends BaseContext {
      * 
      * @return the Timestamp Expires value
      */
-    @Nullable public DateTime getTimestampExpires() {
+    @Nullable public Instant getTimestampExpires() {
         return timestampExpires;
     }
 
@@ -90,7 +90,7 @@ public class WSSecurityContext extends BaseContext {
      * 
      * @param value the Timestamp Expires value
      */
-    public void setTimestampExpires(@Nullable final DateTime value) {
+    public void setTimestampExpires(@Nullable final Instant value) {
         timestampExpires = value;
     }
 

@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.common.binding.security.impl;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.annotation.Duration;
@@ -27,7 +29,6 @@ import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
-import org.joda.time.DateTime;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
@@ -144,15 +145,15 @@ public class MessageReplaySecurityHandler extends AbstractMessageHandler {
             }
         }
 
-        DateTime issueInstant = msgInfoContext.getMessageIssueInstant();
+        Instant issueInstant = msgInfoContext.getMessageIssueInstant();
         if (issueInstant == null) {
-            issueInstant = new DateTime();
+            issueInstant = Instant.now();
         }
         
         log.debug("{} Evaluating message replay for message ID '{}', issue instant '{}', entityID '{}'", 
                 getLogPrefix(), messageId, issueInstant, entityID);
         
-        if (!getReplayCache().check(getClass().getName(), messageId, issueInstant.getMillis() + expires)) {
+        if (!getReplayCache().check(getClass().getName(), messageId, issueInstant.toEpochMilli() + expires)) {
             log.warn("{} Replay detected of message '{}' from issuer '{}'", getLogPrefix(), messageId, entityID);
             throw new MessageHandlerException("Rejecting replayed message ID '" + messageId + "' from issuer "
                     + entityID);

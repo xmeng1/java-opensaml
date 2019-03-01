@@ -17,8 +17,8 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
@@ -51,7 +51,7 @@ public class PublicationInfoUnmarshaller extends AbstractSAMLObjectUnmarshaller 
             if (PublicationInfo.PUBLISHER_ATTRIB_NAME.equals(attribute.getName())) {
                 info.setPublisher(attribute.getValue());
             } else if (PublicationInfo.CREATION_INSTANT_ATTRIB_NAME.equals(attribute.getName())) {
-                info.setCreationInstant(new DateTime(attribute.getValue(), ISOChronology.getInstanceUTC()));
+                info.setCreationInstant(Instant.parse(attribute.getValue()));
             } else if (PublicationInfo.PUBLICATION_ID_ATTRIB_NAME.equals(attribute.getName())) {
                 info.setPublicationId(attribute.getValue());
             } else {

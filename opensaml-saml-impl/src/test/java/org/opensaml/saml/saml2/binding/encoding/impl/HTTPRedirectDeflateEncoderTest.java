@@ -19,11 +19,11 @@ package org.opensaml.saml.saml2.binding.encoding.impl;
 
 import java.io.ByteArrayInputStream;
 import java.security.KeyPair;
+import java.time.Instant;
 import java.util.Map;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.SAMLObject;
@@ -80,7 +80,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         Response samlMessage = responseBuilder.buildObject();
         samlMessage.setID("foo");
         samlMessage.setVersion(SAMLVersion.VERSION_20);
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
         samlMessage.setStatus(responseStatus);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
@@ -157,7 +157,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         Response samlMessage = responseBuilder.buildObject();
         samlMessage.setID("foo");
         samlMessage.setVersion(SAMLVersion.VERSION_20);
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
         samlMessage.setStatus(responseStatus);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
@@ -238,7 +238,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         Response samlMessage = responseBuilder.buildObject();
         samlMessage.setID("foo");
         samlMessage.setVersion(SAMLVersion.VERSION_20);
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
         samlMessage.setStatus(responseStatus);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
@@ -323,7 +323,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         Response samlMessage = responseBuilder.buildObject();
         samlMessage.setID("foo");
         samlMessage.setVersion(SAMLVersion.VERSION_20);
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
         samlMessage.setStatus(responseStatus);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory

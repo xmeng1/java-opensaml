@@ -17,10 +17,10 @@
 
 package org.opensaml.saml.saml1.core.impl;
 
-import org.joda.time.format.ISODateTimeFormat;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
+import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml1.core.Assertion;
 import org.w3c.dom.Element;
 
@@ -47,7 +47,8 @@ public class AssertionMarshaller extends AbstractSAMLObjectMarshaller {
         }
 
         if (assertion.getIssueInstant() != null) {
-            final String date = ISODateTimeFormat.dateTime().print(assertion.getIssueInstant());
+            final String date =
+                    SAMLConfigurationSupport.getSAMLDateFormatter().format(assertion.getIssueInstant());
             domElement.setAttributeNS(null, Assertion.ISSUEINSTANT_ATTRIB_NAME, date);
         }
 

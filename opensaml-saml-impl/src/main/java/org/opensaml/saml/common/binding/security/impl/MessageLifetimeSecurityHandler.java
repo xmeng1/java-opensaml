@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.common.binding.security.impl;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.annotation.Duration;
@@ -24,8 +26,6 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NonNegative;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
@@ -135,10 +135,10 @@ public class MessageLifetimeSecurityHandler extends AbstractMessageHandler {
             }
         }
 
-        final DateTime issueInstant = msgInfoContext.getMessageIssueInstant();
-        final DateTime now = new DateTime(DateTimeZone.UTC);
-        final DateTime latestValid = now.plus(getClockSkew());
-        final DateTime expiration = issueInstant.plus(getClockSkew() + getMessageLifetime());
+        final Instant issueInstant = msgInfoContext.getMessageIssueInstant();
+        final Instant now = Instant.now();
+        final Instant latestValid = now.plusMillis(getClockSkew());
+        final Instant expiration = issueInstant.plusMillis(getClockSkew() + getMessageLifetime());
 
         // Check message wasn't issued in the future
         if (issueInstant.isAfter(latestValid)) {

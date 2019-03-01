@@ -20,10 +20,11 @@ package org.opensaml.saml.saml2.metadata.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.Extensions;
@@ -48,7 +49,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
     protected long expectedCacheDuration;
 
     /** Expected validUntil value */
-    protected DateTime expectedValidUntil;
+    protected Instant expectedValidUntil;
 
     /** Expected number of child EntitiesDescriptors */
     protected int expectedEntitiesDescriptorsCount;
@@ -70,7 +71,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
         expectedID = "id";
         expectedName = "eDescName";
         expectedCacheDuration = 90000;
-        expectedValidUntil = new DateTime(2005, 12, 7, 10, 21, 0, 0, ISOChronology.getInstanceUTC());
+        expectedValidUntil = Instant.parse("2005-12-07T10:21:00.000Z");
         expectedEntitiesDescriptorsCount = 3;
         expectedEntityDescriptorsCount = 2;
     }
@@ -86,7 +87,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
         Long duration = entitiesDescriptorObj.getCacheDuration();
         Assert.assertNull(duration, "cacheDuration attribute has a value of " + duration + ", expected no value");
 
-        DateTime validUntil = entitiesDescriptorObj.getValidUntil();
+        Instant validUntil = entitiesDescriptorObj.getValidUntil();
         Assert.assertNull(validUntil, "validUntil attribute has a value of " + validUntil + ", expected no value");
         Assert.assertTrue(entitiesDescriptorObj.isValid());
     }
@@ -107,7 +108,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
         Assert.assertEquals(duration, expectedCacheDuration, "cacheDuration attribute has a value of " + duration + ", expected a value of "
                         + expectedCacheDuration);
 
-        DateTime validUntil = entitiesDescriptorObj.getValidUntil();
+        Instant validUntil = entitiesDescriptorObj.getValidUntil();
         Assert.assertEquals(expectedValidUntil
                 .compareTo(validUntil), 0, "validUntil attribute value did not match expected value");
         Assert.assertFalse(entitiesDescriptorObj.isValid());

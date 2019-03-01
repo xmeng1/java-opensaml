@@ -17,10 +17,11 @@
 
 package org.opensaml.soap.wssecurity;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.opensaml.core.xml.AttributeExtensibleXMLObject;
 import org.opensaml.core.xml.schema.XSString;
 
@@ -37,21 +38,12 @@ public interface AttributedDateTime extends XSString, IdBearing, AttributeExtens
     public static final QName TYPE_NAME = 
         new QName(WSSecurityConstants.WSU_NS, TYPE_LOCAL_NAME, WSSecurityConstants.WSU_PREFIX);
     
-    /** Default DateTime format. 
-     * 
-     * @deprecated replaced by use of a {@link DateTimeFormatter} 
-     *              configured via {@link #setDateTimeFormatter(DateTimeFormatter)}.
-     * 
-     */
-    @Deprecated
-    public static final String DEFAULT_DATETIME_FORMAT= "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-
     /**
      * Returns the DateTime content or attribute value.
      * 
      * @return the {@link DateTime} object.
      */
-    public DateTime getDateTime();
+    public Instant getDateTime();
 
     /**
      * Sets the DateTime content or attribute value.
@@ -59,7 +51,7 @@ public interface AttributedDateTime extends XSString, IdBearing, AttributeExtens
      * @param dateTime
      *            the {@link DateTime} object to set.
      */
-    public void setDateTime(DateTime dateTime);
+    public void setDateTime(Instant dateTime);
     
     /**
      * Get the {@link DateTimeFormatter} to be used when stringifying

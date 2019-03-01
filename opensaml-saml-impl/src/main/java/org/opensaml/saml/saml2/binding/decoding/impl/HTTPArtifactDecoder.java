@@ -17,14 +17,13 @@
 
 package org.opensaml.saml.saml2.binding.decoding.impl;
 
+import java.time.Instant;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.MessageException;
 import org.opensaml.messaging.context.InOutOperationContext;
@@ -522,7 +521,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
         
         request.setID(idStrategy.generateIdentifier(true));
         request.setDestination(endpoint);
-        request.setIssueInstant(new DateTime(ISOChronology.getInstanceUTC()));
+        request.setIssueInstant(Instant.now());
         request.setIssuer(buildIssuer(selfEntityID));
         
         return request;

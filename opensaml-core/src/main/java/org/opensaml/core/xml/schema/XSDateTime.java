@@ -17,14 +17,15 @@
 
 package org.opensaml.core.xml.schema;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.xml.XMLConstants;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.opensaml.core.xml.XMLObject;
 
 /**
@@ -43,22 +44,20 @@ public interface XSDateTime extends XMLObject {
      * 
      * @return the dateTime value
      */
-    @Nullable public DateTime getValue();
+    @Nullable public Instant getValue();
     
     /**
      * Sets the dateTime value.
      * 
      * @param newValue the dateTime value
      */
-    public void setValue(@Nullable final DateTime newValue);
+    public void setValue(@Nullable final Instant newValue);
     
     /**
      * Get the {@link DateTimeFormatter} to be used when stringifying
      * the {@link DateTime} value.
      * 
-     * <p>Defaults to the formatter constructed by calling:
-     * <code>ISODateTimeFormat.dateTime().withChronology(org.joda.time.chrono.ISOChronology.getInstanceUTC())</code>
-     * </p>
+     * <p>Defaults to {@link DateTimeFormatter.ISO_INSTANT}.</p>
      * 
      * @return the currently configured formatter
      */

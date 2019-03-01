@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.common.profile.logic;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +27,6 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.core.xml.schema.XSBase64Binary;
@@ -420,9 +420,9 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
             } else if (object instanceof XSInteger) {
                 toMatch = ((XSInteger) object).getValue().toString();
             } else if (object instanceof XSDateTime) {
-                final DateTime dt = ((XSDateTime) object).getValue();
+                final Instant dt = ((XSDateTime) object).getValue();
                 if (dt != null) {
-                    toMatch = ((XSDateTime) object).getDateTimeFormatter().print(dt);
+                    toMatch = ((XSDateTime) object).getDateTimeFormatter().format(dt);
                 }
             } else if (object instanceof XSBase64Binary) {
                 toMatch = ((XSBase64Binary) object).getValue();

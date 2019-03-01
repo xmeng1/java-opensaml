@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.saml1.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSignableSAMLObject;
 import org.opensaml.saml.common.SAMLVersion;
@@ -42,7 +42,7 @@ public abstract class ResponseAbstractTypeImpl extends AbstractSignableSAMLObjec
     private String inResponseTo;
 
     /** Contents of the IssueInstant attribute. */
-    private DateTime issueInstant;
+    private Instant issueInstant;
 
     /** Contents of the Recipient attribute. */
     private String recipient;
@@ -93,14 +93,14 @@ public abstract class ResponseAbstractTypeImpl extends AbstractSignableSAMLObjec
     }
 
     /** {@inheritDoc} */
-    public DateTime getIssueInstant() {
+    public Instant getIssueInstant() {
 
         return issueInstant;
     }
 
     /** {@inheritDoc} */
-    public void setIssueInstant(final DateTime date) {
-        this.issueInstant = prepareForAssignment(this.issueInstant, date);
+    public void setIssueInstant(final Instant date) {
+        issueInstant = prepareForAssignment(issueInstant, date);
     }
 
     /** {@inheritDoc} */

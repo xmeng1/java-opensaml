@@ -17,12 +17,13 @@
 
 package org.opensaml.saml.saml2.profile;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.profile.action.AbstractProfileAction;
 import org.opensaml.saml.common.SAMLObjectBuilder;
@@ -62,7 +63,7 @@ public final class SAML2ActionSupport {
 
         final Assertion assertion = assertionBuilder.buildObject();
         assertion.setID(idGenerator.generateIdentifier());
-        assertion.setIssueInstant(new DateTime());
+        assertion.setIssueInstant(Instant.now());
         assertion.setVersion(SAMLVersion.VERSION_20);
 
         if (issuer != null) {

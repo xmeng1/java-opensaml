@@ -17,9 +17,9 @@
 
 package org.opensaml.saml.metadata.resolver;
 
-import javax.annotation.Nullable;
+import java.time.Instant;
 
-import org.joda.time.DateTime;
+import javax.annotation.Nullable;
 
 /**
  * Extended {@link BatchMetadataResolver}.
@@ -33,7 +33,7 @@ public interface ExtendedBatchMetadataResolver extends BatchMetadataResolver {
      *
      * @return the validUntil date/time of the root element, or null if not available
      */
-    @Nullable public DateTime getRootValidUntil();
+    @Nullable public Instant getRootValidUntil();
 
     /**
      * Get the validity state of the metadata batch root element, as determined in an implementation-specific manner.

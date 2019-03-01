@@ -17,9 +17,9 @@
 
 package org.opensaml.saml.config;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.joda.time.format.DateTimeFormatter;
 import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.saml.saml1.binding.artifact.SAML1ArtifactBuilderFactory;
 import org.opensaml.saml.saml2.binding.artifact.SAML2ArtifactBuilderFactory;
@@ -35,7 +35,7 @@ public final class SAMLConfigurationSupport {
     private SAMLConfigurationSupport() {}
 
     /**
-     * Gets the date format used to string'ify SAML's {@link org.joda.time.DateTime} objects.
+     * Gets the date format used to string'ify SAML's date/time objects.
      * 
      * @return date format used to string'ify date objects
      */

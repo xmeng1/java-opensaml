@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.saml1.core;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -26,7 +27,6 @@ import javax.xml.namespace.QName;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -122,14 +122,14 @@ public interface Assertion extends SignableSAMLObject, Evidentiary {
      * 
      * @return the Issue Instant (as a Date)
      */
-    @Nullable DateTime getIssueInstant();
+    @Nullable Instant getIssueInstant();
 
     /**
      * Set the IssueInstance (attribute).
      * 
      * @param issueInstant the issue instant value to set
      */
-    void setIssueInstant(@Nullable final DateTime issueInstant);
+    void setIssueInstant(@Nullable final Instant issueInstant);
 
     /**
      * Return the (singleton) Object, representing the <code> Conditions </code> sub element.

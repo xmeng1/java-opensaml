@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,7 +26,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.metadata.IterableMetadataSource;
@@ -154,7 +154,7 @@ public abstract class AbstractBatchMetadataResolver extends AbstractMetadataReso
     }
 
     /** {@inheritDoc} */
-    @Nullable public DateTime getRootValidUntil() {
+    @Nullable public Instant getRootValidUntil() {
         final XMLObject cached = getBackingStore().getCachedOriginalMetadata();
         if (cached != null && cached instanceof TimeBoundSAMLObject) {
             return ((TimeBoundSAMLObject)cached).getValidUntil();

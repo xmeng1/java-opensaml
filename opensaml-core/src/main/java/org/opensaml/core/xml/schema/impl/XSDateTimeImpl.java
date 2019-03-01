@@ -17,15 +17,17 @@
 
 package org.opensaml.core.xml.schema.impl;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSDateTime;
@@ -37,7 +39,7 @@ import org.opensaml.core.xml.schema.XSDateTime;
 public class XSDateTimeImpl extends AbstractXMLObject implements XSDateTime {
     
     /** Value of this dateTime element. */
-    private DateTime value;
+    private Instant value;
     
     /** The date time formatter to use. */
     private DateTimeFormatter formatter;
@@ -49,18 +51,19 @@ public class XSDateTimeImpl extends AbstractXMLObject implements XSDateTime {
      * @param elementLocalName the local name of the XML element this Object represents
      * @param namespacePrefix the prefix for the given namespace
      */
-    protected XSDateTimeImpl(final String namespaceURI, final String elementLocalName, final String namespacePrefix) {
+    protected XSDateTimeImpl(@Nullable final String namespaceURI, @Nonnull @NotEmpty final String elementLocalName,
+            @Nullable final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        formatter = ISODateTimeFormat.dateTime().withChronology(ISOChronology.getInstanceUTC());
+        formatter = DateTimeFormatter.ISO_INSTANT;
     }
     
     /** {@inheritDoc} */
-    public DateTime getValue() {
+    public Instant getValue() {
         return value;
     }
 
     /** {@inheritDoc} */
-    public void setValue(final DateTime newValue) {
+    public void setValue(final Instant newValue) {
         value = prepareForAssignment(value, newValue);
     }
 

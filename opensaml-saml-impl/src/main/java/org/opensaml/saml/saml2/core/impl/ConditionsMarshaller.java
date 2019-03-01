@@ -40,12 +40,12 @@ public class ConditionsMarshaller extends AbstractSAMLObjectMarshaller {
 
         if (conditions.getNotBefore() != null) {
             final String notBeforeStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(conditions.getNotBefore());
+                    SAMLConfigurationSupport.getSAMLDateFormatter().format(conditions.getNotBefore());
             domElement.setAttributeNS(null, Conditions.NOT_BEFORE_ATTRIB_NAME, notBeforeStr);
         }
 
         if (conditions.getNotOnOrAfter() != null) {
-            final String notOnOrAfterStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(
+            final String notOnOrAfterStr = SAMLConfigurationSupport.getSAMLDateFormatter().format(
                     conditions.getNotOnOrAfter());
             domElement.setAttributeNS(null, Conditions.NOT_ON_OR_AFTER_ATTRIB_NAME, notOnOrAfterStr);
         }

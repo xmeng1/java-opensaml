@@ -17,9 +17,9 @@
 
 package org.opensaml.saml.metadata.resolver;
 
-import javax.annotation.Nullable;
+import java.time.Instant;
 
-import org.joda.time.DateTime;
+import javax.annotation.Nullable;
 
 /**
  * Extended {@link RefreshableMetadataResolver}.
@@ -33,7 +33,7 @@ public interface ExtendedRefreshableMetadataResolver extends RefreshableMetadata
      * 
      * @return time the last successful refresh cycle occurred
      */
-    @Nullable public DateTime getLastSuccessfulRefresh();
+    @Nullable public Instant getLastSuccessfulRefresh();
 
     /**
      * Gets whether the last refresh cycle was successful.

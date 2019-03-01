@@ -17,15 +17,16 @@
 
 package org.opensaml.soap.wssecurity.messaging.impl;
 
+import java.time.Instant;
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.messaging.context.navigate.ContextDataLookupFunction;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.soap.messaging.AbstractHeaderGeneratingMessageHandler;
 import org.opensaml.soap.wssecurity.Created;
@@ -43,13 +44,13 @@ import org.slf4j.LoggerFactory;
 public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(AddTimestampHandler.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(AddTimestampHandler.class);
     
     /** Context lookup function for the Created time. */
-    private ContextDataLookupFunction<MessageContext, DateTime> createdLookup;
+    @Nullable private Function<MessageContext,Instant> createdLookup;
     
     /** Context lookup function for the Expires time. */
-    private ContextDataLookupFunction<MessageContext, DateTime> expiresLookup;
+    @Nullable private Function<MessageContext,Instant> expiresLookup;
     
     /** Flag indicating whether to use the current time as the Created time, if no value
      * is explicitly supplied by the other supported mechanisms. */
@@ -60,17 +61,17 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
     private Long expiresOffsetFromCreated;
     
     /** The effective Created value to use. */
-    private DateTime createdValue;
+    private Instant createdValue;
     
     /** The effective Expires value to use. */
-    private DateTime expiresValue;
+    private Instant expiresValue;
     
     /**
      * Get the context lookup function for the Created time.
      * 
      * @return the lookup function
      */
-    @Nullable public ContextDataLookupFunction<MessageContext, DateTime> getCreatedLookup() {
+    @Nullable public Function<MessageContext,Instant> getCreatedLookup() {
         return createdLookup;
     }
 
@@ -79,7 +80,7 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
      * 
      * @param lookup the lookup function
      */
-    public void setCreatedLookup(@Nullable final ContextDataLookupFunction<MessageContext, DateTime> lookup) {
+    public void setCreatedLookup(@Nullable final Function<MessageContext,Instant> lookup) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         createdLookup = lookup;
@@ -90,7 +91,7 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
      * 
      * @return the lookup function
      */
-    @Nullable public ContextDataLookupFunction<MessageContext, DateTime> getExpiresLookup() {
+    @Nullable public Function<MessageContext,Instant> getExpiresLookup() {
         return expiresLookup;
     }
 
@@ -99,7 +100,7 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
      * 
      * @param lookup the lookup function
      */
-    public void setExpiresLookup(@Nullable final ContextDataLookupFunction<MessageContext, DateTime> lookup) {
+    public void setExpiresLookup(@Nullable final Function<MessageContext,Instant> lookup) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         expiresLookup = lookup;
@@ -194,8 +195,8 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
      * 
      * @return the effective Created DateTime value to use
      */
-    @Nullable protected DateTime getCreatedValue(@Nonnull final MessageContext messageContext) {
-        DateTime value = null;
+    @Nullable protected Instant getCreatedValue(@Nonnull final MessageContext messageContext) {
+        Instant value = null;
         final WSSecurityContext security = messageContext.getSubcontext(WSSecurityContext.class, false);
         if (security != null) {
             value = security.getTimestampCreated();
@@ -207,7 +208,7 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
         
         if (value == null) {
             if (isUseCurrentTimeAsDefaultCreated()) {
-                value = new DateTime();
+                value = Instant.now();
             }
         }
         return value;
@@ -221,9 +222,9 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
      * 
      * @return the effective Expires DateTime value to use
      */
-    @Nullable protected DateTime getExpiresValue(@Nonnull final MessageContext messageContext, 
-            @Nullable final DateTime created) {
-        DateTime value = null;
+    @Nullable protected Instant getExpiresValue(@Nonnull final MessageContext messageContext, 
+            @Nullable final Instant created) {
+        Instant value = null;
         final WSSecurityContext security = messageContext.getSubcontext(WSSecurityContext.class, false);
         if (security != null) {
             value = security.getTimestampExpires();
@@ -235,7 +236,7 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
         
         if (value == null) {
             if (getExpiresOffsetFromCreated() != null && created != null) {
-                return created.plus(getExpiresOffsetFromCreated());
+                return created.plusMillis(getExpiresOffsetFromCreated());
             }
         }
         return value;

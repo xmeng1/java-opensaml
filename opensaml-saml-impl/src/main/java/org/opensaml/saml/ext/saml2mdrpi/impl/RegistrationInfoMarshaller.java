@@ -17,10 +17,10 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
-import org.joda.time.format.ISODateTimeFormat;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
+import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationInfo;
 import org.w3c.dom.Element;
 
@@ -40,7 +40,8 @@ public class RegistrationInfoMarshaller extends AbstractSAMLObjectMarshaller {
         }
 
         if (info.getRegistrationInstant() != null) {
-            final String registrationInstant = ISODateTimeFormat.dateTime().print(info.getRegistrationInstant());
+            final String registrationInstant =
+                    SAMLConfigurationSupport.getSAMLDateFormatter().format(info.getRegistrationInstant());
             domElement.setAttributeNS(null, RegistrationInfo.REGISTRATION_INSTANT_ATTRIB_NAME, registrationInstant);
         }
     }

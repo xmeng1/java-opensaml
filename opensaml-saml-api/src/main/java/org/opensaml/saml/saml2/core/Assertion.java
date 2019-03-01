@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.saml2.core;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -73,14 +73,14 @@ public interface Assertion extends SignableSAMLObject, Evidentiary {
      * 
      * @return the issue instance of this assertion
      */
-    public DateTime getIssueInstant();
+    public Instant getIssueInstant();
 
     /**
      * Sets the issue instance of this assertion.
      * 
      * @param newIssueInstance the issue instance of this assertion
      */
-    public void setIssueInstant(DateTime newIssueInstance);
+    public void setIssueInstant(Instant newIssueInstance);
 
     /**
      * Sets the ID of this assertion.

@@ -39,13 +39,14 @@ public class SubjectConfirmationDataMarshaller extends AbstractSAMLObjectMarshal
         final SubjectConfirmationData subjectCD = (SubjectConfirmationData) samlObject;
 
         if (subjectCD.getNotBefore() != null) {
-            final String notBeforeStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(subjectCD.getNotBefore());
+            final String notBeforeStr =
+                    SAMLConfigurationSupport.getSAMLDateFormatter().format(subjectCD.getNotBefore());
             domElement.setAttributeNS(null, SubjectConfirmationData.NOT_BEFORE_ATTRIB_NAME, notBeforeStr);
         }
 
         if (subjectCD.getNotOnOrAfter() != null) {
             final String notOnOrAfterStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(subjectCD.getNotOnOrAfter());
+                    SAMLConfigurationSupport.getSAMLDateFormatter().format(subjectCD.getNotOnOrAfter());
             domElement.setAttributeNS(null, SubjectConfirmationData.NOT_ON_OR_AFTER_ATTRIB_NAME, notOnOrAfterStr);
         }
 

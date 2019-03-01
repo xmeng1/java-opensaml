@@ -23,10 +23,11 @@ package org.opensaml.saml.saml1.core.impl;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.saml1.core.Advice;
@@ -51,7 +52,7 @@ public class AssertionTest extends XMLObjectProviderBaseTestCase {
 
     private final String expectedIssuer;
 
-    private final DateTime expectedIssueInstant;
+    private final Instant expectedIssueInstant;
 
     private final String expectedID;
     
@@ -62,10 +63,7 @@ public class AssertionTest extends XMLObjectProviderBaseTestCase {
         expectedID = "ident";
         expectedMinorVersion = 1;
         expectedIssuer = "issuer";
-        //
-        // IssueInstant="1970-01-02T01:01:02.100Z"
-        //
-        expectedIssueInstant = new DateTime(1970, 1, 2, 1, 1, 2, 100, ISOChronology.getInstanceUTC());
+        expectedIssueInstant = Instant.parse("1970-01-02T01:01:02.100Z");
 
         singleElementFile = "/org/opensaml/saml/saml1/impl/singleAssertion.xml";
         singleElementOptionalAttributesFile = "/org/opensaml/saml/saml1/impl/singleAssertionAttributes.xml";

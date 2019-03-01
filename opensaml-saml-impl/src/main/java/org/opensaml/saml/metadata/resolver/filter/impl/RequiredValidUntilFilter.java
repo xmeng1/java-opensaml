@@ -17,14 +17,14 @@
 
 package org.opensaml.saml.metadata.resolver.filter.impl;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.annotation.Duration;
 import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
@@ -90,15 +90,15 @@ public class RequiredValidUntilFilter implements MetadataFilter {
             return null;
         }
         
-        final DateTime validUntil = getValidUntil(metadata);
+        final Instant validUntil = getValidUntil(metadata);
 
         if (validUntil == null) {
             throw new FilterException("Metadata did not include a validUntil attribute");
         }
 
-        final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+        final Instant now = Instant.now();
         if (maxValidityInterval > 0 && validUntil.isAfter(now)) {
-            final long validityInterval = validUntil.getMillis() - now.getMillis();
+            final long validityInterval = validUntil.toEpochMilli() - now.toEpochMilli();
             if (validityInterval > maxValidityInterval) {
                 throw new FilterException(String.format("Metadata's validity interval %s is larger than is allowed %s", 
                         DOMTypeSupport.longToDuration(validityInterval),
@@ -119,7 +119,7 @@ public class RequiredValidUntilFilter implements MetadataFilter {
      * @throws FilterException thrown if the given XML object is not an {@link EntitiesDescriptor} or
      *             {@link EntityDescriptor}
      */
-    @Nullable protected DateTime getValidUntil(@Nonnull final XMLObject metadata) throws FilterException {
+    @Nullable protected Instant getValidUntil(@Nonnull final XMLObject metadata) throws FilterException {
         if (metadata instanceof EntitiesDescriptor) {
             return ((EntitiesDescriptor) metadata).getValidUntil();
         } else if (metadata instanceof EntityDescriptor) {

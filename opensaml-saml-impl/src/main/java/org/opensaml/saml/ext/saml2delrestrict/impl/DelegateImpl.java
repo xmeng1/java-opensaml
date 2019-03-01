@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.ext.saml2delrestrict.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2delrestrict.Delegate;
@@ -44,7 +44,7 @@ public class DelegateImpl extends AbstractSAMLObject implements Delegate {
     private EncryptedID encryptedID;
     
     /** DelegationInstant attribute. */
-    private DateTime delegationInstant;
+    private Instant delegationInstant;
     
     /** ConfirmationMethod attribute. */
     private String confirmationMethod;
@@ -71,7 +71,7 @@ public class DelegateImpl extends AbstractSAMLObject implements Delegate {
     }
 
     /** {@inheritDoc} */
-    public DateTime getDelegationInstant() {
+    public Instant getDelegationInstant() {
         return delegationInstant;
     }
 
@@ -96,7 +96,7 @@ public class DelegateImpl extends AbstractSAMLObject implements Delegate {
     }
 
     /** {@inheritDoc} */
-    public void setDelegationInstant(final DateTime newInstant) {
+    public void setDelegationInstant(final Instant newInstant) {
         delegationInstant = prepareForAssignment(delegationInstant, newInstant);
     }
 

@@ -44,7 +44,7 @@ public class AssertionMarshaller extends AbstractSAMLObjectMarshaller {
 
         if (assertion.getIssueInstant() != null) {
             final String issueInstantStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(assertion.getIssueInstant());
+                    SAMLConfigurationSupport.getSAMLDateFormatter().format(assertion.getIssueInstant());
             domElement.setAttributeNS(null, Assertion.ISSUE_INSTANT_ATTRIB_NAME, issueInstantStr);
         }
 

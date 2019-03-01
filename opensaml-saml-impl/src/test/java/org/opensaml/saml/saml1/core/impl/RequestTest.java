@@ -22,12 +22,13 @@ package org.opensaml.saml.saml1.core.impl;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.saml1.core.AssertionArtifact;
@@ -47,7 +48,7 @@ public class RequestTest extends XMLObjectProviderBaseTestCase {
 
     private final String expectedID;
     
-    private final DateTime expectedIssueInstant;
+    private final Instant expectedIssueInstant;
 
     private final int expectedMinorVersion;
     
@@ -55,7 +56,7 @@ public class RequestTest extends XMLObjectProviderBaseTestCase {
         expectedID = "ident";
         singleElementFile = "/org/opensaml/saml/saml1/impl/singleRequest.xml";
         singleElementOptionalAttributesFile = "/org/opensaml/saml/saml1/impl/singleRequestAttributes.xml";
-        expectedIssueInstant = new DateTime(1970, 1, 1, 0, 0, 0, 100, ISOChronology.getInstanceUTC());
+        expectedIssueInstant = Instant.parse("1970-01-01T00:00:00.100Z");
         expectedMinorVersion = 1;
         qname = Request.DEFAULT_ELEMENT_NAME;
     }
@@ -68,7 +69,7 @@ public class RequestTest extends XMLObjectProviderBaseTestCase {
         String id = request.getID();
         Assert.assertNull(id, "ID attribute has value " + id + "expected no value");
         
-        DateTime date = request.getIssueInstant();
+        Instant date = request.getIssueInstant();
         Assert.assertNull(date, "IssueInstant attribute has a value of " + date + ", expected no value");
 
         Assert.assertNull(request.getQuery(), "Query has value");

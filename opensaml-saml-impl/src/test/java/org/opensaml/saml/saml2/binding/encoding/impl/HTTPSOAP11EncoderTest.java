@@ -18,8 +18,8 @@
 package org.opensaml.saml.saml2.binding.encoding.impl;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.util.XMLObjectSupport;
@@ -68,7 +68,7 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         Response samlMessage = responseBuilder.buildObject();
         samlMessage.setID("foo");
         samlMessage.setVersion(SAMLVersion.VERSION_20);
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
         samlMessage.setStatus(responseStatus);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory

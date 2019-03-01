@@ -18,6 +18,7 @@
 package org.opensaml.saml.common.binding.artifact.impl;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
@@ -37,7 +38,6 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.TimerSupport;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.artifact.ExpiringSAMLArtifactMapEntry;
 import org.opensaml.saml.common.binding.artifact.SAMLArtifactMap;
@@ -180,7 +180,7 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
 
         if (log.isDebugEnabled()) {
             log.debug("Storing new artifact entry '{}' for relying party '{}', expiring at '{}'", new Object[] {
-                    artifact, relyingPartyId, new DateTime(artifactEntry.getExpiration()),});
+                    artifact, relyingPartyId, Instant.ofEpochMilli(artifactEntry.getExpiration()),});
         }
 
         artifactStore.put(artifact, artifactEntry);

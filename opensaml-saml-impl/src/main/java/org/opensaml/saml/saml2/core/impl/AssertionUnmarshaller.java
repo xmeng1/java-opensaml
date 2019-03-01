@@ -21,8 +21,8 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
@@ -73,7 +73,7 @@ public class AssertionUnmarshaller extends AbstractSAMLObjectUnmarshaller {
                 assertion.setVersion(parseSAMLVersion(attribute));
             } else if (attribute.getLocalName().equals(Assertion.ISSUE_INSTANT_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                assertion.setIssueInstant(new DateTime(attribute.getValue(), ISOChronology.getInstanceUTC()));
+                assertion.setIssueInstant(Instant.parse(attribute.getValue()));
             } else if (attribute.getLocalName().equals(Assertion.ID_ATTRIB_NAME)) {
                 assertion.setID(attribute.getValue());
                 attribute.getOwnerElement().setIdAttributeNode(attribute, true);

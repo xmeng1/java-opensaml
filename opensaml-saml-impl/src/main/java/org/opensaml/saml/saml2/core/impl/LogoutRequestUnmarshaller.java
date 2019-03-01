@@ -17,8 +17,8 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.saml2.core.BaseID;
@@ -62,7 +62,7 @@ public class LogoutRequestUnmarshaller extends RequestAbstractTypeUnmarshaller {
                 req.setReason(attribute.getValue());
             } else if (attribute.getLocalName().equals(LogoutRequest.NOT_ON_OR_AFTER_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                req.setNotOnOrAfter(new DateTime(attribute.getValue(), ISOChronology.getInstanceUTC()));
+                req.setNotOnOrAfter(Instant.parse(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

@@ -17,9 +17,10 @@
 
 package org.opensaml.saml.ext.saml2mdrpi;
 
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
@@ -73,14 +74,14 @@ public interface Publication extends SAMLObject {
      * 
      * @return the creation instant
      */
-    public DateTime getCreationInstant();
+    public Instant getCreationInstant();
 
     /**
      * Set the creation instant.
      * 
      * @param dateTime the instant
      */
-    public void setCreationInstant(DateTime dateTime);
+    public void setCreationInstant(Instant dateTime);
 
     /**
      * Get the publicationId.

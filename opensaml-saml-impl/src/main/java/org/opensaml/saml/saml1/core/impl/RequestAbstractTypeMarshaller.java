@@ -47,7 +47,7 @@ public class RequestAbstractTypeMarshaller extends AbstractSAMLObjectMarshaller 
         }
 
         if (request.getIssueInstant() != null) {
-            final String date = SAMLConfigurationSupport.getSAMLDateFormatter().print(request.getIssueInstant());
+            final String date = SAMLConfigurationSupport.getSAMLDateFormatter().format(request.getIssueInstant());
             domElement.setAttributeNS(null, RequestAbstractType.ISSUEINSTANT_ATTRIB_NAME, date);
         }
 

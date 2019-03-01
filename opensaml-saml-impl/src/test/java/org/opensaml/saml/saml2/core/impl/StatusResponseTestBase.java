@@ -23,10 +23,11 @@ package org.opensaml.saml.saml2.core.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLVersion;
@@ -50,7 +51,7 @@ public abstract class StatusResponseTestBase extends XMLObjectProviderBaseTestCa
     protected SAMLVersion expectedSAMLVersion;
     
     /** Expected IssueInstant attribute */
-    protected DateTime expectedIssueInstant;
+    protected Instant expectedIssueInstant;
     
     /** Expected Destination attribute */
     protected String expectedDestination;
@@ -77,7 +78,7 @@ public abstract class StatusResponseTestBase extends XMLObjectProviderBaseTestCa
         expectedID = "def456";
         expectedInResponseTo = "abc123";
         expectedSAMLVersion = SAMLVersion.VERSION_20;
-        expectedIssueInstant = new DateTime(2006, 2, 21, 16, 40, 0, 0, ISOChronology.getInstanceUTC());
+        expectedIssueInstant = Instant.parse("2006-02-21T16:40:00.000Z");
         expectedDestination = "http://sp.example.org/endpoint";
         expectedConsent = "urn:string:consent";
         
@@ -108,7 +109,7 @@ public abstract class StatusResponseTestBase extends XMLObjectProviderBaseTestCa
         
         sr.setID(expectedID);
         sr.setIssueInstant(expectedIssueInstant);
-        // NOTE:  the SAML Version attribute is set automatically by the impl superclas
+        // NOTE:  the SAML Version attribute is set automatically by the impl superclass
         
     }
     

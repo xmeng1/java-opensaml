@@ -18,12 +18,12 @@
 package org.opensaml.saml.saml2.profile.impl;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.profile.action.AbstractProfileAction;
 import org.opensaml.profile.action.ActionSupport;
 import org.opensaml.profile.action.EventIds;
@@ -311,7 +311,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
                 ? lifetimeLookupStrategy.apply(profileRequestContext) : null;
         if (lifetime != null) {
             confirmationData = confirmationData != null ? confirmationData : confirmationDataBuilder.buildObject();
-            confirmationData.setNotOnOrAfter(new DateTime().plus(lifetime));
+            confirmationData.setNotOnOrAfter(Instant.now().plusMillis(lifetime));
         }
         
         if (confirmationData != null) {

@@ -37,7 +37,7 @@ public class DelegateMarshaller extends AbstractSAMLObjectMarshaller {
         
         if (delegate.getDelegationInstant() != null) {
             final String delInstant =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(delegate.getDelegationInstant());
+                    SAMLConfigurationSupport.getSAMLDateFormatter().format(delegate.getDelegationInstant());
             domElement.setAttributeNS(null, Delegate.DELEGATION_INSTANT_ATTRIB_NAME, delInstant);
         }
         if (!Strings.isNullOrEmpty(delegate.getConfirmationMethod())) {

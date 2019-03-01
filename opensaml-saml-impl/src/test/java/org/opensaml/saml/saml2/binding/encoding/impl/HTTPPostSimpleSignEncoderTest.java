@@ -19,11 +19,11 @@ package org.opensaml.saml.saml2.binding.encoding.impl;
 
 import java.io.ByteArrayInputStream;
 import java.security.KeyPair;
+import java.time.Instant;
 import java.util.List;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.DocumentType;
@@ -103,7 +103,7 @@ public class HTTPPostSimpleSignEncoderTest extends XMLObjectBaseTestCase {
         Response samlMessage = responseBuilder.buildObject();
         samlMessage.setID("foo");
         samlMessage.setVersion(SAMLVersion.VERSION_20);
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
         samlMessage.setStatus(responseStatus);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
@@ -201,7 +201,7 @@ public class HTTPPostSimpleSignEncoderTest extends XMLObjectBaseTestCase {
         AuthnRequest samlMessage = responseBuilder.buildObject();
         samlMessage.setID("foo");
         samlMessage.setVersion(SAMLVersion.VERSION_20);
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
                 .getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
@@ -295,7 +295,7 @@ public class HTTPPostSimpleSignEncoderTest extends XMLObjectBaseTestCase {
         AuthnRequest samlMessage = responseBuilder.buildObject();
         samlMessage.setID("foo");
         samlMessage.setVersion(SAMLVersion.VERSION_20);
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
                 .getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME);

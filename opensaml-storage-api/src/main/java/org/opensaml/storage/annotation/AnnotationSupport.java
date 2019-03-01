@@ -19,6 +19,7 @@ package org.opensaml.storage.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,9 +28,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
-
-import org.joda.time.Instant;
-import org.joda.time.ReadableInstant;
 
 /**
  * Support class that reads and writes fields decorated with storage annotations.
@@ -180,8 +178,8 @@ public final class AnnotationSupport {
             return (Long) value;
         } else if (value instanceof Date) {
             return ((Date) value).getTime();
-        } else if (value instanceof ReadableInstant) {
-            return ((ReadableInstant) value).getMillis();
+        } else if (value instanceof Instant) {
+            return ((Instant) value).toEpochMilli();
         }
         throw new RuntimeException(value + " is an unsupported data type for an expiration field.");
     }
@@ -215,8 +213,8 @@ public final class AnnotationSupport {
             setFieldValue(target, expField.value(), expiration);
         } else if (Date.class.isAssignableFrom(type)) {
             setFieldValue(target, expField.value(), new Date(expiration));
-        } else if (ReadableInstant.class.isAssignableFrom(type)) {
-            setFieldValue(target, expField.value(), new Instant(expiration));
+        } else if (Instant.class.isAssignableFrom(type)) {
+            setFieldValue(target, expField.value(), Instant.ofEpochMilli(expiration));
         } else {
             throw new RuntimeException(type + " is an unsupported data type for an expiration field.");
         }

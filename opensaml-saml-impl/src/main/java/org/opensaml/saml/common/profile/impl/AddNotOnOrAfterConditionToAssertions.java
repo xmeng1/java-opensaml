@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.common.profile.impl;
 
+import java.time.Instant;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
@@ -27,7 +28,6 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NonNegative;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
-import org.joda.time.DateTime;
 import org.opensaml.messaging.context.navigate.MessageLookup;
 import org.opensaml.profile.action.AbstractConditionalProfileAction;
 import org.opensaml.profile.action.ActionSupport;
@@ -151,7 +151,7 @@ public class AddNotOnOrAfterConditionToAssertions extends AbstractConditionalPro
             for (final org.opensaml.saml.saml1.core.Assertion assertion :
                     ((org.opensaml.saml.saml1.core.Response) response).getAssertions()) {
 
-                final DateTime expiration = new DateTime(assertion.getIssueInstant()).plus(
+                final Instant expiration = assertion.getIssueInstant().plusMillis(
                         lifetime != null ? lifetime : defaultAssertionLifetime);
                 log.debug("{} Added NotOnOrAfter condition, indicating an expiration of {}, to Assertion {}",
                         new Object[] {getLogPrefix(), expiration, assertion.getID()});
@@ -161,7 +161,7 @@ public class AddNotOnOrAfterConditionToAssertions extends AbstractConditionalPro
             for (final org.opensaml.saml.saml2.core.Assertion assertion :
                     ((org.opensaml.saml.saml2.core.Response) response).getAssertions()) {
 
-                final DateTime expiration = new DateTime(assertion.getIssueInstant()).plus(
+                final Instant expiration = assertion.getIssueInstant().plusMillis(
                         lifetime != null ? lifetime : defaultAssertionLifetime);
                 log.debug("{} Added NotOnOrAfter condition, indicating an expiration of {}, to Assertion {}",
                         new Object[] {getLogPrefix(), expiration, assertion.getID()});

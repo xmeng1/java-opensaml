@@ -39,7 +39,7 @@ public class AuthenticationStatementMarshaller extends SubjectStatementMarshalle
         }
 
         if (authenticationStatement.getAuthenticationInstant() != null) {
-            final String value = SAMLConfigurationSupport.getSAMLDateFormatter().print(
+            final String value = SAMLConfigurationSupport.getSAMLDateFormatter().format(
                     authenticationStatement.getAuthenticationInstant());
             domElement.setAttributeNS(null, AuthenticationStatement.AUTHENTICATIONINSTANT_ATTRIB_NAME, value);
         }

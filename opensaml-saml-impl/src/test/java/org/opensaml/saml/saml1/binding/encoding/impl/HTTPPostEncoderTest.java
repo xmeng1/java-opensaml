@@ -18,11 +18,11 @@
 package org.opensaml.saml.saml1.binding.encoding.impl;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.util.List;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.DocumentType;
@@ -74,7 +74,7 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
                 .getBuilder(Response.DEFAULT_ELEMENT_NAME);
         Response samlMessage = requestBuilder.buildObject();
         samlMessage.setID("foo");
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
         samlMessage.setVersion(SAMLVersion.VERSION_11);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory

@@ -17,14 +17,12 @@
 
 package org.opensaml.soap.wssecurity.messaging.impl;
 
-import javax.annotation.Nullable;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
-import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.messaging.context.navigate.ContextDataLookupFunction;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.soap.SOAPMessagingBaseTestCase;
 import org.opensaml.soap.messaging.SOAPMessagingSupport;
@@ -71,13 +69,13 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
         Assert.assertNotNull(timestamp.getCreated());
         Assert.assertNotNull(timestamp.getCreated().getDateTime());
         Assert.assertNotNull(timestamp.getExpires());
-        Assert.assertEquals(timestamp.getExpires().getDateTime(), timestamp.getCreated().getDateTime().plus(5*60*1000));
+        Assert.assertEquals(timestamp.getExpires().getDateTime(), timestamp.getCreated().getDateTime().plusMillis(5*60*1000));
     }
     
     @Test
     public void testContextBothValues() throws ComponentInitializationException, MessageHandlerException {
-        DateTime created = new DateTime(ISOChronology.getInstanceUTC());
-        DateTime expires = created.plusMinutes(5);
+        Instant created = Instant.now();
+        Instant expires = created.plus(5, ChronoUnit.MINUTES);
         getMessageContext().getSubcontext(WSSecurityContext.class, true).setTimestampCreated(created);
         getMessageContext().getSubcontext(WSSecurityContext.class, true).setTimestampExpires(expires);
         
@@ -97,7 +95,7 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
     
     @Test
     public void testContextCreated() throws ComponentInitializationException, MessageHandlerException {
-        DateTime created = new DateTime(ISOChronology.getInstanceUTC());
+        Instant created = Instant.now();
         getMessageContext().getSubcontext(WSSecurityContext.class, true).setTimestampCreated(created);
         
         handler.initialize();
@@ -115,8 +113,8 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
     
     @Test
     public void testContextExpires() throws ComponentInitializationException, MessageHandlerException {
-        DateTime created = new DateTime(ISOChronology.getInstanceUTC());
-        DateTime expires = created.plusMinutes(5);
+        Instant created = Instant.now();
+        Instant expires = created.plus(5, ChronoUnit.MINUTES);
         getMessageContext().getSubcontext(WSSecurityContext.class, true).setTimestampExpires(expires);
         
         handler.initialize();
@@ -134,8 +132,8 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
     
     @Test
     public void testContextCreatedWithOffset() throws ComponentInitializationException, MessageHandlerException {
-        DateTime created = new DateTime(ISOChronology.getInstanceUTC());
-        DateTime expires = created.plusMinutes(5);
+        Instant created = Instant.now();
+        Instant expires = created.plus(5, ChronoUnit.MINUTES);
         getMessageContext().getSubcontext(WSSecurityContext.class, true).setTimestampCreated(created);
         handler.setExpiresOffsetFromCreated(5*60*1000L);
         
@@ -155,18 +153,10 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
     
     @Test
     public void testLookupBothValues() throws ComponentInitializationException, MessageHandlerException {
-        final DateTime created = new DateTime(ISOChronology.getInstanceUTC());
-        final DateTime expires = created.plusMinutes(5);
-        handler.setCreatedLookup(new ContextDataLookupFunction<MessageContext, DateTime>() {
-            @Nullable public DateTime apply(@Nullable MessageContext input) {
-                return created;
-            }
-        });
-        handler.setExpiresLookup(new ContextDataLookupFunction<MessageContext, DateTime>() {
-            @Nullable public DateTime apply(@Nullable MessageContext input) {
-                return expires;
-            }
-        });
+        Instant created = Instant.now();
+        Instant expires = created.plus(5, ChronoUnit.MINUTES);
+        handler.setCreatedLookup(FunctionSupport.constant(created));
+        handler.setExpiresLookup(FunctionSupport.constant(expires));
         
         handler.initialize();
         handler.invoke(getMessageContext());
@@ -184,13 +174,9 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
     
     @Test
     public void testLookupCreatedWithOffset() throws ComponentInitializationException, MessageHandlerException {
-        final DateTime created = new DateTime(ISOChronology.getInstanceUTC());
-        final DateTime expires = created.plusMinutes(5);
-        handler.setCreatedLookup(new ContextDataLookupFunction<MessageContext, DateTime>() {
-            @Nullable public DateTime apply(@Nullable MessageContext input) {
-                return created;
-            }
-        });
+        Instant created = Instant.now();
+        Instant expires = created.plus(5, ChronoUnit.MINUTES);
+        handler.setCreatedLookup(FunctionSupport.constant(created));
         handler.setExpiresOffsetFromCreated(5*60*1000L);
         
         

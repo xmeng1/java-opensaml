@@ -18,9 +18,9 @@
 package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Timer;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ public class ResourceBackedMetadataResolver extends AbstractReloadingMetadataRes
     @Override
     protected byte[] fetchMetadata() throws ResolverException {
         try {
-            final DateTime metadataUpdateTime = new DateTime(metadataResource.lastModified());
+            final Instant metadataUpdateTime = Instant.ofEpochMilli(metadataResource.lastModified());
             log.debug("{} Resource {} was last modified {}", 
                     getLogPrefix(), metadataResource.getDescription(), metadataUpdateTime);
             if (getLastRefresh() == null || metadataUpdateTime.isAfter(getLastRefresh())) {

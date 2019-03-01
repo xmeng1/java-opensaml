@@ -17,13 +17,13 @@
 
 package org.opensaml.saml.saml1.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.saml.common.AbstractSignableSAMLObject;
@@ -53,7 +53,7 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
     private String issuer;
 
     /** Object version of the <code> IssueInstant </code> attribute. */
-    private DateTime issueInstant;
+    private Instant issueInstant;
 
     /** (Possibly null) Singleton object version of the <code> Conditions </code> element. */
     private Conditions conditions;
@@ -115,12 +115,12 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
     }
 
     /** {@inheritDoc} */
-    public DateTime getIssueInstant() {
+    public Instant getIssueInstant() {
         return this.issueInstant;
     }
 
     /** {@inheritDoc} */
-    public void setIssueInstant(final DateTime instant) {
+    public void setIssueInstant(final Instant instant) {
         issueInstant = prepareForAssignment(issueInstant, instant);
     }
 

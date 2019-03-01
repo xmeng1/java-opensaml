@@ -21,11 +21,11 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSignableSAMLObject;
 import org.opensaml.saml.common.SAMLVersion;
@@ -45,7 +45,7 @@ public abstract class RequestAbstractTypeImpl extends AbstractSignableSAMLObject
     private String id;
 
     /** Date/time request was issued. */
-    private DateTime issueInstant;
+    private Instant issueInstant;
 
     /** URI of the request destination. */
     private String destination;
@@ -89,19 +89,19 @@ public abstract class RequestAbstractTypeImpl extends AbstractSignableSAMLObject
 
     /** {@inheritDoc} */
     public void setID(final String newID) {
-        final String oldID = this.id;
-        this.id = prepareForAssignment(this.id, newID);
-        registerOwnID(oldID, this.id);
+        final String oldID = id;
+        id = prepareForAssignment(id, newID);
+        registerOwnID(oldID, id);
     }
 
     /** {@inheritDoc} */
-    public DateTime getIssueInstant() {
+    public Instant getIssueInstant() {
         return issueInstant;
     }
 
     /** {@inheritDoc} */
-    public void setIssueInstant(final DateTime newIssueInstant) {
-        this.issueInstant = prepareForAssignment(this.issueInstant, newIssueInstant);
+    public void setIssueInstant(final Instant newIssueInstant) {
+        issueInstant = prepareForAssignment(issueInstant, newIssueInstant);
     }
 
     /** {@inheritDoc} */
@@ -111,7 +111,7 @@ public abstract class RequestAbstractTypeImpl extends AbstractSignableSAMLObject
 
     /** {@inheritDoc} */
     public void setDestination(final String newDestination) {
-        this.destination = prepareForAssignment(this.destination, newDestination);
+        destination = prepareForAssignment(destination, newDestination);
     }
 
     /** {@inheritDoc} */
@@ -121,7 +121,7 @@ public abstract class RequestAbstractTypeImpl extends AbstractSignableSAMLObject
 
     /** {@inheritDoc} */
     public void setConsent(final String newConsent) {
-        this.consent = prepareForAssignment(this.consent, newConsent);
+        consent = prepareForAssignment(consent, newConsent);
     }
 
     /** {@inheritDoc} */
@@ -131,17 +131,17 @@ public abstract class RequestAbstractTypeImpl extends AbstractSignableSAMLObject
 
     /** {@inheritDoc} */
     public void setIssuer(final Issuer newIssuer) {
-        this.issuer = prepareForAssignment(this.issuer, newIssuer);
+        issuer = prepareForAssignment(issuer, newIssuer);
     }
 
     /** {@inheritDoc} */
     public Extensions getExtensions() {
-        return this.extensions;
+        return extensions;
     }
 
     /** {@inheritDoc} */
     public void setExtensions(final Extensions newExtensions) {
-        this.extensions = prepareForAssignment(this.extensions, newExtensions);
+        extensions = prepareForAssignment(extensions, newExtensions);
     }
 
     /** {@inheritDoc} */

@@ -21,11 +21,11 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
@@ -47,7 +47,7 @@ public class AffiliationDescriptorImpl extends AbstractSignableSAMLObject implem
     private String id;
 
     /** validUntil attribute. */
-    private DateTime validUntil;
+    private Instant validUntil;
 
     /** cacheDurection attribute. */
     private Long cacheDuration;
@@ -115,19 +115,18 @@ public class AffiliationDescriptorImpl extends AbstractSignableSAMLObject implem
             return true;
         }
 
-        final DateTime now = new DateTime();
-        return now.isBefore(validUntil);
+        return Instant.now().isBefore(validUntil);
     }
 
     /** {@inheritDoc} */
     @Override
-    public DateTime getValidUntil() {
+    public Instant getValidUntil() {
         return validUntil;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setValidUntil(final DateTime theValidUntil) {
+    public void setValidUntil(final Instant theValidUntil) {
         this.validUntil = prepareForAssignment(this.validUntil, theValidUntil);
     }
 

@@ -17,9 +17,10 @@
 
 package org.opensaml.saml.saml2.core;
 
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
 /**
@@ -55,14 +56,14 @@ public interface AuthnStatement extends Statement {
      * 
      * @return the time when the authentication took place
      */
-    public DateTime getAuthnInstant();
+    public Instant getAuthnInstant();
 
     /**
      * Sets the time when the authentication took place.
      * 
      * @param newAuthnInstant the time when the authentication took place
      */
-    public void setAuthnInstant(DateTime newAuthnInstant);
+    public void setAuthnInstant(Instant newAuthnInstant);
 
     /**
      * Get the session index between the principal and the authenticating authority.
@@ -83,14 +84,14 @@ public interface AuthnStatement extends Statement {
      * 
      * @return the time when the session between the principal and the SAML authority ends
      */
-    public DateTime getSessionNotOnOrAfter();
+    public Instant getSessionNotOnOrAfter();
 
     /**
      * Set the time when the session between the principal and the SAML authority ends.
      * 
      * @param newSessionNotOnOrAfter the time when the session between the principal and the SAML authority ends
      */
-    public void setSessionNotOnOrAfter(DateTime newSessionNotOnOrAfter);
+    public void setSessionNotOnOrAfter(Instant newSessionNotOnOrAfter);
 
     /**
      * Get the DNS domain and IP address of the system where the principal was authenticated.

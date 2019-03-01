@@ -19,11 +19,10 @@ package org.opensaml.saml.metadata.resolver.filter.impl;
 
 import java.io.File;
 import java.net.URL;
+import java.time.Instant;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.common.SAMLObjectBuilder;
@@ -104,7 +103,7 @@ public class RequiredValidUntilTest extends XMLObjectBaseTestCase {
         SAMLObjectBuilder<EntitiesDescriptor> entitiesDescriptorBuilder = 
                 (SAMLObjectBuilder<EntitiesDescriptor>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(EntitiesDescriptor.TYPE_NAME);
         EntitiesDescriptor descriptor = entitiesDescriptorBuilder.buildObject();
-        descriptor.setValidUntil(new DateTime(ISOChronology.getInstanceUTC()).minus(10000));
+        descriptor.setValidUntil(Instant.now().minusMillis(10000));
 
         RequiredValidUntilFilter filter = new RequiredValidUntilFilter(-1);
         filter.filter(descriptor);

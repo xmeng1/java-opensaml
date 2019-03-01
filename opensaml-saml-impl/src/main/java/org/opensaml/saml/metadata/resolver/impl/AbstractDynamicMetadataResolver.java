@@ -19,6 +19,7 @@ package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,8 +39,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.metrics.MetricsSupport;
 import org.opensaml.core.xml.XMLObject;
@@ -870,7 +869,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
 
                 if (!descriptors.isEmpty()) {
                     mgmtData.setRefreshTriggerTime(computeRefreshTriggerTime(mgmtData.getExpirationTime(), 
-                            new DateTime(ISOChronology.getInstanceUTC())));
+                            Instant.now()));
                     log.debug("{} Had existing data, recalculated refresh trigger time as: {}", 
                             getLogPrefix(), mgmtData.getRefreshTriggerTime());
                 }
@@ -1168,7 +1167,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         final DynamicEntityBackingStore dynamicBackingStore = (DynamicEntityBackingStore) backingStore;
         final EntityManagementData mgmtData = dynamicBackingStore.getManagementData(entityID);
         
-        final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+        final Instant now = Instant.now();
         log.debug("{} For metadata expiration and refresh computation, 'now' is : {}", getLogPrefix(), now);
         
         mgmtData.setLastUpdateTime(now);
@@ -1190,14 +1189,14 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * @param nextRefresh  the next refresh trigger time for the entity descriptor
      */
     private void logMetadataExpiration(@Nonnull final EntityDescriptor descriptor,
-            @Nonnull final DateTime now, @Nonnull final DateTime nextRefresh) {
+            @Nonnull final Instant now, @Nonnull final Instant nextRefresh) {
         if (!isValid(descriptor)) {
             log.warn("{} Metadata with ID '{}' currently live is expired or otherwise invalid",
                     getLogPrefix(), descriptor.getEntityID());
         } else {
             if (isRequireValidMetadata() && descriptor.getValidUntil() != null) {
                 if (getExpirationWarningThreshold() > 0 
-                        && descriptor.getValidUntil().isBefore(now.plus(getExpirationWarningThreshold()))) {
+                        && descriptor.getValidUntil().isBefore(now.plusMillis(getExpirationWarningThreshold()))) {
                     log.warn("{} Metadata with ID '{}' currently live will expire "
                             + "within the configured threshhold at '{}'",
                             getLogPrefix(), descriptor.getEntityID(), descriptor.getValidUntil());
@@ -1217,13 +1216,13 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * @param now the current date time instant
      * @return the effective expiration time for the metadata
      */
-    @Nonnull protected DateTime computeExpirationTime(@Nonnull final EntityDescriptor entityDescriptor,
-            @Nonnull final DateTime now) {
+    @Nonnull protected Instant computeExpirationTime(@Nonnull final EntityDescriptor entityDescriptor,
+            @Nonnull final Instant now) {
         
-        final DateTime lowerBound = now.toDateTime(ISOChronology.getInstanceUTC()).plus(getMinCacheDuration());
+        final Instant lowerBound = now.plusMillis(getMinCacheDuration());
         
-        DateTime expiration = SAML2Support.getEarliestExpiration(entityDescriptor, 
-                now.plus(getMaxCacheDuration()), now);
+        Instant expiration = SAML2Support.getEarliestExpiration(entityDescriptor, 
+                now.plusMillis(getMaxCacheDuration()), now);
         if (expiration.isBefore(lowerBound)) {
             expiration = lowerBound;
         }
@@ -1239,15 +1238,14 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @return the time after which refresh attempt(s) should be made
      */
-    @Nonnull protected DateTime computeRefreshTriggerTime(@Nullable final DateTime expirationTime,
-            @Nonnull final DateTime nowDateTime) {
+    @Nonnull protected Instant computeRefreshTriggerTime(@Nullable final Instant expirationTime,
+            @Nonnull final Instant nowDateTime) {
         
-        final DateTime nowDateTimeUTC = nowDateTime.toDateTime(ISOChronology.getInstanceUTC());
-        final long now = nowDateTimeUTC.getMillis();
+        final long now = nowDateTime.toEpochMilli();
 
         long expireInstant = 0;
         if (expirationTime != null) {
-            expireInstant = expirationTime.toDateTime(ISOChronology.getInstanceUTC()).getMillis();
+            expireInstant = expirationTime.toEpochMilli();
         }
         long refreshDelay = (long) ((expireInstant - now) * getRefreshDelayFactor());
 
@@ -1257,7 +1255,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             refreshDelay = getMinCacheDuration();
         }
 
-        return nowDateTimeUTC.plus(refreshDelay);
+        return nowDateTime.plusMillis(refreshDelay);
     }
     
     /**
@@ -1267,8 +1265,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * @return true if should attempt refresh, false otherwise
      */
     protected boolean shouldAttemptRefresh(@Nonnull final EntityManagementData mgmtData) {
-        final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-        return now.isAfter(mgmtData.getRefreshTriggerTime());
+        return Instant.now().isAfter(mgmtData.getRefreshTriggerTime());
         
     }
 
@@ -1652,19 +1649,19 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         private String entityID;
         
         /** Last update time of the associated metadata. */
-        private DateTime lastUpdateTime;
+        private Instant lastUpdateTime;
         
         /** Expiration time of the associated metadata. */
-        private DateTime expirationTime;
+        private Instant expirationTime;
         
         /** Time at which should start attempting to refresh the metadata. */
-        private DateTime refreshTriggerTime;
+        private Instant refreshTriggerTime;
         
         /** The last time in milliseconds at which the entity's backing store data was accessed. */
-        private DateTime lastAccessedTime;
+        private Instant lastAccessedTime;
         
         /** The time at which the negative lookup cache flag expires, if set. */
-        private DateTime negativeLookupCacheExpiration;
+        private Instant negativeLookupCacheExpiration;
         
         /** Read-write lock instance which governs access to the entity's backing store data. */
         private ReadWriteLock readWriteLock;
@@ -1675,9 +1672,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          */
         protected EntityManagementData(@Nonnull final String id) {
             entityID = Constraint.isNotNull(id, "Entity ID was null");
-            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-            expirationTime = now.plus(getMaxCacheDuration());
-            refreshTriggerTime = now.plus(getMaxCacheDuration());
+            final Instant now = Instant.now();
+            expirationTime = now.plusMillis(getMaxCacheDuration());
+            refreshTriggerTime = now.plusMillis(getMaxCacheDuration());
             lastAccessedTime = now;
             readWriteLock = new ReentrantReadWriteLock(true);
         }
@@ -1696,7 +1693,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the last update time, or null if no metadata is yet loaded for the entity
          */
-        @Nullable public DateTime getLastUpdateTime() {
+        @Nullable public Instant getLastUpdateTime() {
             return lastUpdateTime;
         }
 
@@ -1705,7 +1702,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @param dateTime the last update time
          */
-        public void setLastUpdateTime(@Nonnull final DateTime dateTime) {
+        public void setLastUpdateTime(@Nonnull final Instant dateTime) {
             lastUpdateTime = dateTime;
         }
         
@@ -1714,7 +1711,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the expiration time
          */
-        @Nonnull public DateTime getExpirationTime() {
+        @Nonnull public Instant getExpirationTime() {
             return expirationTime;
         }
 
@@ -1723,7 +1720,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @param dateTime the new expiration time
          */
-        public void setExpirationTime(@Nonnull final DateTime dateTime) {
+        public void setExpirationTime(@Nonnull final Instant dateTime) {
             expirationTime = Constraint.isNotNull(dateTime, "Expiration time may not be null");
         }
         
@@ -1732,7 +1729,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the refresh trigger time
          */
-        @Nonnull public DateTime getRefreshTriggerTime() {
+        @Nonnull public Instant getRefreshTriggerTime() {
             return refreshTriggerTime;
         }
 
@@ -1741,7 +1738,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @param dateTime the new refresh trigger time
          */
-        public void setRefreshTriggerTime(@Nonnull final DateTime dateTime) {
+        public void setRefreshTriggerTime(@Nonnull final Instant dateTime) {
             refreshTriggerTime = Constraint.isNotNull(dateTime, "Refresh trigger time may not be null");
         }
 
@@ -1750,7 +1747,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the time in milliseconds since the epoch
          */
-        @Nonnull public DateTime getLastAccessedTime() {
+        @Nonnull public Instant getLastAccessedTime() {
             return lastAccessedTime;
         }
         
@@ -1758,7 +1755,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * Record access of the entity's backing store data.
          */
         public void recordEntityAccess() {
-            lastAccessedTime = new DateTime(ISOChronology.getInstanceUTC());
+            lastAccessedTime = Instant.now();
         }
         
         /**
@@ -1767,8 +1764,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * @return true if active, false otherwise
          */
         public boolean isNegativeLookupCacheActive() {
-            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-            return negativeLookupCacheExpiration != null && now.isBefore(negativeLookupCacheExpiration);
+            return negativeLookupCacheExpiration != null && Instant.now().isBefore(negativeLookupCacheExpiration);
         }
         
         /**
@@ -1776,9 +1772,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the time before which no further lookups for the entity will be performed
          */
-        public DateTime initNegativeLookupCache() {
-            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-            negativeLookupCacheExpiration = now.plus(getNegativeLookupCacheDuration());
+        public Instant initNegativeLookupCache() {
+            negativeLookupCacheExpiration = Instant.now().plusMillis(getNegativeLookupCacheDuration());
             return negativeLookupCacheExpiration;
         }
         
@@ -1807,7 +1802,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     protected class BackingStoreCleanupSweeper extends TimerTask {
         
         /** Logger. */
-        private final Logger log = LoggerFactory.getLogger(BackingStoreCleanupSweeper.class);
+        @Nonnull private final Logger log = LoggerFactory.getLogger(BackingStoreCleanupSweeper.class);
 
         /** {@inheritDoc} */
         @Override
@@ -1828,8 +1823,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          *  which hasn't been accessed within the last {@link #getMaxIdleEntityData()} milliseconds.
          */
         private void removeExpiredAndIdleMetadata() {
-            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-            final DateTime earliestValidLastAccessed = now.minus(getMaxIdleEntityData());
+            final Instant now = Instant.now();
+            final Instant earliestValidLastAccessed = now.minusMillis(getMaxIdleEntityData());
             
             final DynamicEntityBackingStore backingStore = getBackingStore();
             final Map<String, List<EntityDescriptor>> indexedDescriptors = backingStore.getIndexedDescriptors();
@@ -1862,7 +1857,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * @return true if the entity is expired or exceeds the max idle time, false otherwise
          */
         private boolean isRemoveData(@Nonnull final EntityManagementData mgmtData, 
-                @Nonnull final DateTime now, @Nonnull final DateTime earliestValidLastAccessed) {
+                @Nonnull final Instant now, @Nonnull final Instant earliestValidLastAccessed) {
             if (isRemoveIdleEntityData() && mgmtData.getLastAccessedTime().isBefore(earliestValidLastAccessed)) {
                 log.debug("{} Entity metadata exceeds maximum idle time, removing: {}", 
                         getLogPrefix(), mgmtData.getEntityID());

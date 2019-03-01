@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.ext.saml2mdrpi;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
@@ -72,14 +72,14 @@ public interface RegistrationInfo extends SAMLObject {
      * 
      * @return the registration instant
      */
-    public DateTime getRegistrationInstant();
+    public Instant getRegistrationInstant();
 
     /**
      * Set the registration instant.
      * 
      * @param dateTime the instant
      */
-    public void setRegistrationInstant(DateTime dateTime);
+    public void setRegistrationInstant(Instant dateTime);
 
     /**
      * Get the {@link RegistrationPolicy}s.

@@ -21,11 +21,11 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSignableSAMLObject;
 import org.opensaml.saml.common.SAMLVersion;
@@ -49,7 +49,7 @@ public abstract class StatusResponseTypeImpl extends AbstractSignableSAMLObject 
     private String inResponseTo;
 
     /** IssueInstant attribute. */
-    private DateTime issueInstant;
+    private Instant issueInstant;
 
     /** Destination attribute. */
     private String destination;
@@ -86,7 +86,7 @@ public abstract class StatusResponseTypeImpl extends AbstractSignableSAMLObject 
 
     /** {@inheritDoc} */
     public void setVersion(final SAMLVersion newVersion) {
-        this.version = prepareForAssignment(this.version, newVersion);
+        version = prepareForAssignment(version, newVersion);
     }
     
     /** {@inheritDoc} */
@@ -112,13 +112,13 @@ public abstract class StatusResponseTypeImpl extends AbstractSignableSAMLObject 
     }
 
     /** {@inheritDoc} */
-    public DateTime getIssueInstant() {
-        return this.issueInstant;
+    public Instant getIssueInstant() {
+        return issueInstant;
     }
 
     /** {@inheritDoc} */
-    public void setIssueInstant(final DateTime newIssueInstant) {
-        this.issueInstant = prepareForAssignment(this.issueInstant, newIssueInstant);
+    public void setIssueInstant(final Instant newIssueInstant) {
+        issueInstant = prepareForAssignment(issueInstant, newIssueInstant);
     }
 
     /** {@inheritDoc} */

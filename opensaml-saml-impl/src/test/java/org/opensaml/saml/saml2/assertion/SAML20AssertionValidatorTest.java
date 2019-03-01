@@ -25,6 +25,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +39,6 @@ import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.assertion.AssertionValidationException;
@@ -329,8 +330,8 @@ public class SAML20AssertionValidatorTest extends BaseAssertionValidationTest {
     
     @Test
     public void testInvalidConditionsNotBefore() throws AssertionValidationException {
-        getAssertion().getConditions().setNotBefore(new DateTime().plusMinutes(30));
-        getAssertion().getConditions().setNotOnOrAfter(new DateTime().plusMinutes(60));
+        getAssertion().getConditions().setNotBefore(Instant.now().plus(30, ChronoUnit.MINUTES));
+        getAssertion().getConditions().setNotOnOrAfter(Instant.now().plus(60, ChronoUnit.MINUTES));
         
         validator = getCurrentValidator();
         
@@ -346,8 +347,8 @@ public class SAML20AssertionValidatorTest extends BaseAssertionValidationTest {
     
     @Test
     public void testInvalidConditionsNotOnOrAfter() throws AssertionValidationException {
-        getAssertion().getConditions().setNotBefore(new DateTime().minusMinutes(60));
-        getAssertion().getConditions().setNotOnOrAfter(new DateTime().minusMinutes(30));
+        getAssertion().getConditions().setNotBefore(Instant.now().minus(60, ChronoUnit.MINUTES));
+        getAssertion().getConditions().setNotOnOrAfter(Instant.now().minus(30, ChronoUnit.MINUTES));
         
         validator = getCurrentValidator();
         

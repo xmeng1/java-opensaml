@@ -20,12 +20,12 @@ package org.opensaml.saml.common;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensaml.core.xml.AbstractXMLObject;
 
 /**
  * An abstract implementation of SAMLObject.
+ * 
+ * TODO: this is a no-op base class now
  */
 public abstract class AbstractSAMLObject extends AbstractXMLObject {
 
@@ -55,26 +55,4 @@ public abstract class AbstractSAMLObject extends AbstractXMLObject {
         return super.hashCode();
     }
 
-    /**
-     * A helper function for derived classes that checks to see if the old and new value are equal and if so releases
-     * the cached dom. Derived classes are expected to use this thus: <code>
-     *   this.foo = prepareForAssignment(this.foo, foo);
-     *   </code>
-     * 
-     * This method will do a (null) safe compare of the objects and will also invalidate the DOM if appropriate
-     * 
-     * @param oldValue - current value
-     * @param newValue - proposed new value
-     * 
-     * @return The value to assign to the saved Object.
-     */
-    @Nullable protected DateTime prepareForAssignment(@Nullable final DateTime oldValue,
-            @Nullable final DateTime newValue) {
-        DateTime utcValue = null;
-        if (newValue != null) {
-            utcValue = newValue.withZone(DateTimeZone.UTC);
-        }
-
-        return super.prepareForAssignment(oldValue, utcValue);
-    }
 }

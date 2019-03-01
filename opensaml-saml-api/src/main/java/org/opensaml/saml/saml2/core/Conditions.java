@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.saml2.core;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
@@ -55,28 +55,28 @@ public interface Conditions extends SAMLObject {
      * 
      * @return the date/time before which the assertion is invalid
      */
-    public DateTime getNotBefore();
+    public Instant getNotBefore();
 
     /**
      * Sets the date/time before which the assertion is invalid.
      * 
      * @param newNotBefore the date/time before which the assertion is invalid
      */
-    public void setNotBefore(DateTime newNotBefore);
+    public void setNotBefore(Instant newNotBefore);
 
     /**
      * Gets the date/time on, or after, which the assertion is invalid.
      * 
      * @return the date/time on, or after, which the assertion is invalid
      */
-    public DateTime getNotOnOrAfter();
+    public Instant getNotOnOrAfter();
 
     /**
      * Sets the date/time on, or after, which the assertion is invalid.
      * 
      * @param newNotOnOrAfter the date/time on, or after, which the assertion is invalid
      */
-    public void setNotOnOrAfter(DateTime newNotOnOrAfter);
+    public void setNotOnOrAfter(Instant newNotOnOrAfter);
 
     /**
      * Gets all the conditions on the assertion.

@@ -19,6 +19,7 @@ package org.opensaml.saml.saml2.assertion.impl;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -27,8 +28,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.saml.common.assertion.AssertionValidationException;
 import org.opensaml.saml.common.assertion.ValidationContext;
 import org.opensaml.saml.common.assertion.ValidationResult;
@@ -125,9 +124,8 @@ public abstract class AbstractSubjectConfirmationValidator implements SubjectCon
     @Nonnull protected ValidationResult validateNotBefore(@Nonnull final SubjectConfirmation confirmation, 
             @Nonnull final Assertion assertion, @Nonnull final ValidationContext context) 
                     throws AssertionValidationException {
-        final DateTime skewedNow = new DateTime(ISOChronology.getInstanceUTC()).plus(SAML20AssertionValidator
-                .getClockSkew(context));
-        final DateTime notBefore = confirmation.getSubjectConfirmationData().getNotBefore();
+        final Instant skewedNow = Instant.now().plusMillis(SAML20AssertionValidator.getClockSkew(context));
+        final Instant notBefore = confirmation.getSubjectConfirmationData().getNotBefore();
         
         log.debug("Evaluating SubjectConfirmationData NotBefore '{}' against 'skewed now' time '{}'",
                 notBefore, skewedNow);
@@ -157,9 +155,8 @@ public abstract class AbstractSubjectConfirmationValidator implements SubjectCon
     @Nonnull protected ValidationResult validateNotOnOrAfter(@Nonnull final SubjectConfirmation confirmation, 
             @Nonnull final Assertion assertion, @Nonnull final ValidationContext context) 
                     throws AssertionValidationException {
-        final DateTime skewedNow = new DateTime(ISOChronology.getInstanceUTC()).minus(SAML20AssertionValidator
-                .getClockSkew(context));
-        final DateTime notOnOrAfter = confirmation.getSubjectConfirmationData().getNotOnOrAfter();
+        final Instant skewedNow = Instant.now().minusMillis(SAML20AssertionValidator.getClockSkew(context));
+        final Instant notOnOrAfter = confirmation.getSubjectConfirmationData().getNotOnOrAfter();
         
         log.debug("Evaluating SubjectConfirmationData NotOnOrAfter '{}' against 'skewed now' time '{}'",
                 notOnOrAfter, skewedNow);

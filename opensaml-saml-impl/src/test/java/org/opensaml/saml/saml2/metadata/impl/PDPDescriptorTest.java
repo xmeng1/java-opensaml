@@ -21,12 +21,11 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.Extensions;
@@ -51,7 +50,7 @@ public class PDPDescriptorTest extends XMLObjectProviderBaseTestCase {
     protected long expectedCacheDuration;
 
     /** Expected validUntil value */
-    protected DateTime expectedValidUntil;
+    protected Instant expectedValidUntil;
 
     /** Expected error url */
     protected String expectedErrorURL;
@@ -72,7 +71,7 @@ public class PDPDescriptorTest extends XMLObjectProviderBaseTestCase {
         expectedSupportedProtocol.add("urn:fooz:baz");
 
         expectedCacheDuration = 90000;
-        expectedValidUntil = new DateTime(2005, 12, 7, 10, 21, 0, 0, ISOChronology.getInstanceUTC());
+        expectedValidUntil = Instant.parse("2005-12-07T10:21:00Z");
 
         expectedErrorURL = "http://example.org";
     }

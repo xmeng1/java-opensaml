@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.saml1.core;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
@@ -55,28 +55,28 @@ public interface Conditions extends SAMLObject {
      * 
      * @return the "not before" condition 
      */
-    public DateTime getNotBefore();
+    public Instant getNotBefore();
 
     /**
      * Set the "not before" condition.
      * 
      * @param notBefore the "not before" condition 
      */
-    public void setNotBefore(DateTime notBefore);
+    public void setNotBefore(Instant notBefore);
 
     /**
      * Get the "not on or after" condition.
      * 
      * @return the "not on or after" condition 
      */
-    public DateTime getNotOnOrAfter();
+    public Instant getNotOnOrAfter();
 
     /**
      * Set the "not on or after" condition.
      * 
      * @param notOnOrAfter the "not on or after" condition 
      */
-    public void setNotOnOrAfter(DateTime notOnOrAfter);
+    public void setNotOnOrAfter(Instant notOnOrAfter);
     
     /**
      * Get the conditions.

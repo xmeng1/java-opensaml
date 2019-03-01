@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.saml1.core;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
@@ -102,14 +102,14 @@ public interface AuthenticationStatement extends SAMLObject, SubjectStatement {
      * 
      * @return the authentication instant
      */
-    public DateTime getAuthenticationInstant();
+    public Instant getAuthenticationInstant();
 
     /**
      * Set the contents of the AuthenticationInstant attribute.
      *
      *  @param authenticationInstant the authentication instant
      */
-    public void setAuthenticationInstant(DateTime authenticationInstant);
+    public void setAuthenticationInstant(Instant authenticationInstant);
 
     /**
      * Get the {@link SubjectLocality}.

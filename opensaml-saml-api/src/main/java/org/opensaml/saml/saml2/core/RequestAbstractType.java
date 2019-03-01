@@ -17,9 +17,10 @@
 
 package org.opensaml.saml.saml2.core;
 
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -107,14 +108,14 @@ public interface RequestAbstractType extends SignableSAMLObject {
      * @return the date/time the request was issued
      */
 
-    public DateTime getIssueInstant();
+    public Instant getIssueInstant();
 
     /**
      * Sets the date/time the request was issued.
      * 
      * @param newIssueInstant the date/time the request was issued
      */
-    public void setIssueInstant(DateTime newIssueInstant);
+    public void setIssueInstant(Instant newIssueInstant);
 
     /**
      * Gets the URI of the destination of the request.

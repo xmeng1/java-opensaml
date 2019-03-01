@@ -27,13 +27,14 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.XMLObjectBuilder;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -77,7 +78,7 @@ public class BaseAssertionValidationTest extends XMLObjectBaseTestCase {
     @BeforeMethod
     protected void setUpBasicAssertion() {
         assertion = SAML2ActionTestingSupport.buildAssertion();
-        assertion.setIssueInstant(new DateTime());
+        assertion.setIssueInstant(Instant.now());
         assertion.setIssuer(SAML2ActionTestingSupport.buildIssuer(ISSUER));
         assertion.setSubject(SAML2ActionTestingSupport.buildSubject(PRINCIPAL_NAME));
         assertion.setConditions(buildBasicConditions());
@@ -91,9 +92,9 @@ public class BaseAssertionValidationTest extends XMLObjectBaseTestCase {
     
     protected Conditions buildBasicConditions() {
         Conditions conditions = buildXMLObject(Conditions.DEFAULT_ELEMENT_NAME);
-        DateTime now = new DateTime();
-        conditions.setNotBefore(now.minusMinutes(5));
-        conditions.setNotOnOrAfter(now.plusMinutes(5));
+        Instant now = Instant.now();
+        conditions.setNotBefore(now.minus(5, ChronoUnit.MINUTES));
+        conditions.setNotOnOrAfter(now.plus(5, ChronoUnit.MINUTES));
         return conditions;
     }
     
@@ -112,9 +113,9 @@ public class BaseAssertionValidationTest extends XMLObjectBaseTestCase {
        }
        scd.setRecipient(SUBJECT_CONFIRMATION_RECIPIENT);
        scd.setAddress(SUBJECT_CONFIRMATION_ADDRESS);
-       DateTime now = new DateTime();
-       scd.setNotBefore(now.minusMinutes(5));
-       scd.setNotOnOrAfter(now.plusMinutes(5));
+       Instant now = Instant.now();
+       scd.setNotBefore(now.minus(5, ChronoUnit.MINUTES));
+       scd.setNotOnOrAfter(now.plus(5, ChronoUnit.MINUTES));
        return scd;
     }
     

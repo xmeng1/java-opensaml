@@ -17,9 +17,10 @@
 
 package org.opensaml.saml.ext.saml2delrestrict;
 
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.BaseID;
@@ -99,14 +100,14 @@ public interface Delegate extends SAMLObject {
      * 
      * @return the delegation instant
      */
-    public DateTime getDelegationInstant();
+    public Instant getDelegationInstant();
     
     /**
      * Set the delegation instant attribute value.
      * 
      * @param newInstant the new delegation instant
      */
-    public void setDelegationInstant(DateTime newInstant);
+    public void setDelegationInstant(Instant newInstant);
     
     /**
      * Get the confirmation method attribute value.

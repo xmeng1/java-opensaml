@@ -20,6 +20,7 @@ package org.opensaml.saml.metadata.resolver.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Timer;
 
 import javax.annotation.Nonnull;
@@ -32,7 +33,6 @@ import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
 import org.apache.http.client.HttpClient;
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -317,7 +317,7 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
 
     /** {@inheritDoc} */
     @Override
-    protected long computeNextRefreshDelay(final DateTime expectedExpiration) {
+    protected long computeNextRefreshDelay(final Instant expectedExpiration) {
         if (initializing && initializedFromBackupFile) {
             log.debug("{} Detected initialization from backup file, scheduling next refresh from HTTP in {}ms", 
                     getLogPrefix(), getBackupFileInitNextRefreshDelay());

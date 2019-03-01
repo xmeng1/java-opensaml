@@ -17,9 +17,10 @@
 
 package org.opensaml.saml.saml2.core;
 
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.AttributeExtensibleXMLObject;
 import org.opensaml.core.xml.ElementExtensibleXMLObject;
 import org.opensaml.saml.common.SAMLObject;
@@ -64,28 +65,28 @@ public interface SubjectConfirmationData extends SAMLObject, ElementExtensibleXM
      * 
      * @return the time before which this subject is not valid
      */
-    public DateTime getNotBefore();
+    public Instant getNotBefore();
 
     /**
      * Sets the time before which this subject is not valid.
      * 
      * @param newNotBefore the time before which this subject is not valid
      */
-    public void setNotBefore(DateTime newNotBefore);
+    public void setNotBefore(Instant newNotBefore);
 
     /**
      * Gets the time at, or after, which this subject is not valid.
      * 
      * @return the time at, or after, which this subject is not valid
      */
-    public DateTime getNotOnOrAfter();
+    public Instant getNotOnOrAfter();
 
     /**
      * Sets the time at, or after, which this subject is not valid.
      * 
      * @param newNotOnOrAfter the time at, or after, which this subject is not valid
      */
-    public void setNotOnOrAfter(DateTime newNotOnOrAfter);
+    public void setNotOnOrAfter(Instant newNotOnOrAfter);
 
     /**
      * Gets the recipient of this subject.

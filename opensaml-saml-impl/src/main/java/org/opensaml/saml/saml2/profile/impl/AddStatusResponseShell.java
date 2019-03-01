@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.saml2.profile.impl;
 
+import java.time.Instant;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
@@ -30,8 +31,6 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
 import net.shibboleth.utilities.java.support.security.SecureRandomIdentifierGenerationStrategy;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.messaging.context.MessageContext;
@@ -209,7 +208,7 @@ public class AddStatusResponseShell extends AbstractProfileAction {
         final StatusResponseType response = (StatusResponseType) object;
         
         response.setID(idGenerator.generateIdentifier());
-        response.setIssueInstant(new DateTime(ISOChronology.getInstanceUTC()));
+        response.setIssueInstant(Instant.now());
         response.setStatus(status);
         response.setVersion(SAMLVersion.VERSION_20);
 

@@ -62,7 +62,7 @@ public class AffiliationDescriptorMarshaller extends AbstractSAMLObjectMarshalle
         if (descriptor.getValidUntil() != null) {
             log.debug("Writting validUntil attribute to AffiliationDescriptor DOM element");
             final String validUntilStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(descriptor.getValidUntil());
+                    SAMLConfigurationSupport.getSAMLDateFormatter().format(descriptor.getValidUntil());
             domElement.setAttributeNS(null, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME, validUntilStr);
         }
 

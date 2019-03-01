@@ -20,9 +20,11 @@ package org.opensaml.soap.wstrust.impl;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.core.xml.schema.XSBooleanValue;
@@ -415,7 +417,7 @@ public class WSTrustObjectsTestCase extends WSBaseTestCase {
     protected Timestamp createTimestamp() throws Exception {
         Timestamp timestamp= buildXMLObject(Timestamp.ELEMENT_NAME);
         Created created= buildXMLObject(Created.ELEMENT_NAME);
-        created.setDateTime(new DateTime());
+        created.setDateTime(Instant.now());
         timestamp.setCreated(created);
         return timestamp;
     }
@@ -439,7 +441,7 @@ public class WSTrustObjectsTestCase extends WSBaseTestCase {
         Password password= buildXMLObject(Password.ELEMENT_NAME);
         password.setValue(pass);
         Created created= buildXMLObject(Created.ELEMENT_NAME);
-        created.setDateTime(new DateTime());
+        created.setDateTime(Instant.now());
         String id= "UsernameToken-" + System.currentTimeMillis();
         usernameToken.setWSUId(id);
         usernameToken.setUsername(username);

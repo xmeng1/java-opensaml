@@ -21,8 +21,8 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
@@ -58,13 +58,12 @@ public class AuthnStatementUnmarshaller extends AbstractSAMLObjectUnmarshaller {
         if (attribute.getNamespaceURI() == null) {
             if (attribute.getLocalName().equals(AuthnStatement.AUTHN_INSTANT_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                authnStatement.setAuthnInstant(new DateTime(attribute.getValue(), ISOChronology.getInstanceUTC()));
+                authnStatement.setAuthnInstant(Instant.parse(attribute.getValue()));
             } else if (attribute.getLocalName().equals(AuthnStatement.SESSION_INDEX_ATTRIB_NAME)) {
                 authnStatement.setSessionIndex(attribute.getValue());
             } else if (attribute.getLocalName().equals(AuthnStatement.SESSION_NOT_ON_OR_AFTER_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                authnStatement.setSessionNotOnOrAfter(new DateTime(attribute.getValue(),
-                        ISOChronology.getInstanceUTC()));
+                authnStatement.setSessionNotOnOrAfter(Instant.parse(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

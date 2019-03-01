@@ -17,7 +17,8 @@
 
 package org.opensaml.saml.saml1.core;
 
-import org.joda.time.DateTime;
+import java.time.Instant;
+
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
 
@@ -91,12 +92,12 @@ public interface ResponseAbstractType extends SignableSAMLObject {
      * 
      * @return the IssueInstant
      */
-    public DateTime getIssueInstant();
+    public Instant getIssueInstant();
 
     /** Set the Issue Instant (attribute).     * 
      * @param date what to set
      */
-    public void setIssueInstant(DateTime date);
+    public void setIssueInstant(Instant date);
 
     /**
      * Return the Recipient (attribute). .

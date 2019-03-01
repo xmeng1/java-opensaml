@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -34,7 +35,6 @@ import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.metadata.resolver.ClearableMetadataResolver;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.RefreshableMetadataResolver;
@@ -182,11 +182,11 @@ public class CompositeMetadataResolver extends AbstractIdentifiedInitializableCo
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public DateTime getLastUpdate() {
-        DateTime ret = null;
+    @Nullable public Instant getLastUpdate() {
+        Instant ret = null;
         for (final MetadataResolver resolver : resolvers) {
             if (resolver instanceof RefreshableMetadataResolver) {
-                final DateTime lastUpdate = ((RefreshableMetadataResolver) resolver).getLastUpdate();
+                final Instant lastUpdate = ((RefreshableMetadataResolver) resolver).getLastUpdate();
                 if (ret == null || ret.isBefore(lastUpdate)) {
                     ret = lastUpdate;
                 }
@@ -198,11 +198,11 @@ public class CompositeMetadataResolver extends AbstractIdentifiedInitializableCo
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public DateTime getLastRefresh() {
-        DateTime ret = null;
+    @Nullable public Instant getLastRefresh() {
+        Instant ret = null;
         for (final MetadataResolver resolver : resolvers) {
             if (resolver instanceof RefreshableMetadataResolver) {
-                final DateTime lastRefresh = ((RefreshableMetadataResolver) resolver).getLastRefresh();
+                final Instant lastRefresh = ((RefreshableMetadataResolver) resolver).getLastRefresh();
                 if (ret == null || ret.isBefore(lastRefresh)) {
                     ret = lastRefresh;
                 }

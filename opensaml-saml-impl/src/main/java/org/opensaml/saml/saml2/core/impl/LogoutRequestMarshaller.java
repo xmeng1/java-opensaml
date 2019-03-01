@@ -42,7 +42,7 @@ public class LogoutRequestMarshaller extends RequestAbstractTypeMarshaller {
         }
 
         if (req.getNotOnOrAfter() != null) {
-            final String noaStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(req.getNotOnOrAfter());
+            final String noaStr = SAMLConfigurationSupport.getSAMLDateFormatter().format(req.getNotOnOrAfter());
             domElement.setAttributeNS(null, LogoutRequest.NOT_ON_OR_AFTER_ATTRIB_NAME, noaStr);
         }
 

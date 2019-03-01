@@ -38,7 +38,7 @@ public class XSDateTimeMarshaller extends BaseXMLObjectMarshaller {
             throws MarshallingException {
         final XSDateTime xsDateTime = (XSDateTime) xmlObject;
         
-        ElementSupport.appendTextContent(domElement, xsDateTime.getDateTimeFormatter().print(xsDateTime.getValue()));
+        ElementSupport.appendTextContent(domElement, xsDateTime.getDateTimeFormatter().format(xsDateTime.getValue()));
     }
 
 }

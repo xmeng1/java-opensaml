@@ -23,9 +23,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -220,8 +219,8 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         
         Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
         
-        DateTime initRefresh = metadataProvider.getLastRefresh();
-        DateTime initUpdate = metadataProvider.getLastUpdate();
+        Instant initRefresh = metadataProvider.getLastRefresh();
+        Instant initUpdate = metadataProvider.getLastUpdate();
         
         Assert.assertNotNull(metadataProvider.resolveSingle(criteriaSet), "Metadata inited from backing file was null");
         
@@ -261,9 +260,9 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         
         Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
         
-        DateTime postInit = new DateTime(ISOChronology.getInstanceUTC());
-        DateTime initRefresh = metadataProvider.getLastRefresh();
-        DateTime initUpdate = metadataProvider.getLastUpdate();
+        Instant postInit = Instant.now();
+        Instant initRefresh = metadataProvider.getLastRefresh();
+        Instant initUpdate = metadataProvider.getLastUpdate();
         
         // Metadata was expired, so have no live metadata at this point
         Assert.assertNull(initUpdate);
@@ -273,7 +272,7 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay() + 5000);
         
         Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
-        DateTime refreshUpdate = metadataProvider.getLastUpdate();
+        Instant refreshUpdate = metadataProvider.getLastUpdate();
         Assert.assertNotNull(refreshUpdate);
         Assert.assertTrue(refreshUpdate.isAfter(postInit));
         
@@ -307,9 +306,9 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         
         Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
         
-        DateTime postInit = new DateTime(ISOChronology.getInstanceUTC());
-        DateTime initRefresh = metadataProvider.getLastRefresh();
-        DateTime initUpdate = metadataProvider.getLastUpdate();
+        Instant postInit = Instant.now();
+        Instant initRefresh = metadataProvider.getLastRefresh();
+        Instant initUpdate = metadataProvider.getLastUpdate();
         
         // Metadata was fundamentally not able to be processed, so have no live metadata at this point
         Assert.assertNull(initUpdate);
@@ -319,7 +318,7 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay() + 5000);
         
         Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
-        DateTime refreshUpdate = metadataProvider.getLastUpdate();
+        Instant refreshUpdate = metadataProvider.getLastUpdate();
         Assert.assertNotNull(refreshUpdate);
         Assert.assertTrue(refreshUpdate.isAfter(postInit));
         
@@ -350,8 +349,8 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         
         Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
         
-        DateTime initRefresh = metadataProvider.getLastRefresh();
-        DateTime initUpdate = metadataProvider.getLastUpdate();
+        Instant initRefresh = metadataProvider.getLastRefresh();
+        Instant initUpdate = metadataProvider.getLastUpdate();
         
         Assert.assertNotNull(metadataProvider.resolveSingle(criteriaSet), "Metadata retrieved from backing file was null");
         

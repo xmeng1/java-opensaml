@@ -17,10 +17,9 @@
 
 package org.opensaml.soap.wssecurity.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.soap.wssecurity.AttributedDateTime;
 import org.opensaml.soap.wssecurity.IdBearing;
@@ -35,7 +34,7 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
     private DateTimeFormatter formatter;
 
     /** DateTime object. */
-    private DateTime dateTimeValue;
+    private Instant dateTimeValue;
 
     /** String dateTime representation. */
     private String stringValue;
@@ -56,19 +55,19 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
     public AttributedDateTimeImpl(final String namespaceURI, final String elementLocalName,
             final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        formatter = ISODateTimeFormat.dateTime().withChronology(ISOChronology.getInstanceUTC());
+        formatter = DateTimeFormatter.ISO_INSTANT;
         unknownAttributes = new AttributeMap(this);
     }
 
     /** {@inheritDoc} */
-    public DateTime getDateTime() {
+    public Instant getDateTime() {
         return dateTimeValue;
     }
 
     /** {@inheritDoc} */
-    public void setDateTime(final DateTime newDateTime) {
+    public void setDateTime(final Instant newDateTime) {
         dateTimeValue = newDateTime;
-        final String formattedDateTime = formatter.print(dateTimeValue);
+        final String formattedDateTime = formatter.format(dateTimeValue);
         stringValue = prepareForAssignment(stringValue, formattedDateTime);
     }
 
@@ -79,7 +78,7 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
 
     /** {@inheritDoc} */
     public void setValue(final String newValue) {
-        dateTimeValue = new DateTime(newValue).withChronology(ISOChronology.getInstanceUTC());
+        dateTimeValue = Instant.from(formatter.parse(newValue));
         stringValue = prepareForAssignment(stringValue, newValue);
     }
 

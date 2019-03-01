@@ -90,7 +90,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         Assert.assertNotNull(assertion.getConditions());
         Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
         Assert.assertEquals(
-                assertion.getConditions().getNotOnOrAfter().minus(response.getIssueInstant().getMillis()).getMillis(),
+                assertion.getConditions().getNotOnOrAfter().minusMillis(response.getIssueInstant().toEpochMilli()).toEpochMilli(),
                 5 * 60 * 1000);
     }
 
@@ -121,7 +121,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         Assert.assertSame(assertion.getConditions(), conditions);
         Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
         Assert.assertEquals(
-                assertion.getConditions().getNotOnOrAfter().minus(response.getIssueInstant().getMillis()).getMillis(),
+                assertion.getConditions().getNotOnOrAfter().minusMillis(response.getIssueInstant().toEpochMilli()).toEpochMilli(),
                 10 * 60 * 1000);
     }
 
@@ -147,7 +147,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
             Assert.assertNotNull(assertion.getConditions());
             Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
             Assert.assertEquals(
-                    assertion.getConditions().getNotOnOrAfter().minus(response.getIssueInstant().getMillis()).getMillis(),
+                    assertion.getConditions().getNotOnOrAfter().minusMillis(response.getIssueInstant().toEpochMilli()).toEpochMilli(),
                     3 * 60 * 1000);
         }
     }
@@ -172,7 +172,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         Assert.assertNotNull(assertion.getConditions());
         Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
         Assert.assertEquals(
-                assertion.getConditions().getNotOnOrAfter().minus(response.getIssueInstant().getMillis()).getMillis(),
+                assertion.getConditions().getNotOnOrAfter().minusMillis(response.getIssueInstant().toEpochMilli()).toEpochMilli(),
                 5 * 60 * 1000);
     }
     

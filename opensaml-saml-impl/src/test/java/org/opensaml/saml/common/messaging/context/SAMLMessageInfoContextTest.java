@@ -17,8 +17,8 @@
 
 package org.opensaml.saml.common.messaging.context;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.context.TestContext;
@@ -39,12 +39,12 @@ public class SAMLMessageInfoContextTest extends XMLObjectBaseTestCase {
     
     private String id;
     
-    private DateTime issueInstant;
+    private Instant issueInstant;
     
     @BeforeClass
     public void setUp() {
         id = "abc123";
-        issueInstant = new DateTime(DateTimeZone.UTC);
+        issueInstant = Instant.now();
     }
     
     @Test

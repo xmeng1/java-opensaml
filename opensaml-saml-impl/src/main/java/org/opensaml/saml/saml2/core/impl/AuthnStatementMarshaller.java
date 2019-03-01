@@ -39,7 +39,7 @@ public class AuthnStatementMarshaller extends AbstractSAMLObjectMarshaller {
         final AuthnStatement authnStatement = (AuthnStatement) samlObject;
 
         if (authnStatement.getAuthnInstant() != null) {
-            final String authnInstantStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(
+            final String authnInstantStr = SAMLConfigurationSupport.getSAMLDateFormatter().format(
                     authnStatement.getAuthnInstant());
             domElement.setAttributeNS(null, AuthnStatement.AUTHN_INSTANT_ATTRIB_NAME, authnInstantStr);
         }
@@ -49,7 +49,7 @@ public class AuthnStatementMarshaller extends AbstractSAMLObjectMarshaller {
         }
 
         if (authnStatement.getSessionNotOnOrAfter() != null) {
-            final String sessionNotOnOrAfterStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(
+            final String sessionNotOnOrAfterStr = SAMLConfigurationSupport.getSAMLDateFormatter().format(
                     authnStatement.getSessionNotOnOrAfter());
             domElement.setAttributeNS(null, AuthnStatement.SESSION_NOT_ON_OR_AFTER_ATTRIB_NAME, sessionNotOnOrAfterStr);
         }

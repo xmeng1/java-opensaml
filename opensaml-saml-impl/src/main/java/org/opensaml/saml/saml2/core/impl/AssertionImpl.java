@@ -21,13 +21,13 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.saml.common.AbstractSignableSAMLObject;
@@ -52,7 +52,7 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
     private SAMLVersion version;
 
     /** Issue Instant of the assertion. */
-    private DateTime issueInstant;
+    private Instant issueInstant;
 
     /** ID of the assertion. */
     private String id;
@@ -92,17 +92,17 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
 
     /** {@inheritDoc} */
     public void setVersion(final SAMLVersion newVersion) {
-        this.version = prepareForAssignment(this.version, newVersion);
+        version = prepareForAssignment(version, newVersion);
     }
 
     /** {@inheritDoc} */
-    public DateTime getIssueInstant() {
+    public Instant getIssueInstant() {
         return issueInstant;
     }
 
     /** {@inheritDoc} */
-    public void setIssueInstant(final DateTime newIssueInstance) {
-        this.issueInstant = prepareForAssignment(this.issueInstant, newIssueInstance);
+    public void setIssueInstant(final Instant newIssueInstance) {
+        issueInstant = prepareForAssignment(issueInstant, newIssueInstance);
     }
 
     /** {@inheritDoc} */
@@ -112,9 +112,9 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
 
     /** {@inheritDoc} */
     public void setID(final String newID) {
-        final String oldID = this.id;
-        this.id = prepareForAssignment(this.id, newID);
-        registerOwnID(oldID, this.id);
+        final String oldID = id;
+        id = prepareForAssignment(id, newID);
+        registerOwnID(oldID, id);
     }
 
     /** {@inheritDoc} */
@@ -124,7 +124,7 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
 
     /** {@inheritDoc} */
     public void setIssuer(final Issuer newIssuer) {
-        this.issuer = prepareForAssignment(this.issuer, newIssuer);
+        issuer = prepareForAssignment(issuer, newIssuer);
     }
 
     /** {@inheritDoc} */
@@ -134,7 +134,7 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
 
     /** {@inheritDoc} */
     public void setSubject(final Subject newSubject) {
-        this.subject = prepareForAssignment(this.subject, newSubject);
+        subject = prepareForAssignment(subject, newSubject);
     }
 
     /** {@inheritDoc} */
@@ -144,7 +144,7 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
 
     /** {@inheritDoc} */
     public void setConditions(final Conditions newConditions) {
-        this.conditions = prepareForAssignment(this.conditions, newConditions);
+        conditions = prepareForAssignment(conditions, newConditions);
     }
 
     /** {@inheritDoc} */
@@ -154,7 +154,7 @@ public class AssertionImpl extends AbstractSignableSAMLObject implements Asserti
 
     /** {@inheritDoc} */
     public void setAdvice(final Advice newAdvice) {
-        this.advice = prepareForAssignment(this.advice, newAdvice);
+        advice = prepareForAssignment(advice, newAdvice);
     }
 
     /** {@inheritDoc} */

@@ -17,10 +17,11 @@
 
 package org.opensaml.saml.saml1.profile;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.profile.action.ActionTestingSupport;
 import org.opensaml.saml.common.SAMLObjectBuilder;
@@ -63,7 +64,7 @@ public class SAML1ActionTestingSupport {
 
         final Response response = responseBuilder.buildObject();
         response.setID(ActionTestingSupport.OUTBOUND_MSG_ID);
-        response.setIssueInstant(new DateTime(0));
+        response.setIssueInstant(Instant.ofEpochMilli(0));
         response.setVersion(SAMLVersion.VERSION_11);
 
         return response;
@@ -82,7 +83,7 @@ public class SAML1ActionTestingSupport {
 
         final Assertion assertion = assertionBuilder.buildObject();
         assertion.setID(ASSERTION_ID);
-        assertion.setIssueInstant(new DateTime(0));
+        assertion.setIssueInstant(Instant.ofEpochMilli(0));
         assertion.setVersion(SAMLVersion.VERSION_11);
 
         return assertion;
@@ -100,7 +101,7 @@ public class SAML1ActionTestingSupport {
                         AuthenticationStatement.DEFAULT_ELEMENT_NAME);
 
         final AuthenticationStatement statement = statementBuilder.buildObject();
-        statement.setAuthenticationInstant(new DateTime(0));
+        statement.setAuthenticationInstant(Instant.ofEpochMilli(0));
         statement.setAuthenticationMethod(AuthenticationStatement.PASSWORD_AUTHN_METHOD);
 
         return statement;
@@ -170,7 +171,7 @@ public class SAML1ActionTestingSupport {
                         Request.DEFAULT_ELEMENT_NAME);
         final Request request = requestBuilder.buildObject();
         request.setID(REQUEST_ID);
-        request.setIssueInstant(new DateTime(0));
+        request.setIssueInstant(Instant.ofEpochMilli(0));
         request.setQuery(query);
         request.setVersion(SAMLVersion.VERSION_11);
 
@@ -194,7 +195,7 @@ public class SAML1ActionTestingSupport {
                         Request.DEFAULT_ELEMENT_NAME);
         final Request request = requestBuilder.buildObject();
         request.setID(REQUEST_ID);
-        request.setIssueInstant(new DateTime(0));
+        request.setIssueInstant(Instant.ofEpochMilli(0));
         request.setVersion(SAMLVersion.VERSION_11);
         
         if (artifacts != null) {

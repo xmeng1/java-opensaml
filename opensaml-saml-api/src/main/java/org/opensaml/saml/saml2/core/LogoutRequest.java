@@ -20,11 +20,11 @@
  */
 package org.opensaml.saml.saml2.core;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
 /**
@@ -83,14 +83,14 @@ public interface LogoutRequest extends RequestAbstractType {
      * 
      * @return the NotOnOrAfter value of the request
      */
-    public DateTime getNotOnOrAfter();
+    public Instant getNotOnOrAfter();
 
     /**
      * Set the NotOnOrAfter attrib value of the request.
      * 
      * @param newNotOnOrAfter the new NotOnOrAfter value of the request
      */
-    public void setNotOnOrAfter(DateTime newNotOnOrAfter);
+    public void setNotOnOrAfter(Instant newNotOnOrAfter);
     
     /**
      * Gets the base identifier of the principal for this request.
