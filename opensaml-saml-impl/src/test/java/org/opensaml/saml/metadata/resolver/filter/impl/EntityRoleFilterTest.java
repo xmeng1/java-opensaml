@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.metadata.resolver.filter.impl;
 
+import java.time.Duration;
 import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
@@ -55,7 +56,7 @@ public class EntityRoleFilterTest extends XMLObjectBaseTestCase {
     @BeforeClass
     protected void setUpClass() throws Exception {
         httpClientBuilder = new HttpClientBuilder();
-        httpClientBuilder.setConnectionTimeout(1000 * 5);
+        httpClientBuilder.setConnectionTimeout(Duration.ofSeconds(5));
         httpClientBuilder.setTLSSocketFactory(HTTPMetadataResolverTest.buildTrustEngineSocketFactory());
         httpClient = httpClientBuilder.buildClient();
 
