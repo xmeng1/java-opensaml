@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.security.KeyException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
@@ -538,7 +540,7 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
                     }
                     
                     // Create new context if necessary.
-                    Map<String,MutableStorageRecord> dataMap = contextMap.get(context);
+                    Map<String,MutableStorageRecord> dataMap = contextMap.get(context.getKey());
                     if (dataMap == null) {
                         dataMap = new HashMap<>();
                         contextMap.put(context.getKey(), dataMap);
@@ -663,7 +665,7 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
                 log.trace("{} Data before encryption is {}", getLogPrefix(), raw);
                 try {
                     final String wrapped = dataSealer.wrap(raw,
-                            exp > 0 ? exp : System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+                            exp > 0 ? Instant.ofEpochMilli(exp) : Instant.now().plus(Duration.ofDays(1)));
                     log.trace("{} Size of data after encryption is {}", getLogPrefix(), wrapped.length());
                     setDirty(false);
                     return new ClientStorageServiceOperation(getId(), getStorageName(), wrapped, source);
