@@ -18,16 +18,16 @@
 package org.opensaml.saml.common.binding.artifact.impl;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
-import net.shibboleth.utilities.java.support.annotation.constraint.Positive;
 import net.shibboleth.utilities.java.support.component.AbstractInitializableComponent;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
 import org.opensaml.saml.common.SAMLObject;
@@ -53,8 +53,8 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
     /** Maximum size of artifacts we can handle. */
     private int artifactStoreKeySize;
 
-    /** Lifetime of an artifact in milliseconds. */
-    @Duration @Positive private long artifactLifetime;
+    /** Lifetime of an artifact. */
+    @Nonnull private Duration artifactLifetime;
 
     /** Factory for SAMLArtifactMapEntry instances. */
     @Nonnull private SAMLArtifactMapEntryFactory entryFactory;
@@ -62,7 +62,7 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
     /** Constructor. */
     public StorageServiceSAMLArtifactMap() {
         entryFactory = new StorageServiceSAMLArtifactMapEntryFactory();
-        artifactLifetime = 60000L;
+        artifactLifetime = Duration.ofMinutes(1);
     }
 
     /** {@inheritDoc} */
@@ -88,11 +88,11 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
     }
 
     /**
-     * Get the artifact entry lifetime in milliseconds.
+     * Get the artifact entry lifetime.
      * 
-     * @return the artifact entry lifetime in milliseconds
+     * @return the artifact entry lifetime
      */
-    @Duration @Positive public long getArtifactLifetime() {
+    @Nonnull public Duration getArtifactLifetime() {
         return artifactLifetime;
     }
 
@@ -111,16 +111,22 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
      * @param store the artifact store
      */
     public void setStorageService(@Nonnull final StorageService store) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
         artifactStore = Constraint.isNotNull(store, "StorageService cannot be null");
     }
 
     /**
-     * Set the artifact entry lifetime in milliseconds.
+     * Set the artifact entry lifetime.
      * 
-     * @param lifetime artifact entry lifetime in milliseconds
+     * @param lifetime artifact entry lifetime
      */
-    @Duration public void setArtifactLifetime(@Duration @Positive final long lifetime) {
-        artifactLifetime = Constraint.isGreaterThan(0, lifetime, "Artifact lifetime must be greater than zero");
+    public void setArtifactLifetime(@Nonnull final Duration lifetime) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        Constraint.isNotNull(lifetime, "Lifetime cannot be null");
+        Constraint.isFalse(lifetime.isNegative() || lifetime.isZero(), "Lifetime must be positive");
+        
+        artifactLifetime = lifetime;
     }
 
     /**
@@ -135,13 +141,15 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
      * @param factory map entry factory
      */
     public void setEntryFactory(@Nonnull final SAMLArtifactMapEntryFactory factory) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
         Constraint.isTrue(factory != null && factory instanceof StorageSerializer<?>,
                 "SAMLArtifactMapEntryFactory cannot be null and must support the StorageSerializer interface");
         entryFactory = factory;
     }
 
     /** {@inheritDoc} */
-    @Override public boolean contains(@Nonnull @NotEmpty final String artifact) throws IOException {
+    public boolean contains(@Nonnull @NotEmpty final String artifact) throws IOException {
         if (artifact.length() > artifactStoreKeySize) {
             throw new IOException("Length of artifact (" + artifact.length() + ") exceeds storage capabilities");
         }
@@ -149,7 +157,7 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
     }
 
     /** {@inheritDoc} */
-    @Override @Nullable public SAMLArtifactMapEntry get(@Nonnull @NotEmpty final String artifact) throws IOException {
+    @Nullable public SAMLArtifactMapEntry get(@Nonnull @NotEmpty final String artifact) throws IOException {
         log.debug("Attempting to retrieve entry for artifact: {}", artifact);
 
         if (artifact.length() > artifactStoreKeySize) {
@@ -168,7 +176,7 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
     }
 
     /** {@inheritDoc} */
-    @Override public void put(@Nonnull @NotEmpty final String artifact, @Nonnull @NotEmpty final String relyingPartyId,
+    public void put(@Nonnull @NotEmpty final String artifact, @Nonnull @NotEmpty final String relyingPartyId,
             @Nonnull @NotEmpty final String issuerId, @Nonnull final SAMLObject samlMessage) throws IOException {
 
         if (artifact.length() > artifactStoreKeySize) {
@@ -179,20 +187,21 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
                 getEntryFactory().newEntry(artifact, issuerId, relyingPartyId, samlMessage);
 
         if (log.isDebugEnabled()) {
-            log.debug("Storing new artifact entry '{}' for relying party '{}', expiring after {} seconds",
-                    new Object[] {artifact, relyingPartyId, getArtifactLifetime() / 1000});
+            log.debug("Storing new artifact entry '{}' for relying party '{}', expiring after {}",
+                    new Object[] {artifact, relyingPartyId, getArtifactLifetime()});
         }
 
         final boolean success =
                 getStorageService().create(STORAGE_CONTEXT, artifact, artifactEntry,
-                        (StorageSerializer) getEntryFactory(), System.currentTimeMillis() + getArtifactLifetime());
+                        (StorageSerializer) getEntryFactory(),
+                        System.currentTimeMillis() + getArtifactLifetime().toMillis());
         if (!success) {
             throw new IOException("A duplicate artifact was generated");
         }
     }
 
     /** {@inheritDoc} */
-    @Override public void remove(@Nonnull @NotEmpty final String artifact) throws IOException {
+    public void remove(@Nonnull @NotEmpty final String artifact) throws IOException {
         log.debug("Removing artifact entry: {}", artifact);
 
         if (artifact.length() > artifactStoreKeySize) {

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.Instant;
 
 import org.opensaml.core.criterion.EntityIdCriterion;
@@ -214,7 +215,7 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setFailFastInitialization(true);
         metadataProvider.setId("test");
-        metadataProvider.setBackupFileInitNextRefreshDelay(1000);
+        metadataProvider.setBackupFileInitNextRefreshDelay(Duration.ofSeconds(1));
         metadataProvider.initialize();
         
         Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
@@ -225,7 +226,7 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertNotNull(metadataProvider.resolveSingle(criteriaSet), "Metadata inited from backing file was null");
         
         // Sleep past the artificial next refresh delay on init from backup file.
-        Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay() + 5000);
+        Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay().toMillis() + 5000);
         
         Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
         Assert.assertTrue(initUpdate.isBefore(metadataProvider.getLastUpdate()));
@@ -255,7 +256,7 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setFailFastInitialization(true);
         metadataProvider.setId("test");
-        metadataProvider.setBackupFileInitNextRefreshDelay(1000);
+        metadataProvider.setBackupFileInitNextRefreshDelay(Duration.ofSeconds(1));
         metadataProvider.initialize();
         
         Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
@@ -269,7 +270,7 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertNull(metadataProvider.resolveSingle(criteriaSet), "Metadata inited from backing file was non-null");
         
         // Sleep past the artificial next refresh delay on init from backup file.
-        Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay() + 5000);
+        Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay().toMillis() + 5000);
         
         Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
         Instant refreshUpdate = metadataProvider.getLastUpdate();
@@ -301,7 +302,7 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setFailFastInitialization(false);
         metadataProvider.setId("test");
-        metadataProvider.setBackupFileInitNextRefreshDelay(1000);
+        metadataProvider.setBackupFileInitNextRefreshDelay(Duration.ofSeconds(1));
         metadataProvider.initialize();
         
         Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
@@ -315,7 +316,7 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertNull(metadataProvider.resolveSingle(criteriaSet), "Metadata inited from backing file was non-null");
         
         // Sleep past the artificial next refresh delay on init from backup file.
-        Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay() + 5000);
+        Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay().toMillis() + 5000);
         
         Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
         Instant refreshUpdate = metadataProvider.getLastUpdate();

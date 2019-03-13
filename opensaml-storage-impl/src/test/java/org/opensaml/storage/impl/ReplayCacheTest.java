@@ -17,6 +17,8 @@
 
 package org.opensaml.storage.impl;
 
+import java.time.Instant;
+
 import org.opensaml.storage.ReplayCache;
 import org.opensaml.storage.impl.client.ClientStorageService;
 import org.testng.annotations.AfterMethod;
@@ -33,7 +35,7 @@ public class ReplayCacheTest {
     
     private String messageID;
     
-    private long expiration;
+    private Instant expiration;
 
     private MemoryStorageService storageService;
     
@@ -43,7 +45,7 @@ public class ReplayCacheTest {
     protected void setUp() throws Exception {
         context = getClass().getName();
         messageID = "abc123";
-        expiration = System.currentTimeMillis() + 180000;
+        expiration = Instant.now().plusSeconds(180);
 
         storageService = new MemoryStorageService();
         storageService.setId("test");
@@ -121,13 +123,13 @@ public class ReplayCacheTest {
     @Test
     public void testNonReplayValidByMillisecondExpiriation() throws InterruptedException {
 
-        Assert.assertTrue(replayCache.check(context, messageID, System.currentTimeMillis() + 1000),
+        Assert.assertTrue(replayCache.check(context, messageID, Instant.now().plusSeconds(1)),
                 "Message was not replay, insert into empty cache");
         
         // Sleep for 2 seconds to make sure replay cache entry has expired
         Thread.sleep(2000L);
         
-        Assert.assertTrue(replayCache.check(context, messageID, System.currentTimeMillis() + 1000),
+        Assert.assertTrue(replayCache.check(context, messageID, Instant.now().plusSeconds(1)),
                 "Message was not replay, previous cache entry should have expired");
     }
 }

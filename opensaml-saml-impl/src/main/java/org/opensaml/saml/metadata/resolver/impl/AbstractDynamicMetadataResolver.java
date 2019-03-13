@@ -19,6 +19,7 @@ package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +70,6 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotLive;
@@ -131,36 +131,36 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     @Nullable private Gauge<PersistentCacheInitializationMetrics> gaugePersistentCacheInit;
     
     /** Timer used to schedule background metadata update tasks. */
-    private Timer taskTimer;
+    @Nullable private Timer taskTimer;
     
     /** Whether we created our own task timer during object construction. */
     private boolean createdOwnTaskTimer;
     
     /** Minimum cache duration. */
-    @Duration @Positive private Long minCacheDuration;
+    @Nonnull private Duration minCacheDuration;
     
     /** Maximum cache duration. */
-    @Duration @Positive private Long maxCacheDuration;
+    @Nonnull private Duration maxCacheDuration;
     
     /** Negative lookup cache duration. */
-    @Duration @Positive private Long negativeLookupCacheDuration;
+    @Nonnull private Duration negativeLookupCacheDuration;
     
     /** Factor used to compute when the next refresh interval will occur. Default value: 0.75 */
     @Positive private Float refreshDelayFactor;
     
     /** The maximum idle time in milliseconds for which the resolver will keep data for a given entityID, 
      * before it is removed. */
-    @Duration @Positive private Long maxIdleEntityData;
+    @Nonnull private Duration maxIdleEntityData;
     
     /** Flag indicating whether idle entity data should be removed. */
     private boolean removeIdleEntityData;
     
-    /** Impending expiration warning threshold for metadata refresh, in milliseconds. 
+    /** Impending expiration warning threshold for metadata refresh. 
      * Default value: 0ms (disabled). */
-    @Duration @Positive private Long expirationWarningThreshold;
+    @Nonnull private Duration expirationWarningThreshold;
     
-    /** The interval in milliseconds at which the cleanup task should run. */
-    @Duration @Positive private Long cleanupTaskInterval;
+    /** The interval at which the cleanup task should run. */
+    @Nonnull private Duration cleanupTaskInterval;
     
     /** The backing store cleanup sweeper background task. */
     private BackingStoreCleanupSweeper cleanupTask;
@@ -174,8 +174,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /** Flag indicating whether should initialize from the persistent cache in the background. */
     private boolean initializeFromPersistentCacheInBackground;
     
-    /** The delay in milliseconds after which to schedule the background initialization from the persistent cache. */
-    @Duration @Positive private Long backgroundInitializationFromCacheDelay;
+    /** The delay after which to schedule the background initialization from the persistent cache. */
+    @Nonnull private Duration backgroundInitializationFromCacheDelay;
     
     /** Predicate which determines whether a given entity should be loaded from the persistent cache
      * at resolver initialization time. */
@@ -207,25 +207,19 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             taskTimer = backgroundTaskTimer;
         }
         
-        // Default to 0ms
-        expirationWarningThreshold = 0L;
+        expirationWarningThreshold = Duration.ZERO;
         
-        // Default to 10 minutes.
-        minCacheDuration = 10*60*1000L;
+        minCacheDuration = Duration.ofMinutes(10);
         
-        // Default to 8 hours.
-        maxCacheDuration = 8*60*60*1000L;
+        maxCacheDuration = Duration.ofHours(8);
         
         refreshDelayFactor = 0.75f;
         
-        // Default to 10 minutes.
-        negativeLookupCacheDuration = 10*60*1000L;
+        negativeLookupCacheDuration = Duration.ofMinutes(10);
         
-        // Default to 30 minutes.
-        cleanupTaskInterval = 30*60*1000L;
+        cleanupTaskInterval = Duration.ofMinutes(30);
         
-        // Default to 8 hours.
-        maxIdleEntityData = 8*60*60*1000L;
+        maxIdleEntityData = Duration.ofHours(8);
         
         // Default to removing idle metadata
         removeIdleEntityData = true;
@@ -233,8 +227,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         // Default to initializing from the the persistent cache in the background
         initializeFromPersistentCacheInBackground = true;
         
-        // Default to 2 seconds.
-        backgroundInitializationFromCacheDelay = 2*1000L;
+        backgroundInitializationFromCacheDelay = Duration.ofSeconds(2);
     }
     
     /**
@@ -262,31 +255,36 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     }
 
     /**
-     * Get the delay in milliseconds after which to schedule the background initialization from the persistent cache.
+     * Get the delay after which to schedule the background initialization from the persistent cache.
      * 
      * <p>Defaults to: 2 seconds.</p>
      * 
-     * @return the delay in milliseconds
+     * @return the delay
      * 
      * @since 3.3.0
      */
-    @Nonnull public Long getBackgroundInitializationFromCacheDelay() {
+    @Nonnull public Duration getBackgroundInitializationFromCacheDelay() {
         return backgroundInitializationFromCacheDelay;
     }
 
     /**
-     * Set the delay in milliseconds after which to schedule the background initialization from the persistent cache.
+     * Set the delay after which to schedule the background initialization from the persistent cache.
      * 
      * <p>Defaults to: 2 seconds.</p>
      * 
-     * @param delay the delay in milliseconds
+     * @param delay the delay
      * 
      * @since 3.3.0
      */
-    public void setBackgroundInitializationFromCacheDelay(@Nonnull final Long delay) {
+    public void setBackgroundInitializationFromCacheDelay(@Nonnull final Duration delay) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+        
+        Constraint.isNotNull(delay, "Delay cannot be null");
+        Constraint.isFalse(delay.isNegative(), "Delay cannot be negative");
+        
         backgroundInitializationFromCacheDelay = delay;
+        
     }
 
     /**
@@ -365,9 +363,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 10 minutes.</p>
      *  
-     * @return the minimum cache duration, in milliseconds
+     * @return the minimum cache duration
      */
-    @Nonnull public Long getMinCacheDuration() {
+    @Nonnull public Duration getMinCacheDuration() {
         return minCacheDuration;
     }
 
@@ -376,12 +374,16 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 10 minutes.</p>
      *  
-     * @param duration the minimum cache duration, in milliseconds
+     * @param duration the minimum cache duration
      */
-    public void setMinCacheDuration(@Nonnull final Long duration) {
+    public void setMinCacheDuration(@Nonnull final Duration duration) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        minCacheDuration = Constraint.isNotNull(duration, "Minimum cache duration may not be null");
+
+        Constraint.isNotNull(duration, "Duration cannot be null");
+        Constraint.isFalse(duration.isNegative(), "Duration cannot be negative");
+        
+        minCacheDuration = duration;
     }
 
     /**
@@ -389,9 +391,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 8 hours.</p>
      *  
-     * @return the maximum cache duration, in milliseconds
+     * @return the maximum cache duration
      */
-    @Nonnull public Long getMaxCacheDuration() {
+    @Nonnull public Duration getMaxCacheDuration() {
         return maxCacheDuration;
     }
 
@@ -400,12 +402,16 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 8 hours.</p>
      *  
-     * @param duration the maximum cache duration, in milliseconds
+     * @param duration the maximum cache duration
      */
-    public void setMaxCacheDuration(@Nonnull final Long duration) {
+    public void setMaxCacheDuration(@Nonnull final Duration duration) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        maxCacheDuration = Constraint.isNotNull(duration, "Maximum cache duration may not be null");
+
+        Constraint.isNotNull(duration, "Duration cannot be null");
+        Constraint.isFalse(duration.isNegative(), "Duration cannot be negative");
+        
+        maxCacheDuration = duration;
     }
     
     /**
@@ -413,9 +419,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 10 minutes.</p>
      *  
-     * @return the negative lookup cache duration, in milliseconds
+     * @return the negative lookup cache duration
      */
-    @Nonnull public Long getNegativeLookupCacheDuration() {
+    @Nonnull public Duration getNegativeLookupCacheDuration() {
         return negativeLookupCacheDuration;
     }
 
@@ -424,12 +430,16 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 10 minutes.</p>
      *  
-     * @param duration the negative lookup cache duration, in milliseconds
+     * @param duration the negative lookup cache duration
      */
-    public void setNegativeLookupCacheDuration(@Nonnull final Long duration) {
+    public void setNegativeLookupCacheDuration(@Nonnull final Duration duration) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        negativeLookupCacheDuration = Constraint.isNotNull(duration, "Negative lookup cache duration may not be null");
+
+        Constraint.isNotNull(duration, "Duration cannot be null");
+        Constraint.isFalse(duration.isNegative(), "Duration cannot be negative");
+        
+        negativeLookupCacheDuration = duration;
     }
     
     /**
@@ -439,7 +449,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @return delay factor used to compute the next refresh time
      */
-    public Float getRefreshDelayFactor() {
+    @Nonnull public Float getRefreshDelayFactor() {
         return refreshDelayFactor;
     }
 
@@ -450,7 +460,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @param factor delay factor used to compute the next refresh time
      */
-    public void setRefreshDelayFactor(final Float factor) {
+    public void setRefreshDelayFactor(@Nonnull final Float factor) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
 
@@ -482,29 +492,33 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     }
 
     /**
-     * Get the maximum idle time in milliseconds for which the resolver will keep data for a given entityID, 
+     * Get the maximum idle time for which the resolver will keep data for a given entityID, 
      * before it is removed.
      * 
      * <p>Defaults to: 8 hours.</p>
      * 
-     * @return return the maximum idle time in milliseconds
+     * @return return the maximum idle time
      */
-    @Nonnull public Long getMaxIdleEntityData() {
+    @Nonnull public Duration getMaxIdleEntityData() {
         return maxIdleEntityData;
     }
 
     /**
-     * Set the maximum idle time in milliseconds for which the resolver will keep data for a given entityID, 
+     * Set the maximum idle time for which the resolver will keep data for a given entityID, 
      * before it is removed.
      * 
      * <p>Defaults to: 8 hours.</p>
      * 
-     * @param max the maximum entity data idle time, in milliseconds
+     * @param max the maximum entity data idle time
      */
-    public void setMaxIdleEntityData(@Nonnull final Long max) {
+    public void setMaxIdleEntityData(@Nonnull final Duration max) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        maxIdleEntityData = Constraint.isNotNull(max, "Max idle entity data may not be null");
+
+        Constraint.isNotNull(max, "Max idle time cannot be null");
+        Constraint.isFalse(max.isNegative(), "Max idle time cannot be negative");
+
+        maxIdleEntityData = max;
     }
     
     /**
@@ -512,7 +526,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @return threshold for logging a warning if live metadata will soon expire
      */
-    @Duration @Nonnull public Long getExpirationWarningThreshold() {
+    @Nonnull public Duration getExpirationWarningThreshold() {
         return expirationWarningThreshold;
     }
 
@@ -521,41 +535,45 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @param threshold the threshold for logging a warning if live metadata will soon expire
      */
-    @Duration public void setExpirationWarningThreshold(@Nullable @Duration @Positive final Long threshold) {
+    public void setExpirationWarningThreshold(@Nullable final Duration threshold) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         
         if (threshold == null) {
-            expirationWarningThreshold = 0L;
+            expirationWarningThreshold = Duration.ZERO;
         }
-        if (threshold < 0) {
+        if (threshold.isNegative()) {
             throw new IllegalArgumentException("Expiration warning threshold must be greater than or equal to 0");
         }
         expirationWarningThreshold = threshold;
     }
 
     /**
-     * Get the interval in milliseconds at which the cleanup task should run.
+     * Get the interval at which the cleanup task should run.
      * 
      * <p>Defaults to: 30 minutes.</p>
      * 
-     * @return return the interval, in milliseconds
+     * @return return the interval
      */
-    @Nonnull public Long getCleanupTaskInterval() {
+    @Nonnull public Duration getCleanupTaskInterval() {
         return cleanupTaskInterval;
     }
 
     /**
-     * Set the interval in milliseconds at which the cleanup task should run.
+     * Set the interval at which the cleanup task should run.
      * 
      * <p>Defaults to: 30 minutes.</p>
      * 
-     * @param interval the interval to set, in milliseconds
+     * @param interval the interval to set
      */
-    public void setCleanupTaskInterval(@Nonnull final Long interval) {
+    public void setCleanupTaskInterval(@Nonnull final Duration interval) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        cleanupTaskInterval = Constraint.isNotNull(interval, "Cleanup task interval may not be null");
+        
+        Constraint.isNotNull(interval, "Cleanup task interval may not be null");
+        Constraint.isFalse(interval.isNegative() || interval.isZero(), "Cleanup task interval must be positive");
+        
+        cleanupTaskInterval = interval;
     }
 
     /**
@@ -1195,8 +1213,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                     getLogPrefix(), descriptor.getEntityID());
         } else {
             if (isRequireValidMetadata() && descriptor.getValidUntil() != null) {
-                if (getExpirationWarningThreshold() > 0 
-                        && descriptor.getValidUntil().isBefore(now.plusMillis(getExpirationWarningThreshold()))) {
+                if (!getExpirationWarningThreshold().isZero() 
+                        && descriptor.getValidUntil().isBefore(now.plus(getExpirationWarningThreshold()))) {
                     log.warn("{} Metadata with ID '{}' currently live will expire "
                             + "within the configured threshhold at '{}'",
                             getLogPrefix(), descriptor.getEntityID(), descriptor.getValidUntil());
@@ -1219,10 +1237,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     @Nonnull protected Instant computeExpirationTime(@Nonnull final EntityDescriptor entityDescriptor,
             @Nonnull final Instant now) {
         
-        final Instant lowerBound = now.plusMillis(getMinCacheDuration());
+        final Instant lowerBound = now.plus(getMinCacheDuration());
         
-        Instant expiration = SAML2Support.getEarliestExpiration(entityDescriptor, 
-                now.plusMillis(getMaxCacheDuration()), now);
+        Instant expiration = SAML2Support.getEarliestExpiration(entityDescriptor, now.plus(getMaxCacheDuration()), now);
         if (expiration.isBefore(lowerBound)) {
             expiration = lowerBound;
         }
@@ -1251,8 +1268,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
 
         // if the expiration time was null or the calculated refresh delay was less than the floor
         // use the floor
-        if (refreshDelay < getMinCacheDuration()) {
-            refreshDelay = getMinCacheDuration();
+        if (refreshDelay < getMinCacheDuration().toMillis()) {
+            refreshDelay = getMinCacheDuration().toMillis();
         }
 
         return nowDateTime.plusMillis(refreshDelay);
@@ -1312,7 +1329,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                             initializeFromPersistentCache();
                         }
                     };
-                    taskTimer.schedule(initTask, getBackgroundInitializationFromCacheDelay());
+                    taskTimer.schedule(initTask, getBackgroundInitializationFromCacheDelay().toMillis());
                 } else {
                     log.debug("{} Initializing from the persistent cache in the foreground", getLogPrefix());
                     initializeFromPersistentCache();
@@ -1321,7 +1338,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             
             cleanupTask = new BackingStoreCleanupSweeper();
             // Start with a delay of 1 minute, run at the user-specified interval
-            taskTimer.schedule(cleanupTask, 1*60*1000, getCleanupTaskInterval());
+            taskTimer.schedule(cleanupTask, 1*60*1000, getCleanupTaskInterval().toMillis());
 
         } finally {
             initializing = false;
@@ -1673,8 +1690,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         protected EntityManagementData(@Nonnull final String id) {
             entityID = Constraint.isNotNull(id, "Entity ID was null");
             final Instant now = Instant.now();
-            expirationTime = now.plusMillis(getMaxCacheDuration());
-            refreshTriggerTime = now.plusMillis(getMaxCacheDuration());
+            expirationTime = now.plus(getMaxCacheDuration());
+            refreshTriggerTime = now.plus(getMaxCacheDuration());
             lastAccessedTime = now;
             readWriteLock = new ReentrantReadWriteLock(true);
         }
@@ -1773,7 +1790,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * @return the time before which no further lookups for the entity will be performed
          */
         public Instant initNegativeLookupCache() {
-            negativeLookupCacheExpiration = Instant.now().plusMillis(getNegativeLookupCacheDuration());
+            negativeLookupCacheExpiration = Instant.now().plus(getNegativeLookupCacheDuration());
             return negativeLookupCacheExpiration;
         }
         
@@ -1824,7 +1841,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          */
         private void removeExpiredAndIdleMetadata() {
             final Instant now = Instant.now();
-            final Instant earliestValidLastAccessed = now.minusMillis(getMaxIdleEntityData());
+            final Instant earliestValidLastAccessed = now.minus(getMaxIdleEntityData());
             
             final DynamicEntityBackingStore backingStore = getBackingStore();
             final Map<String, List<EntityDescriptor>> indexedDescriptors = backingStore.getIndexedDescriptors();

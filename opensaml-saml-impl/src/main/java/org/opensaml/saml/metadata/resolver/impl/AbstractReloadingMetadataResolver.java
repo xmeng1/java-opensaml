@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Timer;
@@ -39,10 +40,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.annotation.constraint.Positive;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
+import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.TimerSupport;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
@@ -64,7 +64,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
         implements ExtendedRefreshableMetadataResolver {
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(AbstractReloadingMetadataResolver.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(AbstractReloadingMetadataResolver.class);
 
     /** Timer used to schedule background metadata update tasks. */
     private Timer taskTimer;
@@ -79,35 +79,34 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
     private float refreshDelayFactor = 0.75f;
 
     /**
-     * Refresh interval used when metadata does not contain any validUntil or cacheDuration information. Default value:
-     * 14400000ms (4 hours).
+     * Refresh interval used when metadata does not contain any validUntil or cacheDuration information.
+     * Default value: 4 hours.
      */
-    @Duration @Positive private long maxRefreshDelay = 14400000;
+    @Nonnull private Duration maxRefreshDelay;
 
-    /** Floor, in milliseconds, for the refresh interval. Default value: 300000ms (5 minutes). */
-    @Duration @Positive private long minRefreshDelay = 300000;
+    /** Floor for the refresh interval. Default value: 5 minutes. */
+    @Nonnull private Duration minRefreshDelay;
 
     /** Time when the currently cached metadata file expires. */
-    private Instant expirationTime;
+    @Nullable private Instant expirationTime;
     
-    /** Impending expiration warning threshold for metadata refresh, in milliseconds. 
-     * Default value: 0ms (disabled). */
-    @Duration @Positive private long expirationWarningThreshold;
+    /** Impending expiration warning threshold for metadata refresh. Default value: 0 (disabled). */
+    @Nonnull private Duration expirationWarningThreshold;
 
     /** Last time the metadata was updated. */
-    private Instant lastUpdate;
+    @Nullable private Instant lastUpdate;
 
     /** Last time a refresh cycle occurred. */
-    private Instant lastRefresh;
+    @Nullable private Instant lastRefresh;
 
     /** Next time a refresh cycle will occur. */
-    private Instant nextRefresh;
+    @Nullable private Instant nextRefresh;
     
     /** Last time a successful refresh cycle occurred. */
-    private Instant lastSuccessfulRefresh;
+    @Nullable private Instant lastSuccessfulRefresh;
 
     /** Flag indicating whether last refresh cycle was successful. */
-    private Boolean wasLastRefreshSuccess;
+    @Nullable private Boolean wasLastRefreshSuccess;
     
     /** Internal flag for tracking success during the refresh operation. */
     private boolean trackRefreshSuccess;
@@ -126,6 +125,11 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
      */
     protected AbstractReloadingMetadataResolver(@Nullable final Timer backgroundTaskTimer) {
         setCacheSourceMetadata(true);
+        
+        minRefreshDelay = Duration.ofMinutes(5);
+        maxRefreshDelay = Duration.ofHours(4);
+        
+        expirationWarningThreshold = Duration.ZERO;
         
         if (backgroundTaskTimer == null) {
             taskTimer = new Timer(TimerSupport.getTimerName(this), true);
@@ -193,7 +197,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
      * 
      * @return threshold for logging a warning if live metadata will soon expire
      */
-    @Duration public long getExpirationWarningThreshold() {
+    @Nonnull public Duration getExpirationWarningThreshold() {
         return expirationWarningThreshold;
     }
 
@@ -202,36 +206,37 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
      * 
      * @param threshold the threshold for logging a warning if live metadata will soon expire
      */
-    @Duration public void setExpirationWarningThreshold(@Duration @Positive final long threshold) {
+    public void setExpirationWarningThreshold(@Nonnull final Duration threshold) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         
-        if (threshold < 0) {
-            throw new IllegalArgumentException("Expiration warning threshold must be greater than or equal to 0");
-        }
+        Constraint.isNotNull(threshold, "Expiration warning threshold cannot be null");
+        Constraint.isFalse(threshold.isNegative(), "Expiration warning threshold cannot be negative");
+        
         expirationWarningThreshold = threshold;
     }
+    
     /**
-     * Gets the maximum amount of time, in milliseconds, between refresh intervals.
+     * Gets the maximum amount of time between refresh intervals.
      * 
      * @return maximum amount of time between refresh intervals
      */
-    @Duration public long getMaxRefreshDelay() {
+    @Nonnull public Duration getMaxRefreshDelay() {
         return maxRefreshDelay;
     }
 
     /**
-     * Sets the maximum amount of time, in milliseconds, between refresh intervals.
+     * Sets the maximum amount of time between refresh intervals.
      * 
-     * @param delay maximum amount of time, in milliseconds, between refresh intervals
+     * @param delay maximum amount of time between refresh intervals
      */
-    @Duration public void setMaxRefreshDelay(@Duration @Positive final long delay) {
+    public void setMaxRefreshDelay(@Nonnull final Duration delay) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         
-        if (delay < 0) {
-            throw new IllegalArgumentException("Maximum refresh delay must be greater than 0");
-        }
+        Constraint.isNotNull(delay, "Maximum refresh delay cannot be null");
+        Constraint.isFalse(delay.isNegative() || delay.isZero(), "Maximum refresh delay must be greater than 0");
+
         maxRefreshDelay = delay;
     }
 
@@ -261,26 +266,26 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
     }
 
     /**
-     * Gets the minimum amount of time, in milliseconds, between refreshes.
+     * Gets the minimum amount of time between refreshes.
      * 
-     * @return minimum amount of time, in milliseconds, between refreshes
+     * @return minimum amount of time between refreshes
      */
-    @Duration public long getMinRefreshDelay() {
+    @Nonnull public Duration getMinRefreshDelay() {
         return minRefreshDelay;
     }
 
     /**
-     * Sets the minimum amount of time, in milliseconds, between refreshes.
+     * Sets the minimum amount of time between refreshes.
      * 
-     * @param delay minimum amount of time, in milliseconds, between refreshes
+     * @param delay minimum amount of time between refreshes
      */
-    @Duration public void setMinRefreshDelay(@Duration @Positive final long delay) {
+    public void setMinRefreshDelay(@Nonnull final Duration delay) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
 
-        if (delay < 0) {
-            throw new IllegalArgumentException("Minimum refresh delay must be greater than 0");
-        }
+        Constraint.isNotNull(delay, "Minimum refresh delay cannot be null");
+        Constraint.isFalse(delay.isNegative() || delay.isZero(), "Minimum refresh delay must be greater than 0");
+
         minRefreshDelay = delay;
     }
 
@@ -312,7 +317,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
             throw new ComponentInitializationException("Error refreshing metadata during init", e);
         }
         
-        if (minRefreshDelay > maxRefreshDelay) {
+        if (minRefreshDelay.compareTo(maxRefreshDelay) > 0) {
             throw new ComponentInitializationException("Minimum refresh delay " + minRefreshDelay
                     + " is greater than maximum refresh delay " + maxRefreshDelay);
         }
@@ -356,7 +361,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
             }
         } catch (final Throwable t) {
             trackRefreshSuccess = false;
-            nextRefresh = Instant.now().plusMillis(computeNextRefreshDelay(null));
+            nextRefresh = Instant.now().plus(computeNextRefreshDelay(null));
             if (t instanceof Exception) {
                 log.error("{} Error occurred while attempting to refresh metadata from '{}'", getLogPrefix(), mdId);
                 throw new ResolverException((Exception) t);
@@ -399,8 +404,8 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
         } else if (cached instanceof TimeBoundSAMLObject) {
             final TimeBoundSAMLObject timebound = (TimeBoundSAMLObject) cached;
             if (isRequireValidMetadata() && timebound.getValidUntil() != null) {
-                if (getExpirationWarningThreshold() > 0 
-                        && timebound.getValidUntil().isBefore(now.plusMillis(getExpirationWarningThreshold()))) {
+                if (!getExpirationWarningThreshold().isZero() 
+                        && timebound.getValidUntil().isBefore(now.plus(getExpirationWarningThreshold()))) {
                     log.warn("{} Metadata root from '{}' currently live (post-refresh) will expire "
                             + "within the configured threshhold at '{}'",
                             getLogPrefix(), mdId, timebound.getValidUntil());
@@ -461,12 +466,11 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
         log.debug("{} Computing new expiration time for cached metadata from '{}'", getLogPrefix(), metadataIdentifier);
         final Instant metadataExpirationTime = 
                 SAML2Support.getEarliestExpiration(getBackingStore().getCachedOriginalMetadata(),
-                refreshStart.plusMillis(getMaxRefreshDelay()), refreshStart);
+                refreshStart.plus(getMaxRefreshDelay()), refreshStart);
 
         trackRefreshSuccess = true;
         expirationTime = metadataExpirationTime;
-        final long nextRefreshDelay = computeNextRefreshDelay(expirationTime);
-        nextRefresh = Instant.now().plusMillis(nextRefreshDelay);
+        nextRefresh = Instant.now().plus(computeNextRefreshDelay(expirationTime));
     }
 
     /**
@@ -506,7 +510,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
         log.warn("{} Entire metadata document from '{}' was expired at time of loading, " 
                 + "previous metadata retained, if any", getLogPrefix(), metadataIdentifier);
 
-        nextRefresh = Instant.now().plusMillis(computeNextRefreshDelay(null));
+        nextRefresh = Instant.now().plus(computeNextRefreshDelay(null));
         trackRefreshSuccess = false;
     }
 
@@ -547,7 +551,7 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
         // Note: As noted in its Javadocs, technically this method can sometimes return null, but won't in this case
         // since the candidate time (2nd arg) is not null.
         final Instant metadataExpirationTime = SAML2Support.getEarliestExpiration(
-                newBackingStore.getCachedOriginalMetadata(), refreshStart.plusMillis(getMaxRefreshDelay()),
+                newBackingStore.getCachedOriginalMetadata(), refreshStart.plus(getMaxRefreshDelay()),
                 refreshStart);
         log.debug("{} Expiration of metadata from '{}' will occur at {}", getLogPrefix(), metadataIdentifier, 
                 metadataExpirationTime.toString());
@@ -561,15 +565,15 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
         
         final Instant now = Instant.now();
         
-        final long nextRefreshDelay;
+        final Duration nextRefreshDelay;
         if (metadataExpirationTime.isBefore(now)) {
-            expirationTime = now.plusMillis(getMinRefreshDelay());
+            expirationTime = now.plus(getMinRefreshDelay());
             nextRefreshDelay = getMaxRefreshDelay();
         } else {
             expirationTime = metadataExpirationTime;
             nextRefreshDelay = computeNextRefreshDelay(expirationTime);
         }
-        nextRefresh = now.plusMillis(nextRefreshDelay);
+        nextRefresh = now.plus(nextRefreshDelay);
 
         log.info("{} New metadata successfully loaded for '{}'", getLogPrefix(), getMetadataIdentifier());
     }
@@ -599,9 +603,9 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
      * 
      * @param expectedExpiration the time when the metadata is expected to expire and need refreshing
      * 
-     * @return delay, in milliseconds, until the next refresh time
+     * @return delay until the next refresh time
      */
-    protected long computeNextRefreshDelay(final Instant expectedExpiration) {
+    @Nonnull protected Duration computeNextRefreshDelay(final Instant expectedExpiration) {
         final long now = System.currentTimeMillis();
 
         long expireInstant = 0;
@@ -612,11 +616,11 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
 
         // if the expiration time was null or the calculated refresh delay was less than the floor
         // use the floor
-        if (refreshDelay < getMinRefreshDelay()) {
-            refreshDelay = getMinRefreshDelay();
+        if (refreshDelay < getMinRefreshDelay().toMillis()) {
+            refreshDelay = getMinRefreshDelay().toMillis();
         }
 
-        return refreshDelay;
+        return Duration.ofMillis(refreshDelay);
     }
 
     /**

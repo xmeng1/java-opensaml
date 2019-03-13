@@ -20,6 +20,8 @@ package org.opensaml.saml.common.profile.impl;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
+import java.time.Duration;
+
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.profile.RequestContextBuilder;
@@ -111,7 +113,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         response.getAssertions().add(assertion);
 
         final AddNotOnOrAfterConditionToAssertions action = new AddNotOnOrAfterConditionToAssertions();
-        action.setDefaultAssertionLifetime(10 * 60 * 1000);
+        action.setDefaultAssertionLifetime(Duration.ofMinutes(10));
         action.initialize();
 
         action.execute(prc);
@@ -134,7 +136,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         response.getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
 
         final AddNotOnOrAfterConditionToAssertions action = new AddNotOnOrAfterConditionToAssertions();
-        action.setAssertionLifetimeStrategy(FunctionSupport.constant(3L * 60 * 1000));
+        action.setAssertionLifetimeStrategy(FunctionSupport.constant(Duration.ofMinutes(3)));
         action.initialize();
 
         action.execute(prc);

@@ -17,7 +17,10 @@
 
 package org.opensaml.saml.common.binding.artifact;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
@@ -28,8 +31,8 @@ import org.opensaml.saml.common.SAMLObject;
 /** Extension of {@link BasicSAMLArtifactMapEntry} that tracks expiration. */
 public class ExpiringSAMLArtifactMapEntry extends BasicSAMLArtifactMapEntry {
     
-    /** Expiration in milliseconds since the start of the Unix epoch. */
-    private long expiration;
+    /** Expiration time. */
+    @Nullable private Instant expiration;
 
     /**
      * Constructor.
@@ -49,20 +52,20 @@ public class ExpiringSAMLArtifactMapEntry extends BasicSAMLArtifactMapEntry {
     }
 
     /**
-     * Returns the expiration in milliseconds since the start of the Unix epoch.
+     * Returns the expiration time.
      * 
      * @return  the expiration
      */
-    public long getExpiration() {
+    @Nullable public Instant getExpiration() {
         return expiration;
     }
 
     /**
-     * Sets the expiration in milliseconds since the start of the Unix epoch.
+     * Sets the expiration time.
      * 
      * @param exp the expiration
      */
-    public void setExpiration(final long exp) {
+    public void setExpiration(@Nullable final Instant exp) {
         expiration = exp;
     }
     
@@ -72,7 +75,7 @@ public class ExpiringSAMLArtifactMapEntry extends BasicSAMLArtifactMapEntry {
      * @return true iff the entry is valid as of now
      */
     public boolean isValid() {
-        return System.currentTimeMillis() < expiration;
+        return expiration == null || expiration.isAfter(Instant.now());
     }
 
     /**
@@ -81,7 +84,8 @@ public class ExpiringSAMLArtifactMapEntry extends BasicSAMLArtifactMapEntry {
      * @param effectiveTime the time to evaluate validity against
      * @return true iff the entry is valid as of a specified time
      */
-    public boolean isValid(final long effectiveTime) {
-        return effectiveTime < expiration;
+    public boolean isValid(@Nonnull final Instant effectiveTime) {
+        return expiration == null || expiration.isBefore(effectiveTime);
     }
+    
 }

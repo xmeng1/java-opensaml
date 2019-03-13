@@ -19,6 +19,7 @@ package org.opensaml.storage;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 
 import javax.annotation.Nonnull;
 
@@ -120,12 +121,12 @@ public class ReplayCache extends AbstractIdentifiableInitializableComponent {
      * 
      * @param context   a context label to subdivide the cache
      * @param s         value to check
-     * @param expires   time (in milliseconds since beginning of epoch) for disposal of value from cache
+     * @param expires   time for disposal of value from cache
      * 
      * @return true iff the check value is not found in the cache
      */
     public synchronized boolean check(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String s,
-            final long expires) {
+            @Nonnull final Instant expires) {
 
         final String key;
         
@@ -143,10 +144,11 @@ public class ReplayCache extends AbstractIdentifiableInitializableComponent {
             final StorageRecord entry = storage.read(context, key);
             if (entry == null) {
                 log.debug("Value '{}' was not a replay, adding to cache with expiration time {}", s, expires);
-                storage.create(context, key, "x", expires);
+                storage.create(context, key, "x", expires.toEpochMilli());
                 return true;
             } else {
-                log.debug("Replay of value '{}' detected in cache, expires at {}", s, entry.getExpiration());
+                log.debug("Replay of value '{}' detected in cache, expires at {}", s,
+                        Instant.ofEpochMilli(entry.getExpiration()));
                 return false;
             }
         } catch (final IOException e) {

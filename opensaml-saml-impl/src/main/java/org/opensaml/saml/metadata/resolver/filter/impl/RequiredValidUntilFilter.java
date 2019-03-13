@@ -17,13 +17,11 @@
 
 package org.opensaml.saml.metadata.resolver.filter.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
@@ -46,45 +44,39 @@ public class RequiredValidUntilFilter implements MetadataFilter {
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(RequiredValidUntilFilter.class);
 
-    /** The maximum interval, in milliseconds, between now and the <code>validUntil</code> date. */
-    @Duration private long maxValidityInterval;
+    /** The maximum interval between now and the <code>validUntil</code> date. Defaults to 14 days. */
+    @Nullable private Duration maxValidityInterval;
 
     /** Constructor. */
     public RequiredValidUntilFilter() {
-        this(0);
+        maxValidityInterval = Duration.ofDays(14);
     }
 
     /**
-     * Constructor.
+     * Get the maximum interval between now and the <code>validUntil</code> date.
+     * A value <=0 indicates that there is no restriction.
      * 
-     * @param maxValidity maximum interval, in seconds, between now and the <code>validUntil</code> date
+     * @return maximum interval between now and the <code>validUntil</code> date
      */
-    public RequiredValidUntilFilter(final long maxValidity) {
-        maxValidityInterval = maxValidity * 1000;
-    }
-
-    /**
-     * Get the maximum interval, in milliseconds, between now and the <code>validUntil</code> date.
-     * A value of less than 1 indicates that there is no restriction.
-     * 
-     * @return maximum interval, in milliseconds, between now and the <code>validUntil</code> date
-     */
-    @Duration public long getMaxValidityInterval() {
+    @Nullable public Duration getMaxValidityInterval() {
         return maxValidityInterval;
     }
     
     /**
-     * Set the maximum interval, in milliseconds, between now and the <code>validUntil</code> date.
-     * A value of less than 1 indicates that there is no restriction.
+     * Set the maximum interval between now and the <code>validUntil</code> date.
+     * A value <=0 indicates that there is no restriction.
      * 
-     * @param validity time in milliseconds between now and the <code>validUntil</code> date
+     * @param validity time between now and the <code>validUntil</code> date
      */
-    @Duration public void setMaxValidityInterval(@Duration final long validity) {
-        maxValidityInterval = validity;
+    public void setMaxValidityInterval(@Nullable final Duration validity) {
+        if (validity != null && !validity.isNegative() && !validity.isZero()) {
+            maxValidityInterval = validity;
+        } else {
+            maxValidityInterval = null;
+        }
     }
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public XMLObject filter(@Nullable final XMLObject metadata) throws FilterException {
         if (metadata == null) {
             return null;
@@ -97,12 +89,11 @@ public class RequiredValidUntilFilter implements MetadataFilter {
         }
 
         final Instant now = Instant.now();
-        if (maxValidityInterval > 0 && validUntil.isAfter(now)) {
+        if (maxValidityInterval != null && validUntil.isAfter(now)) {
             final long validityInterval = validUntil.toEpochMilli() - now.toEpochMilli();
-            if (validityInterval > maxValidityInterval) {
+            if (Duration.ofMillis(validityInterval).compareTo(maxValidityInterval) > 0) {
                 throw new FilterException(String.format("Metadata's validity interval %s is larger than is allowed %s", 
-                        DOMTypeSupport.longToDuration(validityInterval),
-                        DOMTypeSupport.longToDuration(maxValidityInterval)));
+                        Duration.ofMillis(validityInterval), maxValidityInterval));
             }
         }
         

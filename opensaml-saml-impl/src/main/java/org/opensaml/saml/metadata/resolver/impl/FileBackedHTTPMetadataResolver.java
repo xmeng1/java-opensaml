@@ -20,16 +20,16 @@ package org.opensaml.saml.metadata.resolver.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Timer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.annotation.constraint.Positive;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
+import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
 import org.apache.http.client.HttpClient;
@@ -75,8 +75,8 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
     /** Flag indicating whether metadata load during init was from backup file. */
     private boolean initializedFromBackupFile;
     
-    /** Duration in milliseconds after which to schedule next refresh, when initialized from backup file. */
-    @Duration @Positive private long backupFileInitNextRefreshDelay = 5000;
+    /** Duration after which to schedule next refresh, when initialized from backup file. */
+    @Nonnull private Duration backupFileInitNextRefreshDelay;
     
     /**
      * Constructor.
@@ -109,6 +109,9 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
                                           final HttpClient client, final String metadataURL,
             final String backupFilePath) throws ResolverException {
         super(backgroundTaskTimer, client, metadataURL);
+        
+        backupFileInitNextRefreshDelay = Duration.ofSeconds(5);
+        
         setBackupFile(backupFilePath);
     }
     
@@ -149,30 +152,31 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
     }
 
     /**
-     * Get the duration in milliseconds after which to schedule next refresh, when initialized from backup file.
+     * Get the duration after which to schedule next refresh, when initialized from backup file.
      * 
-     * <p>Defaults to 5000ms.</p>
+     * <p>Defaults to 5s.</p>
      * 
-     * @return the duration in milliseconds
+     * @return the duration
      */
-    public long getBackupFileInitNextRefreshDelay() {
+    @Nonnull public Duration getBackupFileInitNextRefreshDelay() {
         return backupFileInitNextRefreshDelay;
     }
 
     /**
-     * Set the duration in milliseconds after which to schedule next refresh, when initialized from backup file.
+     * Set the duration after which to schedule next refresh, when initialized from backup file.
      * 
-     * <p>Defaults to 5000ms.</p>
+     * <p>Defaults to 5s.</p>
      * 
-     * @param delay the next refresh delay, in milliseconds
+     * @param delay the next refresh delay
      */
-    public void setBackupFileInitNextRefreshDelay(final long delay) {
+    public void setBackupFileInitNextRefreshDelay(@Nonnull final Duration delay) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+
+        Constraint.isNotNull(delay, "Backup file init next refresh delay cannot be null");
+        Constraint.isFalse(delay.isNegative() || delay.isZero(),
+                "Backup file init next refresh delay must be greater than 0");
         
-        if (delay < 0) {
-            throw new IllegalArgumentException("Backup file init next refresh delay must be greater than 0");
-        }
         backupFileInitNextRefreshDelay = delay;
     }
 
@@ -317,7 +321,7 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
 
     /** {@inheritDoc} */
     @Override
-    protected long computeNextRefreshDelay(final Instant expectedExpiration) {
+    @Nonnull protected Duration computeNextRefreshDelay(@Nullable final Instant expectedExpiration) {
         if (initializing && initializedFromBackupFile) {
             log.debug("{} Detected initialization from backup file, scheduling next refresh from HTTP in {}ms", 
                     getLogPrefix(), getBackupFileInitNextRefreshDelay());

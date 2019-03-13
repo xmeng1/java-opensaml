@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.saml2.assertion.impl;
 
+import java.time.Duration;
 import java.util.Map;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -39,7 +40,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
- *
+ * Unit test for {@link OneTimeUseConditionValidator}.
  */
 public class OneTimeUseConditionValidatorTest extends BaseAssertionValidationTest {
     
@@ -113,7 +114,7 @@ public class OneTimeUseConditionValidatorTest extends BaseAssertionValidationTes
     @Test
     public void testReplayWithGlobalExpiration() throws AssertionValidationException, InterruptedException {
         // Set validator expiration to 500ms.
-        validator = new OneTimeUseConditionValidator(replayCache, 500L);
+        validator = new OneTimeUseConditionValidator(replayCache, Duration.ofMillis(500));
         
         Assertion assertion = getAssertion();
         Assert.assertNotNull(StringSupport.trimOrNull(assertion.getID()));

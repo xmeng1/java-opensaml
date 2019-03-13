@@ -17,12 +17,11 @@
 
 package org.opensaml.saml.common.binding.security.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import javax.annotation.Nonnull;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.annotation.constraint.NonNegative;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
@@ -42,21 +41,20 @@ public class MessageLifetimeSecurityHandler extends AbstractMessageHandler {
     @Nonnull private final Logger log = LoggerFactory.getLogger(MessageLifetimeSecurityHandler.class);
 
     /**
-     * Clock skew - milliseconds before a lower time bound, or after an upper time bound, to consider still
-     * acceptable Default value: 3 minutes.
+     * Clock skew adjustment in both directions to consider still acceptable (Default value: 3 minutes).
      */
-    @Duration @NonNegative private long clockSkew;
+    @Nonnull private Duration clockSkew;
 
-    /** Amount of time in milliseconds for which a message is valid after it is issued. Default value: 3 minutes */
-    @Duration @NonNegative private long messageLifetime;
+    /** Amount of time for which a message is valid after it is issued (Default value: 3 minutes). */
+    @Nonnull private Duration messageLifetime;
     
     /** Whether this rule is required to be met. */
     private boolean requiredRule;
     
     /** Constructor. */
     public MessageLifetimeSecurityHandler() {
-        clockSkew = 60 * 3 * 1000;
-        messageLifetime = 180 * 1000;
+        clockSkew = Duration.ofMinutes(3);
+        messageLifetime = Duration.ofMinutes(3);
         requiredRule = true;
     }
     
@@ -65,7 +63,7 @@ public class MessageLifetimeSecurityHandler extends AbstractMessageHandler {
      * 
      * @return the clock skew
      */
-    @NonNegative @Duration public long getClockSkew() {
+    @Nonnull public Duration getClockSkew() {
         return clockSkew;
     }
 
@@ -74,31 +72,32 @@ public class MessageLifetimeSecurityHandler extends AbstractMessageHandler {
      * 
      * @param skew clock skew to set
      */
-    @Duration public void setClockSkew(@Duration @NonNegative final long skew) {
+    public void setClockSkew(@Nonnull final Duration skew) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
-        
-        clockSkew = Constraint.isGreaterThanOrEqual(0, skew, "Clock skew must be greater than or equal to 0");
+                
+        clockSkew = Constraint.isNotNull(skew, "Clock skew cannot be null");
     }
 
     /**
-     * Gets the amount of time, in milliseconds, for which a message is valid.
+     * Gets the amount of time for which a message is valid.
      * 
-     * @return amount of time, in milliseconds, for which a message is valid
+     * @return amount of time for which a message is valid
      */
-    @NonNegative @Duration public long getMessageLifetime() {
+    @Nonnull public Duration getMessageLifetime() {
         return messageLifetime;
     }
 
     /**
-     * Sets the amount of time, in milliseconds, for which a message is valid.
+     * Sets the amount of time for which a message is valid.
      * 
-     * @param lifetime amount of time, in milliseconds, for which a message is valid
+     * @param lifetime amount of time for which a message is valid
      */
-    @Duration public synchronized void setMessageLifetime(@Duration @NonNegative final long lifetime) {
+    public synchronized void setMessageLifetime(@Nonnull final Duration lifetime) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        Constraint.isNotNull(lifetime, "Lifetime cannot be null");
+        Constraint.isFalse(lifetime.isNegative(), "Lifetime cannot be negative");
         
-        messageLifetime = Constraint.isGreaterThanOrEqual(0, lifetime,
-                "Message lifetime must be greater than or equal to 0");
+        messageLifetime = lifetime;
     }
 
     /**
@@ -137,8 +136,8 @@ public class MessageLifetimeSecurityHandler extends AbstractMessageHandler {
 
         final Instant issueInstant = msgInfoContext.getMessageIssueInstant();
         final Instant now = Instant.now();
-        final Instant latestValid = now.plusMillis(getClockSkew());
-        final Instant expiration = issueInstant.plusMillis(getClockSkew() + getMessageLifetime());
+        final Instant latestValid = now.plus(getClockSkew().abs());
+        final Instant expiration = issueInstant.plus(getClockSkew().abs()).plus(getMessageLifetime());
 
         // Check message wasn't issued in the future
         if (issueInstant.isAfter(latestValid)) {

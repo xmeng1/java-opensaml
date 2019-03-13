@@ -19,6 +19,7 @@ package org.opensaml.storage.impl;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,7 +67,7 @@ public class JPAStorageServiceTest extends StorageServiceTest {
     @BeforeClass public void setUp() throws ComponentInitializationException {
         storageService = new JPAStorageService(createEntityManagerFactory());
         storageService.setId("test");
-        storageService.setCleanupInterval(5000);
+        storageService.setCleanupInterval(Duration.ofSeconds(5));
         storageService.setTransactionRetry(2);
         super.setUp();
     }

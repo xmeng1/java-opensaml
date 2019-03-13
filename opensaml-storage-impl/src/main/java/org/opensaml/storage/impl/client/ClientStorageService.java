@@ -130,9 +130,9 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
 
     /** {@inheritDoc} */
     @Override
-    public synchronized void setCleanupInterval(final long interval) {
+    public synchronized void setCleanupInterval(@Nullable final Duration interval) {
         // Don't allow a cleanup task.
-        super.setCleanupInterval(0);
+        super.setCleanupInterval(Duration.ZERO);
     }
     
     /**

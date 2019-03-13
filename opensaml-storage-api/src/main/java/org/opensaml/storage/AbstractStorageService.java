@@ -18,14 +18,13 @@
 package org.opensaml.storage;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.annotation.constraint.NonNegative;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.annotation.constraint.Positive;
 import net.shibboleth.utilities.java.support.component.AbstractIdentifiableInitializableComponent;
@@ -46,10 +45,8 @@ import org.opensaml.storage.annotation.AnnotationSupport;
 public abstract class AbstractStorageService extends AbstractIdentifiableInitializableComponent implements
         StorageService, StorageCapabilities {
 
-    /**
-     * Number of seconds between cleanup checks. Default value: (0)
-     */
-    @Duration @NonNegative private long cleanupInterval;
+    /** Time between cleanup checks. Default value: (0) */
+    @Nonnull private Duration cleanupInterval;
 
     /** Timer used to schedule cleanup tasks. */
     private Timer cleanupTaskTimer;
@@ -68,30 +65,37 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
 
     /** Configurable value size limit. */
     @Positive private int valueSize;
+    
+    /** Constructor. */
+    public AbstractStorageService() {
+        cleanupInterval = Duration.ZERO;
+    }
 
     /**
-     * Gets the number of milliseconds between one cleanup and another. A value of 0 indicates that no cleanup will be
+     * Gets the time between one cleanup and another. A value of 0 indicates that no cleanup will be
      * performed.
      * 
-     * @return number of milliseconds between one cleanup and another
+     * @return time between one cleanup and another
      */
-    @NonNegative @Duration public long getCleanupInterval() {
+    @Nonnull public Duration getCleanupInterval() {
         return cleanupInterval;
     }
 
     /**
-     * Sets the number of milliseconds between one cleanup and another. A value of 0 indicates that no cleanup will be
+     * Sets the time between one cleanup and another. A value of 0 indicates that no cleanup will be
      * performed.
      * 
      * This setting cannot be changed after the service has been initialized.
      * 
-     * @param interval number of milliseconds between one cleanup and another
+     * @param interval time between one cleanup and another
      */
-    @Duration public void setCleanupInterval(@Duration @NonNegative final long interval) {
+    public void setCleanupInterval(@Nonnull final Duration interval) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
+        Constraint.isNotNull(interval, "Interval cannot be null");
+        Constraint.isFalse(interval.isNegative(), "Interval cannot be negative");
 
-        cleanupInterval =
-                Constraint.isGreaterThanOrEqual(0, interval, "Cleanup interval must be greater than or equal to zero");
+        cleanupInterval = interval;
     }
 
     /**
@@ -166,7 +170,7 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
     @Override protected void doInitialize() throws ComponentInitializationException {
         super.doInitialize();
 
-        if (cleanupInterval > 0) {
+        if (!cleanupInterval.isZero()) {
             cleanupTask = getCleanupTask();
             if (cleanupTask == null) {
                 throw new ComponentInitializationException("Cleanup task cannot be null if cleanupInterval is set.");
@@ -175,7 +179,7 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
             } else {
                 internalTaskTimer = cleanupTaskTimer;
             }
-            internalTaskTimer.schedule(cleanupTask, cleanupInterval, cleanupInterval);
+            internalTaskTimer.schedule(cleanupTask, cleanupInterval.toMillis(), cleanupInterval.toMillis());
         }
     }
 
