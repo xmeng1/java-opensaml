@@ -32,6 +32,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.http.HttpHost;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.protocol.HttpContext;
@@ -47,6 +48,7 @@ import org.opensaml.security.x509.tls.impl.ThreadLocalX509CredentialContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.shibboleth.utilities.java.support.httpclient.HttpClientSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
 import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
@@ -117,6 +119,10 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
  */
 public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocketFactory {
     
+    /** Instance of {@link ThreadLocalClientTLSCredentialHandler} to use.  */
+    private static final ThreadLocalClientTLSCredentialHandler CLIENT_TLS_HANDLER =
+            new ThreadLocalClientTLSCredentialHandler();
+
     /** Logger. */
     private final Logger log = LoggerFactory.getLogger(SecurityEnhancedTLSSocketFactory.class);
     
@@ -394,30 +400,33 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
             log.trace("HttpContext was null, skipping thread-local setup");
             return;
         }
-        if (!ThreadLocalX509CredentialContext.haveCurrent()) {
-            final X509Credential credential = 
-                    (X509Credential) context.getAttribute(
-                            HttpClientSecurityConstants.CONTEXT_KEY_CLIENT_TLS_CREDENTIAL);
-            if (credential != null) {
-                log.trace("Loading ThreadLocalX509CredentialContext with client TLS credential: {}", credential);
-                ThreadLocalX509CredentialContext.loadCurrent(credential);
-            } else {
-                log.trace("HttpContext did not contain a client TLS credential, nothing to do");
+
+        final X509Credential credential =
+                (X509Credential) context.getAttribute(HttpClientSecurityConstants.CONTEXT_KEY_CLIENT_TLS_CREDENTIAL);
+        if (credential != null) {
+            log.trace("Loading ThreadLocalX509CredentialContext with client TLS credential: {}", credential);
+            if (ThreadLocalX509CredentialContext.haveCurrent()) {
+                log.trace("ThreadLocalX509CredentialContext was already loaded with client TLS credential, "
+                        + "will be overwritten with credential from HttpContext");
             }
+            ThreadLocalX509CredentialContext.loadCurrent(credential);
         } else {
-            log.trace("ThreadLocalX509CredentialContext was already loaded with client TLS credential, skipping setup");
+            log.trace("HttpContext did not contain a client TLS credential, nothing to do");
         }
+
     }
     
     /**
-     * Clear the {@link ThreadLocalX509CredentialContext} of the client TLS credential obtained from 
-     * the {@link HttpContext}.
+     * Schedule the deferred clearing of the {@link ThreadLocalX509CredentialContext} of the client TLS credential
+     * obtained from the {@link HttpContext}.
      * 
      * @param context the HttpContext instance
      */
     protected void teardown(@Nullable final HttpContext context) {
-        log.trace("Clearing thread-local client TLS X509Credential");
-        ThreadLocalX509CredentialContext.clearCurrent();
+        if (ThreadLocalX509CredentialContext.haveCurrent()) {
+            log.trace("Scheduling deferred clearing of thread-local client TLS X509Credential");
+            HttpClientSupport.addDynamicContextHandlerLast(HttpClientContext.adapt(context), CLIENT_TLS_HANDLER);
+        }
     }
 
 }
