@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import javax.xml.namespace.QName;
@@ -45,8 +46,8 @@ public class AffiliationDescriptorTest extends XMLObjectProviderBaseTestCase {
     /** Expceted ID value */
     protected String expectedID;
 
-    /** Expected cacheDuration value in miliseconds */
-    protected long expectedCacheDuration;
+    /** Expected cacheDuration value. */
+    protected Duration expectedCacheDuration;
 
     /** Expected validUntil value */
     protected Instant expectedValidUntil;
@@ -70,7 +71,7 @@ public class AffiliationDescriptorTest extends XMLObjectProviderBaseTestCase {
     protected void setUp() throws Exception {
         expectedOwnerID = "urn:example.org";
         expectedID = "id";
-        expectedCacheDuration = 90000;
+        expectedCacheDuration = Duration.ofSeconds(90);
         expectedValidUntil = Instant.parse("2005-12-07T10:21:00Z");
     }
 
@@ -83,7 +84,7 @@ public class AffiliationDescriptorTest extends XMLObjectProviderBaseTestCase {
         Assert.assertEquals(ownerId,
                 expectedOwnerID, "entityID attribute has a value of " + ownerId + ", expected a value of " + expectedOwnerID);
 
-        Long duration = descriptor.getCacheDuration();
+        Duration duration = descriptor.getCacheDuration();
         Assert.assertNull(duration, "cacheDuration attribute has a value of " + duration + ", expected no value");
 
         Instant validUntil = descriptor.getValidUntil();
@@ -104,7 +105,7 @@ public class AffiliationDescriptorTest extends XMLObjectProviderBaseTestCase {
         String id = descriptor.getID();
         Assert.assertEquals(id, expectedID, "ID attribute has a value of " + id + ", expected a value of " + expectedID);
 
-        long duration = descriptor.getCacheDuration().longValue();
+        Duration duration = descriptor.getCacheDuration();
         Assert.assertEquals(duration, expectedCacheDuration, "cacheDuration attribute has a value of " + duration + ", expected a value of "
                         + expectedCacheDuration);
 

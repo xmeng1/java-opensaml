@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import javax.xml.namespace.QName;
@@ -55,7 +56,7 @@ public class EntityDescriptorTest extends XMLObjectProviderBaseTestCase {
     protected String expectedID;
 
     /** Expected cacheDuration value in miliseconds */
-    protected long expectedCacheDuration;
+    protected Duration expectedCacheDuration;
 
     /** Expected validUntil value */
     protected Instant expectedValidUntil;
@@ -82,7 +83,7 @@ public class EntityDescriptorTest extends XMLObjectProviderBaseTestCase {
     @BeforeMethod protected void setUp() throws Exception {
         expectedID = "id";
         expectedEntityID = "99ff33";
-        expectedCacheDuration = 90000;
+        expectedCacheDuration = Duration.ofSeconds(90);
         expectedValidUntil = Instant.parse("2005-12-07T10:21:00Z");
     }
 
@@ -94,7 +95,7 @@ public class EntityDescriptorTest extends XMLObjectProviderBaseTestCase {
         Assert.assertEquals(entityID, expectedEntityID, "entityID attribute has a value of " + entityID
                 + ", expected a value of " + expectedEntityID);
 
-        Long duration = descriptor.getCacheDuration();
+        Duration duration = descriptor.getCacheDuration();
         Assert.assertNull(duration, "cacheDuration attribute has a value of " + duration + ", expected no value");
 
         Instant validUntil = descriptor.getValidUntil();
@@ -114,7 +115,7 @@ public class EntityDescriptorTest extends XMLObjectProviderBaseTestCase {
         String id = descriptor.getID();
         Assert.assertEquals(id, expectedID, "ID attribute has a value of " + id + ", expected a value of " + expectedID);
 
-        long duration = descriptor.getCacheDuration().longValue();
+        Duration duration = descriptor.getCacheDuration();
         Assert.assertEquals(duration, expectedCacheDuration, "cacheDuration attribute has a value of " + duration
                 + ", expected a value of " + expectedCacheDuration);
 

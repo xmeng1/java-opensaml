@@ -72,7 +72,7 @@ public class AffiliationDescriptorUnmarshaller extends AbstractSAMLObjectUnmarsh
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
                 descriptor.setValidUntil(Instant.parse(attribute.getValue()));
             } else if (attribute.getLocalName().equals(CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME)) {
-                descriptor.setCacheDuration(DOMTypeSupport.durationToLong(attribute.getValue()));
+                descriptor.setCacheDuration(DOMTypeSupport.durationToDuration(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

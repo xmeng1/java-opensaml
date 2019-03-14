@@ -17,8 +17,6 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
-import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
-
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
 import org.opensaml.saml.config.SAMLConfigurationSupport;
@@ -44,14 +42,14 @@ public class EntitiesDescriptorMarshaller extends AbstractSAMLObjectMarshaller {
 
         // Set the ID attribute
         if (entitiesDescriptor.getID() != null) {
-            log.debug("Writing ID attribute to EntitiesDescriptor DOM element.");
+            log.trace("Writing ID attribute to EntitiesDescriptor DOM element.");
             domElement.setAttributeNS(null, EntitiesDescriptor.ID_ATTRIB_NAME, entitiesDescriptor.getID());
             domElement.setIdAttributeNS(null, EntitiesDescriptor.ID_ATTRIB_NAME, true);
         }
 
         // Set the validUntil attribute
         if (entitiesDescriptor.getValidUntil() != null) {
-            log.debug("Writting validUntil attribute to EntitiesDescriptor DOM element");
+            log.trace("Writting validUntil attribute to EntitiesDescriptor DOM element");
             final String validUntilStr =
                     SAMLConfigurationSupport.getSAMLDateFormatter().format(entitiesDescriptor.getValidUntil());
             domElement.setAttributeNS(null, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME, validUntilStr);
@@ -59,14 +57,14 @@ public class EntitiesDescriptorMarshaller extends AbstractSAMLObjectMarshaller {
 
         // Set the cacheDuration attribute
         if (entitiesDescriptor.getCacheDuration() != null) {
-            log.debug("Writting cacheDuration attribute to EntitiesDescriptor DOM element");
-            final String cacheDuration = DOMTypeSupport.longToDuration(entitiesDescriptor.getCacheDuration());
-            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME, cacheDuration);
+            log.trace("Writting cacheDuration attribute to EntitiesDescriptor DOM element");
+            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME,
+                    entitiesDescriptor.getCacheDuration().toString());
         }
 
         // Set the Name attribute
         if (entitiesDescriptor.getName() != null) {
-            log.debug("Writting Name attribute to EntitiesDescriptor DOM element");
+            log.trace("Writting Name attribute to EntitiesDescriptor DOM element");
             domElement.setAttributeNS(null, EntitiesDescriptor.NAME_ATTRIB_NAME, entitiesDescriptor.getName());
         }
     }

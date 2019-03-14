@@ -17,8 +17,6 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
-import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
-
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
 import org.opensaml.saml.config.SAMLConfigurationSupport;
@@ -63,8 +61,8 @@ public class EntityDescriptorMarshaller extends AbstractSAMLObjectMarshaller {
         // Set the cacheDuration attribute
         if (entityDescriptor.getCacheDuration() != null) {
             log.debug("Writting cacheDuration attribute to EntityDescriptor DOM element");
-            final String cacheDuration = DOMTypeSupport.longToDuration(entityDescriptor.getCacheDuration());
-            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME, cacheDuration);
+            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME,
+                    entityDescriptor.getCacheDuration().toString());
         }
 
         marshallUnknownAttributes(entityDescriptor, domElement);

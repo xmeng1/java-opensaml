@@ -19,10 +19,12 @@ package org.opensaml.saml.saml2.common;
 
 import java.time.Instant;
 
-import javax.xml.namespace.QName;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.opensaml.saml.common.SAMLObject;
-import org.opensaml.saml.common.xml.SAMLConstants;
+
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
 /**
  * A functional interface for SAMLElements that are bounded with a 
@@ -31,31 +33,27 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 public interface TimeBoundSAMLObject extends SAMLObject{
 
     /** "validUntil" attribute's local name. */
-    public static final String VALID_UNTIL_ATTRIB_NAME = "validUntil";
-
-    /** "validUntil" attribute's QName. */
-    public static final QName VALID_UNTIL_ATTRIB_QNAME =
-            new QName(SAMLConstants.SAML20MD_NS, VALID_UNTIL_ATTRIB_NAME, SAMLConstants.SAML20MD_PREFIX);
+    @Nonnull @NotEmpty static final String VALID_UNTIL_ATTRIB_NAME = "validUntil";
 
     /**
      * Checks to see if the current time is past the validUntil time.
      * 
      * @return true of this descriptor is still valid otherwise false
      */
-    public boolean isValid();
+    boolean isValid();
 
     /**
      * Gets the date until which this descriptor is valid.
      * 
      * @return the date until which this descriptor is valid
      */
-    public Instant getValidUntil();
+    @Nullable Instant getValidUntil();
 
     /**
      * Sets the date until which this descriptor is valid.
      * 
      * @param validUntil the date until which this descriptor is valid
      */
-    public void setValidUntil(Instant validUntil);
+    void setValidUntil(@Nullable final Instant validUntil);
 
 }

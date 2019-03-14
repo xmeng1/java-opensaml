@@ -17,10 +17,14 @@
 
 package org.opensaml.saml.saml2.common;
 
-import javax.xml.namespace.QName;
+import java.time.Duration;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.opensaml.saml.common.SAMLObject;
-import org.opensaml.saml.common.xml.SAMLConstants;
+
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
 /**
  * A functional interface for SAMLElements that provide cache duration information.
@@ -29,24 +33,20 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 public interface CacheableSAMLObject extends SAMLObject{
 
     /** "cacheDuration" attribute name. */
-    public static final String CACHE_DURATION_ATTRIB_NAME = "cacheDuration";
-
-    /** "cacheDuration" attribute's QName. */
-    public static final QName CACHE_DURATION_ATTRIB_QNAME =
-            new QName(SAMLConstants.SAML20MD_NS, CACHE_DURATION_ATTRIB_NAME, SAMLConstants.SAML20MD_PREFIX);
+    @Nonnull @NotEmpty static final String CACHE_DURATION_ATTRIB_NAME = "cacheDuration";
 
     /**
-     * Gets the maximum time, in milliseconds, that this descriptor should be cached.
+     * Gets the maximum time that this descriptor should be cached.
      *  
      * @return the maximum time that this descriptor should be cached
      */
-    public Long getCacheDuration();
+    @Nullable Duration getCacheDuration();
 
     /**
-     * Sets the maximum time, in milliseconds, that this descriptor should be cached.
+     * Sets the maximum time that this descriptor should be cached.
      * 
      * @param duration the maximum time that this descriptor should be cached
      */
-    public void setCacheDuration(Long duration);
+    void setCacheDuration(@Nullable final Duration duration);
 
 }

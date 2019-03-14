@@ -21,6 +21,7 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class AuthnAuthorityDescriptorTest extends XMLObjectProviderBaseTestCase 
     protected List<String> expectedSupportedProtocols;
 
     /** Expected cacheDuration value in miliseconds */
-    protected long expectedCacheDuration;
+    protected Duration expectedCacheDuration;
 
     /** Expected validUntil value */
     protected Instant expectedValidUntil;
@@ -84,7 +85,7 @@ public class AuthnAuthorityDescriptorTest extends XMLObjectProviderBaseTestCase 
     @BeforeMethod protected void setUp() throws Exception {
         expectedSupportedProtocols = new ArrayList<>();
         expectedSupportedProtocols.add(SAMLConstants.SAML20P_NS);
-        expectedCacheDuration = 90000;
+        expectedCacheDuration = Duration.ofSeconds(90);
         expectedValidUntil = Instant.parse("2005-12-07T10:21:00Z");
         expectedErrorURL = "http://example.org";
         //
@@ -105,7 +106,7 @@ public class AuthnAuthorityDescriptorTest extends XMLObjectProviderBaseTestCase 
         Assert.assertEquals(protoEnum, expectedSupportedProtocols,
                 "Supported protocol enumeration was not equal to expected enumeration");
 
-        Long duration = authnAuthorityObj.getCacheDuration();
+        Duration duration = authnAuthorityObj.getCacheDuration();
         Assert.assertNull(duration, "cacheDuration attribute has a value of " + duration + ", expected no value");
 
         Instant validUntil = authnAuthorityObj.getValidUntil();
@@ -124,7 +125,7 @@ public class AuthnAuthorityDescriptorTest extends XMLObjectProviderBaseTestCase 
         Assert.assertEquals(protoEnum, expectedSupportedProtocols,
                 "Supported protocol enumeration was not equal to expected enumeration");
 
-        long duration = authnAuthorityObj.getCacheDuration().longValue();
+        Duration duration = authnAuthorityObj.getCacheDuration();
         Assert.assertEquals(duration, expectedCacheDuration, "cacheDuration attribute has a value of " + duration
                 + ", expected a value of " + expectedCacheDuration);
 

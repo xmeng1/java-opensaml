@@ -21,8 +21,6 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
-import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
-
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
@@ -60,7 +58,7 @@ public class AffiliationDescriptorMarshaller extends AbstractSAMLObjectMarshalle
 
         // Set the validUntil attribute
         if (descriptor.getValidUntil() != null) {
-            log.debug("Writting validUntil attribute to AffiliationDescriptor DOM element");
+            log.trace("Writting validUntil attribute to AffiliationDescriptor DOM element");
             final String validUntilStr =
                     SAMLConfigurationSupport.getSAMLDateFormatter().format(descriptor.getValidUntil());
             domElement.setAttributeNS(null, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME, validUntilStr);
@@ -68,11 +66,12 @@ public class AffiliationDescriptorMarshaller extends AbstractSAMLObjectMarshalle
 
         // Set the cacheDuration attribute
         if (descriptor.getCacheDuration() != null) {
-            log.debug("Writting cacheDuration attribute to AffiliationDescriptor DOM element");
-            final String cacheDuration = DOMTypeSupport.longToDuration(descriptor.getCacheDuration());
-            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME, cacheDuration);
+            log.trace("Writting cacheDuration attribute to AffiliationDescriptor DOM element");
+            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME,
+                    descriptor.getCacheDuration().toString());
         }
 
         marshallUnknownAttributes(descriptor, domElement);
     }
+    
 }

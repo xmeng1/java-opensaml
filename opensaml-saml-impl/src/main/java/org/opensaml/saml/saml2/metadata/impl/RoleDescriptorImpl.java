@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +47,7 @@ public abstract class RoleDescriptorImpl extends AbstractSignableSAMLObject impl
     private Instant validUntil;
 
     /** cacheDurection attribute. */
-    private Long cacheDuration;
+    private Duration cacheDuration;
 
     /** Set of supported protocols. */
     private final List<String> supportedProtocols;
@@ -86,13 +87,11 @@ public abstract class RoleDescriptorImpl extends AbstractSignableSAMLObject impl
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getID() {
         return id;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void setID(final String newID) {
         final String oldID = this.id;
         this.id = prepareForAssignment(this.id, newID);
@@ -100,7 +99,6 @@ public abstract class RoleDescriptorImpl extends AbstractSignableSAMLObject impl
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isValid() {
         if (null == validUntil) {
             return true;
@@ -110,43 +108,36 @@ public abstract class RoleDescriptorImpl extends AbstractSignableSAMLObject impl
     }
 
     /** {@inheritDoc} */
-    @Override
     public Instant getValidUntil() {
         return validUntil;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void setValidUntil(final Instant dt) {
         validUntil = prepareForAssignment(validUntil, dt);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Long getCacheDuration() {
+    public Duration getCacheDuration() {
         return cacheDuration;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setCacheDuration(final Long duration) {
+    public void setCacheDuration(final Duration duration) {
         cacheDuration = prepareForAssignment(cacheDuration, duration);
     }
 
     /** {@inheritDoc} */
-    @Override
     public List<String> getSupportedProtocols() {
         return Collections.unmodifiableList(supportedProtocols);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isSupportedProtocol(final String protocol) {
         return supportedProtocols.contains(protocol);
     }
 
     /** {@inheritDoc} */
-    @Override
     public void addSupportedProtocol(final String protocol) {
         final String trimmed = StringSupport.trimOrNull(protocol);
         if (trimmed != null && !supportedProtocols.contains(trimmed)) {
@@ -156,7 +147,6 @@ public abstract class RoleDescriptorImpl extends AbstractSignableSAMLObject impl
     }
 
     /** {@inheritDoc} */
-    @Override
     public void removeSupportedProtocol(final String protocol) {
         final String trimmed = StringSupport.trimOrNull(protocol);
         if (trimmed != null && supportedProtocols.contains(trimmed)) {
@@ -166,7 +156,6 @@ public abstract class RoleDescriptorImpl extends AbstractSignableSAMLObject impl
     }
 
     /** {@inheritDoc} */
-    @Override
     public void removeSupportedProtocols(final Collection<String> protocols) {
         for (final String protocol : protocols) {
             removeSupportedProtocol(protocol);
@@ -174,62 +163,51 @@ public abstract class RoleDescriptorImpl extends AbstractSignableSAMLObject impl
     }
 
     /** {@inheritDoc} */
-    @Override
     public void removeAllSupportedProtocols() {
         supportedProtocols.clear();
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getErrorURL() {
         return errorURL;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void setErrorURL(final String url) {
-
         errorURL = prepareForAssignment(errorURL, url);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Extensions getExtensions() {
         return extensions;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void setExtensions(final Extensions ext) {
         extensions = prepareForAssignment(extensions, ext);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Organization getOrganization() {
         return organization;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void setOrganization(final Organization org) {
         organization = prepareForAssignment(organization, org);
     }
 
     /** {@inheritDoc} */
-    @Override
     public List<ContactPerson> getContactPersons() {
         return contactPersons;
     }
 
     /** {@inheritDoc} */
-    @Override
     public List<KeyDescriptor> getKeyDescriptors() {
         return keyDescriptors;
     }
 
     /** {@inheritDoc} */
-    @Override
     public AttributeMap getUnknownAttributes() {
         return unknownAttributes;
     }

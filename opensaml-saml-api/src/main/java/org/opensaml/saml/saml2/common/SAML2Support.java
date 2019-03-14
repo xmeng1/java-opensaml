@@ -131,8 +131,8 @@ public final class SAML2Support {
         
         Instant earliestExpiration = candidateTime;
 
-        if (cacheableObject.getCacheDuration() != null && cacheableObject.getCacheDuration() > 0) {
-            final Instant elementExpirationTime = now.plusMillis(cacheableObject.getCacheDuration());
+        if (cacheableObject.getCacheDuration() != null && !cacheableObject.getCacheDuration().isNegative()) {
+            final Instant elementExpirationTime = now.plus(cacheableObject.getCacheDuration());
             if (earliestExpiration == null) {
                 earliestExpiration = elementExpirationTime;
             } else {

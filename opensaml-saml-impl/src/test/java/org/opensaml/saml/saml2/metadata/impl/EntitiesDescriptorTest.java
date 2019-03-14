@@ -21,6 +21,7 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import javax.xml.namespace.QName;
@@ -46,7 +47,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
     protected String expectedID;
 
     /** Expected cacheDuration value in miliseconds */
-    protected long expectedCacheDuration;
+    protected Duration expectedCacheDuration;
 
     /** Expected validUntil value */
     protected Instant expectedValidUntil;
@@ -70,7 +71,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
     protected void setUp() throws Exception {
         expectedID = "id";
         expectedName = "eDescName";
-        expectedCacheDuration = 90000;
+        expectedCacheDuration = Duration.ofSeconds(90);
         expectedValidUntil = Instant.parse("2005-12-07T10:21:00.000Z");
         expectedEntitiesDescriptorsCount = 3;
         expectedEntityDescriptorsCount = 2;
@@ -84,7 +85,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
         String name = entitiesDescriptorObj.getName();
         Assert.assertNull(name, "Name attribute has a value of " + name + ", expected no value");
 
-        Long duration = entitiesDescriptorObj.getCacheDuration();
+        Duration duration = entitiesDescriptorObj.getCacheDuration();
         Assert.assertNull(duration, "cacheDuration attribute has a value of " + duration + ", expected no value");
 
         Instant validUntil = entitiesDescriptorObj.getValidUntil();
@@ -104,7 +105,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
         String id = entitiesDescriptorObj.getID();
         Assert.assertEquals(id, expectedID, "ID attriubte has a value of " + id + ", expected a value of " + expectedID);
 
-        long duration = entitiesDescriptorObj.getCacheDuration().longValue();
+        Duration duration = entitiesDescriptorObj.getCacheDuration();
         Assert.assertEquals(duration, expectedCacheDuration, "cacheDuration attribute has a value of " + duration + ", expected a value of "
                         + expectedCacheDuration);
 
@@ -144,7 +145,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
 
         entitiesDescriptor.setName(expectedName);
         entitiesDescriptor.setID(expectedID);
-        entitiesDescriptor.setCacheDuration(Long.valueOf(expectedCacheDuration));
+        entitiesDescriptor.setCacheDuration(expectedCacheDuration);
         entitiesDescriptor.setValidUntil(expectedValidUntil);
 
         assertXMLEquals(expectedOptionalAttributesDOM, entitiesDescriptor);
