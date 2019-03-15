@@ -187,6 +187,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                             transaction.commit();
                         } catch (final Exception e) {
                             log.error("Error committing transaction", e);
+                            if (transaction.isActive()) {
+                                try {
+                                    transaction.rollback();
+                                } catch (final Exception ex) {
+                                    log.error("Error rolling back transaction", e);
+                                }
+                            }
                         }
                     }
                 }
@@ -347,6 +354,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     transaction.commit();
                 } catch (final Exception e) {
                     log.error("Error committing transaction", e);
+                    if (transaction.isActive()) {
+                        try {
+                            transaction.rollback();
+                        } catch (final Exception ex) {
+                            log.error("Error rolling back transaction", e);
+                        }
+                    }
                 }
             }
             if (manager != null && manager.isOpen()) {
@@ -467,6 +481,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                             transaction.commit();
                         } catch (final Exception e) {
                             log.error("Error committing transaction", e);
+                            if (transaction.isActive()) {
+                                try {
+                                    transaction.rollback();
+                                } catch (final Exception ex) {
+                                    log.error("Error rolling back transaction", e);
+                                }
+                            }
                         }
                     }
                 }
@@ -561,6 +582,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                             transaction.commit();
                         } catch (final Exception e) {
                             log.error("Error committing transaction", e);
+                            if (transaction.isActive()) {
+                                try {
+                                    transaction.rollback();
+                                } catch (final Exception ex) {
+                                    log.error("Error rolling back transaction", e);
+                                }
+                            }
                         }
                     }
                 }
@@ -621,6 +649,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                             transaction.commit();
                         } catch (final Exception e) {
                             log.error("Error committing transaction", e);
+                            if (transaction.isActive()) {
+                                try {
+                                    transaction.rollback();
+                                } catch (final Exception ex) {
+                                    log.error("Error rolling back transaction", e);
+                                }
+                            }
                         }
                     }
                 }
@@ -705,6 +740,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                             transaction.commit();
                         } catch (final Exception e) {
                             log.error("Error committing transaction", e);
+                            if (transaction.isActive()) {
+                                try {
+                                    transaction.rollback();
+                                } catch (final Exception ex) {
+                                    log.error("Error rolling back transaction", e);
+                                }
+                            }
                         }
                     }
                 }
@@ -768,6 +810,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                             transaction.commit();
                         } catch (final Exception e) {
                             log.error("Error committing transaction", e);
+                            if (transaction.isActive()) {
+                                try {
+                                    transaction.rollback();
+                                } catch (final Exception ex) {
+                                    log.error("Error rolling back transaction", e);
+                                }
+                            }
                         }
                     }
                 }
@@ -832,6 +881,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     transaction.commit();
                 } catch (final Exception e) {
                     log.error("Error committing transaction", e);
+                    if (transaction.isActive()) {
+                        try {
+                            transaction.rollback();
+                        } catch (final Exception ex) {
+                            log.error("Error rolling back transaction", e);
+                        }
+                    }
                 }
             }
         }

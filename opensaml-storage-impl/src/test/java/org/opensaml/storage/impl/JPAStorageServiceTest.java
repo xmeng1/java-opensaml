@@ -143,6 +143,17 @@ public class JPAStorageServiceTest extends StorageServiceTest {
         Assert.assertFalse(result, "createString should have failed");
     }
 
+    @Test(singleThreaded = false, threadPoolSize = 25, invocationCount = 100)
+    public void multithreadCaseSensitiveKey() throws IOException {
+        shared.create("unit_test", "foo", "bar", null);
+        shared.create("unit_test", "FOO", "bar", null);
+        StorageRecord rec1 = shared.read("unit_test", "foo");
+        StorageRecord rec2 = shared.read("unit_test", "FOO");
+        Assert.assertNotNull(rec1);
+        Assert.assertNotNull(rec2);
+        Assert.assertNotEquals(rec1, rec2);
+    }
+
     @Test
     public void keyCollision() throws IOException {
         shared.create("unit_test", "dlo1", "value", null);
@@ -172,6 +183,73 @@ public class JPAStorageServiceTest extends StorageServiceTest {
         shared.delete("unit_test", "dn11");
         rec1 = shared.read("unit_test", "dlo1");
         rec2 = shared.read("unit_test", "dn11");
+        Assert.assertNull(rec1);
+        Assert.assertNull(rec2);
+    }
+
+    @Test
+    public void caseSensitiveContext() throws IOException {
+        shared.create("foo", "bar", "value", null);
+        shared.create("FOO", "bar", "value", null);
+        StorageRecord rec1 = shared.read("foo", "bar");
+        StorageRecord rec2 = shared.read("FOO", "bar");
+        Assert.assertNotNull(rec1);
+        Assert.assertNotNull(rec2);
+        Assert.assertNotEquals(rec1, rec2);
+
+        shared.update("foo", "bar", "value2", null);
+        shared.update("FOO", "bar", "value2", null);
+        rec1 = shared.read("foo", "bar");
+        rec2 = shared.read("FOO", "bar");
+        Assert.assertNotNull(rec1);
+        Assert.assertNotNull(rec2);
+        Assert.assertNotEquals(rec1, rec2);
+
+        Assert.assertEquals(2, storageService.readAll().size());
+        Assert.assertEquals(1, storageService.readAll("foo").size());
+        Assert.assertEquals(1, storageService.readAll("FOO").size());
+
+        shared.delete("foo", "bar");
+        rec1 = shared.read("foo", "bar");
+        rec2 = shared.read("FOO", "bar");
+        Assert.assertNull(rec1);
+        Assert.assertNotNull(rec2);
+        shared.delete("FOO", "bar");
+        rec1 = shared.read("foo", "bar");
+        rec2 = shared.read("FOO", "bar");
+        Assert.assertNull(rec1);
+        Assert.assertNull(rec2);
+    }
+
+    @Test
+    public void caseSensitiveKey() throws IOException {
+        shared.create("unit_test", "foo", "value", null);
+        shared.create("unit_test", "FOO", "value", null);
+        StorageRecord rec1 = shared.read("unit_test", "foo");
+        StorageRecord rec2 = shared.read("unit_test", "FOO");
+        Assert.assertNotNull(rec1);
+        Assert.assertNotNull(rec2);
+        Assert.assertNotEquals(rec1, rec2);
+
+        shared.update("unit_test", "foo", "value2", null);
+        shared.update("unit_test", "FOO", "value2", null);
+        rec1 = shared.read("unit_test", "foo");
+        rec2 = shared.read("unit_test", "FOO");
+        Assert.assertNotNull(rec1);
+        Assert.assertNotNull(rec2);
+        Assert.assertNotEquals(rec1, rec2);
+
+        Assert.assertEquals(2, storageService.readAll().size());
+        Assert.assertEquals(2, storageService.readAll("unit_test").size());
+
+        shared.delete("unit_test", "foo");
+        rec1 = shared.read("unit_test", "foo");
+        rec2 = shared.read("unit_test", "FOO");
+        Assert.assertNull(rec1);
+        Assert.assertNotNull(rec2);
+        shared.delete("unit_test", "FOO");
+        rec1 = shared.read("unit_test", "foo");
+        rec2 = shared.read("unit_test", "FOO");
         Assert.assertNull(rec1);
         Assert.assertNull(rec2);
     }
