@@ -23,6 +23,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -249,7 +250,7 @@ public class FilesystemLoadSaveManager<T extends XMLObject> extends AbstractCond
             try (final ByteArrayInputStream bais = new ByteArrayInputStream(source)) {
                 final XMLObject xmlObject = XMLObjectSupport.unmarshallFromInputStream(parserPool, bais);
                 xmlObject.getObjectMetadata().put(new XMLObjectSource(source));
-                updateLoadLastModified(key, file.lastModified());
+                updateLoadLastModified(key, Instant.ofEpochMilli(file.lastModified()));
                 //TODO via ctor, etc, does caller need to supply a Class so we can can test and throw an IOException, 
                 // rather than an unchecked ClassCastException?
                 return (T) xmlObject;
@@ -262,9 +263,9 @@ public class FilesystemLoadSaveManager<T extends XMLObject> extends AbstractCond
     /** {@inheritDoc} */
     protected synchronized boolean isUnmodifiedSinceLastLoad(@Nonnull final String key) throws IOException {
         final File file = buildFile(key);
-        final long lastModified = file.lastModified();
+        final Instant lastModified = Instant.ofEpochMilli(file.lastModified());
         log.trace("File '{}' last modified was: {}", file.getAbsolutePath(), lastModified);
-        return getLoadLastModified(key) != null && lastModified <= getLoadLastModified(key);
+        return getLoadLastModified(key) != null && !lastModified.isAfter(getLoadLastModified(key));
     }
 
     /** {@inheritDoc} */

@@ -82,23 +82,6 @@ public abstract class XMLObjectBaseTestCase extends OpenSAMLInitBaseTestCase {
     /** Baseline for duration calculations (comes from XML Schema standard). */
     private static Calendar baseline = new GregorianCalendar(1696, 9, 1, 0, 0, 0);
     
-    /**
-     * Helper method to extract the value of an XML duration attribute in milliseconds.
-     * 
-     * @param element element to pull attribute from
-     * @param name  name of attribute
-     * 
-     * @return the attribute value converted to milliseconds
-     * @throws DatatypeConfigurationException if a {@link DatatypeFactory} can't be constructed
-     */
-    public static long fetchDuration(@Nonnull final Element element, @Nonnull final QName name)
-            throws DatatypeConfigurationException {
-        final DatatypeFactory dtf = DatatypeFactory.newInstance();
-        final Attr attr = AttributeSupport.getAttribute(element, name);
-        Assert.assertNotNull(attr);
-        return dtf.newDuration(attr.getValue()).getTimeInMillis(baseline);
-    }
-    
     @BeforeClass
 	protected void initXMLObjectSupport() throws Exception {
         XMLUnit.setIgnoreWhitespace(true);

@@ -124,7 +124,7 @@ public abstract class AbstractSubjectConfirmationValidator implements SubjectCon
     @Nonnull protected ValidationResult validateNotBefore(@Nonnull final SubjectConfirmation confirmation, 
             @Nonnull final Assertion assertion, @Nonnull final ValidationContext context) 
                     throws AssertionValidationException {
-        final Instant skewedNow = Instant.now().plusMillis(SAML20AssertionValidator.getClockSkew(context));
+        final Instant skewedNow = Instant.now().plus(SAML20AssertionValidator.getClockSkew(context));
         final Instant notBefore = confirmation.getSubjectConfirmationData().getNotBefore();
         
         log.debug("Evaluating SubjectConfirmationData NotBefore '{}' against 'skewed now' time '{}'",
@@ -155,7 +155,7 @@ public abstract class AbstractSubjectConfirmationValidator implements SubjectCon
     @Nonnull protected ValidationResult validateNotOnOrAfter(@Nonnull final SubjectConfirmation confirmation, 
             @Nonnull final Assertion assertion, @Nonnull final ValidationContext context) 
                     throws AssertionValidationException {
-        final Instant skewedNow = Instant.now().minusMillis(SAML20AssertionValidator.getClockSkew(context));
+        final Instant skewedNow = Instant.now().minus(SAML20AssertionValidator.getClockSkew(context));
         final Instant notOnOrAfter = confirmation.getSubjectConfirmationData().getNotOnOrAfter();
         
         log.debug("Evaluating SubjectConfirmationData NotOnOrAfter '{}' against 'skewed now' time '{}'",

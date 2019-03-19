@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.saml2.assertion;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +27,8 @@ import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.collection.LazyMap;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
@@ -77,7 +80,7 @@ import org.w3c.dom.Element;
  * <li>
  * {@link SAML2AssertionValidationParameters#CLOCK_SKEW}:
  * Optional.
- * If not present the default clock skew of {@link SAML20AssertionValidator#DEFAULT_CLOCK_SKEW} milliseconds 
+ * If not present the default clock skew of {@link SAML20AssertionValidator#DEFAULT_CLOCK_SKEW} 
  * will be used.
  * </li>
  * </ul>
@@ -97,11 +100,11 @@ import org.w3c.dom.Element;
  * */
 public class SAML20AssertionValidator {
 
-    /** Default clock skew; {@value} milliseconds. */
-    public static final long DEFAULT_CLOCK_SKEW = 5 * 60 * 1000;
+    /** Default clock skew of 5 minutes. */
+    @Nonnull public static final Duration DEFAULT_CLOCK_SKEW = Duration.ofMinutes(5);
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(SAML20AssertionValidator.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(SAML20AssertionValidator.class);
 
     /** Registered {@link Condition} validators. */
     private LazyMap<QName, ConditionValidator> conditionValidators;
@@ -167,20 +170,31 @@ public class SAML20AssertionValidator {
 
     /**
      * Gets the clock skew from the {@link ValidationContext#getStaticParameters()} parameters. If the parameter is not
-     * set or is not a positive {@link Long} then the {@link #DEFAULT_CLOCK_SKEW} is used.
+     * set or is not a non-zero {@link Duration} then the {@link #DEFAULT_CLOCK_SKEW} is used.
      * 
      * @param context current validation context
      * 
      * @return the clock skew
      */
-    public static long getClockSkew(@Nonnull final ValidationContext context) {
-        long clockSkew = DEFAULT_CLOCK_SKEW;
+    public static Duration getClockSkew(@Nonnull final ValidationContext context) {
+        Duration clockSkew = DEFAULT_CLOCK_SKEW;
 
         if (context.getStaticParameters().containsKey(SAML2AssertionValidationParameters.CLOCK_SKEW)) {
             try {
-                clockSkew = (Long) context.getStaticParameters().get(SAML2AssertionValidationParameters.CLOCK_SKEW);
-                if (clockSkew < 1) {
+                final Object raw = context.getStaticParameters().get(SAML2AssertionValidationParameters.CLOCK_SKEW);
+                if (raw instanceof Duration) {
+                    clockSkew = (Duration) raw;
+                } else if (raw instanceof Long) {
+                    clockSkew = Duration.ofMillis((Long) raw);
+                    // This is a V4 deprecation, remove in V5.
+                    DeprecationSupport.warn(ObjectType.CONFIGURATION, SAML2AssertionValidationParameters.CLOCK_SKEW,
+                            null, Duration.class.getName());
+                }
+                
+                if (clockSkew.isZero()) {
                     clockSkew = DEFAULT_CLOCK_SKEW;
+                } else if (clockSkew.isNegative()) {
+                    clockSkew = clockSkew.abs();
                 }
             } catch (final ClassCastException e) {
                 clockSkew = DEFAULT_CLOCK_SKEW;
@@ -473,12 +487,12 @@ public class SAML20AssertionValidator {
         }
         
         final Instant now = Instant.now();
-        final long clockSkew = getClockSkew(context);
+        final Duration clockSkew = getClockSkew(context);
 
         final Instant notBefore = conditions.getNotBefore();
         log.debug("Evaluating Conditions NotBefore '{}' against 'skewed now' time '{}'",
-                notBefore, now.plusMillis(clockSkew));
-        if (notBefore != null && notBefore.isAfter(now.plusMillis(clockSkew))) {
+                notBefore, now.plus(clockSkew));
+        if (notBefore != null && notBefore.isAfter(now.plus(clockSkew))) {
             context.setValidationFailureMessage(String.format(
                     "Assertion '%s' with NotBefore condition of '%s' is not yet valid", assertion.getID(), notBefore));
             return ValidationResult.INVALID;
@@ -486,8 +500,8 @@ public class SAML20AssertionValidator {
 
         final Instant notOnOrAfter = conditions.getNotOnOrAfter();
         log.debug("Evaluating Conditions NotOnOrAfter '{}' against 'skewed now' time '{}'",
-                notOnOrAfter, now.minusMillis(clockSkew));
-        if (notOnOrAfter != null && notOnOrAfter.isBefore(now.minusMillis(clockSkew))) {
+                notOnOrAfter, now.minus(clockSkew));
+        if (notOnOrAfter != null && notOnOrAfter.isBefore(now.minus(clockSkew))) {
             context.setValidationFailureMessage(String.format(
                     "Assertion '%s' with NotOnOrAfter condition of '%s' is no longer valid", assertion.getID(),
                     notOnOrAfter));

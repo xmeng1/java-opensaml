@@ -17,6 +17,7 @@
 
 package org.opensaml.soap.wssecurity.messaging.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.function.Function;
 
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handler implementation that adds a wsse:Timestamp header to the wsse:Security header
- *  of the outbound SOAP envelope.
+ * of the outbound SOAP envelope.
  */
 public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler {
     
@@ -56,15 +57,15 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
      * is explicitly supplied by the other supported mechanisms. */
     private boolean useCurrentTimeAsDefaultCreated;
     
-    /** Parameter indicating the offset from Created, in milliseconds, used to calculate the Expires time, 
+    /** Parameter indicating the offset from Created used to calculate the Expires time, 
      * if no Expires value is explicitly supplied via the other supported mechanisms. */
-    private Long expiresOffsetFromCreated;
+    @Nullable private Duration expiresOffsetFromCreated;
     
     /** The effective Created value to use. */
-    private Instant createdValue;
+    @Nullable private Instant createdValue;
     
     /** The effective Expires value to use. */
-    private Instant expiresValue;
+    @Nullable private Instant expiresValue;
     
     /**
      * Get the context lookup function for the Created time.
@@ -129,28 +130,29 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
     }
     
     /**
-     * Get the parameter indicating the offset from Created, in milliseconds, used to calculate the Expires time, 
+     * Get the parameter indicating the offset from Created used to calculate the Expires time, 
      * if no Expires value is explicitly supplied via the other supported mechanisms. 
      * 
      * @return the expires offset, or null
      */
-    @Nullable public Long getExpiresOffsetFromCreated() {
+    @Nullable public Duration getExpiresOffsetFromCreated() {
         return expiresOffsetFromCreated;
     }
 
     /**
-     * Set the parameter indicating the offset from Created, in milliseconds, used to calculate the Expires time, 
+     * Set the parameter indicating the offset from Created used to calculate the Expires time, 
      * if no Expires value is explicitly supplied via the other supported mechanisms. 
      * 
-     * @param value the expires off set, or null
+     * @param value the expires offset, or null
      */
-    public void setExpiresOffsetFromCreated(@Nullable final Long value) {
+    public void setExpiresOffsetFromCreated(@Nullable final Duration value) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         expiresOffsetFromCreated = value;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean doPreInvoke(@Nonnull final MessageContext messageContext) throws MessageHandlerException {
         if (!super.doPreInvoke(messageContext)) {
             return false;
@@ -236,7 +238,7 @@ public class AddTimestampHandler extends AbstractHeaderGeneratingMessageHandler 
         
         if (value == null) {
             if (getExpiresOffsetFromCreated() != null && created != null) {
-                return created.plusMillis(getExpiresOffsetFromCreated());
+                return created.plus(getExpiresOffsetFromCreated());
             }
         }
         return value;

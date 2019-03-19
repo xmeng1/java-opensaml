@@ -18,6 +18,7 @@
 package org.opensaml.core.xml.persist;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -118,7 +119,7 @@ public class MapLoadSaveManagerTest extends XMLObjectBaseTestCase {
         manager.save("foo", (SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
         
         Assert.assertNotNull(manager.load("foo"));
-        Long initialCachedModified = manager.getLoadLastModified("foo");
+        Instant initialCachedModified = manager.getLoadLastModified("foo");
         Assert.assertNotNull(initialCachedModified);
         
         // Hasn't changed
@@ -131,7 +132,7 @@ public class MapLoadSaveManagerTest extends XMLObjectBaseTestCase {
         manager.save("foo", (SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME), true);
         
         Assert.assertNotNull(manager.load("foo"));
-        Long updatedCachedModified = manager.getLoadLastModified("foo");
+        Instant updatedCachedModified = manager.getLoadLastModified("foo");
         Assert.assertNotNull(updatedCachedModified);
         Assert.assertNotEquals(updatedCachedModified, initialCachedModified);
         

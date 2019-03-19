@@ -148,7 +148,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     /** Factor used to compute when the next refresh interval will occur. Default value: 0.75 */
     @Positive private Float refreshDelayFactor;
     
-    /** The maximum idle time in milliseconds for which the resolver will keep data for a given entityID, 
+    /** The maximum idle time for which the resolver will keep data for a given entityID, 
      * before it is removed. */
     @Nonnull private Duration maxIdleEntityData;
     
@@ -156,7 +156,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     private boolean removeIdleEntityData;
     
     /** Impending expiration warning threshold for metadata refresh. 
-     * Default value: 0ms (disabled). */
+     * Default value: 0 (disabled). */
     @Nonnull private Duration expirationWarningThreshold;
     
     /** The interval at which the cleanup task should run. */
@@ -1674,7 +1674,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         /** Time at which should start attempting to refresh the metadata. */
         private Instant refreshTriggerTime;
         
-        /** The last time in milliseconds at which the entity's backing store data was accessed. */
+        /** The last time at which the entity's backing store data was accessed. */
         private Instant lastAccessedTime;
         
         /** The time at which the negative lookup cache flag expires, if set. */
@@ -1762,7 +1762,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         /**
          * Get the last time at which the entity's backing store data was accessed.
          * 
-         * @return the time in milliseconds since the epoch
+         * @return last access time
          */
         @Nonnull public Instant getLastAccessedTime() {
             return lastAccessedTime;
@@ -1837,7 +1837,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
 
         /**
          *  Purge metadata which is either 1) expired or 2) (if {@link #isRemoveIdleEntityData()} is true) 
-         *  which hasn't been accessed within the last {@link #getMaxIdleEntityData()} milliseconds.
+         *  which hasn't been accessed within the last {@link #getMaxIdleEntityData()} duration.
          */
         private void removeExpiredAndIdleMetadata() {
             final Instant now = Instant.now();

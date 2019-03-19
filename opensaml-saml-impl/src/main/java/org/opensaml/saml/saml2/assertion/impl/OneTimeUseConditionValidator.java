@@ -28,6 +28,8 @@ import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.saml.common.assertion.AssertionValidationException;
@@ -82,9 +84,8 @@ public class OneTimeUseConditionValidator implements ConditionValidator {
      * Constructor.
      * 
      * @param replay reply cache used to track which assertions have been used
-     * @param expires time (in milliseconds since beginning of epoch) for disposal of tracked
-     *         assertion from the replay cache.  May be null, then defaults to 
-     *         {@link #DEFAULT_CACHE_EXPIRES}.
+     * @param expires time for disposal of tracked assertion from the replay cache.
+     *      May be null, then defaults to 8 hours
      */
     public OneTimeUseConditionValidator(@Nonnull final ReplayCache replay, @Nullable final Duration expires) {
         replayCache = Constraint.isNotNull(replay, "Replay cache was null");
@@ -151,25 +152,29 @@ public class OneTimeUseConditionValidator implements ConditionValidator {
      * @return the effective one-time use expiration for the assertion being evaluated
      */
     @Nonnull protected Instant getExpires(final Assertion assertion, final ValidationContext context) {
-        Long expires = null;
-        try {
-            expires = (Long) context.getStaticParameters().get(
-                    SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES);
-        } catch (final ClassCastException e) {
-            log.warn("Value of param was not a Long: {}", SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES);
+        Duration expires = null;
+        final Object raw = context.getStaticParameters().get(
+                SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES);
+        if (raw instanceof Duration) {
+            expires = (Duration) raw;
+        } else if (raw instanceof Long) {
+            expires = Duration.ofMillis((Long) raw);
+            DeprecationSupport.warn(ObjectType.CONFIGURATION,
+                    SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES, null, Duration.class.getName());
         }
+        
         log.debug("Saw one-time use cache expires context param: {}", expires);
         
         Duration suppliedExpiration = null;
         
-        if (expires == null) {
+        if (expires == null || expires.isZero()) {
             suppliedExpiration = getReplayCacheExpires();
-        } else if (expires < 0) {
+        } else if (expires.isNegative()) {
             log.warn("Supplied context param for replay cache expires '{}' was negative, using configured expiration", 
                     expires);
             suppliedExpiration = getReplayCacheExpires();
         } else {
-            suppliedExpiration = Duration.ofMillis(expires);
+            suppliedExpiration = expires;
         }
              
         log.debug("Effective one-time use cache expires of: {}", suppliedExpiration);

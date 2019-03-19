@@ -93,9 +93,9 @@ public class AddNotOnOrAfterConditionToAssertions extends AbstractConditionalPro
     }
     
     /**
-     * Set the default assertion lifetime in milliseconds.
+     * Set the default assertion lifetime.
      * 
-     * @param lifetime  default lifetime in milliseconds
+     * @param lifetime  default lifetime
      */
     public void setDefaultAssertionLifetime(@Nonnull final Duration lifetime) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);

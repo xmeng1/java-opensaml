@@ -17,6 +17,7 @@
 
 package org.opensaml.soap.wssecurity.messaging.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -56,7 +57,7 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
     @Test
     public void testNoInputUsingCurrentTimeAndOffset() throws ComponentInitializationException, MessageHandlerException {
         handler.setUseCurrentTimeAsDefaultCreated(true);
-        handler.setExpiresOffsetFromCreated(5*60*1000L);
+        handler.setExpiresOffsetFromCreated(Duration.ofMinutes(5));
         
         handler.initialize();
         handler.invoke(getMessageContext());
@@ -135,7 +136,7 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
         Instant created = Instant.now();
         Instant expires = created.plus(5, ChronoUnit.MINUTES);
         getMessageContext().getSubcontext(WSSecurityContext.class, true).setTimestampCreated(created);
-        handler.setExpiresOffsetFromCreated(5*60*1000L);
+        handler.setExpiresOffsetFromCreated(Duration.ofMinutes(5));
         
         handler.initialize();
         handler.invoke(getMessageContext());
@@ -177,7 +178,7 @@ public class AddTimestampHandlerTest extends SOAPMessagingBaseTestCase {
         Instant created = Instant.now();
         Instant expires = created.plus(5, ChronoUnit.MINUTES);
         handler.setCreatedLookup(FunctionSupport.constant(created));
-        handler.setExpiresOffsetFromCreated(5*60*1000L);
+        handler.setExpiresOffsetFromCreated(Duration.ofMinutes(5));
         
         
         handler.initialize();
