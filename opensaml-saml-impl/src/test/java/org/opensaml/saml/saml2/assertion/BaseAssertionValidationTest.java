@@ -27,6 +27,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -59,7 +60,7 @@ import org.testng.annotations.BeforeMethod;
 
 public class BaseAssertionValidationTest extends XMLObjectBaseTestCase {
     
-    public static final Long CLOCK_SKEW = 5*60*1000L;
+    public static final Duration CLOCK_SKEW = Duration.ofMinutes(5);
     
     public static final String PRINCIPAL_NAME = "gollum";
     

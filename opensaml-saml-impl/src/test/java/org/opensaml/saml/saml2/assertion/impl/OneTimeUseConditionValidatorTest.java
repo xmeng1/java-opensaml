@@ -139,7 +139,7 @@ public class OneTimeUseConditionValidatorTest extends BaseAssertionValidationTes
         Assert.assertNotNull(StringSupport.trimOrNull(assertion.getID()));
         
         Map<String, Object> staticParams = buildBasicStaticParameters();
-        staticParams.put(SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES, 500L);
+        staticParams.put(SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES, Duration.ofMillis(500));
         ValidationContext validationContext = new ValidationContext(staticParams);
         
         Assert.assertEquals(validator.validate(condition, assertion, validationContext), 
@@ -160,7 +160,7 @@ public class OneTimeUseConditionValidatorTest extends BaseAssertionValidationTes
         Assert.assertNotNull(StringSupport.trimOrNull(assertion.getID()));
         
         Map<String, Object> staticParams = buildBasicStaticParameters();
-        // This value is not a Long and so will be effectively ignored
+        // This value is not a Duration or Long and so will be effectively ignored
         staticParams.put(SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES, "500");
         ValidationContext validationContext = new ValidationContext(staticParams);
         
