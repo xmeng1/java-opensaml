@@ -36,5 +36,5 @@ public interface Unmarshaller {
      * 
      * @throws UnmarshallingException thrown if an error occurs unmarshalling the DOM element into the XMLObject
      */
-    @Nonnull public XMLObject unmarshall(@Nonnull final Element element) throws UnmarshallingException;
+    @Nonnull XMLObject unmarshall(@Nonnull final Element element) throws UnmarshallingException;
 }

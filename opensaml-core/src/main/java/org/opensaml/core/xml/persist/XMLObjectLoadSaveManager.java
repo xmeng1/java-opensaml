@@ -50,8 +50,7 @@ public interface XMLObjectLoadSaveManager<T extends XMLObject> {
      * 
      * @throws IOException if there is a fatal error obtaining the keys
      */
-    @Nonnull @NonnullElements @NotLive @Unmodifiable
-    public Set<String> listKeys() throws IOException;
+    @Nonnull @NonnullElements @NotLive @Unmodifiable Set<String> listKeys() throws IOException;
 
     /**
      * Return an iterable of all objects under management, along with their associated index key.
@@ -60,8 +59,7 @@ public interface XMLObjectLoadSaveManager<T extends XMLObject> {
      * 
      * @throws IOException if there is a fatal error loading the managed objects
      */
-    @Nonnull @NonnullElements
-    public Iterable<Pair<String,T>> listAll() throws IOException;
+    @Nonnull @NonnullElements Iterable<Pair<String,T>> listAll() throws IOException;
 
     /**
      * Evaluate whether an object already exists indexed by the supplied key.
@@ -72,7 +70,7 @@ public interface XMLObjectLoadSaveManager<T extends XMLObject> {
      * 
      * @throws IOException if there is a fatal error evaluating object existence
      */
-    public boolean exists(@Nonnull @NotEmpty final String key) throws IOException;
+    boolean exists(@Nonnull @NotEmpty final String key) throws IOException;
     
     /**
      * Load a particular object based on the supplied key.
@@ -83,8 +81,7 @@ public interface XMLObjectLoadSaveManager<T extends XMLObject> {
      * 
      * @throws IOException if there is a fatal error loading the object
      */
-    @Nullable
-    public T load(@Nonnull @NotEmpty final String key) throws IOException;
+    @Nullable T load(@Nonnull @NotEmpty final String key) throws IOException;
     
     /**
      * Save a particular object, indexed by the supplied key.
@@ -101,7 +98,7 @@ public interface XMLObjectLoadSaveManager<T extends XMLObject> {
      * @throws IOException if there is a fatal error saving the object, or if an object already exists
      *          indexed by the supplied key
      */
-    public void save(@Nonnull @NotEmpty final String key, @Nonnull final T xmlObject) throws IOException;
+    void save(@Nonnull @NotEmpty final String key, @Nonnull final T xmlObject) throws IOException;
     
     /**
      * Save a particular object, indexed by the supplied key.
@@ -113,7 +110,7 @@ public interface XMLObjectLoadSaveManager<T extends XMLObject> {
      * @throws IOException if there is a fatal error saving the object, or if overwrite=false,
      *          if an object already exists indexed by the supplied key
      */
-    public void save(@Nonnull @NotEmpty final String key, @Nonnull final T xmlObject, boolean overwrite)
+    void save(@Nonnull @NotEmpty final String key, @Nonnull final T xmlObject, boolean overwrite)
             throws IOException;
     
     /**
@@ -125,7 +122,7 @@ public interface XMLObjectLoadSaveManager<T extends XMLObject> {
      * 
      * @throws IOException if there was a fatal error removing the object
      */
-    public boolean remove(@Nonnull @NotEmpty final String key) throws IOException;
+    boolean remove(@Nonnull @NotEmpty final String key) throws IOException;
     
     /**
      * Update the key under which a particular object is stored.
@@ -138,7 +135,7 @@ public interface XMLObjectLoadSaveManager<T extends XMLObject> {
      *          
      * @throws IOException if there was a fatal error updating the key
      */
-    public boolean updateKey(@Nonnull @NotEmpty final String currentKey, @Nonnull @NotEmpty final String newKey)
+    boolean updateKey(@Nonnull @NotEmpty final String currentKey, @Nonnull @NotEmpty final String newKey)
             throws IOException;
     
 }

@@ -17,9 +17,11 @@
 
 package org.opensaml.core.xml.schema;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.xml.XMLConstants;
 
 import org.opensaml.core.xml.XMLObject;
@@ -30,22 +32,22 @@ import org.opensaml.core.xml.XMLObject;
 public interface XSString extends XMLObject {
 
     /** Local name of the XSI type. */
-    public static final String TYPE_LOCAL_NAME = "string"; 
+    @Nonnull @NotEmpty static final String TYPE_LOCAL_NAME = "string"; 
         
     /** QName of the XSI type. */
-    public static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
+    @Nonnull static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
     
     /**
      * Gets the string.
      * 
      * @return the string
      */
-    @Nullable public String getValue();
+    @Nullable String getValue();
     
     /**
      * Sets the string.
      * 
      * @param newValue the string value
      */
-    public void setValue(@Nullable final String newValue);
+    void setValue(@Nullable final String newValue);
 }

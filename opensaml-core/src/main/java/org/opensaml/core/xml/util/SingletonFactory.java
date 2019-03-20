@@ -37,6 +37,6 @@ public interface SingletonFactory<Input, Output> {
      * @param input the input class instance
      * @return an output class instance
      */
-    public Output getInstance(Input input);
+    Output getInstance(Input input);
 
 }

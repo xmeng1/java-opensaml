@@ -34,10 +34,10 @@ import org.opensaml.core.xml.XMLObject;
 public interface XSDateTime extends XMLObject {
 
     /** Local name of the XSI type. */
-    @Nonnull @NotEmpty public static final String TYPE_LOCAL_NAME = "dateTime"; 
+    @Nonnull @NotEmpty static final String TYPE_LOCAL_NAME = "dateTime"; 
         
     /** QName of the XSI type. */
-    @Nonnull public static final QName TYPE_NAME =
+    @Nonnull static final QName TYPE_NAME =
             new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
     
     /**
@@ -45,13 +45,13 @@ public interface XSDateTime extends XMLObject {
      * 
      * @return the dateTime value
      */
-    @Nullable public Instant getValue();
+    @Nullable Instant getValue();
     
     /**
      * Sets the dateTime value.
      * 
      * @param newValue the dateTime value
      */
-    public void setValue(@Nullable final Instant newValue);
+    void setValue(@Nullable final Instant newValue);
     
 }

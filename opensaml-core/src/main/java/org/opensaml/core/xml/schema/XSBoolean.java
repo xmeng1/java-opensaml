@@ -17,11 +17,13 @@
 
 package org.opensaml.core.xml.schema;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
 import org.opensaml.core.xml.XMLObject;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.xml.XMLConstants;
 
 /**
@@ -30,23 +32,23 @@ import net.shibboleth.utilities.java.support.xml.XMLConstants;
 public abstract interface XSBoolean extends XMLObject {
 
     /** Local name of the XSI type. */
-    public static final String TYPE_LOCAL_NAME = "boolean"; 
+    @Nonnull @NotEmpty static final String TYPE_LOCAL_NAME = "boolean"; 
             
     /** QName of the XSI type. */
-    public static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
+    @Nonnull static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
     
     /**
      * Returns the XSBooleanValue value.
      * 
      * @return the {@link XSBooleanValue} value
      */
-    @Nullable public XSBooleanValue getValue();
+    @Nullable XSBooleanValue getValue();
 
     /**
      * Sets the XSBooleanValue value.
      * 
      * @param value The {@link XSBooleanValue} value
      */
-    public void setValue(@Nullable final XSBooleanValue value);
+    void setValue(@Nullable final XSBooleanValue value);
 
 }

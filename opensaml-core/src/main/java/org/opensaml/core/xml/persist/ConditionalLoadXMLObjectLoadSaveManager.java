@@ -40,7 +40,7 @@ public interface ConditionalLoadXMLObjectLoadSaveManager<T extends XMLObject> ex
      * 
      * @return true if data modify time check is enabled, false if not
      */
-    public boolean isLoadConditionally();
+    boolean isLoadConditionally();
     
     /**
      * Retrieve the cached modified time for the last load of the specified key.
@@ -54,7 +54,7 @@ public interface ConditionalLoadXMLObjectLoadSaveManager<T extends XMLObject> ex
      * @param key the target key
      * @return the current cached modified time, may be null
      */
-    @Nullable public Instant getLoadLastModified(@Nonnull final String key);
+    @Nullable Instant getLoadLastModified(@Nonnull final String key);
     
     /**
      * Clear the cached modified time for the last load of the specified key.
@@ -62,11 +62,11 @@ public interface ConditionalLoadXMLObjectLoadSaveManager<T extends XMLObject> ex
      * @param key the target key
      * @return the previously cached modified time, or null if did not exist
      */
-    @Nullable public Instant clearLoadLastModified(@Nonnull final String key);
+    @Nullable Instant clearLoadLastModified(@Nonnull final String key);
 
     /**
      * Clear the cached modified times for the last load for all keys.
      */
-    public void clearAllLoadLastModified();
+    void clearAllLoadLastModified();
 
 }
