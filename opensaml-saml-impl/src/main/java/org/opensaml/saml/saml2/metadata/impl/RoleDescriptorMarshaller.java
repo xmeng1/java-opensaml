@@ -52,7 +52,7 @@ public abstract class RoleDescriptorMarshaller extends AbstractSAMLObjectMarshal
 
         // Set the validUntil attribute
         if (roleDescriptor.getValidUntil() != null) {
-            log.trace("Writting validUntil attribute to RoleDescriptor DOM element");
+            log.trace("Writing validUntil attribute to RoleDescriptor DOM element");
             final String validUntilStr =
                     SAMLConfigurationSupport.getSAMLDateFormatter().format(roleDescriptor.getValidUntil());
             domElement.setAttributeNS(null, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME, validUntilStr);
@@ -60,7 +60,7 @@ public abstract class RoleDescriptorMarshaller extends AbstractSAMLObjectMarshal
 
         // Set the cacheDuration attribute
         if (roleDescriptor.getCacheDuration() != null) {
-            log.trace("Writting cacheDuration attribute to EntitiesDescriptor DOM element");
+            log.trace("Writing cacheDuration attribute to EntitiesDescriptor DOM element");
             domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME,
                     roleDescriptor.getCacheDuration().toString());
         }
@@ -68,7 +68,7 @@ public abstract class RoleDescriptorMarshaller extends AbstractSAMLObjectMarshal
         // Set the protocolSupportEnumeration attribute
         final List<String> supportedProtocols = roleDescriptor.getSupportedProtocols();
         if (supportedProtocols != null && supportedProtocols.size() > 0) {
-            log.trace("Writting protocolSupportEnumberation attribute to RoleDescriptor DOM element");
+            log.trace("Writing protocolSupportEnumberation attribute to RoleDescriptor DOM element");
 
             final StringBuilder builder = new StringBuilder();
             for (final String protocol : supportedProtocols) {
@@ -81,7 +81,7 @@ public abstract class RoleDescriptorMarshaller extends AbstractSAMLObjectMarshal
 
         // Set errorURL attribute
         if (roleDescriptor.getErrorURL() != null) {
-            log.trace("Writting errorURL attribute to RoleDescriptor DOM element");
+            log.trace("Writing errorURL attribute to RoleDescriptor DOM element");
             domElement.setAttributeNS(null, RoleDescriptor.ERROR_URL_ATTRIB_NAME, roleDescriptor.getErrorURL());
         }
 

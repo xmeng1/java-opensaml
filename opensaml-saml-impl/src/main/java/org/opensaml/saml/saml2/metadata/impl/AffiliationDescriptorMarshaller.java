@@ -58,7 +58,7 @@ public class AffiliationDescriptorMarshaller extends AbstractSAMLObjectMarshalle
 
         // Set the validUntil attribute
         if (descriptor.getValidUntil() != null) {
-            log.trace("Writting validUntil attribute to AffiliationDescriptor DOM element");
+            log.trace("Writing validUntil attribute to AffiliationDescriptor DOM element");
             final String validUntilStr =
                     SAMLConfigurationSupport.getSAMLDateFormatter().format(descriptor.getValidUntil());
             domElement.setAttributeNS(null, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME, validUntilStr);
@@ -66,7 +66,7 @@ public class AffiliationDescriptorMarshaller extends AbstractSAMLObjectMarshalle
 
         // Set the cacheDuration attribute
         if (descriptor.getCacheDuration() != null) {
-            log.trace("Writting cacheDuration attribute to AffiliationDescriptor DOM element");
+            log.trace("Writing cacheDuration attribute to AffiliationDescriptor DOM element");
             domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME,
                     descriptor.getCacheDuration().toString());
         }
