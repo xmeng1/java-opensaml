@@ -20,6 +20,7 @@ package org.opensaml.saml.ext.saml2mdrpi;
 import java.time.Instant;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.opensaml.saml.common.SAMLObject;
@@ -47,12 +48,16 @@ public interface RegistrationInfo extends SAMLObject {
     public static final QName TYPE_NAME =
             new QName(SAMLConstants.SAML20MDRPI_NS, TYPE_LOCAL_NAME, SAMLConstants.SAML20MDRPI_PREFIX);
 
-    /** Registration Authority attribute name. */
-    public String REGISTRATION_AUTHORITY_ATTRIB_NAME = "registrationAuthority";
+    /** registrationAuthority attribute name. */
+    public static String REGISTRATION_AUTHORITY_ATTRIB_NAME = "registrationAuthority";
 
-    /** Registration Instant attribute name. */
-    public String REGISTRATION_INSTANT_ATTRIB_NAME = "registrationInstant";
+    /** registrationInstant attribute name. */
+    public static String REGISTRATION_INSTANT_ATTRIB_NAME = "registrationInstant";
 
+    /** QName of the registrationInstant attribute. */
+    public static final QName REGISTRATION_INSTANT_ATTRIB_QNAME =
+            new QName(null, REGISTRATION_INSTANT_ATTRIB_NAME, XMLConstants.DEFAULT_NS_PREFIX);
+    
     /**
      * Get the registration authority.
      * 

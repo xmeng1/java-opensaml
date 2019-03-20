@@ -18,7 +18,6 @@
 package org.opensaml.soap.wssecurity;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 
 import javax.xml.namespace.QName;
 
@@ -53,27 +52,4 @@ public interface AttributedDateTime extends XSString, IdBearing, AttributeExtens
      */
     public void setDateTime(Instant dateTime);
     
-    /**
-     * Get the {@link DateTimeFormatter} to be used when stringifying
-     * the {@link DateTime} value.
-     * 
-     * <p>Defaults to the formatter constructed by calling: 
-     * <code>ISODateTimeFormat.dateTime().withChronology(ISOChronology.getInstanceUTC()</code>
-     * </p>
-     * 
-     * @return the currently configured formatter
-     */
-    public DateTimeFormatter getDateTimeFormatter();
-    
-    /**
-     * Set the {@link DateTimeFormatter} to be used when stringifying
-     * the {@link DateTime} value.
-     * 
-     * <p>Defaults to the formatter constructed by calling: 
-     * <code>ISODateTimeFormat.dateTime().withChronology(ISOChronology.getInstanceUTC()</code>
-     * </p>
-     * 
-     * @param newFormatter the new formatter
-     */
-    public void setDateTimeFormatter(DateTimeFormatter newFormatter);
 }

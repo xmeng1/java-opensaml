@@ -24,9 +24,10 @@ package org.opensaml.saml.saml2.core.impl;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml2.core.Conditions;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 
 /**
  * A thread-safe Marshaller for {@link org.opensaml.saml.saml2.core.Conditions} objects.
@@ -39,15 +40,13 @@ public class ConditionsMarshaller extends AbstractSAMLObjectMarshaller {
         final Conditions conditions = (Conditions) samlObject;
 
         if (conditions.getNotBefore() != null) {
-            final String notBeforeStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().format(conditions.getNotBefore());
-            domElement.setAttributeNS(null, Conditions.NOT_BEFORE_ATTRIB_NAME, notBeforeStr);
+            AttributeSupport.appendDateTimeAttribute(domElement, Conditions.NOT_BEFORE_ATTRIB_QNAME,
+                    conditions.getNotBefore());
         }
 
         if (conditions.getNotOnOrAfter() != null) {
-            final String notOnOrAfterStr = SAMLConfigurationSupport.getSAMLDateFormatter().format(
+            AttributeSupport.appendDateTimeAttribute(domElement, Conditions.NOT_ON_OR_AFTER_ATTRIB_QNAME,
                     conditions.getNotOnOrAfter());
-            domElement.setAttributeNS(null, Conditions.NOT_ON_OR_AFTER_ATTRIB_NAME, notOnOrAfterStr);
         }
     }
 }

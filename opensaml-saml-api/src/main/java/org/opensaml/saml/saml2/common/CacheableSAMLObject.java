@@ -21,6 +21,8 @@ import java.time.Duration;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 
 import org.opensaml.saml.common.SAMLObject;
 
@@ -35,6 +37,10 @@ public interface CacheableSAMLObject extends SAMLObject{
     /** "cacheDuration" attribute name. */
     @Nonnull @NotEmpty static final String CACHE_DURATION_ATTRIB_NAME = "cacheDuration";
 
+    /** "cacheDuration" attribute QName. */
+    @Nonnull static final QName CACHE_DURATION_ATTRIB_QNAME =
+            new QName(null, "cacheDuration", XMLConstants.DEFAULT_NS_PREFIX);
+    
     /**
      * Gets the maximum time that this descriptor should be cached.
      *  

@@ -17,8 +17,6 @@
 
 package org.opensaml.saml.config;
 
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,9 +51,6 @@ public class SAMLConfiguration {
     /** Lowercase string function. */
     private static Function<String, String> lowercaseFunction = new LowercaseFunction();
 
-    /** Formatter used to write dates. */
-    private DateTimeFormatter dateFormatter;
-
     /** SAML 1 Artifact factory. */
     private SAML1ArtifactBuilderFactory saml1ArtifactBuilderFactory;
 
@@ -73,30 +68,6 @@ public class SAMLConfiguration {
      */
     public SAMLConfiguration() {
         setAllowedBindingURLSchemes(Lists.newArrayList("http", "https"));
-    }
-
-    /**
-     * Gets the date format used to string'ify SAML's date/time information.
-     * 
-     * @return date format used to string'ify date objects
-     */
-    public DateTimeFormatter getSAMLDateFormatter() {
-        if (dateFormatter == null) {
-            dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC);
-        }
-        
-        return dateFormatter;
-    }
-
-    /**
-     * Sets the date format used to string'ify SAML's date/time objects.
-     * 
-     * See the {@link java.text.SimpleDateFormat} documentation for format syntax.
-     * 
-     * @param format date format used to string'ify date objects
-     */
-    public void setSAMLDateFormat(final String format) {
-        dateFormatter = DateTimeFormatter.ofPattern(format).withZone(ZoneOffset.UTC);
     }
 
     /**

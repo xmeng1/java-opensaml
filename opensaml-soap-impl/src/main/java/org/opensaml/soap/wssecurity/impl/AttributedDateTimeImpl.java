@@ -18,20 +18,18 @@
 package org.opensaml.soap.wssecurity.impl;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.soap.wssecurity.AttributedDateTime;
 import org.opensaml.soap.wssecurity.IdBearing;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * Implementation of {@link AttributedDateTime}.
  * 
  */
 public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements AttributedDateTime {
-
-    /** DateTime formatter. */
-    private DateTimeFormatter formatter;
 
     /** DateTime object. */
     private Instant dateTimeValue;
@@ -55,7 +53,6 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
     public AttributedDateTimeImpl(final String namespaceURI, final String elementLocalName,
             final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        formatter = DateTimeFormatter.ISO_INSTANT;
         unknownAttributes = new AttributeMap(this);
     }
 
@@ -67,8 +64,7 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
     /** {@inheritDoc} */
     public void setDateTime(final Instant newDateTime) {
         dateTimeValue = newDateTime;
-        final String formattedDateTime = formatter.format(dateTimeValue);
-        stringValue = prepareForAssignment(stringValue, formattedDateTime);
+        stringValue = prepareForAssignment(stringValue, DOMTypeSupport.instantToDateTime(dateTimeValue));
     }
 
     /** {@inheritDoc} */
@@ -78,7 +74,7 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
 
     /** {@inheritDoc} */
     public void setValue(final String newValue) {
-        dateTimeValue = Instant.from(formatter.parse(newValue));
+        dateTimeValue = DOMTypeSupport.dateTimeToInstant(newValue);
         stringValue = prepareForAssignment(stringValue, newValue);
     }
 
@@ -100,19 +96,4 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
         return unknownAttributes;
     }
     
-    /** {@inheritDoc} */
-    public DateTimeFormatter getDateTimeFormatter() {
-        return formatter;
-    }
-
-    /** {@inheritDoc} */
-    public void setDateTimeFormatter(final DateTimeFormatter newFormatter) {
-        if (newFormatter == null) {
-            throw new IllegalArgumentException("The specified DateTimeFormatter may not be null");
-        }
-        formatter = newFormatter;
-        // Explicitly cause the cached string representation to be reformatted when the formatter is changed
-        setDateTime(getDateTime());
-    }
-
 }

@@ -21,6 +21,8 @@ import java.time.Instant;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 
 import org.opensaml.saml.common.SAMLObject;
 
@@ -34,6 +36,10 @@ public interface TimeBoundSAMLObject extends SAMLObject{
 
     /** "validUntil" attribute's local name. */
     @Nonnull @NotEmpty static final String VALID_UNTIL_ATTRIB_NAME = "validUntil";
+
+    /** "validUntil" attribute's QName. */
+    @Nonnull static final QName VALID_UNTIL_ATTRIB_QNAME =
+            new QName(null, "validUntil", XMLConstants.DEFAULT_NS_PREFIX);
 
     /**
      * Checks to see if the current time is past the validUntil time.

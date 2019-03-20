@@ -20,6 +20,7 @@ package org.opensaml.saml.saml1.core;
 import java.time.Instant;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.opensaml.saml.common.SAMLObject;
@@ -31,59 +32,66 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 public interface Conditions extends SAMLObject {
 
     /** Element name, no namespace. */
-    public static final String DEFAULT_ELEMENT_LOCAL_NAME = "Conditions";
+    static final String DEFAULT_ELEMENT_LOCAL_NAME = "Conditions";
     
     /** Default element name. */
-    public static final QName DEFAULT_ELEMENT_NAME =
+    static final QName DEFAULT_ELEMENT_NAME =
             new QName(SAMLConstants.SAML1_NS, DEFAULT_ELEMENT_LOCAL_NAME, SAMLConstants.SAML1_PREFIX);
     
     /** Local name of the XSI type. */
-    public static final String TYPE_LOCAL_NAME = "ConditionsType"; 
+    static final String TYPE_LOCAL_NAME = "ConditionsType"; 
         
     /** QName of the XSI type. */
-    public static final QName TYPE_NAME =
+    static final QName TYPE_NAME =
             new QName(SAMLConstants.SAML1_NS, TYPE_LOCAL_NAME, SAMLConstants.SAML1_PREFIX);
 
     /** Name for the NotBefore attribute. */
-    public static final String NOTBEFORE_ATTRIB_NAME = "NotBefore";
+    static final String NOTBEFORE_ATTRIB_NAME = "NotBefore";
 
-    /** Name for the NotBefore attribute. */
-    public static final String NOTONORAFTER_ATTRIB_NAME = "NotOnOrAfter";
+    /** QName for the NotBefore attribute. */
+    static final QName NOTBEFORE_ATTRIB_QNAME = new QName(null, "NotBefore", XMLConstants.DEFAULT_NS_PREFIX);
+
+    /** Name for the NotOnOrAfter attribute. */
+    static final String NOTONORAFTER_ATTRIB_NAME = "NotOnOrAfter";
+
+    /** QName for the NotOnOrAfter attribute. */
+    static final QName NOTONORAFTER_ATTRIB_QNAME =
+            new QName(null, "NotOnOrAfter", XMLConstants.DEFAULT_NS_PREFIX);
 
     /**
      * Get the "not before" condition.
      * 
      * @return the "not before" condition 
      */
-    public Instant getNotBefore();
+    Instant getNotBefore();
 
     /**
      * Set the "not before" condition.
      * 
      * @param notBefore the "not before" condition 
      */
-    public void setNotBefore(Instant notBefore);
+    void setNotBefore(Instant notBefore);
 
     /**
      * Get the "not on or after" condition.
      * 
      * @return the "not on or after" condition 
      */
-    public Instant getNotOnOrAfter();
+    Instant getNotOnOrAfter();
 
     /**
      * Set the "not on or after" condition.
      * 
      * @param notOnOrAfter the "not on or after" condition 
      */
-    public void setNotOnOrAfter(Instant notOnOrAfter);
+    void setNotOnOrAfter(Instant notOnOrAfter);
     
     /**
      * Get the conditions.
      * 
      * @return the conditions
      */
-    public List<Condition> getConditions();
+    List<Condition> getConditions();
     
     /**
      * Get the conditions with the given schema type or element name.
@@ -92,19 +100,19 @@ public interface Conditions extends SAMLObject {
      * 
      * @return the matching conditions
      */
-    public List<Condition> getConditions(QName typeOrName);
+    List<Condition> getConditions(QName typeOrName);
 
     /**
      * Get the audience restriction conditions.
      * 
      * @return the audience restriction conditions
      */
-    public List<AudienceRestrictionCondition> getAudienceRestrictionConditions();
+    List<AudienceRestrictionCondition> getAudienceRestrictionConditions();
 
     /**
      * Get the "do not cache" conditions.
      * 
      * @return the "do not cache" conditions
      */
-    public List<DoNotCacheCondition> getDoNotCacheConditions();
+    List<DoNotCacheCondition> getDoNotCacheConditions();
 }

@@ -24,6 +24,9 @@ package org.opensaml.saml.saml1.core;
 import java.time.Instant;
 import java.util.List;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
 
@@ -32,64 +35,68 @@ import org.opensaml.saml.common.SignableSAMLObject;
  */
 public interface RequestAbstractType extends SignableSAMLObject {
 
-    /** Name for the attribute which defines the Major Version (which must be "1". */
-    public static final String MAJORVERSION_ATTRIB_NAME = "MajorVersion";
+    /** Name for the attribute which defines the MajorVersion (which must be "1". */
+    static final String MAJORVERSION_ATTRIB_NAME = "MajorVersion";
 
-    /** Name for the attribute which defines the Minor Version. */
-    public static final String MINORVERSION_ATTRIB_NAME = "MinorVersion";
+    /** Name for the attribute which defines the MinorVersion. */
+    static final String MINORVERSION_ATTRIB_NAME = "MinorVersion";
 
+    /** Name for the attribute which defines the IssueInstant. */
+    static final String ISSUEINSTANT_ATTRIB_NAME = "IssueInstant";
+    
+    /** QName for the attribute which defines the IssueInstant. */
+    static final QName ISSUEINSTANT_ATTRIB_QNAME =
+            new QName(null, "IssueInstant", XMLConstants.DEFAULT_NS_PREFIX);
+    
     /** Name for the attribute which defines the Issue Instant. */
-    public static final String ISSUEINSTANT_ATTRIB_NAME = "IssueInstant";
-
-    /** Name for the attribute which defines the Issue Instant. */
-    public static final String ID_ATTRIB_NAME = "RequestID";
+    static final String ID_ATTRIB_NAME = "RequestID";
 
     /**
      * Gets the SAML version of this message.
      * 
      * @return the SAML version of this message
      */
-    public SAMLVersion getVersion();
+    SAMLVersion getVersion();
 
     /**
      * Sets the SAML version of this message.
      * 
      * @param version SAML version of this message
      */
-    public void setVersion(SAMLVersion version);
+    void setVersion(SAMLVersion version);
 
     /**
      * Get the issue instant.
      * 
      * @return the issue instant
      */
-    public Instant getIssueInstant();
+    Instant getIssueInstant();
 
     /**
      * Set the issue instant.
      * 
      * @param date what to set
      */
-    public void setIssueInstant(Instant date);
+    void setIssueInstant(Instant date);
 
     /**
      * Get the ID.
      * 
      * @return the ID
      */
-    public String getID();
+    String getID();
 
     /**
      * Set the ID.
      * 
      * @param id what to set
      */
-    public void setID(String id);
+    void setID(String id);
 
     /**
      * Return the list of RespondWith elements.
      * 
      * @return the list of RespondWith elements
      */
-    public List<RespondWith> getRespondWiths();
+    List<RespondWith> getRespondWiths();
 }

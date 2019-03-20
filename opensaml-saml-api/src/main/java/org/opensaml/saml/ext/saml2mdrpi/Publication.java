@@ -19,6 +19,7 @@ package org.opensaml.saml.ext.saml2mdrpi;
 
 import java.time.Instant;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.opensaml.saml.common.SAMLObject;
@@ -47,13 +48,17 @@ public interface Publication extends SAMLObject {
             new QName(SAMLConstants.SAML20MDRPI_NS, TYPE_LOCAL_NAME, SAMLConstants.SAML20MDRPI_PREFIX);
 
     /** publisher attribute name. */
-    public String PUBLISHER_ATTRIB_NAME = "publisher";
+    public static String PUBLISHER_ATTRIB_NAME = "publisher";
 
     /** creation attribute name. */
-    public String CREATION_INSTANT_ATTRIB_NAME = "creationInstant";
+    public static String CREATION_INSTANT_ATTRIB_NAME = "creationInstant";
 
+    /** QName of the creation attribute. */
+    public static final QName CREATION_INSTANT_ATTRIB_QNAME =
+            new QName(null, CREATION_INSTANT_ATTRIB_NAME, XMLConstants.DEFAULT_NS_PREFIX);
+    
     /** publication id attribute name. */
-    public String PUBLICATION_ID_ATTRIB_NAME = "publicationId";
+    public static String PUBLICATION_ID_ATTRIB_NAME = "publicationId";
 
     /**
      * Get the publisher.

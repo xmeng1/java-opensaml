@@ -48,7 +48,6 @@ public class XSDateTimeTest extends XMLObjectBaseTestCase {
     @BeforeMethod
     protected void setUp() throws Exception{
         expectedXMLObjectQName = new QName("urn:example.org:foo", "bar", "foo");
-        //expectedValue = new DateTime(2010, 04, 05, 18, 52, 42, 790, ISOChronology.getInstanceUTC());
         expectedValue = Instant.parse("2010-04-05T18:52:42.790Z");
     }
 

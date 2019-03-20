@@ -21,8 +21,6 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
-import java.time.Instant;
-
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
@@ -31,6 +29,8 @@ import org.opensaml.saml.saml2.core.Conditions;
 import org.w3c.dom.Attr;
 
 import com.google.common.base.Strings;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * A thread-safe Unmarshaller for {@link org.opensaml.saml.saml2.core.Conditions} objects.
@@ -56,10 +56,10 @@ public class ConditionsUnmarshaller extends AbstractSAMLObjectUnmarshaller {
         if (attribute.getNamespaceURI() == null) {
             if (attribute.getLocalName().equals(Conditions.NOT_BEFORE_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                conditions.setNotBefore(Instant.parse(attribute.getValue()));
+                conditions.setNotBefore(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(Conditions.NOT_ON_OR_AFTER_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                conditions.setNotOnOrAfter(Instant.parse(attribute.getValue()));
+                conditions.setNotOnOrAfter(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

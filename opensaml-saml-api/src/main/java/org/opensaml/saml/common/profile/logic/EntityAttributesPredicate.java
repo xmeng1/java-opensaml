@@ -56,6 +56,7 @@ import net.shibboleth.utilities.java.support.annotation.constraint.Unmodifiable;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * Predicate to determine whether an {@link EntityDescriptor} or its parent groups contain an {@link EntityAttributes}
@@ -422,7 +423,7 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
             } else if (object instanceof XSDateTime) {
                 final Instant dt = ((XSDateTime) object).getValue();
                 if (dt != null) {
-                    toMatch = ((XSDateTime) object).getDateTimeFormatter().format(dt);
+                    toMatch = DOMTypeSupport.instantToDateTime(dt);
                 }
             } else if (object instanceof XSBase64Binary) {
                 toMatch = ((XSBase64Binary) object).getValue();

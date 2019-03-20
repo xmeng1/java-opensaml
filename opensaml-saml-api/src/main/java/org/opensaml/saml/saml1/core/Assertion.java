@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
@@ -65,6 +66,10 @@ public interface Assertion extends SignableSAMLObject, Evidentiary {
     /** Name for the attribute which defines the issue instant. */
     @Nonnull @NotEmpty static final String ISSUEINSTANT_ATTRIB_NAME = "IssueInstant";
 
+    /** QName for the attribute which defines the issue instant. */
+    @Nonnull static final QName ISSUEINSTANT_ATTRIB_QNAME =
+            new QName(null, "IssueInstant", XMLConstants.DEFAULT_NS_PREFIX);
+    
     /** Name for the attribute which defines the Issue Instant. */
     @Nonnull @NotEmpty static final String ID_ATTRIB_NAME = "AssertionID";
 

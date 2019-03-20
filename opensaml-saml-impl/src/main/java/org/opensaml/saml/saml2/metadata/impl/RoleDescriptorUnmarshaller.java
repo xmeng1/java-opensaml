@@ -17,7 +17,6 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
-import java.time.Instant;
 import java.util.StringTokenizer;
 
 import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
@@ -72,7 +71,7 @@ public abstract class RoleDescriptorUnmarshaller extends AbstractSAMLObjectUnmar
                 attribute.getOwnerElement().setIdAttributeNode(attribute, true);
             } else if (attribute.getLocalName().equals(TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                roleDescriptor.setValidUntil(Instant.parse(attribute.getValue()));
+                roleDescriptor.setValidUntil(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME)) {
                 roleDescriptor.setCacheDuration(DOMTypeSupport.durationToDuration(attribute.getValue()));
             } else if (attribute.getLocalName().equals(RoleDescriptor.PROTOCOL_ENUMERATION_ATTRIB_NAME)) {

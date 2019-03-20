@@ -17,8 +17,6 @@
 
 package org.opensaml.saml.saml1.core.impl;
 
-import java.time.Instant;
-
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.saml1.core.AuthenticationStatement;
@@ -27,6 +25,8 @@ import org.opensaml.saml.saml1.core.SubjectLocality;
 import org.w3c.dom.Attr;
 
 import com.google.common.base.Strings;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * A thread-safe Unmarshaller for {@link org.opensaml.saml.saml1.core.AuthenticationStatement} objects.
@@ -55,7 +55,8 @@ public class AuthenticationStatementUnmarshaller extends SubjectStatementUnmarsh
         if (attribute.getNamespaceURI() == null) {
             if (AuthenticationStatement.AUTHENTICATIONINSTANT_ATTRIB_NAME.equals(attribute.getLocalName())
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                authenticationStatement.setAuthenticationInstant(Instant.parse(attribute.getValue()));
+                authenticationStatement.setAuthenticationInstant(
+                        DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
             } else if (AuthenticationStatement.AUTHENTICATIONMETHOD_ATTRIB_NAME.equals(attribute.getLocalName())) {
                 authenticationStatement.setAuthenticationMethod(attribute.getValue());
             } else {

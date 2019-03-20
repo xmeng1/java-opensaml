@@ -18,7 +18,6 @@
 package org.opensaml.core.xml.schema.impl;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +25,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
-import net.shibboleth.utilities.java.support.logic.Constraint;
 
 import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
@@ -41,9 +39,6 @@ public class XSDateTimeImpl extends AbstractXMLObject implements XSDateTime {
     /** Value of this dateTime element. */
     private Instant value;
     
-    /** The date time formatter to use. */
-    private DateTimeFormatter formatter;
-    
     /**
      * Constructor.
      * 
@@ -54,32 +49,21 @@ public class XSDateTimeImpl extends AbstractXMLObject implements XSDateTime {
     protected XSDateTimeImpl(@Nullable final String namespaceURI, @Nonnull @NotEmpty final String elementLocalName,
             @Nullable final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        formatter = DateTimeFormatter.ISO_INSTANT;
     }
     
     /** {@inheritDoc} */
-    public Instant getValue() {
+    @Nullable public Instant getValue() {
         return value;
     }
 
     /** {@inheritDoc} */
-    public void setValue(final Instant newValue) {
+    public void setValue(@Nullable final Instant newValue) {
         value = prepareForAssignment(value, newValue);
     }
 
     /** {@inheritDoc} */
     public List<XMLObject> getOrderedChildren() {
         return Collections.emptyList();
-    }
-
-    /** {@inheritDoc} */
-    public DateTimeFormatter getDateTimeFormatter() {
-        return formatter;
-    }
-
-    /** {@inheritDoc} */
-    public void setDateTimeFormatter(final DateTimeFormatter newFormatter) {
-        formatter = Constraint.isNotNull(newFormatter, "The formatter cannot be null");
     }
 
 }

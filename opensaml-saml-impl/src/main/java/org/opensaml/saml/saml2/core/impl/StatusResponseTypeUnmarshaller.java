@@ -21,8 +21,6 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
-import java.time.Instant;
-
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
@@ -35,8 +33,10 @@ import org.w3c.dom.Attr;
 
 import com.google.common.base.Strings;
 
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
+
 /**
- * A thread-safe Unmarshaller for {@link org.opensaml.saml.saml2.core.StatusResponseType} objects.
+ * A thread-safe Unmarshaller for {@link StatusResponseType} objects.
  */
 public abstract class StatusResponseTypeUnmarshaller extends AbstractSAMLObjectUnmarshaller {
 
@@ -72,7 +72,7 @@ public abstract class StatusResponseTypeUnmarshaller extends AbstractSAMLObjectU
                 sr.setInResponseTo(attribute.getValue());
             } else if (attribute.getLocalName().equals(StatusResponseType.ISSUE_INSTANT_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                sr.setIssueInstant(Instant.parse(attribute.getValue()));
+                sr.setIssueInstant(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(StatusResponseType.DESTINATION_ATTRIB_NAME)) {
                 sr.setDestination(attribute.getValue());
             } else if (attribute.getLocalName().equals(StatusResponseType.CONSENT_ATTRIB_NAME)) {

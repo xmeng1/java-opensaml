@@ -19,21 +19,17 @@ package org.opensaml.saml.saml2.metadata.impl;
 
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml2.common.CacheableSAMLObject;
 import org.opensaml.saml.saml2.common.TimeBoundSAMLObject;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 
 /**
  * A thread safe Marshaller for {@link org.opensaml.saml.saml2.metadata.EntitiesDescriptor} objects.
  */
 public class EntitiesDescriptorMarshaller extends AbstractSAMLObjectMarshaller {
-
-    /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(EntitiesDescriptorMarshaller.class);
 
     /** {@inheritDoc} */
     protected void marshallAttributes(final XMLObject samlElement, final Element domElement) {
@@ -42,29 +38,24 @@ public class EntitiesDescriptorMarshaller extends AbstractSAMLObjectMarshaller {
 
         // Set the ID attribute
         if (entitiesDescriptor.getID() != null) {
-            log.trace("Writing ID attribute to EntitiesDescriptor DOM element.");
             domElement.setAttributeNS(null, EntitiesDescriptor.ID_ATTRIB_NAME, entitiesDescriptor.getID());
             domElement.setIdAttributeNS(null, EntitiesDescriptor.ID_ATTRIB_NAME, true);
         }
 
         // Set the validUntil attribute
         if (entitiesDescriptor.getValidUntil() != null) {
-            log.trace("Writing validUntil attribute to EntitiesDescriptor DOM element");
-            final String validUntilStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().format(entitiesDescriptor.getValidUntil());
-            domElement.setAttributeNS(null, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME, validUntilStr);
+            AttributeSupport.appendDateTimeAttribute(domElement, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_QNAME,
+                    entitiesDescriptor.getValidUntil());
         }
 
         // Set the cacheDuration attribute
         if (entitiesDescriptor.getCacheDuration() != null) {
-            log.trace("Writing cacheDuration attribute to EntitiesDescriptor DOM element");
-            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME,
-                    entitiesDescriptor.getCacheDuration().toString());
+            AttributeSupport.appendDurationAttribute(domElement, CacheableSAMLObject.CACHE_DURATION_ATTRIB_QNAME,
+                    entitiesDescriptor.getCacheDuration());
         }
 
         // Set the Name attribute
         if (entitiesDescriptor.getName() != null) {
-            log.trace("Writing Name attribute to EntitiesDescriptor DOM element");
             domElement.setAttributeNS(null, EntitiesDescriptor.NAME_ATTRIB_NAME, entitiesDescriptor.getName());
         }
     }

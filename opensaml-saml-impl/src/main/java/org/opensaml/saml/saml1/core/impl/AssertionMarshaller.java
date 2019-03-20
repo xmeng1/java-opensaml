@@ -20,9 +20,10 @@ package org.opensaml.saml.saml1.core.impl;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml1.core.Assertion;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 
 /**
  * A thread safe Marshaller for {@link org.opensaml.saml.saml1.core.Assertion} objects.
@@ -47,9 +48,8 @@ public class AssertionMarshaller extends AbstractSAMLObjectMarshaller {
         }
 
         if (assertion.getIssueInstant() != null) {
-            final String date =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().format(assertion.getIssueInstant());
-            domElement.setAttributeNS(null, Assertion.ISSUEINSTANT_ATTRIB_NAME, date);
+            AttributeSupport.appendDateTimeAttribute(domElement, Assertion.ISSUEINSTANT_ATTRIB_QNAME,
+                    assertion.getIssueInstant());
         }
 
         domElement.setAttributeNS(null, Assertion.MAJORVERSION_ATTRIB_NAME, "1");

@@ -21,8 +21,6 @@
 
 package org.opensaml.saml.saml1.core.impl;
 
-import java.time.Instant;
-
 import javax.annotation.Nonnull;
 
 import org.opensaml.core.xml.XMLObject;
@@ -38,6 +36,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.google.common.base.Strings;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * A thread safe Unmarshaller for {@link org.opensaml.saml.saml1.core.RequestAbstractType} objects.
@@ -81,7 +81,7 @@ public abstract class RequestAbstractTypeUnmarshaller extends AbstractSAMLObject
                 request.setID(attribute.getValue());
             } else if (RequestAbstractType.ISSUEINSTANT_ATTRIB_NAME.equals(attribute.getLocalName())
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                request.setIssueInstant(Instant.parse(attribute.getValue()));
+                request.setIssueInstant(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(RequestAbstractType.MAJORVERSION_ATTRIB_NAME)) {
                 final int major;
                 try {

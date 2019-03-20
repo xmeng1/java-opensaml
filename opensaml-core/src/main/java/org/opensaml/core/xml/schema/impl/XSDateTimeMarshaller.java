@@ -17,6 +17,7 @@
 
 package org.opensaml.core.xml.schema.impl;
 
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 import net.shibboleth.utilities.java.support.xml.ElementSupport;
 
 import org.opensaml.core.xml.XMLObject;
@@ -38,7 +39,7 @@ public class XSDateTimeMarshaller extends BaseXMLObjectMarshaller {
             throws MarshallingException {
         final XSDateTime xsDateTime = (XSDateTime) xmlObject;
         
-        ElementSupport.appendTextContent(domElement, xsDateTime.getDateTimeFormatter().format(xsDateTime.getValue()));
+        ElementSupport.appendTextContent(domElement, DOMTypeSupport.instantToDateTime(xsDateTime.getValue()));
     }
 
 }

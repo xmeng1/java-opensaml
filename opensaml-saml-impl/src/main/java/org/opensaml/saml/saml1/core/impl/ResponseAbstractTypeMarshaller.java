@@ -25,10 +25,10 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
 import org.opensaml.saml.common.SAMLVersion;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
-import org.opensaml.saml.saml1.core.RequestAbstractType;
 import org.opensaml.saml.saml1.core.ResponseAbstractType;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 
 /**
  * A thread safe Marshaller for {@link org.opensaml.saml.saml1.core.ResponseAbstractType} objects.
@@ -52,13 +52,13 @@ public abstract class ResponseAbstractTypeMarshaller extends AbstractSAMLObjectM
         }
 
         if (response.getIssueInstant() != null) {
-            final String date = SAMLConfigurationSupport.getSAMLDateFormatter().format(response.getIssueInstant());
-            domElement.setAttributeNS(null, ResponseAbstractType.ISSUEINSTANT_ATTRIB_NAME, date);
+            AttributeSupport.appendDateTimeAttribute(domElement, ResponseAbstractType.ISSUEINSTANT_ATTRIB_QNAME,
+                    response.getIssueInstant());
         }
 
-        domElement.setAttributeNS(null, RequestAbstractType.MAJORVERSION_ATTRIB_NAME,
+        domElement.setAttributeNS(null, ResponseAbstractType.MAJORVERSION_ATTRIB_NAME,
                 Integer.toString(response.getVersion().getMajorVersion()));
-        domElement.setAttributeNS(null, RequestAbstractType.MINORVERSION_ATTRIB_NAME,
+        domElement.setAttributeNS(null, ResponseAbstractType.MINORVERSION_ATTRIB_NAME,
                 Integer.toString(response.getVersion().getMinorVersion()));
 
         if (response.getRecipient() != null) {
