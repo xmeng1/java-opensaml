@@ -51,7 +51,7 @@ public class PublicationInfoUnmarshaller extends AbstractSAMLObjectUnmarshaller 
             if (PublicationInfo.PUBLISHER_ATTRIB_NAME.equals(attribute.getName())) {
                 info.setPublisher(attribute.getValue());
             } else if (PublicationInfo.CREATION_INSTANT_ATTRIB_NAME.equals(attribute.getName())) {
-                info.setCreationInstant(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                info.setCreationInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (PublicationInfo.PUBLICATION_ID_ATTRIB_NAME.equals(attribute.getName())) {
                 info.setPublicationId(attribute.getValue());
             } else {

@@ -64,7 +64,7 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
     /** {@inheritDoc} */
     public void setDateTime(final Instant newDateTime) {
         dateTimeValue = newDateTime;
-        stringValue = prepareForAssignment(stringValue, DOMTypeSupport.instantToDateTime(dateTimeValue));
+        stringValue = prepareForAssignment(stringValue, DOMTypeSupport.instantToString(dateTimeValue));
     }
 
     /** {@inheritDoc} */
@@ -74,7 +74,7 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
 
     /** {@inheritDoc} */
     public void setValue(final String newValue) {
-        dateTimeValue = DOMTypeSupport.dateTimeToInstant(newValue);
+        dateTimeValue = DOMTypeSupport.stringToInstant(newValue);
         stringValue = prepareForAssignment(stringValue, newValue);
     }
 

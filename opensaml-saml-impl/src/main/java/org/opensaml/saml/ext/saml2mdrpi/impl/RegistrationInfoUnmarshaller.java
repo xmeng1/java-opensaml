@@ -51,7 +51,7 @@ public class RegistrationInfoUnmarshaller extends AbstractSAMLObjectUnmarshaller
             if (RegistrationInfo.REGISTRATION_AUTHORITY_ATTRIB_NAME.equals(attribute.getName())) {
                 info.setRegistrationAuthority(attribute.getValue());
             } else if (RegistrationInfo.REGISTRATION_INSTANT_ATTRIB_NAME.equals(attribute.getName())) {
-                info.setRegistrationInstant(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                info.setRegistrationInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

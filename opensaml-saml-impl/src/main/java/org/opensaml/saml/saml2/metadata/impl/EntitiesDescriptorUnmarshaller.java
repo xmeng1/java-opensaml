@@ -65,9 +65,9 @@ public class EntitiesDescriptorUnmarshaller extends AbstractSAMLObjectUnmarshall
                 attribute.getOwnerElement().setIdAttributeNode(attribute, true);
             } else if (attribute.getLocalName().equals(TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                entitiesDescriptor.setValidUntil(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                entitiesDescriptor.setValidUntil(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME)) {
-                entitiesDescriptor.setCacheDuration(DOMTypeSupport.durationToDuration(attribute.getValue()));
+                entitiesDescriptor.setCacheDuration(DOMTypeSupport.stringToDuration(attribute.getValue()));
             } else if (attribute.getLocalName().equals(EntitiesDescriptor.NAME_ATTRIB_NAME)) {
                 entitiesDescriptor.setName(attribute.getValue());
             } else {

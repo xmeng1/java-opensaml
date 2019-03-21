@@ -53,10 +53,10 @@ public class SubjectConfirmationDataUnmarshaller extends AbstractSAMLObjectUnmar
         if (attribute.getNamespaceURI() == null) {
             if (attribute.getLocalName().equals(SubjectConfirmationData.NOT_BEFORE_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                subjectCD.setNotBefore(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                subjectCD.setNotBefore(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(SubjectConfirmationData.NOT_ON_OR_AFTER_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                subjectCD.setNotOnOrAfter(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                subjectCD.setNotOnOrAfter(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(SubjectConfirmationData.RECIPIENT_ATTRIB_NAME)) {
                 subjectCD.setRecipient(attribute.getValue());
             } else if (attribute.getLocalName().equals(SubjectConfirmationData.IN_RESPONSE_TO_ATTRIB_NAME)) {

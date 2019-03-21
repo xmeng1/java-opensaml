@@ -35,7 +35,7 @@ public class XSDateTimeUnmarshaller extends BaseXMLObjectUnmarshaller{
     protected void processElementContent(final XMLObject xmlObject, final String elementContent) {
         final XSDateTime xsDateTime = (XSDateTime) xmlObject;
         
-        xsDateTime.setValue(DOMTypeSupport.dateTimeToInstant(elementContent));
+        xsDateTime.setValue(DOMTypeSupport.stringToInstant(elementContent));
     }
 
 }

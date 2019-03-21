@@ -62,7 +62,7 @@ public class LogoutRequestUnmarshaller extends RequestAbstractTypeUnmarshaller {
                 req.setReason(attribute.getValue());
             } else if (attribute.getLocalName().equals(LogoutRequest.NOT_ON_OR_AFTER_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                req.setNotOnOrAfter(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                req.setNotOnOrAfter(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

@@ -56,7 +56,7 @@ public class AuthenticationStatementUnmarshaller extends SubjectStatementUnmarsh
             if (AuthenticationStatement.AUTHENTICATIONINSTANT_ATTRIB_NAME.equals(attribute.getLocalName())
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
                 authenticationStatement.setAuthenticationInstant(
-                        DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                        DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (AuthenticationStatement.AUTHENTICATIONMETHOD_ATTRIB_NAME.equals(attribute.getLocalName())) {
                 authenticationStatement.setAuthenticationMethod(attribute.getValue());
             } else {

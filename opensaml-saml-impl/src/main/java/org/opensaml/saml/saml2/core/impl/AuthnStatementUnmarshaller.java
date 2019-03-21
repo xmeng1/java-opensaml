@@ -58,12 +58,12 @@ public class AuthnStatementUnmarshaller extends AbstractSAMLObjectUnmarshaller {
         if (attribute.getNamespaceURI() == null) {
             if (attribute.getLocalName().equals(AuthnStatement.AUTHN_INSTANT_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                authnStatement.setAuthnInstant(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                authnStatement.setAuthnInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(AuthnStatement.SESSION_INDEX_ATTRIB_NAME)) {
                 authnStatement.setSessionIndex(attribute.getValue());
             } else if (attribute.getLocalName().equals(AuthnStatement.SESSION_NOT_ON_OR_AFTER_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                authnStatement.setSessionNotOnOrAfter(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                authnStatement.setSessionNotOnOrAfter(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

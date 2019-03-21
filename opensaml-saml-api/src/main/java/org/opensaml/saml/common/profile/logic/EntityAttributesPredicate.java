@@ -423,7 +423,7 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
             } else if (object instanceof XSDateTime) {
                 final Instant dt = ((XSDateTime) object).getValue();
                 if (dt != null) {
-                    toMatch = DOMTypeSupport.instantToDateTime(dt);
+                    toMatch = DOMTypeSupport.instantToString(dt);
                 }
             } else if (object instanceof XSBase64Binary) {
                 toMatch = ((XSBase64Binary) object).getValue();

@@ -72,7 +72,7 @@ public abstract class StatusResponseTypeUnmarshaller extends AbstractSAMLObjectU
                 sr.setInResponseTo(attribute.getValue());
             } else if (attribute.getLocalName().equals(StatusResponseType.ISSUE_INSTANT_ATTRIB_NAME)
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                sr.setIssueInstant(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                sr.setIssueInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(StatusResponseType.DESTINATION_ATTRIB_NAME)) {
                 sr.setDestination(attribute.getValue());
             } else if (attribute.getLocalName().equals(StatusResponseType.CONSENT_ATTRIB_NAME)) {

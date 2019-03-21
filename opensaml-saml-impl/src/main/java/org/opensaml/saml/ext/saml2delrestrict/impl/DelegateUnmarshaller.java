@@ -42,7 +42,7 @@ public class DelegateUnmarshaller extends AbstractSAMLObjectUnmarshaller {
             if (Delegate.CONFIRMATION_METHOD_ATTRIB_NAME.equals(attrName)) {
                 delegate.setConfirmationMethod(attribute.getValue());
             } else if (Delegate.DELEGATION_INSTANT_ATTRIB_NAME.equals(attrName)) {
-                delegate.setDelegationInstant(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                delegate.setDelegationInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

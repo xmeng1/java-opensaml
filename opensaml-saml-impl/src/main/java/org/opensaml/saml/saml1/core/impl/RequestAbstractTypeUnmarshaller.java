@@ -81,7 +81,7 @@ public abstract class RequestAbstractTypeUnmarshaller extends AbstractSAMLObject
                 request.setID(attribute.getValue());
             } else if (RequestAbstractType.ISSUEINSTANT_ATTRIB_NAME.equals(attribute.getLocalName())
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                request.setIssueInstant(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                request.setIssueInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (attribute.getLocalName().equals(RequestAbstractType.MAJORVERSION_ATTRIB_NAME)) {
                 final int major;
                 try {

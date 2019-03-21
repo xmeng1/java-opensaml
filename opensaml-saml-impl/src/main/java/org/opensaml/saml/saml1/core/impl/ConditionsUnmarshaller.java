@@ -53,10 +53,10 @@ public class ConditionsUnmarshaller extends AbstractSAMLObjectUnmarshaller {
         if (attribute.getNamespaceURI() == null) {
             if (Conditions.NOTBEFORE_ATTRIB_NAME.equals(attribute.getLocalName())
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                conditions.setNotBefore(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                conditions.setNotBefore(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (Conditions.NOTONORAFTER_ATTRIB_NAME.equals(attribute.getLocalName())
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                conditions.setNotOnOrAfter(DOMTypeSupport.dateTimeToInstant(attribute.getValue()));
+                conditions.setNotOnOrAfter(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }
