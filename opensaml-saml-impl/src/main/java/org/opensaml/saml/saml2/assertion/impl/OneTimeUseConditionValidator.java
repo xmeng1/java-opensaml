@@ -139,7 +139,7 @@ public class OneTimeUseConditionValidator implements ConditionValidator {
      * Get the one-time use expiration time for the assertion being evaluated.
      * 
      * <p>
-     * Defaults to <code>System.currentTimeMillis() + getReplayCacheExpires()</code>.
+     * Defaults to <code>Instant.now().plus(getReplayCacheExpires())</code>.
      * </p>
      * 
      * <p>

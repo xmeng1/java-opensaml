@@ -19,6 +19,7 @@ package org.opensaml.saml.common.binding.artifact.impl;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -194,7 +195,7 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
         final boolean success =
                 getStorageService().create(STORAGE_CONTEXT, artifact, artifactEntry,
                         (StorageSerializer) getEntryFactory(),
-                        System.currentTimeMillis() + getArtifactLifetime().toMillis());
+                        Instant.now().plus(getArtifactLifetime()).toEpochMilli());
         if (!success) {
             throw new IOException("A duplicate artifact was generated");
         }
