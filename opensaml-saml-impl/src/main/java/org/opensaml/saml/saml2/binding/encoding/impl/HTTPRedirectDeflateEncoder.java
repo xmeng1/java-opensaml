@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +55,7 @@ import org.opensaml.xmlsec.crypto.XMLSigningUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -171,6 +173,13 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         final List<Pair<String, String>> queryParams = urlBuilder.getQueryParams();
         removeDisallowedQueryParams(queryParams);
         
+        // This is a copy of any existing allowed params that were preserved.  Note that they will not be signed.
+        final List<Pair<String, String>> originalParams = new ArrayList<>(queryParams);
+
+        // We clear here so that existing params will not be signed, but can still use the URLBuilder#buildQueryString()
+        // to build the string that will potentially be signed later. Add originalParms back in later.
+        queryParams.clear();
+
         final SAMLObject outboundMessage = messageContext.getMessage();
 
         if (outboundMessage instanceof RequestAbstractType) {
@@ -197,8 +206,17 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
 
             queryParams.add(new Pair<>("Signature", generateSignature(
                     signingParameters.getSigningCredential(), sigAlgURI, sigMaterial)));
+
+            // Add original params to the beginning of the list preserving their original order.
+            if (!originalParams.isEmpty()) {
+                for (final Pair<String, String> param : Lists.reverse(originalParams)) {
+                    queryParams.add(0, param);
+                }
+            }
+
         } else {
             log.debug("No signing credential was supplied, skipping HTTP-Redirect DEFLATE signing");
+            queryParams.addAll(originalParams);
         }
         
         return urlBuilder.buildURL();
