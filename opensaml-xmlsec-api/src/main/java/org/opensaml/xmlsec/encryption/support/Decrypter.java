@@ -927,7 +927,7 @@ public class Decrypter {
      * @return a new key length credential criteria instance, or null if the value could not be determined
      */
     @Nullable private KeyLengthCriterion buildKeyLengthCriteria(@Nullable final String encAlgorithmURI) {
-        if (!Strings.isNullOrEmpty(encAlgorithmURI)) {
+        if (Strings.isNullOrEmpty(encAlgorithmURI)) {
             return null;
         }
 
