@@ -172,14 +172,14 @@ public abstract class StorageServiceTest {
         Assert.assertEquals(o1.getValue(), o2.getValue());
         
         o2.setValue("foo");
-        o2.setExpiration(System.currentTimeMillis() + 5000);
+        o2.setExpiration(System.currentTimeMillis() + 10000);
         shared.update(o2);
         
         shared.read(o1);
         Assert.assertEquals(o1.getValue(), "foo");
         Assert.assertEquals(o1.getExpiration(), o2.getExpiration());
         
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         
         Assert.assertNull(shared.read(o2));
     }
@@ -199,7 +199,7 @@ public abstract class StorageServiceTest {
             context = Long.toString(random.nextLong());
             key = Long.toString(random.nextLong());
             value = Long.toString(random.nextLong());
-            expiration = System.currentTimeMillis() + 5000;
+            expiration = System.currentTimeMillis() + 60000;
         }
         
         public String getContext() {
