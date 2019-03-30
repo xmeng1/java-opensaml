@@ -25,6 +25,7 @@ import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.function.Function;
@@ -70,7 +71,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -439,7 +439,7 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
                         if (input == null) {
                             return false;
                         }
-                        return Objects.equal(id1, input.getEntityID());
+                        return Objects.equals(id1, input.getEntityID());
                     }
                 });
         
