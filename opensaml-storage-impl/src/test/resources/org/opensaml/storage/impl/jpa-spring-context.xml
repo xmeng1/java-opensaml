@@ -54,9 +54,15 @@
     </bean>
     <bean id="mysqlDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close" lazy-init="true"
        p:driverClassName="com.mysql.jdbc.Driver"
-       p:url="jdbc:mysql://localhost:3306/storageservice"
+       p:url="jdbc:mysql://localhost:3306/storageservice?serverTimezone=UTC"
        p:username="shib"
-       p:password="p@ssw0rd" />
+       p:password="p@ssw0rd"
+       p:maxTotal="1"
+       p:maxIdle="1"
+       p:maxWaitMillis="15000"
+       p:testOnBorrow="true"
+       p:validationQuery="select 1"
+       p:validationQueryTimeout="5" />
 
     <!-- Oracle configuration
     
