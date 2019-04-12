@@ -19,7 +19,7 @@ package org.opensaml.saml.security.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 
@@ -258,7 +258,7 @@ public class MetadataCredentialResolver extends AbstractCriteriaFilteringCredent
         
         log.debug("Resolving credentials from supplied RoleDescriptor using usage: {}.  Effective entityID was: {}", 
                 usage, entityID);
-        final HashSet<Credential> credentials = new HashSet<>(3);
+        final LinkedHashSet<Credential> credentials = new LinkedHashSet<>(3);
         
         processRoleDescriptor(credentials, roleDescriptor, entityID, usage);
         
@@ -285,7 +285,7 @@ public class MetadataCredentialResolver extends AbstractCriteriaFilteringCredent
 
         log.debug("Resolving credentials from metadata using entityID: {}, role: {}, protocol: {}, usage: {}", 
                 entityID, role, protocol, usage);
-        final HashSet<Credential> credentials = new HashSet<>(3);
+        final LinkedHashSet<Credential> credentials = new LinkedHashSet<>(3);
 
         final Iterable<RoleDescriptor> roleDescriptors = getRoleDescriptors(criteriaSet, entityID, role, protocol);
             
@@ -299,14 +299,14 @@ public class MetadataCredentialResolver extends AbstractCriteriaFilteringCredent
     /**
      * Process a RoleDescriptor by examing each of its KeyDescriptors.
      * 
-     *  @param accumulator the set of credentials being accumulated for return to the caller
+     * @param accumulator the collection of credentials being accumulated for return to the caller
      * @param roleDescriptor the KeyDescriptor being processed
      * @param entityID the entity ID of the KeyDescriptor being processed
      * @param usage the credential usage type specified as resolve input
      * 
      * @throws ResolverException if there is a problem resolving credentials from the KeyDescriptor's KeyInfo element
      */
-    protected void processRoleDescriptor(@Nonnull final HashSet<Credential> accumulator, 
+    protected void processRoleDescriptor(@Nonnull final Collection<Credential> accumulator, 
             @Nonnull final RoleDescriptor roleDescriptor, @Nullable final String entityID, 
             @Nonnull final UsageType usage) throws ResolverException {
         
@@ -329,7 +329,7 @@ public class MetadataCredentialResolver extends AbstractCriteriaFilteringCredent
      * object metadata cache. If they are not found there, then they will be resolved from the KeyDescriptor's
      * KeyInfo and then cached in the KeyDescriptor's object metadata before returning.
      * 
-     * @param accumulator the set of credentials being accumulated for return to the caller
+     * @param accumulator the collection of credentials being accumulated for return to the caller
      * @param keyDescriptor the KeyDescriptor being processed
      * @param entityID the entity ID of the KeyDescriptor being processed
      * @param mdUsage the effective credential usage type in effect for the resolved credentials
@@ -337,7 +337,7 @@ public class MetadataCredentialResolver extends AbstractCriteriaFilteringCredent
      * @throws ResolverException if there is a problem resolving credentials from the KeyDescriptor's KeyInfo element
      */
     //CheckStyle: ReturnCount OFF
-    protected void extractCredentials(@Nonnull final HashSet<Credential> accumulator, 
+    protected void extractCredentials(@Nonnull final Collection<Credential> accumulator, 
             @Nonnull final KeyDescriptor keyDescriptor, @Nullable final String entityID, 
             @Nonnull final UsageType mdUsage) throws ResolverException {
         
