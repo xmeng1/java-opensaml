@@ -211,6 +211,35 @@ public class CompositeMetadataResolver extends AbstractIdentifiedInitializableCo
         
         return ret;
     }
+    
+    /** {@inheritDoc} */
+    public Instant getLastSuccessfulRefresh() {
+        Instant ret = null;
+        for (final MetadataResolver resolver : resolvers) {
+            if (resolver instanceof RefreshableMetadataResolver) {
+                final Instant lastSuccessRefresh = ((RefreshableMetadataResolver) resolver).getLastSuccessfulRefresh();
+                if (ret == null || ret.isBefore(lastSuccessRefresh)) {
+                    ret = lastSuccessRefresh;
+                }
+            }
+        }
+        
+        return ret;
+    }
+
+    /** {@inheritDoc} */
+    public Boolean wasLastRefreshSuccess() {
+        for (final MetadataResolver resolver : resolvers) {
+            if (resolver instanceof RefreshableMetadataResolver) {
+                final RefreshableMetadataResolver refreshable = (RefreshableMetadataResolver) resolver;
+                if (refreshable.wasLastRefreshSuccess() != null && !refreshable.wasLastRefreshSuccess()) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
 
     /**
      * {@link Iterable} implementation that provides an {@link Iterator} that lazily iterates over each composed

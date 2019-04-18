@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
-import org.opensaml.saml.metadata.resolver.ExtendedRefreshableMetadataResolver;
+import org.opensaml.saml.metadata.resolver.RefreshableMetadataResolver;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.saml2.common.SAML2Support;
 import org.opensaml.saml.saml2.common.TimeBoundSAMLObject;
@@ -61,7 +61,7 @@ import net.shibboleth.utilities.java.support.resolver.ResolverException;
  * expires.
  */
 public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMetadataResolver 
-        implements ExtendedRefreshableMetadataResolver {
+        implements RefreshableMetadataResolver {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(AbstractReloadingMetadataResolver.class);
