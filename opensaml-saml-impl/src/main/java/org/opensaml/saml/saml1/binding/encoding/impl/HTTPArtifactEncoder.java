@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
+import net.shibboleth.utilities.java.support.codec.Base64Support;
 import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
@@ -43,7 +44,7 @@ import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.messaging.context.SAMLSelfEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.config.SAMLConfigurationSupport;
-import org.opensaml.saml.saml1.binding.artifact.AbstractSAML1Artifact;
+import org.opensaml.saml.saml1.binding.artifact.SAML1Artifact;
 import org.opensaml.saml.saml1.binding.artifact.SAML1ArtifactBuilder;
 import org.opensaml.saml.saml1.binding.artifact.SAML1ArtifactType0001;
 import org.opensaml.saml.saml1.core.Assertion;
@@ -161,19 +162,19 @@ public class HTTPArtifactEncoder extends BaseSAML1MessageEncoder {
         }
         final Response samlResponse = (Response) outboundMessage;
         for (final Assertion assertion : samlResponse.getAssertions()) {
-            final AbstractSAML1Artifact artifact = artifactBuilder.buildArtifact(messageContext, assertion);
+            final SAML1Artifact artifact = artifactBuilder.buildArtifact(messageContext, assertion);
             if (artifact == null) {
                 log.error("Unable to build artifact for message to relying party {}", requester);
                 throw new MessageEncodingException("Unable to build artifact for message to relying party");
             }
 
+            final String artifactString = Base64Support.encode(artifact.getArtifactBytes(), Base64Support.UNCHUNKED);
             try {
-                artifactMap.put(artifact.base64Encode(), requester, issuer, assertion);
+                artifactMap.put(artifactString, requester, issuer, assertion);
             } catch (final IOException e) {
                 log.error("Unable to store assertion mapping for artifact", e);
                 throw new MessageEncodingException("Unable to store assertion mapping for artifact", e);
             }
-            final String artifactString = artifact.base64Encode();
             queryParams.add(new Pair<>("SAMLart", artifactString));
         }
 

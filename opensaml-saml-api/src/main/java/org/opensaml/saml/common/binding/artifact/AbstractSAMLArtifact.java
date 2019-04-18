@@ -105,8 +105,8 @@ public abstract class AbstractSAMLArtifact implements SAMLArtifact {
             return true;
         }
 
-        if (o instanceof AbstractSAMLArtifact) {
-            final AbstractSAMLArtifact otherArtifact = (AbstractSAMLArtifact) o;
+        if (o instanceof SAMLArtifact) {
+            final SAMLArtifact otherArtifact = (SAMLArtifact) o;
             return Arrays.equals(getArtifactBytes(), otherArtifact.getArtifactBytes());
         }
 

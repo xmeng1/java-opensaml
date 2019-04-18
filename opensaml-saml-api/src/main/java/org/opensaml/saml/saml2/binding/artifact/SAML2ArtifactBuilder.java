@@ -32,7 +32,7 @@ import org.opensaml.saml.common.SAMLObject;
  * 
  * @param <ArtifactType> type of artifact built by this builder
  */
-public interface SAML2ArtifactBuilder<ArtifactType extends AbstractSAML2Artifact> {
+public interface SAML2ArtifactBuilder<ArtifactType extends SAML2Artifact> {
 
     /**
      * Builds an artifact, for the given assertion, destined for the outbound message recipient.

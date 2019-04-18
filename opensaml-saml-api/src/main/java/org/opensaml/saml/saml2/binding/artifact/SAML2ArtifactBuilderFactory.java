@@ -63,7 +63,7 @@ public class SAML2ArtifactBuilderFactory {
      * 
      * @return constructed artifact
      */
-    public AbstractSAML2Artifact buildArtifact(final String base64Artifact){
+    public SAML2Artifact buildArtifact(final String base64Artifact){
         return buildArtifact(Base64Support.decode(base64Artifact));
     }
 
@@ -74,7 +74,7 @@ public class SAML2ArtifactBuilderFactory {
      * 
      * @return constructed artifact
      */
-    public AbstractSAML2Artifact buildArtifact(final byte[] artifact) {
+    public SAML2Artifact buildArtifact(final byte[] artifact) {
         if(artifact == null){
             return null;
         }

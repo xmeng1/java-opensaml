@@ -33,7 +33,7 @@ import org.opensaml.saml.saml1.core.Assertion;
  * 
  * @param <ArtifactType> type of artifact built by this builder
  */
-public interface SAML1ArtifactBuilder<ArtifactType extends AbstractSAML1Artifact> {
+public interface SAML1ArtifactBuilder<ArtifactType extends SAML1Artifact> {
 
     /**
      * Builds an artifact, for the given assertion, destined for the outbound message recipient.
