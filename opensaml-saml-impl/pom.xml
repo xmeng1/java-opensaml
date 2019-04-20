@@ -24,41 +24,108 @@
         <!-- Compile Dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-messaging-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-profile-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-saml-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>opensaml-storage-api</artifactId>
+            <artifactId>opensaml-security-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-security-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>opensaml-xmlsec-impl</artifactId>
+            <artifactId>opensaml-soap-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-soap-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-storage-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-xmlsec-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-xmlsec-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.code.findbugs</groupId>
+        	<artifactId>jsr305</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.guava</groupId>
+        	<artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>org.apache.santuario</groupId>
+        	<artifactId>xmlsec</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>${httpclient.groupId}</groupId>
             <artifactId>httpclient</artifactId>
+        </dependency> 
+
+        <dependency>
+            <groupId>${httpclient.groupId}</groupId>
+            <artifactId>httpcore</artifactId>
         </dependency> 
 
         <!-- Provided Dependencies -->

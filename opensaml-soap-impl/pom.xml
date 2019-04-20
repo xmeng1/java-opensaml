@@ -24,7 +24,13 @@
         <!-- Compile Dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>opensaml-soap-api</artifactId>
+            <artifactId>opensaml-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-messaging-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -33,6 +39,39 @@
             <artifactId>opensaml-profile-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-soap-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-xmlsec-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.code.findbugs</groupId>
+        	<artifactId>jsr305</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.guava</groupId>
+        	<artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+        </dependency>
+
 
         <!-- Provided Dependencies -->
         <dependency>

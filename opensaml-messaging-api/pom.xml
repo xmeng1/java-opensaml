@@ -28,9 +28,25 @@
             <artifactId>opensaml-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+        	<groupId>com.google.code.findbugs</groupId>
+        	<artifactId>jsr305</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.guava</groupId>
+        	<artifactId>guava</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>${httpclient.groupId}</groupId>
             <artifactId>httpclient</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${httpclient.groupId}</groupId>
+            <artifactId>httpcore</artifactId>
         </dependency>
 
         <!-- Provided Dependencies -->

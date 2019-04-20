@@ -27,11 +27,22 @@
             <artifactId>opensaml-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-messaging-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+        	<groupId>com.google.code.findbugs</groupId>
+        	<artifactId>jsr305</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>com.google.guava</groupId>
+        	<artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
         </dependency>
 
         <!-- Provided Dependencies -->
@@ -52,16 +63,6 @@
         <dependency>
             <groupId>${spring.groupId}</groupId>
             <artifactId>spring-context</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${spring.groupId}</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${spring.groupId}</groupId>
-            <artifactId>spring-web</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

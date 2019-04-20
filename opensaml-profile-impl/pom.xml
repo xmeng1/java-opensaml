@@ -24,13 +24,25 @@
         <!-- Compile Dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>opensaml-profile-api</artifactId>
+            <artifactId>opensaml-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-messaging-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-profile-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-security-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -44,6 +56,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-xmlsec-impl</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.code.findbugs</groupId>
+        	<artifactId>jsr305</artifactId>
         </dependency>
 
         <!-- Provided Dependencies -->
@@ -69,25 +86,6 @@
             <artifactId>opensaml-profile-api</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${spring.groupId}</groupId>
-            <version>${spring.version}</version>
-            <artifactId>spring-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${spring.groupId}</groupId>
-            <version>${spring.version}</version>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${spring.groupId}</groupId>
-            <artifactId>spring-web</artifactId>
             <scope>test</scope>
         </dependency>
 

@@ -24,9 +24,10 @@
         <!-- Compile Dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>opensaml-security-api</artifactId>
+            <artifactId>opensaml-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-messaging-api</artifactId>
@@ -34,8 +35,40 @@
         </dependency>
         
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-security-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.code.findbugs</groupId>
+        	<artifactId>jsr305</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.guava</groupId>
+        	<artifactId>guava</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>org.cryptacular</groupId>
+			<artifactId>cryptacular</artifactId>
+		</dependency>
+
+        <dependency>
             <groupId>${httpclient.groupId}</groupId>
             <artifactId>httpclient</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>${httpclient.groupId}</groupId>
+            <artifactId>httpcore</artifactId>
             <optional>true</optional>
         </dependency>
 

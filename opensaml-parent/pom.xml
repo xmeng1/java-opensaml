@@ -81,10 +81,6 @@
             <artifactId>java-support</artifactId>
             <version>${java-support.version}</version>
         </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
 
         <!-- Provided Dependencies -->
 
@@ -112,33 +108,34 @@
     <dependencyManagement>
         <dependencies>
             <!-- Compile Dependencies -->
-          <dependency>
-              <groupId>org.hibernate</groupId>
-              <artifactId>hibernate-core</artifactId>
-              <version>5.4.2.Final</version>
-          </dependency>
-          <dependency>
-              <groupId>org.hibernate.javax.persistence</groupId>
-              <artifactId>hibernate-jpa-2.1-api</artifactId>
-              <version>1.0.2.Final</version>
-          </dependency>
-          <dependency>
-              <groupId>net.spy</groupId>
-              <artifactId>spymemcached</artifactId>
-              <version>2.12.3</version>
-          </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>5.4.2.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.javax.persistence</groupId>
+                <artifactId>hibernate-jpa-2.1-api</artifactId>
+                <version>1.0.2.Final</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.spy</groupId>
+                <artifactId>spymemcached</artifactId>
+                <version>2.12.3</version>
+            </dependency>
 
             <!-- Provided Dependencies -->
 
             <!-- Runtime Dependencies -->
 
             <!-- Test Dependencies -->
-          <dependency>
-              <groupId>net.shibboleth.ext</groupId>
-              <artifactId>spring-extensions</artifactId>
-              <version>${spring-extensions.version}</version>
-              <scope>test</scope>
-          </dependency>
+            <dependency>
+                <groupId>net.shibboleth.ext</groupId>
+                <artifactId>spring-extensions</artifactId>
+                <version>${spring-extensions.version}</version>
+                <scope>test</scope>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

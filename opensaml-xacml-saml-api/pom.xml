@@ -24,12 +24,19 @@
         <!-- Compile Dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>opensaml-xacml-api</artifactId>
+            <artifactId>opensaml-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-saml-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-xacml-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
