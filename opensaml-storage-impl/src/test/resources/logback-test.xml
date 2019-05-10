@@ -14,7 +14,8 @@
         <appender-ref ref="STDOUT" />
     </root>
     
-    <logger name="org.opensaml.storage.impl.JSONRequestScopedStorageService" level="TRACE"/>
+    <logger name="org.opensaml.storage" level="TRACE"/>
+    <logger name="org.opensaml.storage" level="DEBUG"/>
     <logger name="net.shibboleth.utilities.java.support.security.DataSealer" level="TRACE"/>
     
 </configuration>
