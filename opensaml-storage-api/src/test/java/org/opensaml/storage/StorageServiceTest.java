@@ -179,7 +179,7 @@ public abstract class StorageServiceTest {
         Assert.assertEquals(o1.getValue(), "foo");
         Assert.assertEquals(o1.getExpiration(), o2.getExpiration());
         
-        Thread.sleep(10000);
+        Thread.sleep(10100);
         
         Assert.assertNull(shared.read(o2));
     }
