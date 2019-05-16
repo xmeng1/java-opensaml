@@ -52,7 +52,7 @@ public class AttributeConsumingServiceImpl extends AbstractSAMLObject implements
     private final XMLObjectChildrenList<ServiceDescription> serviceDescriptions;
 
     /** RequestedAttribute children. */
-    private final XMLObjectChildrenList<RequestedAttribute> requestAttributes;
+    private final XMLObjectChildrenList<RequestedAttribute> requestedAttributes;
     
     /**
      * Constructor.
@@ -66,7 +66,7 @@ public class AttributeConsumingServiceImpl extends AbstractSAMLObject implements
         super(namespaceURI, elementLocalName, namespacePrefix);
         serviceNames = new XMLObjectChildrenList<>(this);
         serviceDescriptions = new XMLObjectChildrenList<>(this);
-        requestAttributes = new XMLObjectChildrenList<>(this);
+        requestedAttributes = new XMLObjectChildrenList<>(this);
     }
 
     /** {@inheritDoc} */
@@ -121,8 +121,8 @@ public class AttributeConsumingServiceImpl extends AbstractSAMLObject implements
     }
 
     /** {@inheritDoc} */
-    public List<RequestedAttribute> getRequestAttributes() {
-        return requestAttributes;
+    public List<RequestedAttribute> getRequestedAttributes() {
+        return requestedAttributes;
     }
 
     /** {@inheritDoc} */
@@ -131,7 +131,7 @@ public class AttributeConsumingServiceImpl extends AbstractSAMLObject implements
 
         children.addAll(serviceNames);
         children.addAll(serviceDescriptions);
-        children.addAll(requestAttributes);
+        children.addAll(requestedAttributes);
 
         return Collections.unmodifiableList(children);
     }

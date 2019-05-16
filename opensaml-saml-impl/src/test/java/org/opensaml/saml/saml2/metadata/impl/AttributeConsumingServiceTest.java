@@ -83,7 +83,7 @@ public class AttributeConsumingServiceTest extends XMLObjectProviderBaseTestCase
         
         Assert.assertEquals(service.getNames().size(), expectedServiceNameCount, "<ServiceName> count");
         Assert.assertEquals(service.getDescriptions().size(), expectedServiceDecsriptionCount, "<ServiceDescription> count");
-        Assert.assertEquals(service.getRequestAttributes().size(), expectedRequestedAttributeCount, "<ReqestAttribute> count");
+        Assert.assertEquals(service.getRequestedAttributes().size(), expectedRequestedAttributeCount, "<ReqestAttribute> count");
        
     }
 
@@ -124,7 +124,7 @@ public class AttributeConsumingServiceTest extends XMLObjectProviderBaseTestCase
             service.getDescriptions().add((ServiceDescription) buildXMLObject(ServiceDescription.DEFAULT_ELEMENT_NAME));
         }
 
-        service.getRequestAttributes().add((RequestedAttribute) buildXMLObject(RequestedAttribute.DEFAULT_ELEMENT_NAME));
+        service.getRequestedAttributes().add((RequestedAttribute) buildXMLObject(RequestedAttribute.DEFAULT_ELEMENT_NAME));
 
         assertXMLEquals(expectedChildElementsDOM, service);
     
