@@ -138,6 +138,15 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
     public boolean getTrimTags() {
         return trimTags;
     }
+
+    /**
+     * Get whether all candidates must match.
+     * 
+     * @return  true iff all candidates have to match 
+     */
+    public boolean getMatchAll() {
+        return matchAll;
+    }
     
     /**
      * Get the candidate criteria.
