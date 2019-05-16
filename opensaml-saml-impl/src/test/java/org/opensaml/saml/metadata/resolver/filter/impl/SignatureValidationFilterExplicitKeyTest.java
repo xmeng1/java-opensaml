@@ -29,6 +29,7 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.metadata.resolver.impl.DOMMetadataResolver;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.security.credential.CredentialSupport;
@@ -95,6 +96,8 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
     
     private KeyInfoCredentialResolver kiResolver;
     
+    private MetadataFilterContext filterContext;
+
     @BeforeClass
     public void buildKeyInfoCredentialResolver() {
         kiResolver = DefaultSecurityConfigurationBootstrap.buildBasicInlineKeyInfoCredentialResolver();
@@ -109,6 +112,8 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         X509Credential switchCred = CredentialSupport.getSimpleCredential(switchCert, null);
         StaticCredentialResolver switchCredResolver = new StaticCredentialResolver(switchCred);
         switchSigTrustEngine = new ExplicitKeySignatureTrustEngine(switchCredResolver, kiResolver);
+
+        filterContext = new MetadataFilterContext();
     }
 
     @Test
@@ -118,7 +123,7 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         
         SignatureValidationFilter filter = new SignatureValidationFilter(switchSigTrustEngine);
         try {
-            filter.filter(xmlObject);
+            filter.filter(xmlObject, filterContext);
         } catch (FilterException e) {
             Assert.fail("Filter failed validation, should have succeeded: " + e.getMessage());
         }
@@ -136,7 +141,7 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         CriteriaSet defaultCriteriaSet = new CriteriaSet(new SignatureValidationParametersCriterion(sigParams));
         filter.setDefaultCriteria(defaultCriteriaSet);
         
-        filter.filter(xmlObject);
+        filter.filter(xmlObject, filterContext);
     }
     
     @Test
@@ -146,7 +151,7 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         
         SignatureValidationFilter filter = new SignatureValidationFilter(switchSigTrustEngine);
         try {
-            filter.filter(xmlObject);
+            filter.filter(xmlObject, filterContext);
             Assert.fail("Filter passed validation, should have failed");
         } catch (FilterException e) {
             // do nothing, should fail
@@ -170,7 +175,7 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         
         SignatureValidationFilter filter = new SignatureValidationFilter(trustEngine);
         try {
-            filter.filter(ed);
+            filter.filter(ed, filterContext);
         } catch (FilterException e) {
             Assert.fail("Filter failed validation, should have succeeded: " + e.getMessage());
         }
@@ -193,7 +198,7 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         
         SignatureValidationFilter filter = new SignatureValidationFilter(trustEngine);
         try {
-            filter.filter(xmlObject);
+            filter.filter(xmlObject, filterContext);
             Assert.fail("Filter passed validation, should have failed");
         } catch (FilterException e) {
             // do nothing, should fail

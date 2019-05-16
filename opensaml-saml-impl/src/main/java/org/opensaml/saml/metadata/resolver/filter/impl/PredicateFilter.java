@@ -30,6 +30,7 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.slf4j.Logger;
@@ -115,7 +116,8 @@ public class PredicateFilter implements MetadataFilter {
 
     /** {@inheritDoc} */
     @Override
-    public XMLObject filter(@Nullable final XMLObject metadata) throws FilterException {
+    public XMLObject filter(@Nullable final XMLObject metadata, @Nonnull final MetadataFilterContext context)
+            throws FilterException {
         
         if (metadata == null) {
             return null;

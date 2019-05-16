@@ -56,7 +56,8 @@ public class MetadataFilterChain implements MetadataFilter {
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public final XMLObject filter(@Nullable final XMLObject xmlObject) throws FilterException {
+    @Nullable public final XMLObject filter(@Nullable final XMLObject xmlObject,
+            @Nonnull final MetadataFilterContext context) throws FilterException {
         if (xmlObject == null) {
             return null;
         }
@@ -73,7 +74,7 @@ public class MetadataFilterChain implements MetadataFilter {
                     return null;
                 }
                 log.debug("Applying filter {}", filter.getClass().getName());
-                current = filter.filter(current);
+                current = filter.filter(current, context);
             }
             
             return current;

@@ -57,6 +57,7 @@ import org.opensaml.saml.metadata.criteria.entity.impl.EntityDescriptorCriterion
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.saml2.common.SAML2Support;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -374,10 +375,24 @@ public abstract class AbstractMetadataResolver extends AbstractIdentifiableIniti
     @Nullable protected XMLObject filterMetadata(@Nullable final XMLObject metadata) throws FilterException {
         if (getMetadataFilter() != null) {
             log.debug("{} Applying metadata filter", getLogPrefix());
-            return getMetadataFilter().filter(metadata);
+            return getMetadataFilter().filter(metadata, newFilterContext());
         } else {
             return metadata;
         }
+    }
+
+    /**
+     * Get a new instance of {@link MetadataFilterContext} to be used when filtering metadata.
+     *
+     * <p>
+     * This default implementation will just return an empty context.  Subclasses would override
+     * to add contextual info specific to the implementation.
+     * </p>
+     *
+     * @return the new filter context instance
+     */
+    @Nonnull protected MetadataFilterContext newFilterContext() {
+        return new MetadataFilterContext();
     }
 
     /**

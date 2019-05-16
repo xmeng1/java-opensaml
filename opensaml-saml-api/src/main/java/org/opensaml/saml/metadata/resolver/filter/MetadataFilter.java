@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.metadata.resolver.filter;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.opensaml.core.xml.XMLObject;
@@ -44,6 +45,7 @@ public interface MetadataFilter {
      * Filters the given metadata, perhaps to remove elements that are not wanted.
      * 
      * @param metadata the metadata to be filtered.
+     * @param context the metadata filter context
      * 
      * @return the filtered XMLObject, which may or may not be the same as the XMLObject instance
      *          passed in to the method. Maybe be null, for example if the top-level element 
@@ -51,5 +53,6 @@ public interface MetadataFilter {
      * 
      * @throws FilterException thrown if an error occurs during the filtering process
      */
-    @Nullable XMLObject filter(@Nullable final XMLObject metadata) throws FilterException;
+    @Nullable XMLObject filter(@Nullable final XMLObject metadata, @Nonnull final MetadataFilterContext context)
+            throws FilterException;
 }

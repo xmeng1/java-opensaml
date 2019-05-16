@@ -27,6 +27,7 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.common.SAMLObjectBuilder;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.metadata.resolver.impl.FilesystemMetadataResolver;
 import org.opensaml.saml.metadata.resolver.impl.FilesystemMetadataResolverTest;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
@@ -90,10 +91,10 @@ public class RequiredValidUntilTest extends XMLObjectBaseTestCase {
 
         RequiredValidUntilFilter filter = new RequiredValidUntilFilter();
         filter.setMaxValidityInterval(Duration.ofSeconds(-1));
-        filter.filter(descriptor);
+        filter.filter(descriptor, new MetadataFilterContext());
         
         filter = new RequiredValidUntilFilter();
-        filter.filter(descriptor);
+        filter.filter(descriptor, new MetadataFilterContext());
     }
     
 }

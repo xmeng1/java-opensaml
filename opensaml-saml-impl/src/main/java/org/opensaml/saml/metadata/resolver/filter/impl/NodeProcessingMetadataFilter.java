@@ -33,6 +33,7 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.metadata.resolver.filter.MetadataNodeProcessor;
 
 import com.google.common.base.Predicates;
@@ -76,7 +77,9 @@ public class NodeProcessingMetadataFilter extends AbstractInitializableComponent
     }
 
     /** {@inheritDoc} */
-    @Override @Nullable public XMLObject filter(@Nullable final XMLObject metadata) throws FilterException {
+    @Override
+    @Nullable public XMLObject filter(@Nullable final XMLObject metadata, @Nonnull final MetadataFilterContext context)
+            throws FilterException {
         ComponentSupport.ifNotInitializedThrowUninitializedComponentException(this);
 
         if (metadata == null) {
