@@ -194,13 +194,17 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
         }
 
         if (entityAttributes == null || entityAttributes.isEmpty()) {
-            log.debug("no EntityAttributes extension found for {}", input.getEntityID());
+            log.trace("No Entity Attributes found for {}", input.getEntityID());
             return false;
         }
+        
+        log.trace("Checking for match against {} Entity Attributes for {}", entityAttributes.size(),
+                input.getEntityID());
         
         // If we find a matching tag, we win. Each tag is treated in OR fashion.
         final EntityAttributesMatcher matcher = new EntityAttributesMatcher(entityAttributes);
         
+        // Then we determine whether the overall set of tag containers is AND or OR.
         if (matchAll) {
             return Iterables.all(candidateSet, matcher::test);
         } else {
@@ -330,9 +334,6 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
      */
     private class EntityAttributesMatcher implements Predicate<Candidate> {
         
-        /** Class logger. */
-        @Nonnull private final Logger log = LoggerFactory.getLogger(EntityAttributesPredicate.class);
-        
         /** Population to evaluate for a match. */
         private final Collection<Attribute> attributes;
         
@@ -344,7 +345,8 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
         public EntityAttributesMatcher(@Nonnull @NonnullElements final Collection<Attribute> attrs) {
             attributes = Constraint.isNotNull(attrs, "Extension attributes cannot be null");
         }
-                
+
+// Checkstyle: MethodLength OFF
         /** {@inheritDoc} */
         public boolean test(@Nonnull final Candidate input) {
             final List<String> tagvals = input.values;
@@ -369,10 +371,14 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
                             final String cvalstr = xmlObjectToString(cval);
                             if (tagvalstr != null && cvalstr != null) {
                                 if (tagvalstr.equals(cvalstr)) {
+                                    log.trace("Matched Entity Attribute ({}:{}) value {}", a.getNameFormat(),
+                                            a.getName(), tagvalstr);
                                     valflags[tagindex] = true;
                                     break;
                                 } else if (trimTags) {
                                     if (tagvalstr.equals(cvalstr.trim())) {
+                                        log.trace("Matched Entity Attribute ({}:{}) value {}", a.getNameFormat(),
+                                                a.getName(), tagvalstr);
                                         valflags[tagindex] = true;
                                         break;
                                     }
@@ -389,6 +395,8 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
                             final String cvalstr = xmlObjectToString(cval);
                             if (tagexps.get(tagindex) != null && cvalstr != null) {
                                 if (tagexps.get(tagindex).matcher(cvalstr).matches()) {
+                                    log.trace("Matched Entity Attribute ({}:{}) value {}", a.getNameFormat(),
+                                            a.getName(), cvalstr);
                                     expflags[tagindex] = true;
                                     break;
                                 }
@@ -412,6 +420,7 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
 
             return true;
         }
+// Checkstyle: MethodLength ON
      
         /**
          * Convert an XMLObject to a String if the type of recognized.
