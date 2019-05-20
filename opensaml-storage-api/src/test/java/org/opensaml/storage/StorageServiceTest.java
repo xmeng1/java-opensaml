@@ -125,7 +125,7 @@ public abstract class StorageServiceTest {
             shared.create(context, Integer.toString(i), Integer.toString(i + 1), System.currentTimeMillis() + 5000);
         }
 
-        Thread.sleep(5000);
+        Thread.sleep(5150);
         
         for (int i = 1; i <= 100; i++) {
             StorageRecord rec = shared.read(context, Integer.toString(i));
