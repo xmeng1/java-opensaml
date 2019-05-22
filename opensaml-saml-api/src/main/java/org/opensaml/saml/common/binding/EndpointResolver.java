@@ -33,11 +33,6 @@ import net.shibboleth.utilities.java.support.resolver.Resolver;
  * <li>{@link org.opensaml.saml.criterion.RoleDescriptorCriterion}</li>
  * </ul>
  * 
- * Implementations SHOULD also support the following criteria when possible:
- * <ul>
- * <li>{@link org.opensaml.saml.criterion.SignedRequestCriterion}</li>
- * </ul>
- * 
  * @param <EndpointType> the type of endpoint to resolve
  */
 public interface EndpointResolver<EndpointType extends Endpoint> extends Resolver<EndpointType, CriteriaSet> {
