@@ -36,7 +36,7 @@ public final class SAML2AssertionValidationParameters {
     public static final String STMT_INFIX = ".Statement";
     
     /**
-     * Carries a {@link java.lang.Duration} specifying a clock skew value.
+     * Carries a {@link java.time.Duration} specifying a clock skew value.
      */
     public static final String CLOCK_SKEW = STD_PREFIX + ".ClockSkew";
 
@@ -95,7 +95,7 @@ public final class SAML2AssertionValidationParameters {
     public static final String COND_VALID_AUDIENCES = STD_PREFIX + COND_INFIX + ".ValidAudiences";
 
     /**
-     * Carries a {@link java.lang.Duration} representing the per-invocation value for the Assertion 
+     * Carries a {@link java.time.Duration} representing the per-invocation value for the Assertion 
      * replay cache expiration.
      */
     public static final String COND_ONE_TIME_USE_EXPIRES = STD_PREFIX + COND_INFIX + ".OneTimeUseExpires";

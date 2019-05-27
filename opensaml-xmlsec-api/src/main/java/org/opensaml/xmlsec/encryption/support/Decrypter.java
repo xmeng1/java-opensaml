@@ -28,7 +28,6 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.XMLConstants;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
@@ -981,6 +980,7 @@ public class Decrypter {
      * 
      * @deprecated
      */
+    @Deprecated
     protected ParserPool buildParserPool() {
         // Note: we don't really build this here anymore, so the method name is semantically misleading.
         // We should remove this method in next major release and just move this call to the ctor.

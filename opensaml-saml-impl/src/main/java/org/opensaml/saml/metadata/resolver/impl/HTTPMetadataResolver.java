@@ -86,11 +86,13 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
     /** HttpClient credentials provider. 
      * @deprecated use {@link #httpClientSecurityParameters}.
      * */
+    @Deprecated
     @Nullable private BasicCredentialsProvider credentialsProvider;
     
     /** Optional trust engine used in evaluating server TLS credentials. 
      * @deprecated use {@link #httpClientSecurityParameters}.
      * */
+    @Deprecated
     @Nullable private TrustEngine<? super X509Credential> tlsTrustEngine;
     
     /** Optional HttpClient security parameters.*/
@@ -154,6 +156,7 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
      * 
      * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
      */
+    @Deprecated
     public void setTLSTrustEngine(@Nullable final TrustEngine<? super X509Credential> engine) {
         DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setTLSTrustEngine", 
                 null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
@@ -170,6 +173,7 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
      * 
      * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
      */
+    @Deprecated
     public void setBasicCredentials(@Nullable final UsernamePasswordCredentials credentials) {
         DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentials", 
                 null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
@@ -190,6 +194,7 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
      * 
      * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
      */
+    @Deprecated
     public void setBasicCredentialsWithScope(@Nullable final UsernamePasswordCredentials credentials,
             @Nullable final AuthScope scope) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
@@ -374,6 +379,7 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
      * 
      * @deprecated use {@link #buildHttpClientContext(HttpUriRequest)}
      */
+    @Deprecated
     protected HttpClientContext buildHttpClientContext() {
         //TODO when we remove this deprecated method, change called method to @Nonnull for request
         DeprecationSupport.warn(ObjectType.METHOD, getClass().getName() + ".buildHttpClientContext()", null, null);

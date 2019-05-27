@@ -54,7 +54,7 @@ public class RequiredValidUntilFilter implements MetadataFilter {
 
     /**
      * Get the maximum interval between now and the <code>validUntil</code> date.
-     * A value <=0 indicates that there is no restriction.
+     * A value &lt;=0 indicates that there is no restriction.
      * 
      * @return maximum interval between now and the <code>validUntil</code> date
      */
@@ -64,7 +64,7 @@ public class RequiredValidUntilFilter implements MetadataFilter {
     
     /**
      * Set the maximum interval between now and the <code>validUntil</code> date.
-     * A value <=0 indicates that there is no restriction.
+     * A value &lt;=0 indicates that there is no restriction.
      * 
      * @param validity time between now and the <code>validUntil</code> date
      */

@@ -230,6 +230,7 @@ public class BasicEncryptionParametersResolver extends AbstractSecurityParameter
      * 
      * @deprecated use {@link #validate(EncryptionParameters, boolean)}.
      */
+    @Deprecated
     protected boolean validate(@Nonnull final EncryptionParameters params) {
         DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".validate(EncryptionParameters)", 
                 null, "validate(EncryptionParameters, boolean)");
