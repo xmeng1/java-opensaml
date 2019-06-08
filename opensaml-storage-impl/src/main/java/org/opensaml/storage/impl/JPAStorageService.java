@@ -708,8 +708,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      *
      * @param transaction to commit
      */
-    private void commitTransaction(@Nullable final EntityTransaction transaction)
-    {
+    private void commitTransaction(@Nullable final EntityTransaction transaction) {
         if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
             try {
                 transaction.commit();
@@ -724,8 +723,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      *
      * @param transaction to roll back
      */
-    private void rollbackTransaction(@Nullable final EntityTransaction transaction)
-    {
+    private void rollbackTransaction(@Nullable final EntityTransaction transaction) {
         if (transaction != null && transaction.isActive()) {
             try {
                 transaction.rollback();
@@ -740,8 +738,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      *
      * @param manager to close
      */
-    private void closeEntityManager(@Nullable final EntityManager manager)
-    {
+    private void closeEntityManager(@Nullable final EntityManager manager) {
         if (manager != null && manager.isOpen()) {
             try {
                 manager.close();

@@ -21,12 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
-import javax.annotation.Nonnull;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.Diff;
@@ -44,12 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 import net.shibboleth.utilities.java.support.xml.ParserPool;
 import net.shibboleth.utilities.java.support.xml.QNameSupport;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
@@ -79,13 +72,10 @@ public abstract class XMLObjectBaseTestCase extends OpenSAMLInitBaseTestCase {
     /** QName for SimpleXMLObject */
     protected static QName simpleXMLObjectQName = new QName(SimpleXMLObject.NAMESPACE, SimpleXMLObject.LOCAL_NAME);
 
-    /** Baseline for duration calculations (comes from XML Schema standard). */
-    private static Calendar baseline = new GregorianCalendar(1696, 9, 1, 0, 0, 0);
-    
     @BeforeClass
 	protected void initXMLObjectSupport() throws Exception {
         XMLUnit.setIgnoreWhitespace(true);
-        
+
         try {
             parserPool = XMLObjectProviderRegistrySupport.getParserPool();
             builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
@@ -95,7 +85,6 @@ public abstract class XMLObjectBaseTestCase extends OpenSAMLInitBaseTestCase {
             log.error("Can not initialize XMLObjectBaseTestCase", e);
             throw e;
         }
-        
     }
 
     /**
