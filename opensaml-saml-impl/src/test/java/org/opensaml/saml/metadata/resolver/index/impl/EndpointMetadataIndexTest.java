@@ -171,6 +171,10 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
                 "https://www.example.com/", false)));
         Assert.assertTrue(keys.contains(new EndpointMetadataIndex.EndpointMetadataIndexKey(SPSSODescriptor.DEFAULT_ELEMENT_NAME, AssertionConsumerService.DEFAULT_ELEMENT_NAME, 
                 "https://www.example.com", false)));
+        //IDP-1467
+        Assert.assertTrue(keys.contains(new EndpointMetadataIndex.EndpointMetadataIndexKey(SPSSODescriptor.DEFAULT_ELEMENT_NAME, AssertionConsumerService.DEFAULT_ELEMENT_NAME, 
+                "https://www.example.com?organization_id=5b7653fb3bf5f0014f000456&redirect_url=&url", false)));
+        
     }
     
     @Test
