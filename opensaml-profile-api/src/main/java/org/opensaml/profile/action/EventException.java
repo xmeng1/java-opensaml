@@ -26,7 +26,7 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
 /**
  * Runtime exception which may be used to communicate a specific event ID.
  */
-public class EventException extends RuntimeException {
+public class EventException extends Exception {
     
     /** Serial version UID. */
     private static final long serialVersionUID = -6394047591957378161L;
