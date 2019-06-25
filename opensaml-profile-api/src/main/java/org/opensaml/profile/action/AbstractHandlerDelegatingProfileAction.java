@@ -17,6 +17,7 @@
 
 package org.opensaml.profile.action;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -70,8 +71,9 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
             @Nonnull final ContextDataLookupFunction<ProfileRequestContext, MessageContext> lookup) {
         Constraint.isNotNull(delegateClass, "Delegate class may not be null");
         try {
-            delegate = delegateClass.newInstance();
-        } catch (final InstantiationException | IllegalAccessException e) {
+            delegate = delegateClass.getDeclaredConstructor().newInstance();
+        } catch (final InstantiationException | IllegalAccessException | IllegalArgumentException |
+                InvocationTargetException | NoSuchMethodException | SecurityException e) {
             throw new RuntimeException(e);
         }
         
