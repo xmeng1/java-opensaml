@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSBooleanValue;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.IDPList;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.ecp.Request;
@@ -33,7 +33,7 @@ import org.opensaml.soap.soap11.MustUnderstandBearing;
 /**
  *  A concrete implementation of {@link Request}.
  */
-public class RequestImpl extends AbstractSAMLObject implements Request {
+public class RequestImpl extends AbstractXMLObject implements Request {
     
     /** IDPList child element. */
     private IDPList idpList;

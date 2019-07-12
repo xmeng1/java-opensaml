@@ -23,14 +23,14 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.StatusCode;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml1.core.StatusCode} Object.
  */
-public class StatusCodeImpl extends AbstractSAMLObject implements StatusCode {
+public class StatusCodeImpl extends AbstractXMLObject implements StatusCode {
 
     /** Contents of the Value attribute. */
     private QName value;

@@ -19,14 +19,14 @@ package org.opensaml.saml.saml1.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.Audience;
 
 /**
  * Concrete class implementation of {@link org.opensaml.saml.saml1.core.Audience}.
  */
-public class AudienceImpl extends AbstractSAMLObject implements Audience {
+public class AudienceImpl extends AbstractXMLObject implements Audience {
 
     /** String to hold the URI. */
     private String uri;

@@ -27,16 +27,16 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.SubjectConfirmationData}.
  */
-public class SubjectConfirmationDataImpl extends AbstractSAMLObject implements SubjectConfirmationData {
+public class SubjectConfirmationDataImpl extends AbstractXMLObject implements SubjectConfirmationData {
 
     /** NotBefore of the Confirmation Data. */
     private Instant notBefore;

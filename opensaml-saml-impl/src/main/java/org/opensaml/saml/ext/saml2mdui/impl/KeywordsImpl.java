@@ -19,9 +19,9 @@ package org.opensaml.saml.ext.saml2mdui.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.LangBearing;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdui.Keywords;
 
 import com.google.common.base.Strings;
@@ -29,7 +29,7 @@ import com.google.common.base.Strings;
 /**
  * Concrete Implementation of  {@link org.opensaml.saml.ext.saml2mdui.Keywords}.
  */
-public class KeywordsImpl extends AbstractSAMLObject implements Keywords {
+public class KeywordsImpl extends AbstractXMLObject implements Keywords {
 
     /** The language. */
     private String lang;

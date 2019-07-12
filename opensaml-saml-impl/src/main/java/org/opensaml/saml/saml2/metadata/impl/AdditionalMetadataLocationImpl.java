@@ -19,14 +19,14 @@ package org.opensaml.saml.saml2.metadata.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.metadata.AdditionalMetadataLocation;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.metadata.AdditionalMetadataLocation}.
  */
-public class AdditionalMetadataLocationImpl extends AbstractSAMLObject implements AdditionalMetadataLocation {
+public class AdditionalMetadataLocationImpl extends AbstractXMLObject implements AdditionalMetadataLocation {
 
     /** The metadata location. */
     private String location;

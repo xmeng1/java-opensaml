@@ -24,10 +24,10 @@ package org.opensaml.saml.saml2.metadata.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.metadata.Extensions;
 import org.opensaml.saml.saml2.metadata.Company;
 import org.opensaml.saml.saml2.metadata.ContactPerson;
@@ -40,7 +40,7 @@ import org.opensaml.saml.saml2.metadata.TelephoneNumber;
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.metadata.ContactPerson}.
  */
-public class ContactPersonImpl extends AbstractSAMLObject implements ContactPerson {
+public class ContactPersonImpl extends AbstractXMLObject implements ContactPerson {
 
     /** Contact person type. */
     private ContactPersonTypeEnumeration type;

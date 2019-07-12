@@ -25,16 +25,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Audience;
 import org.opensaml.saml.saml2.core.ProxyRestriction;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.ProxyRestriction}.
  */
-public class ProxyRestrictionImpl extends AbstractSAMLObject implements ProxyRestriction {
+public class ProxyRestrictionImpl extends AbstractXMLObject implements ProxyRestriction {
 
     /** Audiences of the Restriction. */
     private final XMLObjectChildrenList<Audience> audiences;

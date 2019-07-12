@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.AuthenticatingAuthority;
 import org.opensaml.saml.saml2.core.AuthnContext;
 import org.opensaml.saml.saml2.core.AuthnContextClassRef;
@@ -37,7 +37,7 @@ import org.opensaml.saml.saml2.core.AuthnContextDeclRef;
 /**
  * A concrete implemenation of {@link org.opensaml.saml.saml2.core.AuthnContext}.
  */
-public class AuthnContextImpl extends AbstractSAMLObject implements AuthnContext {
+public class AuthnContextImpl extends AbstractXMLObject implements AuthnContext {
 
     /** URI of the Context Class. */
     private AuthnContextClassRef authnContextClassRef;

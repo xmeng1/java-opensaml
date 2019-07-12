@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Audience;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.Audience}.
  */
-public class AudienceImpl extends AbstractSAMLObject implements Audience {
+public class AudienceImpl extends AbstractXMLObject implements Audience {
 
     /** URI of this Audience. */
     private String audienceURI;

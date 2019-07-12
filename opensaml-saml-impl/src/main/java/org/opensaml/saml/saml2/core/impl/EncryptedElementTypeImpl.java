@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.EncryptedElementType;
 import org.opensaml.xmlsec.encryption.EncryptedData;
 import org.opensaml.xmlsec.encryption.EncryptedKey;
@@ -31,7 +31,7 @@ import org.opensaml.xmlsec.encryption.EncryptedKey;
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.EncryptedElementType}.
  */
-public class EncryptedElementTypeImpl extends AbstractSAMLObject implements EncryptedElementType {
+public class EncryptedElementTypeImpl extends AbstractXMLObject implements EncryptedElementType {
     
     /** EncryptedData child element. */
     private EncryptedData encryptedData;

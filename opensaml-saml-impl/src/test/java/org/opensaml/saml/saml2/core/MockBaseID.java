@@ -19,15 +19,15 @@ package org.opensaml.saml.saml2.core;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSString;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.BaseID;
 
 /**
  * Mock BaseID class for testing purposes.
  */
-public class MockBaseID extends AbstractSAMLObject implements BaseID, XSString {
+public class MockBaseID extends AbstractXMLObject implements BaseID, XSString {
     
     /** String content. */
     private String content;

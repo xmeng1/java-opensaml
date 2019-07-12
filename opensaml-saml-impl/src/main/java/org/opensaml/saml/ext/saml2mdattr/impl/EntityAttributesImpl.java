@@ -21,16 +21,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.ext.saml2mdattr.EntityAttributes;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 
 /** Concrete implementation of {@link EntityAttributes}. */
-public class EntityAttributesImpl extends AbstractSAMLObject implements EntityAttributes {
+public class EntityAttributesImpl extends AbstractXMLObject implements EntityAttributes {
 
     /** Extension data. */
     private final IndexedXMLObjectChildrenList<? extends SAMLObject> attributeInfo;

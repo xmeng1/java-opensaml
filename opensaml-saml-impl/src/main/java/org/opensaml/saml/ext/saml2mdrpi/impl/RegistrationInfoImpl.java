@@ -21,17 +21,17 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationInfo;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationPolicy;
 
 /**
  * Concrete Implementation of {@link RegistrationInfo}.
  */
-public class RegistrationInfoImpl extends AbstractSAMLObject implements RegistrationInfo {
+public class RegistrationInfoImpl extends AbstractXMLObject implements RegistrationInfo {
 
     /** The policies. */
     private XMLObjectChildrenList<RegistrationPolicy> registrationPolicies;

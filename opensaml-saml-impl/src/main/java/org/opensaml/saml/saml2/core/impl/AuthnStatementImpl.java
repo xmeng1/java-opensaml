@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.AuthnContext;
 import org.opensaml.saml.saml2.core.AuthnStatement;
 import org.opensaml.saml.saml2.core.SubjectLocality;
@@ -35,7 +35,7 @@ import org.opensaml.saml.saml2.core.SubjectLocality;
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.AuthnStatement}.
  */
-public class AuthnStatementImpl extends AbstractSAMLObject implements AuthnStatement {
+public class AuthnStatementImpl extends AbstractXMLObject implements AuthnStatement {
 
     /** Subject Locality of the Authentication Statement. */
     private SubjectLocality subjectLocality;

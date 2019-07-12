@@ -19,14 +19,14 @@ package org.opensaml.saml.saml1.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.AssertionArtifact;
 
 /**
  * Concrete implementation if {@link org.opensaml.saml.saml1.core.AssertionArtifact}.
  */
-public class AssertionArtifactImpl extends AbstractSAMLObject implements AssertionArtifact {
+public class AssertionArtifactImpl extends AbstractXMLObject implements AssertionArtifact {
 
     /** The assertion artifact. */
     private String assertionArtifact;

@@ -23,15 +23,15 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Extensions;
 
 /**
  * Implementation of {@link org.opensaml.saml.saml2.core.Extensions}.
  */
-public class ExtensionsImpl extends AbstractSAMLObject implements Extensions {
+public class ExtensionsImpl extends AbstractXMLObject implements Extensions {
 
     /** "any" children. */
     private final IndexedXMLObjectChildrenList<XMLObject> unknownChildren;

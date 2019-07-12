@@ -21,16 +21,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2delrestrict.Delegate;
 import org.opensaml.saml.ext.saml2delrestrict.DelegationRestrictionType;
 
 /**
  * Implementation of {@link DelegationRestrictionType}.
  */
-public class DelegationRestrictionTypeImpl extends AbstractSAMLObject implements DelegationRestrictionType {
+public class DelegationRestrictionTypeImpl extends AbstractXMLObject implements DelegationRestrictionType {
     
     /** Delegate child elements. */
     private XMLObjectChildrenList<Delegate> delegates;

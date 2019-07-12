@@ -23,14 +23,14 @@ package org.opensaml.saml.saml1.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.AttributeDesignator;
 
 /**
  * Concrete Implementation of the {@link org.opensaml.saml.saml1.core.AttributeDesignator} interface.
  */
-public class AttributeDesignatorImpl extends AbstractSAMLObject implements AttributeDesignator {
+public class AttributeDesignatorImpl extends AbstractXMLObject implements AttributeDesignator {
 
     /** Contains the AttributeName. */
     private String attributeName;

@@ -24,15 +24,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2alg.DigestMethod;
 
 /**
  * Implementation of {@link DigestMethod}.
  */
-public class DigestMethodImpl extends AbstractSAMLObject implements DigestMethod {
+public class DigestMethodImpl extends AbstractXMLObject implements DigestMethod {
     
     /** Wildcard child elements. */
     private final IndexedXMLObjectChildrenList<XMLObject> unknownChildren;

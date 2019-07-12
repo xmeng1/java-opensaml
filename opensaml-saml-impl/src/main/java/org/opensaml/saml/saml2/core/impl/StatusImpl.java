@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Status;
 import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.StatusDetail;
@@ -35,7 +35,7 @@ import org.opensaml.saml.saml2.core.StatusMessage;
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.Status}.
  */
-public class StatusImpl extends AbstractSAMLObject implements Status {
+public class StatusImpl extends AbstractXMLObject implements Status {
 
     /** StatusCode element. */
     private StatusCode statusCode;

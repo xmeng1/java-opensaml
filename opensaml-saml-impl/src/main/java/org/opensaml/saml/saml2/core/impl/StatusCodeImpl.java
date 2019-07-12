@@ -25,14 +25,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.StatusCode;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.StatusCode}.
  */
-public class StatusCodeImpl extends AbstractSAMLObject implements StatusCode {
+public class StatusCodeImpl extends AbstractXMLObject implements StatusCode {
 
     /** Value attribute URI. */
     private String value;

@@ -24,15 +24,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2alg.SigningMethod;
 
 /**
  * Implementation of {@link SigningMethod}.
  */
-public class SigningMethodImpl extends AbstractSAMLObject implements SigningMethod {
+public class SigningMethodImpl extends AbstractXMLObject implements SigningMethod {
     
     /** Wildcard child elements. */
     private final IndexedXMLObjectChildrenList<XMLObject> unknownChildren;
@@ -105,6 +105,5 @@ public class SigningMethodImpl extends AbstractSAMLObject implements SigningMeth
     public List<XMLObject> getOrderedChildren() {
         return Collections.unmodifiableList(unknownChildren);
     }
-
 
 }

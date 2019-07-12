@@ -19,14 +19,14 @@ package org.opensaml.saml.saml1.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.SubjectLocality;
 
 /**
  * A concrete implementation of the {@link org.opensaml.saml.saml1.core.SubjectLocality} interface.
  */
-public class SubjectLocalityImpl extends AbstractSAMLObject implements SubjectLocality {
+public class SubjectLocalityImpl extends AbstractXMLObject implements SubjectLocality {
 
     /** The ipAddress. */
     private String ipAddress;

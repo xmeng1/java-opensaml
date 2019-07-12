@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.IDPList;
 import org.opensaml.saml.saml2.core.RequesterID;
 import org.opensaml.saml.saml2.core.Scoping;
@@ -35,7 +35,7 @@ import org.opensaml.saml.saml2.core.Scoping;
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.Scoping}.
  */
-public class ScopingImpl extends AbstractSAMLObject implements Scoping {
+public class ScopingImpl extends AbstractXMLObject implements Scoping {
 
     /** IDPList child element. */
     private IDPList idpList;

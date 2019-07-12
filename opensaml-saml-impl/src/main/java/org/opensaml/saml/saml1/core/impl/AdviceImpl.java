@@ -23,9 +23,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml1.core.Advice;
 import org.opensaml.saml.saml1.core.Assertion;
@@ -34,7 +34,7 @@ import org.opensaml.saml.saml1.core.AssertionIDReference;
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml1.core.Advice}.
  */
-public class AdviceImpl extends AbstractSAMLObject implements Advice {
+public class AdviceImpl extends AbstractXMLObject implements Advice {
 
     /** Contains all the SAML objects we have added. */
     private final IndexedXMLObjectChildrenList<XMLObject> assertionChildren;

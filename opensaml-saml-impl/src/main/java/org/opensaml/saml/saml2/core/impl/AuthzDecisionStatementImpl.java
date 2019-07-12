@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Action;
 import org.opensaml.saml.saml2.core.AuthzDecisionStatement;
 import org.opensaml.saml.saml2.core.DecisionTypeEnumeration;
@@ -36,7 +36,7 @@ import org.opensaml.saml.saml2.core.Evidence;
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.AuthzDecisionStatement}.
  */
-public class AuthzDecisionStatementImpl extends AbstractSAMLObject implements AuthzDecisionStatement {
+public class AuthzDecisionStatementImpl extends AbstractXMLObject implements AuthzDecisionStatement {
 
     /** URI of the resource to which authorization is sought. */
     private String resource;

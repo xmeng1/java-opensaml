@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.RequesterID;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.RequesterID}.
  */
-public class RequesterIDImpl extends AbstractSAMLObject implements RequesterID {
+public class RequesterIDImpl extends AbstractXMLObject implements RequesterID {
 
     /** ID of the requester. */
     private String requesterID;

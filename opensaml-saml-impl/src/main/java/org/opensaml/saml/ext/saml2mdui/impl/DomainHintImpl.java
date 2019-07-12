@@ -19,14 +19,14 @@ package org.opensaml.saml.ext.saml2mdui.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdui.DomainHint;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.ext.saml2mdui.DomainHint}.
  */
-public class DomainHintImpl extends AbstractSAMLObject implements DomainHint{
+public class DomainHintImpl extends AbstractXMLObject implements DomainHint{
 
     /**
      * local storage.

@@ -21,17 +21,17 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdrpi.PublicationInfo;
 import org.opensaml.saml.ext.saml2mdrpi.UsagePolicy;
 
 /**
  * Concrete {@link PublicationInfo}.
  */
-public class PublicationInfoImpl extends AbstractSAMLObject implements PublicationInfo {
+public class PublicationInfoImpl extends AbstractXMLObject implements PublicationInfo {
 
     /** The policies. */
     private XMLObjectChildrenList<UsagePolicy> usagePolicies;

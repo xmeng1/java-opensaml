@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Artifact;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.Artifact}.
  */
-public class ArtifactImpl extends AbstractSAMLObject implements Artifact {
+public class ArtifactImpl extends AbstractXMLObject implements Artifact {
 
     /** Artifact data. */
     private String artifact;

@@ -22,9 +22,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdui.Description;
 import org.opensaml.saml.ext.saml2mdui.DisplayName;
 import org.opensaml.saml.ext.saml2mdui.InformationURL;
@@ -37,7 +37,7 @@ import org.opensaml.saml.ext.saml2mdui.UIInfo;
  * Concrete implementation of {@link org.opensaml.saml.ext.saml2mdui.UIInfo}.
  * @author Rod Widdowson
  */
-public class UIInfoImpl extends AbstractSAMLObject implements UIInfo {
+public class UIInfoImpl extends AbstractXMLObject implements UIInfo {
     
     /** Children of the UIInfo. */
     private final IndexedXMLObjectChildrenList<XMLObject> uiInfoChildren;

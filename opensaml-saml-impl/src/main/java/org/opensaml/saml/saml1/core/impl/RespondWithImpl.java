@@ -21,14 +21,14 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.RespondWith;
 
 /**
  * Implementation of {@link RespondWith}.
  */
-public class RespondWithImpl extends AbstractSAMLObject implements RespondWith {
+public class RespondWithImpl extends AbstractXMLObject implements RespondWith {
 
     /** Value of this element. */
     private QName value;

@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.NewID;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.NewID}.
  */
-public class NewIDImpl extends AbstractSAMLObject implements NewID {
+public class NewIDImpl extends AbstractXMLObject implements NewID {
 
     /** The new NameID. */
     private String newID;

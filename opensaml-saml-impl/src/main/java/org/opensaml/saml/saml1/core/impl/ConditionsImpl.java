@@ -24,9 +24,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml1.core.AudienceRestrictionCondition;
 import org.opensaml.saml.saml1.core.Condition;
@@ -36,7 +36,7 @@ import org.opensaml.saml.saml1.core.DoNotCacheCondition;
 /**
  * This is a concrete implementation of the {@link org.opensaml.saml.saml1.core.Conditions} interface.
  */
-public class ConditionsImpl extends AbstractSAMLObject implements Conditions {
+public class ConditionsImpl extends AbstractXMLObject implements Conditions {
 
     /** Value saved in the NotBefore attribute. */
     private Instant notBefore;

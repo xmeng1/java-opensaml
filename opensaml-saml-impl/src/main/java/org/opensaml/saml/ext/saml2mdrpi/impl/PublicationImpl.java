@@ -21,14 +21,14 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdrpi.Publication;
 
 /**
  * A concrete {@link Publication}.
  */
-public class PublicationImpl extends AbstractSAMLObject implements Publication {
+public class PublicationImpl extends AbstractXMLObject implements Publication {
 
     /** The publisher. */
     private String publisher;

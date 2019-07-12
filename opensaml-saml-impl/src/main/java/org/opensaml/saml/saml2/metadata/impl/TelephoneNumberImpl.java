@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.metadata.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.metadata.TelephoneNumber;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.metadata.TelephoneNumber}.
  */
-public class TelephoneNumberImpl extends AbstractSAMLObject implements TelephoneNumber {
+public class TelephoneNumberImpl extends AbstractXMLObject implements TelephoneNumber {
 
     /** Telephone number. */
     private String number;

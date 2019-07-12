@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.OneTimeUse;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.OneTimeUse}.
  */
-public class OneTimeUseImpl extends AbstractSAMLObject implements OneTimeUse {
+public class OneTimeUseImpl extends AbstractXMLObject implements OneTimeUse {
 
     /**
      * Constructor.

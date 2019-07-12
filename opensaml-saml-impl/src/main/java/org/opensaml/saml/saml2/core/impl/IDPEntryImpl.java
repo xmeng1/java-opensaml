@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.IDPEntry;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.IDPEntry}.
  */
-public class IDPEntryImpl extends AbstractSAMLObject implements IDPEntry {
+public class IDPEntryImpl extends AbstractXMLObject implements IDPEntry {
 
     /** The unique identifier of the IdP. */
     private String providerID;

@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2delrestrict.Delegate;
 import org.opensaml.saml.saml2.core.BaseID;
 import org.opensaml.saml.saml2.core.EncryptedID;
@@ -32,7 +32,7 @@ import org.opensaml.saml.saml2.core.NameID;
 /**
  * Implementation of {@link Delegate}.
  */
-public class DelegateImpl extends AbstractSAMLObject implements Delegate {
+public class DelegateImpl extends AbstractXMLObject implements Delegate {
     
     /** BaseID child element. */
     private BaseID baseID;

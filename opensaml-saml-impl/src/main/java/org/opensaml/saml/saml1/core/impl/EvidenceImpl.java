@@ -23,9 +23,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml1.core.Assertion;
 import org.opensaml.saml.saml1.core.AssertionIDReference;
@@ -35,7 +35,7 @@ import org.opensaml.saml.saml1.core.Evidentiary;
 /**
  * Concrete implementation of the {@link org.opensaml.saml.saml1.core.Evidence} interface.
  */
-public class EvidenceImpl extends AbstractSAMLObject implements Evidence {
+public class EvidenceImpl extends AbstractXMLObject implements Evidence {
 
     /** The Evidentiary child elements. */
     private final IndexedXMLObjectChildrenList<Evidentiary> evidence;

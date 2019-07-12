@@ -28,9 +28,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.AudienceRestriction;
 import org.opensaml.saml.saml2.core.Condition;
@@ -41,7 +41,7 @@ import org.opensaml.saml.saml2.core.ProxyRestriction;
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.Conditions}.
  */
-public class ConditionsImpl extends AbstractSAMLObject implements Conditions {
+public class ConditionsImpl extends AbstractXMLObject implements Conditions {
 
     /** A Condition. */
     private final IndexedXMLObjectChildrenList<Condition> conditions;

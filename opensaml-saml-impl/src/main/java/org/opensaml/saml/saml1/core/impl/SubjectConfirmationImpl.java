@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.ConfirmationMethod;
 import org.opensaml.saml.saml1.core.SubjectConfirmation;
 import org.opensaml.xmlsec.signature.KeyInfo;
@@ -31,7 +31,7 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 /**
  * Concrete implementation of a <code> SubjectConfirmation </code> object.
  */
-public class SubjectConfirmationImpl extends AbstractSAMLObject implements SubjectConfirmation {
+public class SubjectConfirmationImpl extends AbstractXMLObject implements SubjectConfirmation {
 
     /** Contains the list of ConfirmationMethods. */
     private final XMLObjectChildrenList<ConfirmationMethod> confirmationMethods;

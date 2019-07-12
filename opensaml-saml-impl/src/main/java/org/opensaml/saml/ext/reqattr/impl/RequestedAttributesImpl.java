@@ -20,10 +20,10 @@ package org.opensaml.saml.ext.reqattr.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.reqattr.RequestedAttributes;
 import org.opensaml.saml.saml2.metadata.RequestedAttribute;
 
@@ -31,7 +31,7 @@ import org.opensaml.saml.saml2.metadata.RequestedAttribute;
 /**
  * A concrete {@link RequestedAttributes}.
  */
-public class RequestedAttributesImpl extends AbstractSAMLObject implements RequestedAttributes {
+public class RequestedAttributesImpl extends AbstractXMLObject implements RequestedAttributes {
 
     /** The policies. */
     private XMLObjectChildrenList<RequestedAttribute> requestedAttributes;
@@ -62,4 +62,5 @@ public class RequestedAttributesImpl extends AbstractSAMLObject implements Reque
         children.addAll(requestedAttributes);
         return children;
     }
+
 }

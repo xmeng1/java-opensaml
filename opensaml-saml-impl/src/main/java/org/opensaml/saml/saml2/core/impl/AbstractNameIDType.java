@@ -19,14 +19,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.NameIDType;
 
 /**
  * Abstract implementation of {@link org.opensaml.saml.saml2.core.NameIDType}.
  */
-public class AbstractNameIDType extends AbstractSAMLObject implements NameIDType {
+public class AbstractNameIDType extends AbstractXMLObject implements NameIDType {
 
     /** Name of the Name ID. */
     private String name;

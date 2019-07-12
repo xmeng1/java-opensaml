@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.xacml.policy.PolicySetType;
 import org.opensaml.xacml.policy.PolicyType;
 import org.opensaml.xacml.profile.saml.ReferencedPoliciesType;
@@ -31,7 +31,7 @@ import org.opensaml.xacml.profile.saml.ReferencedPoliciesType;
 /**
  * Implementation of {@link ReferencedPoliciesType}.
  */
-public class ReferencedPoliciesTypeImpl extends AbstractSAMLObject implements ReferencedPoliciesType {
+public class ReferencedPoliciesTypeImpl extends AbstractXMLObject implements ReferencedPoliciesType {
 
     /**List of policies.*/
     private XMLObjectChildrenList<PolicyType> policies;

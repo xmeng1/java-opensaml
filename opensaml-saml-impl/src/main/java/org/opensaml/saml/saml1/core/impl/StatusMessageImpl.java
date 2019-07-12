@@ -19,14 +19,14 @@ package org.opensaml.saml.saml1.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.StatusMessage;
 
 /**
  * Concrete implementation of org.opensaml.saml.saml1.core StatusMessage object.
  */
-public class StatusMessageImpl extends AbstractSAMLObject implements StatusMessage {
+public class StatusMessageImpl extends AbstractXMLObject implements StatusMessage {
 
     /**
      * Contents of the element.

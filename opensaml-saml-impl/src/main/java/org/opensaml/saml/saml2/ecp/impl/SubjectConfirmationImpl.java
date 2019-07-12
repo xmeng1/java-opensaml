@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSBooleanValue;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.opensaml.saml.saml2.ecp.SubjectConfirmation;
 import org.opensaml.soap.soap11.ActorBearing;
@@ -33,7 +33,7 @@ import org.opensaml.soap.soap11.MustUnderstandBearing;
 /**
  * Concrete implementation of {@link SubjectConfirmation}.
  */
-public class SubjectConfirmationImpl extends AbstractSAMLObject implements SubjectConfirmation {
+public class SubjectConfirmationImpl extends AbstractXMLObject implements SubjectConfirmation {
 
     /** soap11:actor attribute. */
     private String soap11Actor;
