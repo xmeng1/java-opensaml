@@ -40,7 +40,6 @@ import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.ext.saml2mdattr.EntityAttributes;
-import org.opensaml.saml.ext.saml2mdattr.impl.EntityAttributesImpl;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
 import org.opensaml.saml.saml2.core.Attribute;
@@ -214,19 +213,15 @@ public class EntityAttributesFilter extends AbstractInitializableComponent imple
             if (!entityAttributesCollection.isEmpty()) {
                 final EntityAttributes entityAttributes =
                         (EntityAttributes) entityAttributesCollection.iterator().next();
-                if (entityAttributes instanceof EntityAttributesImpl) {
-                    // TODO: bug in original interface requires that we dive into the impl layer
-                    final List<? extends SAMLObject> attributes =
-                            ((EntityAttributesImpl) entityAttributes).getEntityAttributesChildren();
-                    final Iterator<? extends SAMLObject> iter = attributes.iterator();
-                    while (iter.hasNext()) {
-                        final SAMLObject attribute = iter.next();
-                        if (attribute instanceof Attribute) {
-                            if (!attributeFilter.test((Attribute) attribute)) {
-                                log.warn("Filtering pre-existing attribute '{}' from entity '{}'",
-                                        ((Attribute) attribute).getName(), descriptor.getEntityID());
-                                iter.remove();
-                            }
+                final List<? extends SAMLObject> attributes = entityAttributes.getEntityAttributesChildren();
+                final Iterator<? extends SAMLObject> iter = attributes.iterator();
+                while (iter.hasNext()) {
+                    final SAMLObject attribute = iter.next();
+                    if (attribute instanceof Attribute) {
+                        if (!attributeFilter.test((Attribute) attribute)) {
+                            log.warn("Filtering pre-existing attribute '{}' from entity '{}'",
+                                    ((Attribute) attribute).getName(), descriptor.getEntityID());
+                            iter.remove();
                         }
                     }
                 }

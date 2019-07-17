@@ -58,15 +58,7 @@ public class EntityAttributesImpl extends AbstractXMLObject implements EntityAtt
         return (List<Assertion>) attributeInfo.subList(Assertion.DEFAULT_ELEMENT_NAME);
     }
     
-    /**
-     * Get the list of {@link Attribute} and {@link Assertion} content.
-     * 
-     * TODO: this is implementation only until 4.0 when we can promote this to the API
-     * 
-     * @return a modifiable list of the children
-     * 
-     * @since 3.4.0
-     */
+    /** {@inheritDoc} */
     public List<? extends SAMLObject> getEntityAttributesChildren() {
         return attributeInfo;
     }

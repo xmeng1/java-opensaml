@@ -42,13 +42,20 @@ public interface EntityAttributes extends SAMLObject {
     /** QName of the XSI type. */
     public static final QName TYPE_NAME =
         new QName(SAMLConstants.SAML20MDATTR_NS, TYPE_LOCAL_NAME, SAMLConstants.SAML20MDATTR_PREFIX);
-    
-    /* TODO: add a modifiable accessor of the child collection in 4.0  
-    public List<? extends SAMLObject> getEntityAttributesChildren();
+
+    /**
+     * Gets a fully mutable list of the child objects of this extension.
+     * 
+     * @return mutable list of children
+     * 
+     * @since 4.0.0
      */
+    public List<? extends SAMLObject> getEntityAttributesChildren();
     
     /**
      * Gets the attributes about the entity.
+     * 
+     * <p>This list is modifiable "to a point" but not all mutation operations are supported.</p>
      * 
      * @return attributes about the entity
      */
@@ -56,6 +63,8 @@ public interface EntityAttributes extends SAMLObject {
     
     /**
      * Gets the assertions about the entity.
+     * 
+     * <p>This list is modifiable "to a point" but not all mutation operations are supported.</p>
      * 
      * @return assertions about the entity
      */
