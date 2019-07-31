@@ -127,6 +127,10 @@ public abstract class AbstractResponseShellAction<MessageType extends StatusResp
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
+        if (!super.doPreExecute(profileRequestContext)) {
+            return false;
+        }
+        
         final MessageContext outboundMessageCtx = profileRequestContext.getOutboundMessageContext();
         if (outboundMessageCtx == null) {
             log.debug("{} No outbound message context", getLogPrefix());
@@ -151,7 +155,7 @@ public abstract class AbstractResponseShellAction<MessageType extends StatusResp
 
         outboundMessageCtx.setMessage(null);
         
-        return super.doPreExecute(profileRequestContext);
+        return true;
     }
 
     /** {@inheritDoc} */

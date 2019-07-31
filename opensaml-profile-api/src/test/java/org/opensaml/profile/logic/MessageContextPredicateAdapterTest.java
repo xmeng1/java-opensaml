@@ -36,8 +36,8 @@ public class MessageContextPredicateAdapterTest {
     
     @Test
     public void testBasic() {
-        MessageContext mc = new MessageContext<>();
-        ProfileRequestContext prc = new ProfileRequestContext<>();
+        MessageContext mc = new MessageContext();
+        ProfileRequestContext prc = new ProfileRequestContext();
         
         MockPredicate wrapped = new MockPredicate();
         MessageContextPredicateAdapter adapter = new MessageContextPredicateAdapter(wrapped);
@@ -53,7 +53,7 @@ public class MessageContextPredicateAdapterTest {
         Assert.assertFalse(adapter.test(null));
         
         // No parent, unresolved PRC doesn't satisfy (default)
-        mc = new MessageContext<>();
+        mc = new MessageContext();
         mc.addSubcontext(new MockContext());
         Assert.assertFalse(adapter.test(mc));
         

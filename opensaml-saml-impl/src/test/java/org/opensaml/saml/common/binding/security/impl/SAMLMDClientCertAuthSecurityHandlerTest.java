@@ -27,7 +27,6 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.messaging.context.SAMLPresenterEntityContext;
 import org.opensaml.saml.common.messaging.context.SAMLProtocolContext;
@@ -58,7 +57,7 @@ import org.testng.annotations.Test;
  */
 public class SAMLMDClientCertAuthSecurityHandlerTest extends XMLObjectBaseTestCase {
     
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     private SAMLMDClientCertAuthSecurityHandler handler;
     
@@ -162,7 +161,7 @@ public class SAMLMDClientCertAuthSecurityHandlerTest extends XMLObjectBaseTestCa
         handler.setHttpServletRequest(request);
         handler.initialize();
         
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.setMessage(buildInboundSAMLMessage());
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setEntityId(issuer);
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);

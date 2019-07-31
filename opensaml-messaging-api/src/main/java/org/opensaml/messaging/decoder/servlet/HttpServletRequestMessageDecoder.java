@@ -25,10 +25,8 @@ import org.opensaml.messaging.decoder.MessageDecoder;
 
 /**
  * A specialization of {@link MessageDecoder} that operates on a source message data type of {@link HttpServletRequest}.
- *
- * @param <MessageType> the message type of the message context on which to operate
  */
-public interface HttpServletRequestMessageDecoder<MessageType> extends MessageDecoder<MessageType> {
+public interface HttpServletRequestMessageDecoder extends MessageDecoder {
     
     /**
      * Get the HTTP servlet request on which to operate.

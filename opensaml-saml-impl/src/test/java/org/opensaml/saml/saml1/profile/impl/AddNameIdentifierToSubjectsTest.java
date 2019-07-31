@@ -50,7 +50,7 @@ public class AddNameIdentifierToSubjectsTest extends OpenSAMLInitBaseTestCase {
     
     private ChainingSAML1NameIdentifierGenerator generator;
 
-    private ProfileRequestContext<Object,Response> prc;
+    private ProfileRequestContext prc;
     
     private AddNameIdentifierToSubjects action;
     
@@ -66,7 +66,7 @@ public class AddNameIdentifierToSubjectsTest extends OpenSAMLInitBaseTestCase {
 
         final MockSAML1NameIdentifierGenerator mock2 = new MockSAML1NameIdentifierGenerator("bar");
         mock2.setFormat(NameIdentifier.EMAIL);
-        mock2.setActivationCondition(Predicates.<ProfileRequestContext>alwaysFalse());
+        mock2.setActivationCondition(Predicates.alwaysFalse());
         mock2.initialize();
 
         final MockSAML1NameIdentifierGenerator mock3 = new MockSAML1NameIdentifierGenerator("baz");
@@ -93,19 +93,19 @@ public class AddNameIdentifierToSubjectsTest extends OpenSAMLInitBaseTestCase {
         action.initialize();
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage().getAssertions().isEmpty());
+        Assert.assertTrue(((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().isEmpty());
     }
 
     @Test
     public void testNoStatements() throws ComponentInitializationException {
         prc.getOutboundMessageContext().setMessage(SAML1ActionTestingSupport.buildResponse());
-        prc.getOutboundMessageContext().getMessage().getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
+        ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
         
         action.setFormatLookupStrategy(new X509FormatLookupStrategy());
         action.initialize();
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage().getAssertions().get(0).getStatements().isEmpty());
+        Assert.assertTrue(((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0).getStatements().isEmpty());
     }
 
     @Test void testArbitraryFormat() throws ComponentInitializationException {
@@ -116,11 +116,11 @@ public class AddNameIdentifierToSubjectsTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        Assertion assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(0);
+        Assertion assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0);
         Subject subject = assertion.getAuthenticationStatements().get(0).getSubject();
         Assert.assertNull(subject);
 
-        assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(1);
+        assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(1);
         subject = assertion.getAttributeStatements().get(0).getSubject();
         Assert.assertNull(subject);
     }
@@ -134,14 +134,14 @@ public class AddNameIdentifierToSubjectsTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        Assertion assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(0);
+        Assertion assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0);
         Subject subject = assertion.getAuthenticationStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getNameIdentifier());
         Assert.assertEquals(subject.getNameIdentifier().getValue(), "foo");
         Assert.assertEquals(subject.getNameIdentifier().getFormat(), NameIdentifier.X509_SUBJECT);
 
-        assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(1);
+        assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(1);
         subject = assertion.getAttributeStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getNameIdentifier());
@@ -158,14 +158,14 @@ public class AddNameIdentifierToSubjectsTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        Assertion assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(0);
+        Assertion assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0);
         Subject subject = assertion.getAuthenticationStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getNameIdentifier());
         Assert.assertEquals(subject.getNameIdentifier().getValue(), "baz");
         Assert.assertEquals(subject.getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
 
-        assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(1);
+        assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(1);
         subject = assertion.getAttributeStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getNameIdentifier());

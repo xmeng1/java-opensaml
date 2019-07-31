@@ -28,7 +28,7 @@ import org.opensaml.messaging.context.MessageContext;
  *  A lookup strategy that returns an instance of {@link HttpServletRequest} supplied at construction time.
  */
 public class MockHttpServletRequestLookupStrategy 
-        implements ContextDataLookupFunction<MessageContext<?>, HttpServletRequest> {
+        implements ContextDataLookupFunction<MessageContext, HttpServletRequest> {
     
     /** The servlet request. */
     private HttpServletRequest servletRequest;

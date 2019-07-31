@@ -32,6 +32,7 @@ import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.opensaml.core.xml.XMLObject;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.opensaml.saml.common.SAMLObject;
@@ -132,10 +133,10 @@ public class HTTPPostEncoder extends BaseSAML1MessageEncoder {
 
     /** {@inheritDoc} */
     protected void doEncode() throws MessageEncodingException {
-        final MessageContext<SAMLObject> messageContext = getMessageContext();
+        final MessageContext messageContext = getMessageContext();
 
-        final SAMLObject outboundMessage = messageContext.getMessage();
-        if (outboundMessage == null) {
+        final Object outboundMessage = messageContext.getMessage();
+        if (outboundMessage == null || !(outboundMessage instanceof SAMLObject)) {
             throw new MessageEncodingException("No outbound SAML message contained in message context");
         }
         final String endpointURL = getEndpointURL(messageContext).toString();
@@ -151,13 +152,13 @@ public class HTTPPostEncoder extends BaseSAML1MessageEncoder {
      * 
      * @throws MessageEncodingException thrown if there is a problem encoding the message
      */
-    protected void postEncode(final MessageContext<SAMLObject> messageContext, final String endpointURL) 
+    protected void postEncode(final MessageContext messageContext, final String endpointURL) 
             throws MessageEncodingException {
         log.debug("Invoking velocity template to create POST body");
 
         try {
             final VelocityContext context = new VelocityContext();
-            final SAMLObject message = messageContext.getMessage();
+            final Object message = messageContext.getMessage();
 
             final String encodedEndpointURL = HTMLEncoder.encodeForHTMLAttribute(endpointURL);
             log.debug("Encoding action url of '{}' with encoded value '{}'", endpointURL, encodedEndpointURL);
@@ -165,7 +166,7 @@ public class HTTPPostEncoder extends BaseSAML1MessageEncoder {
             context.put("binding", getBindingURI());
 
             log.debug("Marshalling and Base64 encoding SAML message");
-            final String messageXML = SerializeSupport.nodeToString(marshallMessage(message));
+            final String messageXML = SerializeSupport.nodeToString(marshallMessage((XMLObject) message));
             final String encodedMessage = Base64Support.encode(messageXML.getBytes("UTF-8"), Base64Support.UNCHUNKED);
             context.put("SAMLResponse", encodedMessage);
 

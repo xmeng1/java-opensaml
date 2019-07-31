@@ -28,27 +28,24 @@ import org.opensaml.messaging.handler.MessageHandler;
 
 /**
  * Basic implementation of {@link MessagePipeline}.
- *
- * @param <OutboundMessageType> the outbound message type
- * @param <InboundMessageType> the inbound message type
  */
-public class BasicMessagePipeline<InboundMessageType, OutboundMessageType> 
-        implements MessagePipeline<InboundMessageType, OutboundMessageType> {
+public class BasicMessagePipeline 
+        implements MessagePipeline {
     
     /** Message encoder. */
-    private MessageEncoder<OutboundMessageType> encoder;
+    private MessageEncoder encoder;
     
     /** Message decoder. */
-    private MessageDecoder<InboundMessageType> decoder;
+    private MessageDecoder decoder;
     
     /** Outbound payload message handler. */
-    private MessageHandler<OutboundMessageType> outboundPayloadHandler;
+    private MessageHandler outboundPayloadHandler;
     
     /** Outbound transport message handler. */
-    private MessageHandler<OutboundMessageType> outboundTransportHandler;
+    private MessageHandler outboundTransportHandler;
     
     /** Inbound message handler. */
-    private MessageHandler<InboundMessageType> inboundHandler;
+    private MessageHandler inboundHandler;
     
     /**
      * Constructor.
@@ -56,14 +53,14 @@ public class BasicMessagePipeline<InboundMessageType, OutboundMessageType>
      * @param newEncoder the message encoder instance
      * @param newDecoder the message decoder instance
      */
-    public BasicMessagePipeline(@Nonnull final MessageEncoder<OutboundMessageType> newEncoder, 
-            @Nonnull final MessageDecoder<InboundMessageType> newDecoder) {
+    public BasicMessagePipeline(@Nonnull final MessageEncoder newEncoder, 
+            @Nonnull final MessageDecoder newDecoder) {
         setEncoder(newEncoder);
         setDecoder(newDecoder);
     }
 
     /** {@inheritDoc} */
-    public MessageEncoder<OutboundMessageType> getEncoder() {
+    public MessageEncoder getEncoder() {
         return encoder;
     }
     
@@ -72,12 +69,12 @@ public class BasicMessagePipeline<InboundMessageType, OutboundMessageType>
      * 
      * @param newEncoder the new message encoder
      */
-    protected void setEncoder(@Nonnull final MessageEncoder<OutboundMessageType> newEncoder) {
+    protected void setEncoder(@Nonnull final MessageEncoder newEncoder) {
        encoder = Constraint.isNotNull(newEncoder, "MessageEncoder can not be null") ;
     }
 
     /** {@inheritDoc} */
-    public MessageDecoder<InboundMessageType> getDecoder() {
+    public MessageDecoder getDecoder() {
         return decoder;
     }
     
@@ -86,13 +83,13 @@ public class BasicMessagePipeline<InboundMessageType, OutboundMessageType>
      * 
      * @param newDecoder the new message decoder
      */
-    protected void setDecoder(@Nonnull final MessageDecoder<InboundMessageType> newDecoder) {
+    protected void setDecoder(@Nonnull final MessageDecoder newDecoder) {
        decoder = Constraint.isNotNull(newDecoder, "MessageDecoder can not be null");
     }
 
 
     /** {@inheritDoc} */
-    public MessageHandler<OutboundMessageType> getOutboundPayloadMessageHandler() {
+    public MessageHandler getOutboundPayloadMessageHandler() {
         return outboundPayloadHandler;
     }
 
@@ -101,12 +98,12 @@ public class BasicMessagePipeline<InboundMessageType, OutboundMessageType>
      * 
      * @param handler the new handler
      */
-    public void setOutboundPayloadHandler(@Nullable final MessageHandler<OutboundMessageType> handler) {
+    public void setOutboundPayloadHandler(@Nullable final MessageHandler handler) {
         outboundPayloadHandler = handler;
     }
 
     /** {@inheritDoc} */
-    public MessageHandler<OutboundMessageType> getOutboundTransportMessageHandler() {
+    public MessageHandler getOutboundTransportMessageHandler() {
         return outboundTransportHandler;
     }
 
@@ -115,12 +112,12 @@ public class BasicMessagePipeline<InboundMessageType, OutboundMessageType>
      * 
      * @param handler the new handler
      */
-    public void setOutboundTransportHandler(final MessageHandler<OutboundMessageType> handler) {
+    public void setOutboundTransportHandler(final MessageHandler handler) {
         outboundTransportHandler = handler;
     }
 
     /** {@inheritDoc} */
-    public MessageHandler<InboundMessageType> getInboundMessageHandler() {
+    public MessageHandler getInboundMessageHandler() {
         return inboundHandler;
     }
     
@@ -129,7 +126,7 @@ public class BasicMessagePipeline<InboundMessageType, OutboundMessageType>
      * 
      * @param handler the new handler
      */
-    public void setInboundHandler(final MessageHandler<InboundMessageType> handler) {
+    public void setInboundHandler(final MessageHandler handler) {
         inboundHandler = handler;
     }
 

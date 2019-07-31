@@ -84,14 +84,17 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
 
     /** {@inheritDoc} */
     protected void doEncode() throws MessageEncodingException {
-        final MessageContext<SAMLObject> messageContext = getMessageContext();
-        final SAMLObject outboundMessage = messageContext.getMessage();
+        final MessageContext messageContext = getMessageContext();
+        final Object outboundMessage = messageContext.getMessage();
+        if (outboundMessage == null || !(outboundMessage instanceof SAMLObject)) {
+            throw new MessageEncodingException("No outbound SAML message contained in message context");
+        }
 
         final String endpointURL = getEndpointURL(messageContext).toString();
 
-        removeSignature(outboundMessage);
+        removeSignature((SAMLObject) outboundMessage);
 
-        final String encodedMessage = deflateAndBase64Encode(outboundMessage);
+        final String encodedMessage = deflateAndBase64Encode((SAMLObject) outboundMessage);
 
         final String redirectURL = buildRedirectURL(messageContext, endpointURL, encodedMessage);
 
@@ -158,8 +161,7 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
      * 
      * @throws MessageEncodingException thrown if the SAML message is neither a RequestAbstractType or Response
      */
-    protected String buildRedirectURL(final MessageContext<SAMLObject> messageContext, final String endpoint,
-            final String message)
+    protected String buildRedirectURL(final MessageContext messageContext, final String endpoint, final String message)
             throws MessageEncodingException {
         log.debug("Building URL to redirect client to");
         
@@ -180,7 +182,7 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         // to build the string that will potentially be signed later. Add originalParms back in later.
         queryParams.clear();
 
-        final SAMLObject outboundMessage = messageContext.getMessage();
+        final SAMLObject outboundMessage = (SAMLObject) messageContext.getMessage();
 
         if (outboundMessage instanceof RequestAbstractType) {
             queryParams.add(new Pair<>("SAMLRequest", message));

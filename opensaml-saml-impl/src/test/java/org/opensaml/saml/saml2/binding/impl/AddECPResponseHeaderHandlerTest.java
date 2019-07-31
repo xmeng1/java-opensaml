@@ -28,7 +28,6 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
-import org.opensaml.saml.saml2.core.StatusResponseType;
 import org.opensaml.saml.saml2.ecp.Response;
 import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
 import org.opensaml.saml.saml2.metadata.Endpoint;
@@ -44,7 +43,7 @@ public class AddECPResponseHeaderHandlerTest extends OpenSAMLInitBaseTestCase {
     
     /** Test that the handler does nothing on a missing Endpoint context. */
     @Test public void testMissingEndpointContext() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<StatusResponseType> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildResponse());
 
         final AddECPResponseHeaderHandler handler = new AddECPResponseHeaderHandler();
@@ -61,7 +60,7 @@ public class AddECPResponseHeaderHandlerTest extends OpenSAMLInitBaseTestCase {
     /** Test that the handler errors on a missing SOAP context. */
     @Test(expectedExceptions=MessageHandlerException.class)
     public void testMissingEnvelope() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<StatusResponseType> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildResponse());
         
         final Endpoint ep = XMLObjectProviderRegistrySupport.getBuilderFactory().<AssertionConsumerService>getBuilderOrThrow(
@@ -82,7 +81,7 @@ public class AddECPResponseHeaderHandlerTest extends OpenSAMLInitBaseTestCase {
         final Envelope env = XMLObjectProviderRegistrySupport.getBuilderFactory().<Envelope>getBuilderOrThrow(
                 Envelope.DEFAULT_ELEMENT_NAME).buildObject(Envelope.DEFAULT_ELEMENT_NAME);
 
-        final MessageContext<StatusResponseType> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildResponse());
         messageCtx.getSubcontext(SOAP11Context.class, true).setEnvelope(env);
         

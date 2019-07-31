@@ -27,7 +27,6 @@ import javax.annotation.Nullable;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLArtifactContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,7 @@ public class SAML2ArtifactType0004Builder implements SAML2ArtifactBuilder<SAML2A
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public SAML2ArtifactType0004 buildArtifact(@Nonnull final MessageContext<SAMLObject> requestContext) {
+    @Nullable public SAML2ArtifactType0004 buildArtifact(@Nonnull final MessageContext requestContext) {
         try {
             final String sourceId = getSourceEntityId(requestContext);
             if (sourceId == null) {
@@ -86,7 +85,7 @@ public class SAML2ArtifactType0004Builder implements SAML2ArtifactBuilder<SAML2A
      * @return the SAML artifact context, or null
      */
     @Nullable protected SAMLArtifactContext getArtifactContext(
-            @Nonnull final MessageContext<SAMLObject> requestContext) {
+            @Nonnull final MessageContext requestContext) {
         return requestContext.getSubcontext(SAMLArtifactContext.class);
     }
     
@@ -97,7 +96,7 @@ public class SAML2ArtifactType0004Builder implements SAML2ArtifactBuilder<SAML2A
      * 
      * @return the index of the attribute resolution service
      */
-    @Nullable protected Integer getArsEndpointIndex(@Nonnull final MessageContext<SAMLObject> requestContext) {
+    @Nullable protected Integer getArsEndpointIndex(@Nonnull final MessageContext requestContext) {
         final SAMLArtifactContext artifactContext = getArtifactContext(requestContext);
 
         if (artifactContext == null || artifactContext.getSourceArtifactResolutionServiceEndpointIndex() == null) {
@@ -115,7 +114,7 @@ public class SAML2ArtifactType0004Builder implements SAML2ArtifactBuilder<SAML2A
      * 
      * @return the local entityId
      */
-    @Nullable protected String getSourceEntityId(@Nonnull final MessageContext<SAMLObject> requestContext) {
+    @Nullable protected String getSourceEntityId(@Nonnull final MessageContext requestContext) {
         final SAMLArtifactContext artifactContext = getArtifactContext(requestContext);
         if (artifactContext != null) {
             if (artifactContext.getSourceEntityId() != null) {

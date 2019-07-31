@@ -43,7 +43,7 @@ public class EncodeMessageTest {
     
     private MockMessageEncoder encoder;
     
-    private MessageContext<MockMessage> messageContext;
+    private MessageContext messageContext;
     
     private ProfileRequestContext profileCtx;
     
@@ -59,7 +59,7 @@ public class EncodeMessageTest {
         // Encoded mock message, keys sorted alphabetically, per MockMessage#toString
         expectedMessage = "bar=1&baz=2&foo=3";
         
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.setMessage(message);
         
         profileCtx = new ProfileRequestContext();
@@ -103,7 +103,7 @@ public class EncodeMessageTest {
      * Mock implementation of {@link MessageEncoder} which either returns a  
      * {@link MessageContext} with a mock message or throws a {@link MessageDecodingException}.
      */
-    private class MockMessageEncoder extends AbstractMessageEncoder<MockMessage> {
+    private class MockMessageEncoder extends AbstractMessageEncoder {
 
         /** Whether a {@link MessageEncodingException} should be thrown by {@link #doEncode()}. */
         private boolean throwException = false;
@@ -135,7 +135,7 @@ public class EncodeMessageTest {
             if (throwException) {
                 throw new MessageEncodingException();
             } else {
-                message = getMessageContext().getMessage().getEncoded();
+                message = ((MockMessage) getMessageContext().getMessage()).getEncoded();
             }
         }
     }

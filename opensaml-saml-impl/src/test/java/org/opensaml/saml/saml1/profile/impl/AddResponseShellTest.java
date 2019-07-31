@@ -50,8 +50,8 @@ public class AddResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<Response> outMsgCtx = prc.getOutboundMessageContext();
-        final Response response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final Response response = (Response) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getID());

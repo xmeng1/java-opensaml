@@ -27,16 +27,14 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElemen
  *
  * A specialization of {@link MessageHandler} which represents an ordered list of
  * message handlers which may be invoked in order.
- * 
- * @param <MessageType> the type of message being handled
  */
-public interface MessageHandlerChain<MessageType> extends MessageHandler<MessageType> {
+public interface MessageHandlerChain extends MessageHandler {
     
     /**
      * Get the ordered list of message handlers which comprise the handler chain.
      * 
      * @return the list of members of the handler chain
      */
-    @NonnullAfterInit @NonnullElements List<MessageHandler<MessageType>> getHandlers();
+    @NonnullAfterInit @NonnullElements List<MessageHandler> getHandlers();
     
 }

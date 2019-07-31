@@ -20,7 +20,6 @@ package org.opensaml.saml.saml2.binding.decoding.impl;
 import javax.annotation.Nonnull;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -42,7 +41,7 @@ public class HTTPPostSimpleSignDecoder extends HTTPPostDecoder {
      * 
      * @param messageContext the current message context
      */
-    protected void populateBindingContext(final MessageContext<SAMLObject> messageContext) {
+    protected void populateBindingContext(final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, true);
         bindingContext.setBindingUri(getBindingURI());
         bindingContext.setBindingDescriptor(getBindingDescriptor());

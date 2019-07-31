@@ -38,14 +38,12 @@ import com.google.common.collect.Collections2;
 
 /**
  * A basic implementation of {@link MessageHandlerChain}.
- * 
- * @param <MessageType> the type of message being handled
  */
-public class BasicMessageHandlerChain<MessageType> extends AbstractMessageHandler<MessageType> 
-    implements MessageHandlerChain<MessageType> {
+public class BasicMessageHandlerChain extends AbstractMessageHandler 
+    implements MessageHandlerChain {
 
     /** The list of members of the handler chain. */
-    @NonnullAfterInit @NonnullElements private List<MessageHandler<MessageType>> members;
+    @NonnullAfterInit @NonnullElements private List<MessageHandler> members;
     
     /** 
      * {@inheritDoc}
@@ -56,7 +54,7 @@ public class BasicMessageHandlerChain<MessageType> extends AbstractMessageHandle
      * </p>
      * 
      * */
-    @NonnullAfterInit @NonnullElements public List<MessageHandler<MessageType>> getHandlers() {
+    @NonnullAfterInit @NonnullElements public List<MessageHandler> getHandlers() {
         return members;
     }
     
@@ -70,18 +68,18 @@ public class BasicMessageHandlerChain<MessageType> extends AbstractMessageHandle
      * 
      * @param handlers the list of message handler members
      */
-    public void setHandlers(@Nullable @NonnullElements final List<MessageHandler<MessageType>> handlers) {
+    public void setHandlers(@Nullable @NonnullElements final List<MessageHandler> handlers) {
         if (handlers != null) {
-            final ArrayList<MessageHandler<MessageType>> newMembers = new ArrayList<>();
+            final ArrayList<MessageHandler> newMembers = new ArrayList<>();
             newMembers.addAll(Collections2.filter(handlers, Predicates.notNull()));
             members = newMembers;
         } else {
-            members = Collections.EMPTY_LIST;
+            members = Collections.emptyList();
         }
     }
 
     /** {@inheritDoc} */
-    public void doInvoke(@Nonnull final MessageContext<MessageType> msgContext) throws MessageHandlerException {
+    public void doInvoke(@Nonnull final MessageContext msgContext) throws MessageHandlerException {
         if (members != null) {
             for (final MessageHandler handler: members) {
                 handler.invoke(msgContext);

@@ -152,8 +152,8 @@ public class DefaultSAML20AssertionValidationContextBuilderTest extends XMLObjec
         
     }
 
-    private MessageContext<?> buildMessageContext() {
-        MessageContext<?> messageContext = new MessageContext<>();
+    private MessageContext buildMessageContext() {
+        final MessageContext messageContext = new MessageContext();
         messageContext.getSubcontext(SAMLSelfEntityContext.class, true).setEntityId(rpEntityID);
         return messageContext;
     }

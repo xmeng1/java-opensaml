@@ -48,7 +48,7 @@ public class EncryptNameIDsTest extends OpenSAMLInitBaseTestCase {
     
     private EncryptionParameters encParams;
     
-    private ProfileRequestContext<Object,Response> prc;
+    private ProfileRequestContext prc;
     
     private EncryptNameIDs action;
     

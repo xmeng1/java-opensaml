@@ -22,7 +22,6 @@ import javax.annotation.Nonnull;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.messaging.context.SAMLMetadataContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
@@ -37,16 +36,16 @@ import com.google.common.base.Strings;
  * Message handler implementation that enforces the AuthnRequestsSigned flag of 
  * SAML 2 metadata element @{link {@link SPSSODescriptor}.
  */
-public class SAML2AuthnRequestsSignedSecurityHandler extends AbstractMessageHandler<SAMLObject>{
+public class SAML2AuthnRequestsSignedSecurityHandler extends AbstractMessageHandler{
     
     /** Logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(SAML2AuthnRequestsSignedSecurityHandler.class);
 
 // Checkstyle: ReturnCount OFF
     /** {@inheritDoc} */
-    public void doInvoke(@Nonnull final MessageContext<SAMLObject> messageContext) throws MessageHandlerException {
-        final SAMLObject samlMessage = messageContext.getMessage();
-        if (! (samlMessage instanceof AuthnRequest) ) {
+    public void doInvoke(@Nonnull final MessageContext messageContext) throws MessageHandlerException {
+        final Object samlMessage = messageContext.getMessage();
+        if (!(samlMessage instanceof AuthnRequest) ) {
             log.debug("Inbound message is not an instance of AuthnRequest, skipping evaluation...");
             return;
         }
@@ -74,7 +73,7 @@ public class SAML2AuthnRequestsSignedSecurityHandler extends AbstractMessageHand
         final SPSSODescriptor spssoRole = (SPSSODescriptor) metadataContext.getRoleDescriptor();
         
         if (spssoRole.isAuthnRequestsSigned() == Boolean.TRUE) {
-            if (! isMessageSigned(messageContext)) {
+            if (!isMessageSigned(messageContext)) {
                 log.error("SPSSODescriptor for entity ID '{}' indicates AuthnRequests must be signed, "
                         + "but inbound message was not signed", messageIssuer);
                 throw new MessageHandlerException("Inbound AuthnRequest was required to be signed but was not");
@@ -92,7 +91,7 @@ public class SAML2AuthnRequestsSignedSecurityHandler extends AbstractMessageHand
      * @param messageContext the message context being evaluated
      * @return true if the inbound message is signed, otherwise false
      */
-    protected boolean isMessageSigned(@Nonnull final MessageContext<SAMLObject> messageContext) {
+    protected boolean isMessageSigned(@Nonnull final MessageContext messageContext) {
         return SAMLBindingSupport.isMessageSigned(messageContext);
     }
 

@@ -28,7 +28,7 @@ import net.shibboleth.utilities.java.support.collection.LazyMap;
 public class SAML2ArtifactBuilderFactory {
 
     /** Registered artifact builders. */
-    private Map<String, SAML2ArtifactBuilder> artifactBuilders;
+    private Map<String, SAML2ArtifactBuilder<?>> artifactBuilders;
 
     /** Constructor. */
     public SAML2ArtifactBuilderFactory() {
@@ -41,7 +41,7 @@ public class SAML2ArtifactBuilderFactory {
      * 
      * @return currently registered artifact builders
      */
-    public Map<String, SAML2ArtifactBuilder> getArtifactBuilders() {
+    public Map<String, SAML2ArtifactBuilder<?>> getArtifactBuilders() {
         return artifactBuilders;
     }
 
@@ -52,7 +52,7 @@ public class SAML2ArtifactBuilderFactory {
      * 
      * @return artifact builder for the given type
      */
-    public SAML2ArtifactBuilder getArtifactBuilder(final byte[] type) {
+    public SAML2ArtifactBuilder<?> getArtifactBuilder(final byte[] type) {
         return artifactBuilders.get(new String(type));
     }
     

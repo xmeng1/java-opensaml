@@ -21,7 +21,6 @@ import org.opensaml.messaging.context.InOutOperationContext;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.context.navigate.RecursiveTypedParentContextLookup;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.messaging.context.SAMLPresenterEntityContext;
 import org.opensaml.saml.common.messaging.context.SAMLProtocolContext;
@@ -39,7 +38,7 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 public class SAMLProtocolAndRoleHandlerTest {
     
     private SAMLProtocolAndRoleHandler handler;
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     @BeforeMethod
     public void setup() {
@@ -83,8 +82,7 @@ public class SAMLProtocolAndRoleHandlerTest {
         handler.setCopyContextLookup(new RecursiveTypedParentContextLookup(InOutOperationContext.class));
         handler.initialize();
         
-        final InOutOperationContext<SAMLObject, SAMLObject> opContext = 
-                new InOutOperationContext<>(messageContext, new MessageContext<SAMLObject>());
+        final InOutOperationContext opContext = new InOutOperationContext(messageContext, new MessageContext());
         opContext.getSubcontext(SAMLProtocolContext.class, true).setProtocol(SAMLConstants.SAML20P_NS); 
         opContext.getSubcontext(SAMLPeerEntityContext.class, true).setRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
 
@@ -103,8 +101,7 @@ public class SAMLProtocolAndRoleHandlerTest {
         handler.setEntityContextClass(SAMLPresenterEntityContext.class);
         handler.initialize();
         
-        final InOutOperationContext<SAMLObject, SAMLObject> opContext = 
-                new InOutOperationContext<>(messageContext, new MessageContext<SAMLObject>());
+        final InOutOperationContext opContext = new InOutOperationContext(messageContext, new MessageContext());
         opContext.getSubcontext(SAMLProtocolContext.class, true).setProtocol(SAMLConstants.SAML20P_NS); 
         opContext.getSubcontext(SAMLPresenterEntityContext.class, true).setRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
 

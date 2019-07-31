@@ -115,7 +115,7 @@ public class AbstractMessageHandlerTest {
         handler.setActivationCondition(Predicates.alwaysTrue());
         handler.initialize();
         
-        MessageContext messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         handler.invoke(messageContext);
         
         Assert.assertTrue(messageContext.containsSubcontext(MockContext.class));
@@ -128,7 +128,7 @@ public class AbstractMessageHandlerTest {
         handler.setActivationCondition(Predicates.alwaysFalse());
         handler.initialize();
         
-        MessageContext messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         handler.invoke(messageContext);
         
         Assert.assertFalse(messageContext.containsSubcontext(MockContext.class));

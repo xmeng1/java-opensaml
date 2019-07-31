@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLArtifactContext;
 import org.opensaml.saml.saml1.core.Assertion;
 import org.slf4j.Logger;
@@ -53,7 +52,7 @@ public class SAML1ArtifactType0002Builder implements SAML1ArtifactBuilder<SAML1A
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public SAML1ArtifactType0002 buildArtifact(@Nonnull final MessageContext<SAMLObject> requestContext,
+    @Nullable public SAML1ArtifactType0002 buildArtifact(@Nonnull final MessageContext requestContext,
             @Nonnull final Assertion assertion) {
         try {
             final String sourceLocation = getArsEndpointUrl(requestContext);
@@ -78,7 +77,7 @@ public class SAML1ArtifactType0002Builder implements SAML1ArtifactBuilder<SAML1A
      * @return the SAML artifact context, or null
      */
     @Nullable protected SAMLArtifactContext getArtifactContext(
-            @Nonnull final MessageContext<SAMLObject> requestContext) {
+            @Nonnull final MessageContext requestContext) {
         return requestContext.getSubcontext(SAMLArtifactContext.class);
     }
     
@@ -89,7 +88,7 @@ public class SAML1ArtifactType0002Builder implements SAML1ArtifactBuilder<SAML1A
      * 
      * @return the index of the attribute resolution service
      */
-    @Nullable protected String getArsEndpointUrl(@Nonnull final MessageContext<SAMLObject> requestContext) {
+    @Nullable protected String getArsEndpointUrl(@Nonnull final MessageContext requestContext) {
         final SAMLArtifactContext artifactContext = getArtifactContext(requestContext);
 
         if (artifactContext == null || artifactContext.getSourceArtifactResolutionServiceEndpointURL() == null) {

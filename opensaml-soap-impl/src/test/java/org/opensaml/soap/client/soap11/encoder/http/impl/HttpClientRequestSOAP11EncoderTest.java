@@ -20,7 +20,6 @@ package org.opensaml.soap.client.soap11.encoder.http.impl;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 
 import org.apache.http.client.methods.HttpPost;
-import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.mock.SimpleXMLObject;
 import org.opensaml.messaging.context.MessageContext;
@@ -35,9 +34,9 @@ import org.testng.annotations.Test;
 
 public class HttpClientRequestSOAP11EncoderTest extends XMLObjectBaseTestCase {
     
-    private HttpClientRequestSOAP11Encoder<XMLObject> encoder;
+    private HttpClientRequestSOAP11Encoder encoder;
     
-    private MessageContext<XMLObject> messageContext;
+    private MessageContext messageContext;
     
     private HttpPost request;
     
@@ -45,7 +44,7 @@ public class HttpClientRequestSOAP11EncoderTest extends XMLObjectBaseTestCase {
     public void setUp() {
         request = new HttpPost("http://example.org/soap/receiver");
         
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         
         encoder = new HttpClientRequestSOAP11Encoder();
         encoder.setMessageContext(messageContext);

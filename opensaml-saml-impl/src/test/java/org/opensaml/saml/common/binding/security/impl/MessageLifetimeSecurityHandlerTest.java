@@ -23,7 +23,6 @@ import java.time.Instant;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.security.impl.MessageLifetimeSecurityHandler;
 import org.opensaml.saml.common.messaging.context.SAMLMessageInfoContext;
 import org.testng.annotations.BeforeMethod;
@@ -34,7 +33,7 @@ import org.testng.annotations.Test;
  */
 public class MessageLifetimeSecurityHandlerTest extends XMLObjectBaseTestCase {
     
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     private MessageLifetimeSecurityHandler handler;
     
@@ -49,7 +48,7 @@ public class MessageLifetimeSecurityHandlerTest extends XMLObjectBaseTestCase {
         clockSkew = Duration.ofMinutes(5);
         messageLifetime = Duration.ofMinutes(10);
         
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         
         messageContext.getSubcontext(SAMLMessageInfoContext.class, true).setMessageIssueInstant(now);
         

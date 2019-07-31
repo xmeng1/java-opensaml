@@ -25,7 +25,6 @@ import org.opensaml.profile.action.ActionTestingSupport;
 import org.opensaml.profile.action.EventIds;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.saml1.core.Assertion;
-import org.opensaml.saml.saml1.core.Request;
 import org.opensaml.saml.saml1.core.Response;
 import org.opensaml.saml.saml1.core.Subject;
 import org.opensaml.saml.saml1.profile.SAML1ActionTestingSupport;
@@ -39,7 +38,7 @@ public class CopyNameIdentifierFromRequestTest extends OpenSAMLInitBaseTestCase 
 
     private static final String NAME_QUALIFIER = "https://idp.example.org";
 
-    private ProfileRequestContext<Request,Response> prc;
+    private ProfileRequestContext prc;
     
     private CopyNameIdentifierFromRequest action;
     
@@ -63,13 +62,13 @@ public class CopyNameIdentifierFromRequestTest extends OpenSAMLInitBaseTestCase 
 
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage().getAssertions().isEmpty());
+        Assert.assertTrue(((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().isEmpty());
     }
 
     @Test
     public void testNoRequest() {
         prc.getOutboundMessageContext().setMessage(SAML1ActionTestingSupport.buildResponse());
-        prc.getOutboundMessageContext().getMessage().getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
+        ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
         addStatements();
 
         action.execute(prc);
@@ -79,7 +78,7 @@ public class CopyNameIdentifierFromRequestTest extends OpenSAMLInitBaseTestCase 
     @Test
     public void testNoName() {
         prc.getOutboundMessageContext().setMessage(SAML1ActionTestingSupport.buildResponse());
-        prc.getOutboundMessageContext().getMessage().getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
+        ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
         addStatements();
 
         prc.getInboundMessageContext().setMessage(SAML1ActionTestingSupport.buildAttributeQueryRequest(null));
@@ -98,7 +97,7 @@ public class CopyNameIdentifierFromRequestTest extends OpenSAMLInitBaseTestCase 
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        Assertion assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(0);
+        Assertion assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0);
         subject = assertion.getAttributeStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getNameIdentifier());

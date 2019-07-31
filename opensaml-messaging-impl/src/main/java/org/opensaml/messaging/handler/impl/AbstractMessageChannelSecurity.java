@@ -34,10 +34,8 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
  * Abstract base class for message handlers which populate a
  * {@link org.opensaml.messaging.context.MessageChannelSecurityContext} on a {@link BaseContext},
  * where the latter is located using a lookup strategy.
- * 
- * @param <MessageType> the type of message being carried
  */
-public abstract class AbstractMessageChannelSecurity<MessageType> extends AbstractMessageHandler<MessageType> {
+public abstract class AbstractMessageChannelSecurity extends AbstractMessageHandler {
     
     /**
      * Strategy used to look up the parent {@link BaseContext} on which the
@@ -51,7 +49,7 @@ public abstract class AbstractMessageChannelSecurity<MessageType> extends Abstra
     /** Constructor. */
     public AbstractMessageChannelSecurity() {
         //TODO this just returns the input MC - need better default?
-        parentContextLookupStrategy = new Function<MessageContext, BaseContext>() {
+        parentContextLookupStrategy = new Function<>() {
             @Nullable public BaseContext apply(@Nullable final MessageContext input) {
                 return input;
             }

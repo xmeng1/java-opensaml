@@ -83,7 +83,7 @@ public final class SOAPMessagingSupport {
      * @param msgContext the current message context
      * @param header the header that was understood
      */
-    public static void registerUnderstoodHeader(@Nonnull final MessageContext<? extends XMLObject> msgContext, 
+    public static void registerUnderstoodHeader(@Nonnull final MessageContext msgContext, 
             @Nonnull final XMLObject header) {
         final InboundSOAPContext inboundContext = getInboundSOAPContext(msgContext);
         
@@ -97,7 +97,7 @@ public final class SOAPMessagingSupport {
      * @param header the header that is to be checked for understanding
      * @return true if header was understood, false otherwise
      */
-    public static boolean checkUnderstoodHeader(@Nonnull final MessageContext<? extends XMLObject> msgContext,
+    public static boolean checkUnderstoodHeader(@Nonnull final MessageContext msgContext,
             @Nonnull final XMLObject header) {
         final InboundSOAPContext inboundContext = getInboundSOAPContext(msgContext);
         
@@ -111,7 +111,7 @@ public final class SOAPMessagingSupport {
      * @param messageContext the current message context
      * @return true iff the message context contains a SOAP Envelope
      */
-    public static boolean isSOAPMessage(@Nonnull final MessageContext<? extends XMLObject> messageContext) {
+    public static boolean isSOAPMessage(@Nonnull final MessageContext messageContext) {
         Constraint.isNotNull(messageContext, "Message context cannot be null");
         
         final SOAPVersion version = getSOAPVersion(messageContext);
@@ -125,7 +125,7 @@ public final class SOAPMessagingSupport {
      * @param messageContext the current message context
      * @return true iff the message context contains a SOAP 1.1 Envelope
      */
-    public static boolean isSOAP11Message(@Nonnull final MessageContext<? extends XMLObject> messageContext) {
+    public static boolean isSOAP11Message(@Nonnull final MessageContext messageContext) {
         Constraint.isNotNull(messageContext, "Message context cannot be null");
         
         final SOAPVersion version = getSOAPVersion(messageContext);
@@ -143,7 +143,7 @@ public final class SOAPMessagingSupport {
      * @return the SOAP version.  May be null if the version could not be determined.
      */
     @Nullable public static SOAPVersion getSOAPVersion(
-            @Nonnull final MessageContext<? extends XMLObject> messageContext) {
+            @Nonnull final MessageContext messageContext) {
         Constraint.isNotNull(messageContext, "Message context cannot be null");
         
         final SOAP11Context soap11 = getSOAP11Context(messageContext, false);
@@ -257,7 +257,7 @@ public final class SOAPMessagingSupport {
      * @return the list of matching header blocks
      */
     @Nonnull public static List<XMLObject> getInboundHeaderBlock(
-            @Nonnull final MessageContext<? extends XMLObject> messageContext, @Nonnull final QName headerName) {
+            @Nonnull final MessageContext messageContext, @Nonnull final QName headerName) {
             
         final InboundSOAPContext inboundContext = getInboundSOAPContext(messageContext);
         
@@ -275,7 +275,7 @@ public final class SOAPMessagingSupport {
      * @return the list of matching header blocks
      */
     @Nonnull public static List<XMLObject> getOutboundHeaderBlock(
-            @Nonnull final MessageContext<? extends XMLObject> messageContext, @Nonnull final QName headerName) {
+            @Nonnull final MessageContext messageContext, @Nonnull final QName headerName) {
             
         return getHeaderBlock(messageContext, headerName, null, true);
     }

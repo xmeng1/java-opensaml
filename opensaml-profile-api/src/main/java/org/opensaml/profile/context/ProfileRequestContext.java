@@ -28,13 +28,9 @@ import org.opensaml.messaging.context.InOutOperationContext;
 
 /**
  * Context that holds the ongoing state of a profile request.
- * 
- * @param <InboundMessageType> type of in-bound message
- * @param <OutboundMessageType> type of out-bound message
  */
 @ThreadSafe
-public final class ProfileRequestContext<InboundMessageType, OutboundMessageType> extends
-        InOutOperationContext<InboundMessageType, OutboundMessageType> {
+public final class ProfileRequestContext extends InOutOperationContext {
 
     /** ID under which this context is stored, for example, within maps or sessions. */
     public static final String BINDING_KEY = "opensamlProfileRequestContext";

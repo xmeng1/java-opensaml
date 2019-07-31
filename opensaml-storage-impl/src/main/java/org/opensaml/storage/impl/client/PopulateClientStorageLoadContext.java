@@ -46,12 +46,8 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
  * 
  * @event {@link org.opensaml.profile.action.EventIds#PROCEED_EVENT_ID}
  * @event {@link #LOAD_NOT_NEEDED}
- * 
- * @param <InboundMessageType>
- * @param <OutboundMessageType>
  */
-public class PopulateClientStorageLoadContext<InboundMessageType, OutboundMessageType>
-        extends AbstractProfileAction<InboundMessageType, OutboundMessageType> {
+public class PopulateClientStorageLoadContext extends AbstractProfileAction {
 
     /** Event signaling that no load step is necessary. */
     @Nonnull @NotEmpty public static final String LOAD_NOT_NEEDED = "NoLoadNeeded";
@@ -80,8 +76,7 @@ public class PopulateClientStorageLoadContext<InboundMessageType, OutboundMessag
     }
     
     /** {@inheritDoc} */
-    @Override protected boolean doPreExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         if (!super.doPreExecute(profileRequestContext)) {
             ActionSupport.buildEvent(profileRequestContext, LOAD_NOT_NEEDED);
@@ -98,8 +93,7 @@ public class PopulateClientStorageLoadContext<InboundMessageType, OutboundMessag
     }
 
     /** {@inheritDoc} */
-    @Override protected void doExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         final ClientStorageLoadContext loadCtx = new ClientStorageLoadContext();
         

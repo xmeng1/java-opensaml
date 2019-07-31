@@ -20,7 +20,6 @@ package org.opensaml.saml.common.binding.impl;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.binding.impl.SAMLOutboundDestinationHandler;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
@@ -38,7 +37,7 @@ import org.testng.annotations.Test;
 public class SAMLOutboundDestinationHandlerTest extends XMLObjectBaseTestCase {
     
     private SAMLOutboundDestinationHandler handler;
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     @BeforeMethod
     public void setUp() {
@@ -48,7 +47,7 @@ public class SAMLOutboundDestinationHandlerTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         
         handler = new SAMLOutboundDestinationHandler();
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).
             getSubcontext(SAMLEndpointContext.class, true).setEndpoint(samlEndpoint);
     }

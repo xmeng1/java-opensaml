@@ -28,7 +28,6 @@ import org.opensaml.core.xml.io.Marshaller;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.messaging.SAMLMessageSecuritySupport;
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -66,8 +65,7 @@ public class HTTPPostSimpleSignEncoder extends HTTPPostEncoder {
     }
 
     /** {@inheritDoc} */
-    protected void populateVelocityContext(final VelocityContext velocityContext,
-            final MessageContext<SAMLObject> messageContext,
+    protected void populateVelocityContext(final VelocityContext velocityContext, final MessageContext messageContext,
             final String endpointURL) throws MessageEncodingException {
 
         super.populateVelocityContext(velocityContext, messageContext, endpointURL);
@@ -142,8 +140,7 @@ public class HTTPPostSimpleSignEncoder extends HTTPPostEncoder {
      * 
      * @return the form control data string for signature computation
      */
-    protected String buildFormDataToSign(final VelocityContext velocityContext,
-            final MessageContext<SAMLObject> messageContext,
+    protected String buildFormDataToSign(final VelocityContext velocityContext, final MessageContext messageContext,
             final String sigAlgURI) {
         final StringBuilder builder = new StringBuilder();
 

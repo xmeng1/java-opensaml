@@ -194,7 +194,7 @@ public class AddSOAPFault extends AbstractProfileAction {
         if (profileRequestContext.getOutboundMessageContext() != null && nullifyOutboundMessage) {
             profileRequestContext.getOutboundMessageContext().setMessage(null);
         } else {
-            profileRequestContext.setOutboundMessageContext(new MessageContext<Object>());
+            profileRequestContext.setOutboundMessageContext(new MessageContext());
         }
         
         return super.doPreExecute(profileRequestContext);

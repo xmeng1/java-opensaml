@@ -24,37 +24,35 @@ import org.opensaml.messaging.handler.MessageHandler;
 /**
  * A specialization of error handler where the error is handled via use of a specified message handler
  * and message encoder.
- * 
- * @param <MessageType> the type of message being handled
  */
-public interface PipelineMessageErrorHandler<MessageType> extends MessageErrorHandler<MessageType> {
+public interface PipelineMessageErrorHandler extends MessageErrorHandler {
     
     /**
      * Get the handler to invoke on the outbound error message.
      * 
      * @return the outbound error handler
      */
-    MessageHandler<MessageType> getHandler();
+    MessageHandler getHandler();
     
     /**
      * Set the handler to invoke on the outbound error message.
      * 
      * @param handler the outbound error handler
      */
-    void setHandler(MessageHandler<MessageType> handler);
+    void setHandler(MessageHandler handler);
 
     /**
      * Get the message encoder used to encode the outbound error message.
      * 
      * @return the outbound error message encoder
      */
-    MessageEncoder<MessageType> getMessageEncoder();
+    MessageEncoder getMessageEncoder();
     
     /**
      * Set the message encoder used to encode the outbound error message.
      * 
      * @param messageEncoder the outbound error message encoder
      */
-    void setMessageEncoder(MessageEncoder<MessageType> messageEncoder);
+    void setMessageEncoder(MessageEncoder messageEncoder);
     
 }

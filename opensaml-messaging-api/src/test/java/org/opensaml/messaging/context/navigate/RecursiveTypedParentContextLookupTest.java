@@ -35,8 +35,8 @@ public class RecursiveTypedParentContextLookupTest {
         MockContext1 mc1 = new MockContext1();
         MockContext2 mc2 = new MockContext2();
         MockContext3 mc3 = new MockContext3();
-        MessageContext in = new MessageContext<>();
-        InOutOperationContext opContext = new InOutOperationContext<>(null, null);
+        MessageContext in = new MessageContext();
+        InOutOperationContext opContext = new InOutOperationContext(null, null);
         
         opContext.setInboundMessageContext(in);
         opContext.getInboundMessageContext().addSubcontext(mc1);

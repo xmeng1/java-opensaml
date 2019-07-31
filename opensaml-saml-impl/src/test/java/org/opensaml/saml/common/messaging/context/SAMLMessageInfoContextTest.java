@@ -65,57 +65,57 @@ public class SAMLMessageInfoContextTest extends XMLObjectBaseTestCase {
     
     @Test
     public void testNonSAMLMessage() {
-        MessageContext<Object> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         messageContext.setMessage(new Object());
-        SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
+        final SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
         Assert.assertNull(infoContext.getMessageId());
         Assert.assertNull(infoContext.getMessageIssueInstant());
     }
     
     @Test
     public void testSAML2Request() {
-        MessageContext<Object> messageContext = new MessageContext<>();
-        AuthnRequest message = buildXMLObject(AuthnRequest.DEFAULT_ELEMENT_NAME);
+        final MessageContext messageContext = new MessageContext();
+        final AuthnRequest message = buildXMLObject(AuthnRequest.DEFAULT_ELEMENT_NAME);
         message.setID(id);
         message.setIssueInstant(issueInstant);
         messageContext.setMessage(message);
-        SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
+        final SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
         Assert.assertEquals(infoContext.getMessageId(), id);
         Assert.assertEquals(infoContext.getMessageIssueInstant(), issueInstant);
     }
 
     @Test
     public void testSAML2Response() {
-        MessageContext<Object> messageContext = new MessageContext<>();
-        Response message = buildXMLObject(Response.DEFAULT_ELEMENT_NAME);
+        final MessageContext messageContext = new MessageContext();
+        final Response message = buildXMLObject(Response.DEFAULT_ELEMENT_NAME);
         message.setID(id);
         message.setIssueInstant(issueInstant);
         messageContext.setMessage(message);
-        SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
+        final SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
         Assert.assertEquals(infoContext.getMessageId(), id);
         Assert.assertEquals(infoContext.getMessageIssueInstant(), issueInstant);
     }
     
     @Test
     public void testSAML1Request() {
-        MessageContext<Object> messageContext = new MessageContext<>();
-        Request message = buildXMLObject(Request.DEFAULT_ELEMENT_NAME);
+        final MessageContext messageContext = new MessageContext();
+        final Request message = buildXMLObject(Request.DEFAULT_ELEMENT_NAME);
         message.setID(id);
         message.setIssueInstant(issueInstant);
         messageContext.setMessage(message);
-        SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
+        final SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
         Assert.assertEquals(infoContext.getMessageId(), id);
         Assert.assertEquals(infoContext.getMessageIssueInstant(), issueInstant);
     }
     
     @Test
     public void testSAML1Response() {
-        MessageContext<Object> messageContext = new MessageContext<>();
-        org.opensaml.saml.saml1.core.Response message = buildXMLObject(org.opensaml.saml.saml1.core.Response.DEFAULT_ELEMENT_NAME);
+        final MessageContext messageContext = new MessageContext();
+        final org.opensaml.saml.saml1.core.Response message = buildXMLObject(org.opensaml.saml.saml1.core.Response.DEFAULT_ELEMENT_NAME);
         message.setID(id);
         message.setIssueInstant(issueInstant);
         messageContext.setMessage(message);
-        SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
+        final SAMLMessageInfoContext infoContext =  messageContext.getSubcontext(SAMLMessageInfoContext.class, true);
         Assert.assertEquals(infoContext.getMessageId(), id);
         Assert.assertEquals(infoContext.getMessageIssueInstant(), issueInstant);
     }

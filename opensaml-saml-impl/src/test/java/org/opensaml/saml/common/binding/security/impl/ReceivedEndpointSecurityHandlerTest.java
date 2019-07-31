@@ -26,7 +26,6 @@ import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.MessageException;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.binding.security.impl.ReceivedEndpointSecurityHandler;
 import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
@@ -42,7 +41,7 @@ import org.testng.annotations.Test;
  */
 public class ReceivedEndpointSecurityHandlerTest extends XMLObjectBaseTestCase {
     
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     private SAMLBindingContext samlBindingContext;
     
@@ -54,8 +53,8 @@ public class ReceivedEndpointSecurityHandlerTest extends XMLObjectBaseTestCase {
     
     @BeforeMethod
     public void setUp() throws MessageException, ComponentInitializationException {
-        messageContext = new MessageContext<>();
-        messageContext.setMessage((SAMLObject) unmarshallElement("/org/opensaml/saml/saml2/binding/AuthnRequest.xml"));
+        messageContext = new MessageContext();
+        messageContext.setMessage(unmarshallElement("/org/opensaml/saml/saml2/binding/AuthnRequest.xml"));
         
         httpRequest = new MockHttpServletRequest();
         

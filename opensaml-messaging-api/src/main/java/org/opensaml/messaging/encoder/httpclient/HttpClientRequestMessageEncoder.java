@@ -24,10 +24,8 @@ import org.opensaml.messaging.encoder.MessageEncoder;
 
 /**
  * A specialization of {@link MessageEncoder} that operates on a sink message data type of {@link HttpRequest}.
- *
- * @param <MessageType> the message type of the message context on which to operate
  */
-public interface HttpClientRequestMessageEncoder<MessageType> extends MessageEncoder<MessageType> {
+public interface HttpClientRequestMessageEncoder extends MessageEncoder {
     
     /**
      * Get the HTTP client request on which to operate.

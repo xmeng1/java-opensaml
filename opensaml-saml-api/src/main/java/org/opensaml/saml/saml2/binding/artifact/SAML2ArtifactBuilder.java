@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 
 /**
  * Builder of typed SAML 2 artifacts.
@@ -41,7 +40,7 @@ public interface SAML2ArtifactBuilder<ArtifactType extends SAML2Artifact> {
      * 
      * @return constructed artifcate
      */
-    @Nullable ArtifactType buildArtifact(@Nonnull final MessageContext<SAMLObject> requestContext);
+    @Nullable ArtifactType buildArtifact(@Nonnull final MessageContext requestContext);
 
     /**
      * Builds a populated artifact given the artifact's byte-array representation.

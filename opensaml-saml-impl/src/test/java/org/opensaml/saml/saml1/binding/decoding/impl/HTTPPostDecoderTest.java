@@ -69,7 +69,7 @@ public class HTTPPostDecoderTest extends XMLObjectBaseTestCase {
         populateRequestURL(httpRequest, deliveredEndpointURL);
 
         decoder.decode();
-        MessageContext<SAMLObject> messageContext = decoder.getMessageContext();
+        MessageContext messageContext = decoder.getMessageContext();
 
         Assert.assertTrue(messageContext.getMessage() instanceof Response);
         Assert.assertEquals(SAMLBindingSupport.getRelayState(messageContext), expectedRelayValue);

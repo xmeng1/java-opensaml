@@ -44,7 +44,7 @@ public class PopulateSignatureValidationParametersHandlerTest extends OpenSAMLIn
     private PopulateSignatureValidationParametersHandler handler;
     
     @BeforeMethod public void setUp() {
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         handler = new PopulateSignatureValidationParametersHandler();
     }
     

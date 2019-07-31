@@ -71,7 +71,7 @@ import org.testng.annotations.Test;
  */
 public class SAML2HTTPRedirectDeflateSignatureSecurityHandlerTest extends XMLObjectBaseTestCase {
     
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     private SAML2HTTPRedirectDeflateSignatureSecurityHandler handler;
     
@@ -204,7 +204,7 @@ public class SAML2HTTPRedirectDeflateSignatureSecurityHandlerTest extends XMLObj
         handler.setHttpServletRequest(buildServletRequest());
         handler.initialize();
         
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.setMessage(buildInboundSAMLMessage());
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setEntityId(issuer);
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
@@ -304,7 +304,7 @@ public class SAML2HTTPRedirectDeflateSignatureSecurityHandlerTest extends XMLObj
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
         
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         messageContext.setMessage(buildInboundSAMLMessage());
         SAMLBindingSupport.setRelayState(messageContext, expectedRelayValue);
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)

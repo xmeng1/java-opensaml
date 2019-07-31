@@ -52,11 +52,8 @@ import net.shibboleth.utilities.java.support.net.HttpServletSupport;
  *  An application-specific payload-oriented message exchange would handle a specific type
  * of payload structure.  
  * </p>
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public class HTTPSOAP11Decoder<MessageType extends XMLObject> 
-    extends BaseHttpServletRequestXMLMessageDecoder<MessageType> {
+public class HTTPSOAP11Decoder extends BaseHttpServletRequestXMLMessageDecoder {
 
     /** Valid Content-Type media types. */
     private static final Set<MediaType> SUPPORTED_MEDIA_TYPES = Sets.newHashSet(MediaType.create("text", "xml"));
@@ -65,14 +62,14 @@ public class HTTPSOAP11Decoder<MessageType extends XMLObject>
     private final Logger log = LoggerFactory.getLogger(HTTPSOAP11Decoder.class);
     
     /** Message handler to use in processing the message body. */
-    private MessageHandler<MessageType> bodyHandler;
+    private MessageHandler bodyHandler;
     
     /**
      * Get the configured body handler MessageHandler.
      * 
      * @return Returns the bodyHandler.
      */
-    public MessageHandler<MessageType> getBodyHandler() {
+    public MessageHandler getBodyHandler() {
         return bodyHandler;
     }
 
@@ -81,14 +78,14 @@ public class HTTPSOAP11Decoder<MessageType extends XMLObject>
      * 
      * @param newBodyHandler The bodyHandler to set.
      */
-    public void setBodyHandler(final MessageHandler<MessageType> newBodyHandler) {
+    public void setBodyHandler(final MessageHandler newBodyHandler) {
         bodyHandler = newBodyHandler;
     }
 
     /** {@inheritDoc} */
     @Override
     protected void doDecode() throws MessageDecodingException {
-        final MessageContext<MessageType> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final HttpServletRequest request = getHttpServletRequest();
 
         if (!"POST".equalsIgnoreCase(request.getMethod())) {

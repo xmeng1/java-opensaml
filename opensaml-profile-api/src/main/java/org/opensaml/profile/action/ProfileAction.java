@@ -32,17 +32,13 @@ import net.shibboleth.utilities.java.support.component.InitializableComponent;
  * to the tree.</p>
  * 
  * <p>Actions may be stateful or stateless, and are therefore not inherently thread-safe.</p>
- * 
- * @param <InboundMessageType> type of in-bound message
- * @param <OutboundMessageType> type of out-bound message
  */
-public interface ProfileAction<InboundMessageType, OutboundMessageType> extends InitializableComponent {
+public interface ProfileAction extends InitializableComponent {
 
     /**
      * Performs this action.
      * 
      * @param profileRequestContext the current IdP profile request context
      */
-    public void execute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext);
+    public void execute(@Nonnull final ProfileRequestContext profileRequestContext);
 }

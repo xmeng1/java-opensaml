@@ -51,12 +51,9 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
  * @event {@link EventIds#PROCEED_EVENT_ID}
  * @event {@link EventIds#INVALID_PROFILE_CTX}
  * @post ProfileRequestContext.getSubcontext(ClientStorageSaveContext.class) == null
- * 
- * @param <InboundMessageType>
- * @param <OutboundMessageType>
  */
-public class SaveCookieBackedClientStorageServices<InboundMessageType, OutboundMessageType>
-        extends AbstractProfileAction<InboundMessageType, OutboundMessageType> {
+public class SaveCookieBackedClientStorageServices
+        extends AbstractProfileAction {
     
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(SaveCookieBackedClientStorageServices.class);
@@ -92,8 +89,7 @@ public class SaveCookieBackedClientStorageServices<InboundMessageType, OutboundM
     }
     
     /** {@inheritDoc} */
-    @Override protected boolean doPreExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         if (!super.doPreExecute(profileRequestContext)) {
             return false;
@@ -121,8 +117,7 @@ public class SaveCookieBackedClientStorageServices<InboundMessageType, OutboundM
     }
 
     /** {@inheritDoc} */
-    @Override protected void doExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         for (final ClientStorageServiceOperation operation : clientStorageSaveCtx.getStorageOperations()) {
             

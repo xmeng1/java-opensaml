@@ -42,12 +42,9 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
 /**
  * A profile action that logs an event if one is found in the profile request context.
  * 
- * @param <Input> input message type
- * @param <Output> output message type
- * 
  * @event {@link org.opensaml.profile.action.EventIds#PROCEED_EVENT_ID}
  */
-public class LogEvent<Input,Output> extends AbstractProfileAction<Input,Output> {
+public class LogEvent extends AbstractProfileAction {
     
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(LogEvent.class);
@@ -92,7 +89,7 @@ public class LogEvent<Input,Output> extends AbstractProfileAction<Input,Output> 
     
     /** {@inheritDoc} */
     @Override
-    protected void doExecute(@Nonnull final ProfileRequestContext<Input,Output> profileRequestContext) {
+    protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         final EventContext eventCtx = eventContextLookupStrategy.apply(profileRequestContext);
         if (eventCtx == null || eventCtx.getEvent() == null) {

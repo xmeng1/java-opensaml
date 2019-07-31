@@ -52,7 +52,7 @@ public class TestSelfEncryption extends OpenSAMLInitBaseTestCase {
     
     private EncryptionParameters encParams, encParamsSelf1, encParamsSelf2;
     
-    private ProfileRequestContext<Object,Response> prc;
+    private ProfileRequestContext prc;
     
     private EncryptNameIDs action;
     

@@ -29,11 +29,11 @@ import org.opensaml.soap.soap11.Envelope;
  * A body handler for use with {@link HTTPSOAP11Decoder} that populates the 
  * context message with the SOAP Envelope.
  */
-public class EnvelopeBodyHandler extends AbstractMessageHandler<Envelope> {
+public class EnvelopeBodyHandler extends AbstractMessageHandler {
 
     /** {@inheritDoc} */
-    protected void doInvoke(@Nonnull final MessageContext<Envelope> messageContext) throws MessageHandlerException {
-        final Envelope env = (Envelope) messageContext.getSubcontext(SOAP11Context.class).getEnvelope();
+    protected void doInvoke(@Nonnull final MessageContext messageContext) throws MessageHandlerException {
+        final Envelope env = messageContext.getSubcontext(SOAP11Context.class).getEnvelope();
         if (env == null) {
             throw new MessageHandlerException("MessageContext did not contain a SOAP Envelope");
         }

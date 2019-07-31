@@ -27,14 +27,12 @@ import org.opensaml.messaging.encoder.AbstractMessageEncoder;
 
 /**
  * Abstract implementation of {@link HttpServletResponseMessageEncoder}.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public abstract class AbstractHttpServletResponseMessageEncoder<MessageType> extends
-        AbstractMessageEncoder<MessageType> implements HttpServletResponseMessageEncoder<MessageType> {
+public abstract class AbstractHttpServletResponseMessageEncoder extends AbstractMessageEncoder
+        implements HttpServletResponseMessageEncoder {
 
     /** The HTTP servlet response. */
-    private HttpServletResponse response;
+    @Nullable private HttpServletResponse response;
 
     /** {@inheritDoc} */
     @Nullable public HttpServletResponse getHttpServletResponse() {

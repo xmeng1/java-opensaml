@@ -39,7 +39,7 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
  * 
  * @since 3.4.0
  */
-public class ProxiedRequesterPredicate implements Predicate<MessageContext<?>> {
+public class ProxiedRequesterPredicate implements Predicate<MessageContext> {
 
     /** Set of entityIDs to check for. */
     @Nonnull @NonnullElements private final Set<String> entityIds;
@@ -56,7 +56,7 @@ public class ProxiedRequesterPredicate implements Predicate<MessageContext<?>> {
     }
     
     /** {@inheritDoc} */
-    @Nullable public boolean test(@Nullable final MessageContext<?> input) {
+    @Nullable public boolean test(@Nullable final MessageContext input) {
         
         final ProxiedRequesterContext ctx = input != null ? input.getSubcontext(ProxiedRequesterContext.class) : null;
         if (ctx != null) {

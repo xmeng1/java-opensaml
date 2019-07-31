@@ -28,7 +28,6 @@ import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.profile.context.ProxiedRequesterContext;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.saml2.core.AuthnRequest;
-import org.opensaml.saml.saml2.core.RequestAbstractType;
 import org.opensaml.saml.saml2.core.RequesterID;
 import org.opensaml.saml.saml2.core.Scoping;
 import org.opensaml.saml.saml2.profile.SAML2ActionTestingSupport;
@@ -56,7 +55,7 @@ public class ExtractProxiedRequestersHandlerTest extends OpenSAMLInitBaseTestCas
     /** Test that the handler errors on a missing request. */
     @Test(expectedExceptions=MessageHandlerException.class)
     public void testMissingRequest() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<RequestAbstractType> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
 
         final ExtractProxiedRequestersHandler handler = new ExtractProxiedRequestersHandler();
         handler.initialize();
@@ -66,7 +65,7 @@ public class ExtractProxiedRequestersHandlerTest extends OpenSAMLInitBaseTestCas
 
     /** Test that the handler works. */
     @Test public void testSuccess() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<AuthnRequest> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildAuthnRequest());
         
         final Scoping scoping = scopingBuilder.buildObject();
@@ -76,7 +75,7 @@ public class ExtractProxiedRequestersHandlerTest extends OpenSAMLInitBaseTestCas
         two.setRequesterID("two");
         scoping.getRequesterIDs().addAll(Arrays.asList(one, two));
         
-        messageCtx.getMessage().setScoping(scoping);
+        ((AuthnRequest) messageCtx.getMessage()).setScoping(scoping);
         
         final ExtractProxiedRequestersHandler handler = new ExtractProxiedRequestersHandler();
         handler.initialize();

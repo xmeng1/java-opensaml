@@ -60,8 +60,8 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<Response> outMsgCtx = prc.getOutboundMessageContext();
-        final Response response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final Response response = (Response) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getID());
@@ -87,8 +87,8 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<Response> outMsgCtx = prc.getOutboundMessageContext();
-        final Response response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final Response response = (Response) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         
@@ -116,8 +116,8 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<ArtifactResponse> outMsgCtx = prc.getOutboundMessageContext();
-        final ArtifactResponse response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final ArtifactResponse response = (ArtifactResponse) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getID());
@@ -141,8 +141,8 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<LogoutResponse> outMsgCtx = prc.getOutboundMessageContext();
-        final LogoutResponse response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final LogoutResponse response = (LogoutResponse) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getID());

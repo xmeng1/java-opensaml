@@ -104,7 +104,11 @@ public class AddResponseShell extends AbstractProfileAction {
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
-        final MessageContext<Response> outboundMessageCtx = profileRequestContext.getOutboundMessageContext();
+        if (!super.doPreExecute(profileRequestContext)) {
+            return false;
+        }
+        
+        final MessageContext outboundMessageCtx = profileRequestContext.getOutboundMessageContext();
         if (outboundMessageCtx == null) {
             log.debug("{} No outbound message context", getLogPrefix());
             ActionSupport.buildEvent(profileRequestContext, EventIds.INVALID_MSG_CTX);
@@ -124,7 +128,7 @@ public class AddResponseShell extends AbstractProfileAction {
         
         outboundMessageCtx.setMessage(null);
         
-        return super.doPreExecute(profileRequestContext);
+        return true;
     }
 
     /** {@inheritDoc} */

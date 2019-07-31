@@ -22,7 +22,6 @@ import java.net.URI;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.opensaml.messaging.encoder.servlet.BaseHttpServletResponseXMLMessageEncoder;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.BindingException;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.binding.encoding.SAMLMessageEncoder;
@@ -30,7 +29,7 @@ import org.opensaml.saml.common.binding.encoding.SAMLMessageEncoder;
 /**
  * Base class for SAML 2 message encoders.
  */
-public abstract class BaseSAML2MessageEncoder extends BaseHttpServletResponseXMLMessageEncoder<SAMLObject> 
+public abstract class BaseSAML2MessageEncoder extends BaseHttpServletResponseXMLMessageEncoder 
         implements SAMLMessageEncoder {
     
     /**
@@ -42,7 +41,7 @@ public abstract class BaseSAML2MessageEncoder extends BaseHttpServletResponseXML
      * 
      * @throws MessageEncodingException throw if no relying party endpoint is available
      */
-    protected URI getEndpointURL(final MessageContext<SAMLObject> messageContext) throws MessageEncodingException {
+    protected URI getEndpointURL(final MessageContext messageContext) throws MessageEncodingException {
         try {
             return SAMLBindingSupport.getEndpointURL(messageContext);
         } catch (final BindingException e) {

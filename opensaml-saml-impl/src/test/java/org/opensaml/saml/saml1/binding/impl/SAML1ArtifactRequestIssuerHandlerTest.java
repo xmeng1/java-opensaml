@@ -24,7 +24,6 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.artifact.impl.BasicSAMLArtifactMap;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.saml1.profile.SAML1ActionTestingSupport;
@@ -37,7 +36,7 @@ public class SAML1ArtifactRequestIssuerHandlerTest extends OpenSAMLInitBaseTestC
 
     private BasicSAMLArtifactMap artifactMap;
     
-    private MessageContext<SAMLObject> mc;
+    private MessageContext mc;
     
     private SAML1ArtifactRequestIssuerHandler handler;
     
@@ -50,7 +49,7 @@ public class SAML1ArtifactRequestIssuerHandlerTest extends OpenSAMLInitBaseTestC
         handler.setArtifactMap(artifactMap);
         handler.initialize();
         
-        mc = new MessageContext<>();
+        mc = new MessageContext();
     }
 
     @Test

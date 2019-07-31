@@ -48,7 +48,7 @@ public class EncryptAssertionsTest extends OpenSAMLInitBaseTestCase {
     
     private EncryptionParameters encParams;
     
-    private ProfileRequestContext<Object,Response> prc;
+    private ProfileRequestContext prc;
     
     private EncryptAssertions action;
     

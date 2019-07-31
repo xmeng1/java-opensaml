@@ -26,7 +26,6 @@ import java.util.zip.InflaterInputStream;
 
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
@@ -89,7 +88,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(samlMessage);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
@@ -166,7 +165,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response?foo=bar&abc=123");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(samlMessage);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
@@ -247,7 +246,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response?foo=bar&abc=123&SAMLEncoding=blah&SAMLRequest=blah&SAMLResponse=blah&RelayState=blah&SigAlg=blah&Signature=blah");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(samlMessage);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
@@ -332,7 +331,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(samlMessage);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
@@ -419,7 +418,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(samlMessage);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
@@ -477,7 +476,7 @@ public class HTTPRedirectDeflateEncoderTest extends XMLObjectBaseTestCase {
         
         samlEndpoint.setResponseLocation("http://example.org/response?foo=bar&abc=123");
         
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.setMessage(samlMessage);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)

@@ -47,7 +47,7 @@ public class MessageLookup<T> implements ContextDataLookupFunction<MessageContex
     /** {@inheritDoc} */
     @Nullable public T apply(@Nullable final MessageContext input) {
         if (input != null && messageType.isInstance(input.getMessage())) {
-            return (T) input.getMessage();
+            return messageType.cast(input.getMessage());
         }
         return null;
     }

@@ -67,7 +67,7 @@ import org.testng.annotations.Test;
 public class WSSecuritySAML20AssertionTokenSecurityHandlerTest extends XMLObjectBaseTestCase {
     private WSSecuritySAML20AssertionTokenSecurityHandler handler;
     
-    private MessageContext<XMLObject> messageContext;
+    private MessageContext messageContext;
     private MockHttpServletRequest httpServletRequest;
     private Assertion assertion;
     private SubjectConfirmation subjectConfirmation;
@@ -292,8 +292,8 @@ public class WSSecuritySAML20AssertionTokenSecurityHandlerTest extends XMLObject
     // Helper classes and methods
     //
 
-    private MessageContext<XMLObject> buildMessageContext() {
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
+    private MessageContext buildMessageContext() {
+        final MessageContext messageContext = new MessageContext();
         messageContext.getSubcontext(SAMLSelfEntityContext.class, true).setEntityId(rpEntityID);
         XMLObject payload = buildXMLObject(simpleXMLObjectQName);
         messageContext.setMessage(payload);

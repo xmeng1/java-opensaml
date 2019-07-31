@@ -36,7 +36,7 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 /**
  * SAML 2.0 SOAP 1.1 over HTTP binding decoder.
  */
-public class HTTPSOAP11Decoder extends org.opensaml.soap.soap11.decoder.http.impl.HTTPSOAP11Decoder<SAMLObject> 
+public class HTTPSOAP11Decoder extends org.opensaml.soap.soap11.decoder.http.impl.HTTPSOAP11Decoder 
         implements SAMLMessageDecoder {
 
     /** Class logger. */
@@ -81,8 +81,13 @@ public class HTTPSOAP11Decoder extends org.opensaml.soap.soap11.decoder.http.imp
         
         populateBindingContext(getMessageContext());
         
-        final SAMLObject samlMessage = getMessageContext().getMessage();
-        log.debug("Decoded SOAP messaged which included SAML message of type {}", samlMessage.getElementQName());
+        final Object samlMessage = getMessageContext().getMessage();
+        if (samlMessage instanceof SAMLObject) {
+            log.debug("Decoded SOAP message which included SAML message of type {}",
+                    ((SAMLObject) samlMessage).getElementQName());
+        } else {
+            throw new MessageDecodingException("Decoded SOAP message did not contain SAMLObject");
+        }
     }
     
     /**
@@ -90,7 +95,7 @@ public class HTTPSOAP11Decoder extends org.opensaml.soap.soap11.decoder.http.imp
      * 
      * @param messageContext the current message context
      */
-    protected void populateBindingContext(final MessageContext<SAMLObject> messageContext) {
+    protected void populateBindingContext(final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, true);
         bindingContext.setBindingUri(getBindingURI());
         bindingContext.setBindingDescriptor(bindingDescriptor);

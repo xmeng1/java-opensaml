@@ -24,7 +24,6 @@ import java.time.Duration;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.security.impl.MessageReplaySecurityHandler;
 import org.opensaml.saml.common.messaging.context.SAMLMessageInfoContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
@@ -39,7 +38,7 @@ import org.testng.annotations.Test;
  */
 public class MessageReplaySecurityHandlerTest extends XMLObjectBaseTestCase {
     
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     private MessageReplaySecurityHandler handler;
 
@@ -51,7 +50,7 @@ public class MessageReplaySecurityHandlerTest extends XMLObjectBaseTestCase {
 
     @BeforeMethod
     protected void setUp() throws Exception {
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         
         messageID = "abc123";
 

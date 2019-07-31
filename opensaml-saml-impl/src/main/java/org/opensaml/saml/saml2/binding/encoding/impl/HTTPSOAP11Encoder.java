@@ -17,14 +17,13 @@
 
 package org.opensaml.saml.saml2.binding.encoding.impl;
 
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.encoding.SAMLMessageEncoder;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
 /**
  * SAML 2.0 SOAP 1.1 over HTTP binding encoder.
  */
-public class HTTPSOAP11Encoder extends org.opensaml.soap.soap11.encoder.http.impl.HTTPSOAP11Encoder<SAMLObject>
+public class HTTPSOAP11Encoder extends org.opensaml.soap.soap11.encoder.http.impl.HTTPSOAP11Encoder
         implements SAMLMessageEncoder {
 
     /** Constructor. */

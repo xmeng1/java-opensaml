@@ -54,12 +54,8 @@ import net.shibboleth.utilities.java.support.net.URISupport;
  * 
  * @event {@link EventIds#PROCEED_EVENT_ID}
  * @event {@link EventIds#INVALID_PROFILE_CTX}
- * 
- * @param <InboundMessageType>
- * @param <OutboundMessageType>
  */
-public class LoadClientStorageServices<InboundMessageType, OutboundMessageType>
-        extends AbstractProfileAction<InboundMessageType, OutboundMessageType> {
+public class LoadClientStorageServices extends AbstractProfileAction {
     
     /** Name of local storage form field containing local storage support indicator. */
     @Nonnull @NotEmpty public static final String SUPPORT_FORM_FIELD = "shib_idp_ls_supported";
@@ -118,8 +114,7 @@ public class LoadClientStorageServices<InboundMessageType, OutboundMessageType>
     }
     
     /** {@inheritDoc} */
-    @Override protected boolean doPreExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         if (!super.doPreExecute(profileRequestContext)) {
             return false;
@@ -147,8 +142,7 @@ public class LoadClientStorageServices<InboundMessageType, OutboundMessageType>
     }
 
     /** {@inheritDoc} */
-    @Override protected void doExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         boolean useLS = useLocalStorage;
         if (useLS) {

@@ -49,8 +49,7 @@ import com.google.common.base.Strings;
  * 
  * This decoder only supports DEFLATE compression.
  */
-public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessageDecoder<SAMLObject> 
-    implements SAMLMessageDecoder {
+public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessageDecoder implements SAMLMessageDecoder {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(HTTPRedirectDeflateDecoder.class);
@@ -83,7 +82,7 @@ public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessage
 
     /** {@inheritDoc} */
     protected void doDecode() throws MessageDecodingException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final HttpServletRequest request = getHttpServletRequest();
         
         if (!"GET".equalsIgnoreCase(request.getMethod())) {
@@ -151,7 +150,7 @@ public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessage
      * 
      * @param messageContext the current message context
      */
-    protected void populateBindingContext(final MessageContext<SAMLObject> messageContext) {
+    protected void populateBindingContext(final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, true);
         bindingContext.setBindingUri(getBindingURI());
         bindingContext.setBindingDescriptor(bindingDescriptor);

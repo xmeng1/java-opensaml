@@ -31,7 +31,6 @@ import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.saml.common.binding.artifact.impl.BasicSAMLArtifactMap;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.profile.SAMLEventIds;
-import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.profile.SAML2ActionTestingSupport;
@@ -44,7 +43,7 @@ public class ResolveArtifactTest extends OpenSAMLInitBaseTestCase {
 
     private BasicSAMLArtifactMap artifactMap;
     
-    private ProfileRequestContext<ArtifactResolve,ArtifactResponse> prc;
+    private ProfileRequestContext prc;
     
     private ResolveArtifact action;
     
@@ -87,7 +86,7 @@ public class ResolveArtifactTest extends OpenSAMLInitBaseTestCase {
         
         action.execute(prc);
         ActionTestingSupport.assertEvent(prc, SAMLEventIds.UNABLE_RESOLVE_ARTIFACT);
-        Assert.assertNull(prc.getOutboundMessageContext().getMessage().getMessage());
+        Assert.assertNull(((ArtifactResponse) prc.getOutboundMessageContext().getMessage()).getMessage());
     }
 
     @Test public void testWrongSP() throws IOException {
@@ -96,7 +95,7 @@ public class ResolveArtifactTest extends OpenSAMLInitBaseTestCase {
         
         action.execute(prc);
         ActionTestingSupport.assertEvent(prc, SAMLEventIds.UNABLE_RESOLVE_ARTIFACT);
-        Assert.assertNull(prc.getOutboundMessageContext().getMessage().getMessage());
+        Assert.assertNull(((ArtifactResponse) prc.getOutboundMessageContext().getMessage()).getMessage());
         Assert.assertNull(artifactMap.get("foo"));
     }
 
@@ -106,7 +105,7 @@ public class ResolveArtifactTest extends OpenSAMLInitBaseTestCase {
         
         action.execute(prc);
         ActionTestingSupport.assertEvent(prc, SAMLEventIds.UNABLE_RESOLVE_ARTIFACT);
-        Assert.assertNull(prc.getOutboundMessageContext().getMessage().getMessage());
+        Assert.assertNull(((ArtifactResponse) prc.getOutboundMessageContext().getMessage()).getMessage());
         Assert.assertNull(artifactMap.get("foo"));
     }
 
@@ -116,7 +115,7 @@ public class ResolveArtifactTest extends OpenSAMLInitBaseTestCase {
         
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage().getMessage() instanceof Response);
+        Assert.assertTrue(((ArtifactResponse) prc.getOutboundMessageContext().getMessage()).getMessage() instanceof Response);
         Assert.assertNull(artifactMap.get("foo"));
     }
 

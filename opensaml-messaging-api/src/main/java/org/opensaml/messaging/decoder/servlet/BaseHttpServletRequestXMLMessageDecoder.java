@@ -41,20 +41,17 @@ import org.w3c.dom.Element;
 
 /**
  * Base class for message decoders which decode XML messages from an {@link javax.servlet.http.HttpServletRequest}.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public abstract class BaseHttpServletRequestXMLMessageDecoder<MessageType extends XMLObject>
-    extends AbstractHttpServletRequestMessageDecoder<MessageType> {
+public abstract class BaseHttpServletRequestXMLMessageDecoder extends AbstractHttpServletRequestMessageDecoder {
     
     /** Used to log protocol messages. */
-    private Logger protocolMessageLog = LoggerFactory.getLogger("PROTOCOL_MESSAGE");
+    @Nonnull private Logger protocolMessageLog = LoggerFactory.getLogger("PROTOCOL_MESSAGE");
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(BaseHttpServletRequestXMLMessageDecoder.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(BaseHttpServletRequestXMLMessageDecoder.class);
 
     /** Parser pool used to deserialize the message. */
-    private ParserPool parserPool;
+    @Nonnull private ParserPool parserPool;
 
     /** Constructor. */
     public BaseHttpServletRequestXMLMessageDecoder() {
@@ -116,14 +113,14 @@ public abstract class BaseHttpServletRequestXMLMessageDecoder<MessageType extend
      */
     protected void logDecodedMessage() {
         if (protocolMessageLog.isDebugEnabled() ){
-            final XMLObject message = getMessageToLog();
-            if (message == null) {
-                log.warn("Decoded message was null, nothing to log");
+            final Object message = getMessageToLog();
+            if (message == null || !(message instanceof XMLObject)) {
+                log.warn("Decoded message was null or unsupported, nothing to log");
                 return;
             }
             
             try {
-                final Element dom = XMLObjectSupport.marshall(message);
+                final Element dom = XMLObjectSupport.marshall((XMLObject) message);
                 protocolMessageLog.debug("\n" + SerializeSupport.prettyPrintXML(dom));
             } catch (final MarshallingException e) {
                 log.error("Unable to marshall message for logging purposes", e);
@@ -136,7 +133,7 @@ public abstract class BaseHttpServletRequestXMLMessageDecoder<MessageType extend
      * 
      * @return the XMLObject message considered to be the protocol message for logging purposes
      */
-    protected XMLObject getMessageToLog() {
+    protected Object getMessageToLog() {
         return getMessageContext().getMessage();
     }
 

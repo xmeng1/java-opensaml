@@ -20,7 +20,6 @@ package org.opensaml.saml.common.messaging.logic;
 import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 
 import net.shibboleth.utilities.java.support.logic.Predicate;
@@ -29,10 +28,10 @@ import net.shibboleth.utilities.java.support.logic.Predicate;
  * Predicate that determines whether the binding associated with a message context is
  * signature-capable. 
  */
-public class SignatureCapableBindingPredicate implements Predicate<MessageContext<SAMLObject>> {
+public class SignatureCapableBindingPredicate implements Predicate<MessageContext> {
 
     /** {@inheritDoc} */
-    public boolean test(@Nullable final MessageContext<SAMLObject> input) {
+    public boolean test(@Nullable final MessageContext input) {
         return input != null && SAMLBindingSupport.isSigningCapableBinding(input);
     }
 

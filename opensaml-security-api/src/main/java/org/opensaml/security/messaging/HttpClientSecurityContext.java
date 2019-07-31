@@ -36,7 +36,7 @@ public final class HttpClientSecurityContext extends BaseContext {
     private HttpClientSecurityParameters securityParameters;
     
     /** TLS criteria strategy function. */
-    private Function<MessageContext<?>, CriteriaSet> tlsCriteriaSetStrategy;
+    private Function<MessageContext,CriteriaSet> tlsCriteriaSetStrategy;
     
     /**
      * Get the {@link HttpClientSecurityParameters} instance.
@@ -61,7 +61,7 @@ public final class HttpClientSecurityContext extends BaseContext {
      * 
      * @return the strategy function, or null
      */
-    @Nullable public Function<MessageContext<?>, CriteriaSet> getTLSCriteriaSetStrategy() {
+    @Nullable public Function<MessageContext,CriteriaSet> getTLSCriteriaSetStrategy() {
         return tlsCriteriaSetStrategy;
     }
     
@@ -70,7 +70,8 @@ public final class HttpClientSecurityContext extends BaseContext {
      * 
      * @param strategy the strategy function instance, or null
      */
-    public void setTLSCriteriaSetStrategy(@Nullable final Function<MessageContext<?>, CriteriaSet> strategy) {
+    public void setTLSCriteriaSetStrategy(@Nullable final Function<MessageContext,CriteriaSet> strategy) {
         tlsCriteriaSetStrategy = strategy;
     }
+
 }

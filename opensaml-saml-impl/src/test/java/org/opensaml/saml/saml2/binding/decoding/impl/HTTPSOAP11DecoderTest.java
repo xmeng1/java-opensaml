@@ -23,7 +23,6 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.saml2.binding.decoding.impl.HTTPSOAP11Decoder;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.soap.messaging.context.SOAP11Context;
@@ -66,7 +65,7 @@ public class HTTPSOAP11DecoderTest extends XMLObjectBaseTestCase {
         httpRequest.setContent(requestContent.getBytes());
 
         decoder.decode();
-        MessageContext<SAMLObject> messageContext = decoder.getMessageContext();
+        MessageContext messageContext = decoder.getMessageContext();
 
         Assert.assertNotNull(messageContext.getSubcontext(SOAP11Context.class).getEnvelope());
         Assert.assertTrue(messageContext.getMessage() instanceof Response);

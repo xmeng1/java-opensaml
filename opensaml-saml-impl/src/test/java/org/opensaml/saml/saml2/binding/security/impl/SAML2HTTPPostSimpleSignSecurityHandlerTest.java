@@ -77,7 +77,7 @@ import org.w3c.dom.Element;
  */
 public class SAML2HTTPPostSimpleSignSecurityHandlerTest extends XMLObjectBaseTestCase {
     
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     private SAML2HTTPPostSimpleSignSecurityHandler handler;
     
@@ -223,7 +223,7 @@ public class SAML2HTTPPostSimpleSignSecurityHandlerTest extends XMLObjectBaseTes
         handler.setKeyInfoResolver(kiResolver);
         handler.initialize();
         
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.setMessage(buildInboundSAMLMessage());
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setEntityId(issuer);
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
@@ -351,7 +351,7 @@ public class SAML2HTTPPostSimpleSignSecurityHandlerTest extends XMLObjectBaseTes
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
         
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         messageContext.setMessage(buildInboundSAMLMessage());
         SAMLBindingSupport.setRelayState(messageContext, expectedRelayValue);
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)

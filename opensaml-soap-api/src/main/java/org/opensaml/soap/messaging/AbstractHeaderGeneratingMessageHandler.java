@@ -33,16 +33,14 @@ import org.opensaml.messaging.handler.MessageHandlerException;
 
 /**
  * Abstract base class for message handlers that generate SOAP headers.
- *
- * @param <MessageType> the type of message being processed.
  */
-public abstract class AbstractHeaderGeneratingMessageHandler<MessageType> extends AbstractMessageHandler<MessageType> {
+public abstract class AbstractHeaderGeneratingMessageHandler extends AbstractMessageHandler {
     
     /** The statically configured value for mustUnderstand. */
     private boolean mustUnderstand;
     
     /** Predicate strategy for evaluating mustUnderstand from the message context. */
-    @Nullable private Predicate<MessageContext<MessageType>> mustUnderstandStrategy;
+    @Nullable private Predicate<MessageContext> mustUnderstandStrategy;
     
     /** The effective mustUnderstand value to use. */
     private boolean effectiveMustUnderstand;
@@ -51,7 +49,7 @@ public abstract class AbstractHeaderGeneratingMessageHandler<MessageType> extend
     @Nullable private String targetNode;
     
     /** Function strategy for resolving target node from the message context. */
-    @Nullable private Function<MessageContext<MessageType>, String> targetNodeStrategy;
+    @Nullable private Function<MessageContext,String> targetNodeStrategy;
     
     /** The effective target node value to use. */
     private String effectiveTargetNode;
@@ -72,7 +70,7 @@ public abstract class AbstractHeaderGeneratingMessageHandler<MessageType> extend
      * 
      * @param strategy the predicate strategy
      */
-    public void setMustUnderstandStrategy(@Nullable final Predicate<MessageContext<MessageType>> strategy) {
+    public void setMustUnderstandStrategy(@Nullable final Predicate<MessageContext> strategy) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         mustUnderstandStrategy = strategy;
@@ -103,7 +101,7 @@ public abstract class AbstractHeaderGeneratingMessageHandler<MessageType> extend
      * 
      * @param strategy the predicate strategy
      */
-    public void setTargetNodeStrategy(@Nullable final Function<MessageContext<MessageType>, String> strategy) {
+    public void setTargetNodeStrategy(@Nullable final Function<MessageContext,String> strategy) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         targetNodeStrategy = strategy;

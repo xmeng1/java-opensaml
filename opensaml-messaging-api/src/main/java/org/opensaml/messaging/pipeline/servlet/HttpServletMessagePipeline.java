@@ -23,25 +23,21 @@ import org.opensaml.messaging.pipeline.MessagePipeline;
 
 /**
  * Specialization of {@link MessagePipeline} which narrows the type of allowed encoders and decoders.
- * 
- * @param <OutboundMessageType> the outbound message type
- * @param <InboundMessageType> the inbound message type
  */
-public interface HttpServletMessagePipeline<InboundMessageType, OutboundMessageType> 
-        extends MessagePipeline<InboundMessageType, OutboundMessageType> {
+public interface HttpServletMessagePipeline extends MessagePipeline {
     
     /**
      * {@inheritDoc} 
      * 
      * <p>Narrows the super-interface return type to {@link HttpServletResponseMessageEncoder}.</p>
      */
-    public HttpServletResponseMessageEncoder<OutboundMessageType> getEncoder();
+    public HttpServletResponseMessageEncoder getEncoder();
     
     /**
      * {@inheritDoc} 
      * 
      * <p>Narrows the super-interface return type to {@link HttpServletRequestMessageDecoder}.</p>
      */
-    public HttpServletRequestMessageDecoder<InboundMessageType> getDecoder();
+    public HttpServletRequestMessageDecoder getDecoder();
 
 }

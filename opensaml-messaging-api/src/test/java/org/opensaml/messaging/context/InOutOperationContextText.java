@@ -27,10 +27,10 @@ public class InOutOperationContextText {
     
     @Test
     public void testInboundContextParentLinkage() {
-        MessageContext mc1 = new MessageContext<>();
-        MessageContext mc2 = new MessageContext<>();
+        MessageContext mc1 = new MessageContext();
+        MessageContext mc2 = new MessageContext();
         
-       InOutOperationContext opContext = new InOutOperationContext<>(mc1, null);
+       InOutOperationContext opContext = new InOutOperationContext(mc1, null);
        
        Assert.assertSame(opContext.getInboundMessageContext(), mc1);
        Assert.assertSame(mc1.getParent(), opContext);
@@ -49,10 +49,10 @@ public class InOutOperationContextText {
     
     @Test
     public void testOutboundContextParentLinkage() {
-        MessageContext mc1 = new MessageContext<>();
-        MessageContext mc2 = new MessageContext<>();
+        MessageContext mc1 = new MessageContext();
+        MessageContext mc2 = new MessageContext();
         
-       InOutOperationContext opContext = new InOutOperationContext<>(null, mc1);
+       InOutOperationContext opContext = new InOutOperationContext(null, mc1);
        
        Assert.assertSame(opContext.getOutboundMessageContext(), mc1);
        Assert.assertSame(mc1.getParent(), opContext);

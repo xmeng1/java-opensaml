@@ -123,7 +123,7 @@ public class PopulateDecryptionParameters extends AbstractConditionalProfileActi
         if (resolver == null) {
             throw new ComponentInitializationException("DecryptionParametersResolver cannot be null");
         } else if (configurationLookupStrategy == null) {
-            configurationLookupStrategy = new Function<ProfileRequestContext,List<DecryptionConfiguration>>() {
+            configurationLookupStrategy = new Function<>() {
                 public List<DecryptionConfiguration> apply(final ProfileRequestContext input) {
                     return Collections.singletonList(SecurityConfigurationSupport.getGlobalDecryptionConfiguration());
                 }

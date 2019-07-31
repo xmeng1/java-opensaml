@@ -34,7 +34,6 @@ import org.opensaml.messaging.MessageException;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +150,7 @@ public class ReceivedEndpointSecurityHandler extends AbstractMessageHandler {
      *              with message requirements, or if there is a problem decoding and processing
      *              the message Destination or receiver endpoint information
      */
-    protected void checkEndpointURI(@Nonnull final MessageContext<SAMLObject> messageContext, 
+    protected void checkEndpointURI(@Nonnull final MessageContext messageContext, 
             @Nonnull final URIComparator comparator) throws MessageHandlerException {
         Constraint.isNotNull(comparator, "URIComparator may not be null");
         log.debug("{} Checking SAML message intended destination endpoint against receiver endpoint", getLogPrefix());

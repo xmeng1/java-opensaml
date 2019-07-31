@@ -40,11 +40,8 @@ import org.w3c.dom.Element;
 
 /**
  * Base class for message decoders which decode XML messages from an {@link HttpResponse}.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public abstract class BaseHttpClientResponseXMLMessageDecoder<MessageType extends XMLObject>
-    extends AbstractHttpClientResponseMessageDecoder<MessageType> {
+public abstract class BaseHttpClientResponseXMLMessageDecoder extends AbstractHttpClientResponseMessageDecoder {
     
     /** Used to log protocol messages. */
     private Logger protocolMessageLog = LoggerFactory.getLogger("PROTOCOL_MESSAGE");
@@ -111,14 +108,14 @@ public abstract class BaseHttpClientResponseXMLMessageDecoder<MessageType extend
      */
     protected void logDecodedMessage() {
         if (protocolMessageLog.isDebugEnabled() ){
-            final XMLObject message = getMessageToLog();
-            if (message == null) {
-                log.warn("Decoded message was null, nothing to log");
+            final Object message = getMessageToLog();
+            if (message == null || !(message instanceof XMLObject)) {
+                log.warn("Decoded message was null or unsupported, nothing to log");
                 return;
             }
             
             try {
-                final Element dom = XMLObjectSupport.marshall(message);
+                final Element dom = XMLObjectSupport.marshall((XMLObject) message);
                 protocolMessageLog.debug("\n" + SerializeSupport.prettyPrintXML(dom));
             } catch (final MarshallingException e) {
                 log.error("Unable to marshall message for logging purposes", e);
@@ -131,7 +128,7 @@ public abstract class BaseHttpClientResponseXMLMessageDecoder<MessageType extend
      * 
      * @return the XMLObject message considered to be the protocol message for logging purposes
      */
-    protected XMLObject getMessageToLog() {
+    protected Object getMessageToLog() {
         return getMessageContext().getMessage();
     }
 

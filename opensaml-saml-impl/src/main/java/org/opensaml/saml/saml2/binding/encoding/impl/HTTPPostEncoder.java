@@ -134,10 +134,10 @@ public class HTTPPostEncoder extends BaseSAML2MessageEncoder {
 
     /** {@inheritDoc} */
     protected void doEncode() throws MessageEncodingException {
-        final MessageContext<SAMLObject> messageContext = getMessageContext();
+        final MessageContext messageContext = getMessageContext();
 
-        final SAMLObject outboundMessage = messageContext.getMessage();
-        if (outboundMessage == null) {
+        final Object outboundMessage = messageContext.getMessage();
+        if (outboundMessage == null || !(outboundMessage instanceof SAMLObject)) {
             throw new MessageEncodingException("No outbound SAML message contained in message context");
         }
         
@@ -154,7 +154,7 @@ public class HTTPPostEncoder extends BaseSAML2MessageEncoder {
      * 
      * @throws MessageEncodingException thrown if there is a problem encoding the message
      */
-    protected void postEncode(final MessageContext<SAMLObject> messageContext, final String endpointURL) 
+    protected void postEncode(final MessageContext messageContext, final String endpointURL) 
             throws MessageEncodingException {
         log.debug("Invoking Velocity template to create POST body");
         try {
@@ -186,15 +186,14 @@ public class HTTPPostEncoder extends BaseSAML2MessageEncoder {
      * @throws MessageEncodingException thrown if there is a problem encoding the message
      */
     protected void populateVelocityContext(final VelocityContext velocityContext,
-            final MessageContext<SAMLObject> messageContext,
-            final String endpointURL) throws MessageEncodingException {
+            final MessageContext messageContext, final String endpointURL) throws MessageEncodingException {
 
         final String encodedEndpointURL = HTMLEncoder.encodeForHTMLAttribute(endpointURL);
         log.debug("Encoding action url of '{}' with encoded value '{}'", endpointURL, encodedEndpointURL);
         velocityContext.put("action", encodedEndpointURL);
         velocityContext.put("binding", getBindingURI());
         
-        final SAMLObject outboundMessage = messageContext.getMessage();
+        final SAMLObject outboundMessage = (SAMLObject) messageContext.getMessage();
         
         log.debug("Marshalling and Base64 encoding SAML message");
         final Element domMessage = marshallMessage(outboundMessage);

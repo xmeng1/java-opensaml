@@ -25,7 +25,6 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.saml.common.messaging.context.ChannelBindingsContext;
 import org.opensaml.saml.ext.saml2cb.ChannelBindings;
-import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.profile.SAML2ActionTestingSupport;
 import org.opensaml.soap.messaging.SOAPMessagingSupport;
 import org.opensaml.soap.messaging.context.SOAP11Context;
@@ -40,7 +39,7 @@ public class ExtractChannelBindingsHeadersHandlerTest extends OpenSAMLInitBaseTe
     
     /** Test that the handler returns nothing on a missing SOAP context. */
     @Test public void testMissingEnvelope() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<AuthnRequest> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildAuthnRequest());
         
         final ExtractChannelBindingsHeadersHandler handler = new ExtractChannelBindingsHeadersHandler();
@@ -55,7 +54,7 @@ public class ExtractChannelBindingsHeadersHandlerTest extends OpenSAMLInitBaseTe
         final Envelope env = XMLObjectProviderRegistrySupport.getBuilderFactory().<Envelope>getBuilderOrThrow(
                 Envelope.DEFAULT_ELEMENT_NAME).buildObject(Envelope.DEFAULT_ELEMENT_NAME);
 
-        final MessageContext<AuthnRequest> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildAuthnRequest());
         messageCtx.getSubcontext(SOAP11Context.class, true).setEnvelope(env);
         
@@ -73,7 +72,7 @@ public class ExtractChannelBindingsHeadersHandlerTest extends OpenSAMLInitBaseTe
         final Envelope env = XMLObjectProviderRegistrySupport.getBuilderFactory().<Envelope>getBuilderOrThrow(
                 Envelope.DEFAULT_ELEMENT_NAME).buildObject(Envelope.DEFAULT_ELEMENT_NAME);
 
-        final MessageContext<AuthnRequest> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildAuthnRequest());
         messageCtx.getSubcontext(SOAP11Context.class, true).setEnvelope(env);
         
@@ -108,7 +107,7 @@ public class ExtractChannelBindingsHeadersHandlerTest extends OpenSAMLInitBaseTe
         final Envelope env = XMLObjectProviderRegistrySupport.getBuilderFactory().<Envelope>getBuilderOrThrow(
                 Envelope.DEFAULT_ELEMENT_NAME).buildObject(Envelope.DEFAULT_ELEMENT_NAME);
 
-        final MessageContext<AuthnRequest> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildAuthnRequest());
         messageCtx.getSubcontext(SOAP11Context.class, true).setEnvelope(env);
         

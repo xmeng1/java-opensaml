@@ -22,12 +22,11 @@ import javax.annotation.Nonnull;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
 import org.opensaml.messaging.decoder.MessageDecoder;
-import org.opensaml.saml.common.SAMLObject;
 
 /**
  * SAML extension to the generic message decoders.
  */
-public interface SAMLMessageDecoder extends MessageDecoder<SAMLObject> {
+public interface SAMLMessageDecoder extends MessageDecoder {
 
     /**
      * Gets the SAML binding URI supported by this decoder.

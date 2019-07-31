@@ -231,7 +231,7 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
     protected void postEncode() throws MessageEncodingException {
         log.debug("Performing HTTP POST SAML 2 artifact encoding");
         
-        final MessageContext<SAMLObject> messageContext = getMessageContext();
+        final MessageContext messageContext = getMessageContext();
 
         log.debug("Creating velocity context");
         final VelocityContext context = new VelocityContext();
@@ -270,7 +270,7 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
     protected void getEncode() throws MessageEncodingException {
         log.debug("Performing HTTP GET SAML 2 artifact encoding");
 
-        final MessageContext<SAMLObject> messageContext = getMessageContext();
+        final MessageContext messageContext = getMessageContext();
         
         final String endpointUrl = getEndpointURL(messageContext).toString();
         
@@ -314,9 +314,15 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
      * 
      * @throws MessageEncodingException thrown if the artifact can not be created
      */
-    @Nonnull protected SAML2Artifact buildArtifact(@Nonnull final MessageContext<SAMLObject> messageContext) 
+    @Nonnull protected SAML2Artifact buildArtifact(@Nonnull final MessageContext messageContext) 
             throws MessageEncodingException {
 
+        final Object outboundMessage = messageContext.getMessage();
+        if (!(outboundMessage instanceof SAMLObject)) {
+            throw new MessageEncodingException("Outbound message was not a SAMLObject");
+        }
+        final SAMLObject samlObject = (SAMLObject) outboundMessage;
+        
         final String requester = getInboundMessageIssuer(messageContext);
         final String issuer = getOutboundMessageIssuer(messageContext);
         if (requester == null || issuer == null) {
@@ -341,7 +347,7 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
         }
         final String encodedArtifact = Base64Support.encode(artifact.getArtifactBytes(), Base64Support.UNCHUNKED);
         try {
-            artifactMap.put(encodedArtifact, requester, issuer, messageContext.getMessage());
+            artifactMap.put(encodedArtifact, requester, issuer, samlObject);
         } catch (final IOException e) {
             log.error("Unable to store message mapping for artifact", e);
             throw new MessageEncodingException("Unable to store message mapping for artifact", e);
@@ -356,7 +362,7 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
      * @param messageContext  the message context
      * @return the outbound message issuer
      */
-    @Nullable private String getOutboundMessageIssuer(@Nonnull final MessageContext<SAMLObject> messageContext) {
+    @Nullable private String getOutboundMessageIssuer(@Nonnull final MessageContext messageContext) {
         final SAMLSelfEntityContext selfCtx = messageContext.getSubcontext(SAMLSelfEntityContext.class);
         if (selfCtx == null) {
             return null;
@@ -371,7 +377,7 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
      * @param messageContext the message context
      * @return the requester
      */
-    @Nullable private String getInboundMessageIssuer(@Nonnull final MessageContext<SAMLObject> messageContext) {
+    @Nullable private String getInboundMessageIssuer(@Nonnull final MessageContext messageContext) {
         final SAMLPeerEntityContext peerCtx = messageContext.getSubcontext(SAMLPeerEntityContext.class);
         if (peerCtx == null) {
             return null;
@@ -387,7 +393,7 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
      * 
      * @param artifactType the artifact type to store
      */
-    private void storeSAMLArtifactType(@Nonnull final MessageContext<SAMLObject> messageContext,
+    private void storeSAMLArtifactType(@Nonnull final MessageContext messageContext,
             @Nonnull @NotEmpty final byte[] artifactType) {
         messageContext.getSubcontext(SAMLArtifactContext.class, true).setArtifactType(artifactType);
     }
@@ -399,7 +405,7 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
      * 
      * @return the artifact type
      */
-    @Nullable private byte[] getSAMLArtifactType(@Nonnull final MessageContext<SAMLObject> messageContext) {
+    @Nullable private byte[] getSAMLArtifactType(@Nonnull final MessageContext messageContext) {
         return messageContext.getSubcontext(SAMLArtifactContext.class, true).getArtifactType();
     }
     

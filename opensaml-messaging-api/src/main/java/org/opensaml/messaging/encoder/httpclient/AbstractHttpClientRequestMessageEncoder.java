@@ -28,14 +28,12 @@ import org.opensaml.messaging.encoder.servlet.HttpServletResponseMessageEncoder;
 
 /**
  * Abstract implementation of {@link HttpServletResponseMessageEncoder}.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public abstract class AbstractHttpClientRequestMessageEncoder<MessageType> extends
-        AbstractMessageEncoder<MessageType> implements HttpClientRequestMessageEncoder<MessageType> {
+public abstract class AbstractHttpClientRequestMessageEncoder extends AbstractMessageEncoder
+        implements HttpClientRequestMessageEncoder {
 
     /** The HTTP client request. */
-    private HttpRequest request;
+    @Nullable private HttpRequest request;
 
     /** {@inheritDoc} */
     @Nullable public HttpRequest getHttpRequest() {
@@ -65,4 +63,5 @@ public abstract class AbstractHttpClientRequestMessageEncoder<MessageType> exten
             throw new ComponentInitializationException("HTTP client request cannot be null");
         }
     }
+
 }

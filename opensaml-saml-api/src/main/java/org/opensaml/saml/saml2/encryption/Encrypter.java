@@ -201,16 +201,22 @@ public class Encrypter extends org.opensaml.xmlsec.encryption.support.Encrypter 
      */
     private void init() {
         builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
-        keyInfoBuilder = (XMLSignatureBuilder<KeyInfo>) builderFactory.getBuilder(KeyInfo.DEFAULT_ELEMENT_NAME);
+        keyInfoBuilder =
+                (XMLSignatureBuilder<KeyInfo>) builderFactory.<KeyInfo>getBuilderOrThrow(KeyInfo.DEFAULT_ELEMENT_NAME);
         dataReferenceBuilder =
-                (XMLEncryptionBuilder<DataReference>) builderFactory.getBuilder(DataReference.DEFAULT_ELEMENT_NAME);
+                (XMLEncryptionBuilder<DataReference>) builderFactory.<DataReference>getBuilderOrThrow(
+                        DataReference.DEFAULT_ELEMENT_NAME);
         referenceListBuilder =
-                (XMLEncryptionBuilder<ReferenceList>) builderFactory.getBuilder(ReferenceList.DEFAULT_ELEMENT_NAME);
+                (XMLEncryptionBuilder<ReferenceList>) builderFactory.<ReferenceList>getBuilderOrThrow(
+                        ReferenceList.DEFAULT_ELEMENT_NAME);
         retrievalMethodBuilder =
-                (XMLSignatureBuilder<RetrievalMethod>) builderFactory.getBuilder(RetrievalMethod.DEFAULT_ELEMENT_NAME);
-        keyNameBuilder = (XMLSignatureBuilder<KeyName>) builderFactory.getBuilder(KeyName.DEFAULT_ELEMENT_NAME);
+                (XMLSignatureBuilder<RetrievalMethod>) builderFactory.<RetrievalMethod>getBuilderOrThrow(
+                        RetrievalMethod.DEFAULT_ELEMENT_NAME);
+        keyNameBuilder =
+                (XMLSignatureBuilder<KeyName>) builderFactory.<KeyName>getBuilderOrThrow(KeyName.DEFAULT_ELEMENT_NAME);
         carriedKeyNameBuilder =
-                (XMLEncryptionBuilder<CarriedKeyName>) builderFactory.getBuilder(CarriedKeyName.DEFAULT_ELEMENT_NAME);
+                (XMLEncryptionBuilder<CarriedKeyName>) builderFactory.<CarriedKeyName>getBuilderOrThrow(
+                        CarriedKeyName.DEFAULT_ELEMENT_NAME);
 
         idGenerator = new RandomIdentifierGenerationStrategy();
 

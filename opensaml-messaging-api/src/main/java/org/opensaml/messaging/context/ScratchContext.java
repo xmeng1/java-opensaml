@@ -30,11 +30,11 @@ import net.shibboleth.utilities.java.support.annotation.constraint.Live;
 public final class ScratchContext extends BaseContext {
 
     /** Map of scratch data. */
-    @Nonnull private Map map;
+    @Nonnull private Map<?,?> map;
 
     /** Constructor. */
     public ScratchContext() {
-        map = new HashMap();
+        map = new HashMap<>();
     }
     
     /**
@@ -42,7 +42,7 @@ public final class ScratchContext extends BaseContext {
      * 
      * @return the map
      */
-    @Nonnull @Live public Map getMap() {
+    @Nonnull @Live public Map<?,?> getMap() {
         return map;
     }
 

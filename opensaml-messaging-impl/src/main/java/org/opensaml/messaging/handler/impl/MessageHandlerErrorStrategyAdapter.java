@@ -59,16 +59,14 @@ import com.google.common.collect.Collections2;
  * Whether the thrown {@link Throwable} is rethrown by this handler is determined by the flags 
  * {@link #setRethrowIfHandled(boolean)} and {@link #setRethrowIfNotHandled(boolean)}.
  * </p>
- * 
- * @param <MessageType> the type of message handled by the handler
  */
-public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMessageHandler<MessageType> {
+public class MessageHandlerErrorStrategyAdapter extends AbstractMessageHandler {
     
     /** Logger. */
     @Nonnull private Logger log = LoggerFactory.getLogger(MessageHandlerErrorStrategyAdapter.class);
     
     /** The wrapped message handler. */
-    @Nonnull private MessageHandler<MessageType> wrappedHandler;
+    @Nonnull private MessageHandler wrappedHandler;
     
     /** The list of typed error handlers. */
     @Nonnull @NonnullElements private List<TypedMessageErrorHandler> errorHandlers;
@@ -86,7 +84,7 @@ public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMes
      * @param messageHandler the wrapped message handler
      * @param typedErrorHandlers the list of typed error handlers to apply
      */
-    public MessageHandlerErrorStrategyAdapter(@Nonnull final MessageHandler<MessageType> messageHandler, 
+    public MessageHandlerErrorStrategyAdapter(@Nonnull final MessageHandler messageHandler, 
             @Nonnull @NonnullElements final List<TypedMessageErrorHandler> typedErrorHandlers) {
         wrappedHandler = Constraint.isNotNull(messageHandler, "Wrapped MessageHandler cannot be null");
         errorHandlers = new ArrayList<>(Collections2.filter(
@@ -123,7 +121,7 @@ public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMes
 
 
     /** {@inheritDoc} */
-    protected void doInvoke(final MessageContext<MessageType> messageContext) throws MessageHandlerException {
+    protected void doInvoke(final MessageContext messageContext) throws MessageHandlerException {
         try {
             wrappedHandler.invoke(messageContext);
         } catch (final Throwable t) {

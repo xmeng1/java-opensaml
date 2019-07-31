@@ -55,7 +55,7 @@ public class EncryptAttributesTest extends OpenSAMLInitBaseTestCase {
     
     private EncryptionParameters encParams;
     
-    private ProfileRequestContext<Object,Response> prc;
+    private ProfileRequestContext prc;
     
     private EncryptAttributes action;
     

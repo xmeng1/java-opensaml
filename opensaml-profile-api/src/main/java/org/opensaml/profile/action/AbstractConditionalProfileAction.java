@@ -35,12 +35,8 @@ import com.google.common.base.Predicates;
  * <p>A condition does not represent a situation in which an error should be raised, but that normal
  * processing should continue and the action simply doesn't apply, so a false condition does not
  * raise a non-proceed event.</p>
- * 
- * @param <InboundMessageType> type of in-bound message
- * @param <OutboundMessageType> type of out-bound message
  */
-public abstract class AbstractConditionalProfileAction<InboundMessageType, OutboundMessageType>
-        extends AbstractProfileAction<InboundMessageType, OutboundMessageType> {
+public abstract class AbstractConditionalProfileAction extends AbstractProfileAction {
     
     /** Condition dictating whether to run or not. */
     @Nonnull private Predicate<ProfileRequestContext> activationCondition;
@@ -72,8 +68,8 @@ public abstract class AbstractConditionalProfileAction<InboundMessageType, Outbo
     
     /** {@inheritDoc} */
     @Override
-    protected boolean doPreExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
+        
         if (activationCondition.test(profileRequestContext)) {
             return super.doPreExecute(profileRequestContext);
         } else {

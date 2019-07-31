@@ -32,7 +32,6 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
@@ -83,7 +82,7 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
 
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(samlMessage);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)

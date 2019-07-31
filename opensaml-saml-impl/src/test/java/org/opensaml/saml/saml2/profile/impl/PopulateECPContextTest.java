@@ -32,7 +32,6 @@ import org.opensaml.profile.action.ActionTestingSupport;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.messaging.context.ECPContext;
 import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
-import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.profile.SAML2ActionTestingSupport;
 import org.opensaml.saml.saml2.profile.context.EncryptionContext;
 import org.opensaml.xmlsec.EncryptionParameters;
@@ -40,7 +39,7 @@ import org.opensaml.xmlsec.EncryptionParameters;
 /** Unit test for {@link PopulateECPContext}. */
 public class PopulateECPContextTest extends OpenSAMLInitBaseTestCase {
     
-    private ProfileRequestContext<Object,Response> prc;
+    private ProfileRequestContext prc;
     
     private PopulateECPContext action;
     

@@ -78,8 +78,7 @@ import net.shibboleth.utilities.java.support.security.impl.SecureRandomIdentifie
 /** 
  * SAML 2 Artifact Binding decoder, support both HTTP GET and POST.
  */
-public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder<SAMLObject> 
-        implements SAMLMessageDecoder {
+public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder implements SAMLMessageDecoder {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(HTTPArtifactDecoder.class);
@@ -379,7 +378,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
     
     /** {@inheritDoc} */
     protected void doDecode() throws MessageDecodingException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final HttpServletRequest request = getHttpServletRequest();
 
         final String relayState = StringSupport.trim(request.getParameter("RelayState"));
@@ -448,7 +447,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final String selfEntityID = resolveSelfEntityID(peerRoleDescriptor);
         
             // TODO can assume/enforce response as ArtifactResponse here?
-            final InOutOperationContext<SAMLObject, ArtifactResolve> opContext = new SAMLSOAPClientContextBuilder()
+            final InOutOperationContext opContext = new SAMLSOAPClientContextBuilder()
                     .setOutboundMessage(buildArtifactResolveRequestMessage(
                             artifact, ars.getLocation(), peerRoleDescriptor, selfEntityID))
                     .setProtocol(SAMLConstants.SAML20P_NS)
@@ -460,7 +459,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
         
             log.trace("Executing ArtifactResolve over SOAP 1.1 binding to endpoint: {}", ars.getLocation());
             soapClient.send(ars.getLocation(), opContext);
-            final SAMLObject response = opContext.getInboundMessageContext().getMessage();
+            final Object response = opContext.getInboundMessageContext().getMessage();
             if (response instanceof ArtifactResponse) {
                 return validateAndExtractResponseMessage((ArtifactResponse) response);
             } else {
@@ -656,7 +655,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
      * 
      * @param messageContext the current message context
      */
-    protected void populateBindingContext(final MessageContext<SAMLObject> messageContext) {
+    protected void populateBindingContext(final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, true);
         bindingContext.setBindingUri(getBindingURI());
         bindingContext.setBindingDescriptor(bindingDescriptor);

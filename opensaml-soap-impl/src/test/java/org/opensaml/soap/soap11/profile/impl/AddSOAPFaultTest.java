@@ -41,7 +41,7 @@ import com.google.common.base.Predicates;
 /** {@link AddSOAPFault} unit test. */
 public class AddSOAPFaultTest extends OpenSAMLInitBaseTestCase {
     
-    private ProfileRequestContext<Object,Fault> prc;
+    private ProfileRequestContext prc;
     
     private AddSOAPFault action;
     

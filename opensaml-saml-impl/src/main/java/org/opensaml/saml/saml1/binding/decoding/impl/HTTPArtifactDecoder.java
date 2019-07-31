@@ -27,7 +27,6 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.decoder.MessageDecodingException;
 import org.opensaml.messaging.decoder.servlet.BaseHttpServletRequestXMLMessageDecoder;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.BindingDescriptor;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.binding.decoding.SAMLMessageDecoder;
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * 
  * <strong>NOTE: This decoder is not yet implemented.</strong>
  */
-public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder<SAMLObject> 
+public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder 
         implements SAMLMessageDecoder {
 
     /** Class logger. */
@@ -75,7 +74,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
 
     /** {@inheritDoc} */
     protected void doDecode() throws MessageDecodingException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final HttpServletRequest request = getHttpServletRequest();
         
         decodeTarget(messageContext, request);
@@ -131,7 +130,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
      * 
      * @param messageContext the current message context
      */
-    protected void populateBindingContext(final MessageContext<SAMLObject> messageContext) {
+    protected void populateBindingContext(final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, true);
         bindingContext.setBindingUri(getBindingURI());
         bindingContext.setBindingDescriptor(bindingDescriptor);
