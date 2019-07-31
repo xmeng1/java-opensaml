@@ -58,7 +58,7 @@ public class RecursiveTypedParentContextLookup<StartContext extends BaseContext,
         BaseContext current = input.getParent();
         while (current != null) {
             if (parentClass.isInstance(current)) {
-                return (ParentContext) current;
+                return parentClass.cast(current);
             }
             current = current.getParent();
         }
