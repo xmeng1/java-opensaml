@@ -362,13 +362,11 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
                 if (a.getName() != null && a.getName().equals(input.getName())
                         && (input.getNameFormat() == null || input.getNameFormat().equals(a.getNameFormat()))) {
 
+                    final List<String> attributeValues = getPossibleAttributeValuesAsStrings(a);
                     // Check each tag value's simple content for a value match.
                     for (int tagindex = 0; tagindex < tagvals.size(); ++tagindex) {
                         final String tagvalstr = tagvals.get(tagindex);
-
-                        final List<XMLObject> cvals = a.getAttributeValues();
-                        for (final XMLObject cval : cvals) {
-                            final String cvalstr = xmlObjectToString(cval);
+                        for (final String cvalstr: attributeValues) {
                             if (tagvalstr != null && cvalstr != null) {
                                 if (tagvalstr.equals(cvalstr)) {
                                     log.trace("Matched Entity Attribute ({}:{}) value {}", a.getNameFormat(),
@@ -389,10 +387,7 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
 
                     // Check each tag regular expression for a match.
                     for (int tagindex = 0; tagindex < tagexps.size(); ++tagindex) {
-
-                        final List<XMLObject> cvals = a.getAttributeValues();
-                        for (final XMLObject cval : cvals) {
-                            final String cvalstr = xmlObjectToString(cval);
+                        for (final String cvalstr: attributeValues) {
                             if (tagexps.get(tagindex) != null && cvalstr != null) {
                                 if (tagexps.get(tagindex).matcher(cvalstr).matches()) {
                                     log.trace("Matched Entity Attribute ({}:{}) value {}", a.getNameFormat(),
@@ -421,21 +416,39 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
             return true;
         }
 // Checkstyle: MethodLength ON
+
+        /** Get all possible strings values for the attribute.  This copes with the fact that
+         * an attribute can return multiple values {@link Attribute#getAttributeValues()} and that some
+         * type of value can have multiple values (for instance a boolean can be 1/0/true/false).
+         *
+         * @param attribute what to inspect
+         * @return all possible values, as string.
+         */
+        @Nonnull List<String> getPossibleAttributeValuesAsStrings(final @Nonnull Attribute attribute) {
+            final List<XMLObject> cvals = attribute.getAttributeValues();
+            final List<String> result = new ArrayList<String>(cvals.size()*2);
+            for (final XMLObject cval : cvals) {
+                result.addAll(xmlObjectToStrings(cval));
+            }
+            return result;
+        }
      
         /**
-         * Convert an XMLObject to a String if the type of recognized.
+         * Convert an XMLObject to an array of String which can represent the type, if recognized.
          * 
          * @param object object to convert
          * @return the converted value, or null
          */
-        @Nullable private String xmlObjectToString(@Nonnull final XMLObject object) {
+        @Nullable private List<String> xmlObjectToStrings(@Nonnull final XMLObject object) {
             String toMatch = null;
+            String toMatchAlt = null;
             if (object instanceof XSString) {
                 toMatch = ((XSString) object).getValue();
             } else if (object instanceof XSURI) {
                 toMatch = ((XSURI) object).getValue();
             } else if (object instanceof XSBoolean) {
                 toMatch = ((XSBoolean) object).getValue().getValue() ? "1" : "0";
+                toMatchAlt = ((XSBoolean) object).getValue().getValue() ? "true" : "false";
             } else if (object instanceof XSInteger) {
                 toMatch = ((XSInteger) object).getValue().toString();
             } else if (object instanceof XSDateTime) {
@@ -451,12 +464,14 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
                     toMatch = wc.getTextContent();
                 }
             }
-            if (toMatch != null) {
-                return toMatch;
+            if (toMatchAlt != null) {
+                return List.of(toMatch, toMatchAlt);
+            } else if (toMatch != null) {
+                return Collections.singletonList(toMatch);
             }
             log.warn("Unrecognized XMLObject type ({}), unable to convert to a string for comparison",
                     object.getClass().getName());
-            return null;
+            return Collections.emptyList();
         }
     }
 // Checkstyle: CyclomaticComplexity OFF

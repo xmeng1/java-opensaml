@@ -2,6 +2,8 @@
 <EntitiesDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
         xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"
         xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         Name="GroupTop" validUntil="2100-01-01T00:00:00Z">
 
     <Extensions>
@@ -20,6 +22,20 @@
     </EntityDescriptor>
 
     <EntityDescriptor entityID="https://idp-top.example.org">
+        <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
+            <SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://idp.example.org/idp/Shibboleth/SSO"/>
+        </IDPSSODescriptor>
+    </EntityDescriptor>
+
+    <EntityDescriptor entityID="https://idp-1475.example.org">
+        <Extensions>
+            <mdattr:EntityAttributes>
+                <saml2:Attribute Name=" https://its.umich.edu/identity/activationCondition/isMemberOf"
+                                 NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                    <saml2:AttributeValue xsi:type="xsd:boolean">true</saml2:AttributeValue>
+                </saml2:Attribute>
+            </mdattr:EntityAttributes>
+        </Extensions>
         <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
             <SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://idp.example.org/idp/Shibboleth/SSO"/>
         </IDPSSODescriptor>

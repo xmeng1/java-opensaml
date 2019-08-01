@@ -114,6 +114,19 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
     }
     
     @Test
+    public void testIdP1475()  throws Exception {
+        final Candidate candidate = new Candidate("https://its.umich.edu/identity/activationCondition/isMemberOf");
+        candidate.setValues(Collections.singletonList("true"));
+        final EntityAttributesPredicate condition =
+                new EntityAttributesPredicate(Collections.singletonList(candidate));
+
+        final EntityDescriptor entity =
+                metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-1475.example.org")));
+        Assert.assertNotNull(entity);
+        Assert.assertTrue(condition.test(entity));
+    }
+
+    @Test
     public void testGroupAdditional() throws Exception {
 
         final Candidate candidate = new Candidate("urn:foo", Attribute.URI_REFERENCE);
