@@ -29,6 +29,7 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
+import org.opensaml.saml.metadata.resolver.filter.data.impl.MetadataSource;
 import org.opensaml.saml.saml2.metadata.AffiliationDescriptor;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -245,9 +246,9 @@ public class SignatureValidationFilter implements MetadataFilter {
         }
         
         if (signableMetadata instanceof EntityDescriptor) {
-            processEntityDescriptor((EntityDescriptor) signableMetadata);
+            processEntityDescriptor((EntityDescriptor) signableMetadata, context, true);
         } else if (signableMetadata instanceof EntitiesDescriptor) {
-            processEntityGroup((EntitiesDescriptor) signableMetadata);
+            processEntityGroup((EntitiesDescriptor) signableMetadata, context, true);
         } else {
             log.error("Internal error, metadata object was of an unsupported type: {}", metadata.getClass().getName());
         }
@@ -261,15 +262,24 @@ public class SignatureValidationFilter implements MetadataFilter {
      * If signature verification fails on a child, it will be removed from the entity descriptor.
      * 
      * @param entityDescriptor the EntityDescriptor to be processed
+     * @param context the current filter context
+     * @param isRoot true if the element being processed is the XML document root, false if not
      * @throws FilterException thrown if an error occurs during the signature verification process
      *                          on the root EntityDescriptor specified
      */
-    protected void processEntityDescriptor(@Nonnull final EntityDescriptor entityDescriptor) throws FilterException {
+    protected void processEntityDescriptor(@Nonnull final EntityDescriptor entityDescriptor,
+            @Nonnull final MetadataFilterContext context, final boolean isRoot) throws FilterException {
+
         final String entityID = entityDescriptor.getEntityID();
         log.trace("Processing EntityDescriptor: {}", entityID);
         
         if (entityDescriptor.isSigned()) {
-            verifySignature(entityDescriptor, entityID, false);
+            if (isRoot && isSkipRootSignature(context)) {
+                log.trace("Skipping root signature validation of EntityDescriptor based on filter context data");
+            } else {
+                log.trace("Proceeding with signature validation of EntityDescriptor");
+                verifySignature(entityDescriptor, entityID, false);
+            }
         }
         
         final Iterator<RoleDescriptor> roleIter = entityDescriptor.getRoleDescriptors().iterator();
@@ -323,15 +333,24 @@ public class SignatureValidationFilter implements MetadataFilter {
      * If signature verification fails on a child, it will be removed from the entities descriptor group.
      * 
      * @param entitiesDescriptor the EntitiesDescriptor to be processed
+     * @param context the current filter context
+     * @param isRoot true if the element being processed is the XML document root, false if not
      * @throws FilterException thrown if an error occurs during the signature verification process
      *                          on the root EntitiesDescriptor specified
      */
-    protected void processEntityGroup(@Nonnull final EntitiesDescriptor entitiesDescriptor) throws FilterException {
+    protected void processEntityGroup(@Nonnull final EntitiesDescriptor entitiesDescriptor,
+            @Nonnull final MetadataFilterContext context, final boolean isRoot) throws FilterException {
+
         final String name = getGroupName(entitiesDescriptor);
         log.trace("Processing EntitiesDescriptor group: {}", name);
         
         if (entitiesDescriptor.isSigned()) {
-            verifySignature(entitiesDescriptor, name, true);
+            if (isRoot && isSkipRootSignature(context)) {
+                log.trace("Skipping root signature validation of EntitiesDescriptor based on filter context data");
+            } else {
+                log.trace("Proceeding with signature validation of EntitiesDescriptor");
+                verifySignature(entitiesDescriptor, name, true);
+            }
         }
         
         // Can't use IndexedXMLObjectChildrenList sublist iterator remove() to remove members,
@@ -350,7 +369,7 @@ public class SignatureValidationFilter implements MetadataFilter {
             }
             
             try {
-                processEntityDescriptor(entityChild);
+                processEntityDescriptor(entityChild, context, false);
             } catch (final FilterException e) {
                log.error("EntityDescriptor '{}' failed signature verification, removing from metadata provider", 
                        entityChild.getEntityID()); 
@@ -369,7 +388,7 @@ public class SignatureValidationFilter implements MetadataFilter {
             final String childName = getGroupName(entitiesChild);
             log.trace("Processing EntitiesDescriptor member: {}", childName);
             try {
-                processEntityGroup(entitiesChild);
+                processEntityGroup(entitiesChild, context, false);
             } catch (final FilterException e) {
                log.error("EntitiesDescriptor '{}' failed signature verification, removing from metadata provider", 
                        childName); 
@@ -521,4 +540,19 @@ public class SignatureValidationFilter implements MetadataFilter {
         return "(unnamed)";
     }
     
+    /**
+     * Determine whether validation of signature on the document root should be skipped.
+     *
+     * @param context the metadata filter context
+     * @return true if root signature validation should be skipped, false if not
+     */
+    protected boolean isSkipRootSignature(@Nonnull final MetadataFilterContext context) {
+        final MetadataSource metadataSource = context.get(MetadataSource.class);
+        if (metadataSource != null) {
+            return metadataSource.isTrusted();
+        } else {
+            return false;
+        }
+    }
+
 }

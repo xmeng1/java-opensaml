@@ -30,6 +30,7 @@ import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
+import org.opensaml.saml.metadata.resolver.filter.data.impl.MetadataSource;
 import org.opensaml.saml.metadata.resolver.impl.DOMMetadataResolver;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.security.credential.CredentialSupport;
@@ -157,6 +158,24 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
             // do nothing, should fail
         }
     }
+
+    @Test
+    public void testInvalidSWITCHStandaloneWithRootSkip() throws UnmarshallingException {
+        // Goal here is to test the root signature skip (indicated by filter context data) by using a known invalid root signature.
+        XMLObject xmlObject = unmarshallerFactory.getUnmarshaller(switchMDDocumentInvalid
+                .getDocumentElement()).unmarshall(switchMDDocumentInvalid.getDocumentElement());
+
+        MetadataSource metadataSource = new MetadataSource();
+        metadataSource.setTrusted(true);
+        filterContext.add(metadataSource);
+
+        SignatureValidationFilter filter = new SignatureValidationFilter(switchSigTrustEngine);
+        try {
+            filter.filter(xmlObject, filterContext);
+        } catch (FilterException e) {
+            Assert.fail("Filter failed validation, should have passed b/c we implicitly said to skip root signature");
+        }
+    }
     
     @Test
     public void testEntityDescriptor() throws UnmarshallingException, CertificateException, XMLParserException {
@@ -202,6 +221,34 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
             Assert.fail("Filter passed validation, should have failed");
         } catch (FilterException e) {
             // do nothing, should fail
+        }
+    }
+
+    @Test
+    public void testEntityDescriptorInvalidWithRootSkip() throws UnmarshallingException, CertificateException, XMLParserException {
+        // Goal here is to test the root signature skip (indicated by filter context data) by using a known invalid root signature.
+        X509Certificate cert = X509Support.decodeCertificate(openIDCertBase64);
+        X509Credential cred = CredentialSupport.getSimpleCredential(cert, null);
+        StaticCredentialResolver credResolver = new StaticCredentialResolver(cred);
+        SignatureTrustEngine trustEngine = new ExplicitKeySignatureTrustEngine(credResolver, kiResolver);
+
+        Document mdDoc = parserPool.parse(SignatureValidationFilterExplicitKeyTest.class.getResourceAsStream(openIDFileInvalid));
+        XMLObject xmlObject =
+            unmarshallerFactory.getUnmarshaller(mdDoc.getDocumentElement()).unmarshall(mdDoc.getDocumentElement());
+        Assert.assertTrue(xmlObject instanceof EntityDescriptor);
+        EntityDescriptor ed = (EntityDescriptor) xmlObject;
+        Assert.assertTrue(ed.isSigned());
+        Assert.assertNotNull(ed.getSignature(), "Signature was null");
+
+        MetadataSource metadataSource = new MetadataSource();
+        metadataSource.setTrusted(true);
+        filterContext.add(metadataSource);
+
+        SignatureValidationFilter filter = new SignatureValidationFilter(trustEngine);
+        try {
+            filter.filter(xmlObject, filterContext);
+        } catch (FilterException e) {
+            Assert.fail("Filter failed validation, should have passed b/c we implicitly said to skip root signature");
         }
     }
     
@@ -252,6 +299,21 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
         } catch (ComponentInitializationException e) {
             // do nothing, failure expected
         }
+    }
+
+    @Test
+    public void testIsSkipRootSignatureEval() {
+        MetadataFilterContext context = new MetadataFilterContext();
+        SignatureValidationFilter filter = new SignatureValidationFilter(switchSigTrustEngine);
+        MetadataSource metadataSource = new MetadataSource();
+
+        Assert.assertFalse(filter.isSkipRootSignature(context));
+
+        context.add(metadataSource);
+        Assert.assertFalse(filter.isSkipRootSignature(context));
+
+        metadataSource.setTrusted(true);
+        Assert.assertTrue(filter.isSkipRootSignature(context));
     }
 
 }

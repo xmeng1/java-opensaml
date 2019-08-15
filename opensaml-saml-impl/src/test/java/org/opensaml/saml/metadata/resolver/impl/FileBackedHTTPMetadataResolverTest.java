@@ -27,7 +27,12 @@ import java.time.Duration;
 import java.time.Instant;
 
 import org.opensaml.core.criterion.EntityIdCriterion;
+import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
+import org.opensaml.saml.metadata.resolver.filter.FilterException;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
+import org.opensaml.saml.metadata.resolver.filter.data.impl.MetadataSource;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.security.httpclient.HttpClientSecurityParameters;
 import org.testng.Assert;
@@ -211,26 +216,33 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertTrue(backupFile.exists(), "Backup file was not created");
         Assert.assertTrue(backupFile.length() > 0, "Backup file contains no data");
         
+        MockContextTrackingFilter mockFilter = new MockContextTrackingFilter();
+
         metadataProvider = new FileBackedHTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttp, backupFilePath);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setFailFastInitialization(true);
         metadataProvider.setId("test");
         metadataProvider.setBackupFileInitNextRefreshDelay(Duration.ofSeconds(1));
+        metadataProvider.setMetadataFilter(mockFilter);
         metadataProvider.initialize();
-        
+
         Assert.assertTrue(metadataProvider.isInitializedFromBackupFile());
-        
+
+        Assert.assertTrue(mockFilter.lastFilterContext.get(MetadataSource.class).isTrusted());
+
         Instant initRefresh = metadataProvider.getLastRefresh();
         Instant initUpdate = metadataProvider.getLastUpdate();
-        
+
         Assert.assertNotNull(metadataProvider.resolveSingle(criteriaSet), "Metadata inited from backing file was null");
         
         // Sleep past the artificial next refresh delay on init from backup file.
         Thread.sleep(metadataProvider.getBackupFileInitNextRefreshDelay().toMillis() + 5000);
-        
+
         Assert.assertTrue(initRefresh.isBefore(metadataProvider.getLastRefresh()));
         Assert.assertTrue(initUpdate.isBefore(metadataProvider.getLastUpdate()));
-        
+
+        Assert.assertNull(mockFilter.lastFilterContext.get(MetadataSource.class));
+
         Assert.assertNotNull(metadataProvider.resolveSingle(criteriaSet), "Metadata retrieved from HTTP refreshed metadata was null");
     }
     
@@ -539,5 +551,18 @@ public class FileBackedHTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         Assert.assertEquals(descriptor.getEntityID(), entityID, "Entity's ID does not match requested ID");
     }
     
-    
+    // Test helpers
+
+    public class MockContextTrackingFilter implements MetadataFilter {
+
+        public MetadataFilterContext lastFilterContext;
+
+        /** {@inheritDoc} */
+        public XMLObject filter(XMLObject metadata, MetadataFilterContext context) throws FilterException {
+            lastFilterContext = context;
+            return metadata;
+        }
+
+    }
+
 }

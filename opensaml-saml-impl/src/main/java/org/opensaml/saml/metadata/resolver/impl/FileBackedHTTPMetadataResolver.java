@@ -34,6 +34,8 @@ import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
 import org.apache.http.client.HttpClient;
 import org.opensaml.core.xml.XMLObject;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
+import org.opensaml.saml.metadata.resolver.filter.data.impl.MetadataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -317,6 +319,20 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
                 throw new ResolverException("Unable to read metadata from remote server and backup does not exist");
             }
         }
+    }
+
+    /** {@inheritDoc} */
+    protected MetadataFilterContext newFilterContext() {
+        final MetadataFilterContext context = super.newFilterContext();
+        if (initializing && initializedFromBackupFile) {
+            MetadataSource metadataSource = context.get(MetadataSource.class);
+            if (metadataSource == null) {
+                metadataSource = new MetadataSource();
+                context.add(metadataSource);
+            }
+            metadataSource.setTrusted(true);
+        }
+        return context;
     }
 
     /** {@inheritDoc} */
