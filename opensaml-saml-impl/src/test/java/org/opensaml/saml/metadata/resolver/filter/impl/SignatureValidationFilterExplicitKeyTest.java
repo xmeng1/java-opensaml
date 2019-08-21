@@ -314,6 +314,9 @@ public class SignatureValidationFilterExplicitKeyTest extends XMLObjectBaseTestC
 
         metadataSource.setTrusted(true);
         Assert.assertTrue(filter.isSkipRootSignature(context));
+
+        filter.setAlwaysVerifyTrustedSource(true);
+        Assert.assertFalse(filter.isSkipRootSignature(context));
     }
 
 }

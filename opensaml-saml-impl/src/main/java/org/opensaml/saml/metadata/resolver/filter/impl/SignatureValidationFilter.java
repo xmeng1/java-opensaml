@@ -68,6 +68,9 @@ public class SignatureValidationFilter implements MetadataFilter {
     /** Indicates whether the metadata root element is required to be signed. */
     private boolean requireSignedRoot;
     
+    /** Flag indicating whether the root signature of a trusted source should always be verified. */
+    private boolean alwaysVerifyTrustedSource;
+
     /** Set of externally specified default criteria for input to the trust engine. */
     @Nullable private CriteriaSet defaultCriteria;
     
@@ -98,6 +101,24 @@ public class SignatureValidationFilter implements MetadataFilter {
         signatureTrustEngine = engine;
         signaturePrevalidator = new SAMLSignatureProfileValidator();
         dynamicTrustedNamesStrategy = new BasicDynamicTrustedNamesStrategy();
+    }
+
+    /**
+     * Get the flag indicating whether the root signature of a trusted source should always be verified.
+     *
+     * @return true if root signature should always be verified, false if should be dynamically determined
+     */
+    public boolean isAlwaysVerifyTrustedSource() {
+        return alwaysVerifyTrustedSource;
+    }
+
+    /**
+     * Set the flag indicating whether the root signature of a trusted source should always be verified.
+     *
+     * @param flag true if root signature should always be verified, false if should be dynamically determined
+     */
+    public void setAlwaysVerifyTrustedSource(final boolean flag) {
+        alwaysVerifyTrustedSource = flag;
     }
 
     /**
@@ -547,6 +568,10 @@ public class SignatureValidationFilter implements MetadataFilter {
      * @return true if root signature validation should be skipped, false if not
      */
     protected boolean isSkipRootSignature(@Nonnull final MetadataFilterContext context) {
+        if (isAlwaysVerifyTrustedSource()) {
+            return false;
+        }
+
         final MetadataSource metadataSource = context.get(MetadataSource.class);
         if (metadataSource != null) {
             return metadataSource.isTrusted();
