@@ -359,6 +359,7 @@ public class SignatureValidationFilter implements MetadataFilter {
      * @throws FilterException thrown if an error occurs during the signature verification process
      *                          on the root EntitiesDescriptor specified
      */
+    // Checkstyle: CyclomaticComplexity OFF
     protected void processEntityGroup(@Nonnull final EntitiesDescriptor entitiesDescriptor,
             @Nonnull final MetadataFilterContext context, final boolean isRoot) throws FilterException {
 
@@ -421,6 +422,7 @@ public class SignatureValidationFilter implements MetadataFilter {
             entitiesDescriptor.getEntitiesDescriptors().removeAll(toRemove);
         }
     }
+    // Checkstyle: CyclomaticComplexity ON
     
     /**
      * Evaluate the signature on the signed metadata instance.
