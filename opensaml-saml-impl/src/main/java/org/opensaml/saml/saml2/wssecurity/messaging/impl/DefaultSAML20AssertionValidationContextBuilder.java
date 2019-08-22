@@ -148,7 +148,7 @@ public class DefaultSAML20AssertionValidationContextBuilder
         final HashMap<String, Object> staticParams = new HashMap<>();
         
         //For signature validation
-        staticParams.put(SAML2AssertionValidationParameters.SIGNATURE_REQUIRED, new Boolean(isSignatureRequired()));
+        staticParams.put(SAML2AssertionValidationParameters.SIGNATURE_REQUIRED, Boolean.valueOf(isSignatureRequired()));
         staticParams.put(SAML2AssertionValidationParameters.SIGNATURE_VALIDATION_CRITERIA_SET, 
                 getSignatureCriteriaSet(input));
         
@@ -237,7 +237,7 @@ public class DefaultSAML20AssertionValidationContextBuilder
             @Nonnull final SAML20AssertionTokenValidationInput input) {
         try {
             final X509Credential credential = new ServletRequestX509CredentialAdapter(input.getHttpServletRequest());
-            return ((X509Credential)credential).getEntityCertificate();
+            return credential.getEntityCertificate();
         } catch (final SecurityException e) {
             log.warn("Peer TLS X.509 certificate was not present. " 
                     + "Holder-of-key proof-of-possession via client TLS cert will not be possible");
@@ -319,10 +319,9 @@ public class DefaultSAML20AssertionValidationContextBuilder
                 validAddresses.addAll(Arrays.asList(addresses));
                 log.debug("Resolved valid subject confirmation InetAddress set: {}", validAddresses);
                 return validAddresses;
-            } else {
-                log.warn("Could not determine attester IP address. Validation of Assertion may or may not succeed");
-                return Collections.emptySet();
             }
+            log.warn("Could not determine attester IP address. Validation of Assertion may or may not succeed");
+            return Collections.emptySet();
         } catch (final UnknownHostException e) {
             log.warn("Processing of attester IP address failed. Validation of Assertion may or may not succeed", e);
             return Collections.emptySet();

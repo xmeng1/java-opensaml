@@ -44,7 +44,7 @@ public class SOAPClientSecurityProfileIdLookupFunction implements ContextDataLoo
     public SOAPClientSecurityProfileIdLookupFunction() {
         soapContextLookup =
                 new ChildContextLookup<>(SOAPClientSecurityContext.class).compose(
-                        new RecursiveTypedParentContextLookup(InOutOperationContext.class));
+                        new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
     }
     
     /**
@@ -66,9 +66,8 @@ public class SOAPClientSecurityProfileIdLookupFunction implements ContextDataLoo
         final SOAPClientSecurityContext context = soapContextLookup.apply(messageContext);
         if (context != null) {
             return context.getSecurityConfigurationProfileId();
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

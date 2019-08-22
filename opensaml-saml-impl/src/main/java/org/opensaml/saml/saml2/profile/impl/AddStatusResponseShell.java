@@ -189,7 +189,7 @@ public class AddStatusResponseShell extends AbstractProfileAction {
                 (SAMLObjectBuilder<StatusCode>) bf.<StatusCode>getBuilderOrThrow(StatusCode.TYPE_NAME);
         final SAMLObjectBuilder<Status> statusBuilder =
                 (SAMLObjectBuilder<Status>) bf.<Status>getBuilderOrThrow(Status.TYPE_NAME);
-        final SAMLObjectBuilder responseBuilder = (SAMLObjectBuilder) bf.getBuilderOrThrow(messageType);
+        final SAMLObjectBuilder<?> responseBuilder = (SAMLObjectBuilder<?>) bf.getBuilderOrThrow(messageType);
 
         final StatusCode statusCode = statusCodeBuilder.buildObject();
         statusCode.setValue(StatusCode.SUCCESS);

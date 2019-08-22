@@ -233,11 +233,11 @@ public class SAMLMDClientCertAuthSecurityHandlerTest extends XMLObjectBaseTestCa
         trustedCredentials.add(validX509Cred);
         
         // Build a SAML message from which the SAML peer entityID can not be resolved.
-        final Request request = buildXMLObject(Request.DEFAULT_ELEMENT_NAME);
+        final Request req = buildXMLObject(Request.DEFAULT_ELEMENT_NAME);
         final AttributeQuery query = buildXMLObject(AttributeQuery.DEFAULT_ELEMENT_NAME);
         query.setResource(null); // Set null for good measure
-        request.setQuery(query);
-        messageContext.setMessage(request);
+        req.setQuery(query);
+        messageContext.setMessage(req);
         
         messageContext.getSubcontext(SAMLPeerEntityContext.class).setEntityId(null);
         

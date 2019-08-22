@@ -141,10 +141,9 @@ public class MessageReplaySecurityHandler extends AbstractMessageHandler {
                 log.warn("{} Message contained no ID, replay check not possible", getLogPrefix());
                 throw new MessageHandlerException("SAML message from issuer " + entityID
                         + " did not contain an ID");
-            } else {
-                log.debug("{} Message contained no ID, rule is optional, skipping further processing", getLogPrefix());
-                return;
             }
+            log.debug("{} Message contained no ID, rule is optional, skipping further processing", getLogPrefix());
+            return;
         }
 
         Instant issueInstant = msgInfoContext.getMessageIssueInstant();

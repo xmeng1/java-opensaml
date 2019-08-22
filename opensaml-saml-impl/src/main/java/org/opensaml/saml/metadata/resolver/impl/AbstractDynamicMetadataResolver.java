@@ -691,11 +691,10 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                                     + "and negative lookup cache is active, returning empty result", 
                                     getLogPrefix());
                             return Collections.emptyList();
-                        } else {
-                            log.debug("{} Did not find requested metadata in backing store, " 
-                                    + "attempting to resolve dynamically", 
-                                    getLogPrefix());
                         }
+                        log.debug("{} Did not find requested metadata in backing store, " 
+                                + "attempting to resolve dynamically", 
+                                getLogPrefix());
                     } else {
                         if (shouldAttemptRefresh(mgmtData)) {
                             log.debug("{} Metadata was indicated to be refreshed based on refresh trigger time", 
@@ -738,9 +737,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         final Set<String> entityIDs = resolveEntityIDs(criteria);
         if (entityIDs.size() == 1) {
             return entityIDs.iterator().next();
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -760,10 +758,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         if (entityIdCriterion != null) {
             log.debug("{} Found entityID in criteria: {}", getLogPrefix(), entityIdCriterion.getEntityId());
             return Collections.singleton(entityIdCriterion.getEntityId());
-        } else {
-            log.debug("{} EntityID was not supplied in criteria, processing criteria with secondary indexes",
-                    getLogPrefix());
         }
+        log.debug("{} EntityID was not supplied in criteria, processing criteria with secondary indexes",
+                getLogPrefix());
         
         if (!indexesEnabled()) {
             log.trace("Indexes not enabled, skipping secondary index processing");
@@ -794,10 +791,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 log.debug("{} Resolved 1 entityID from secondary indexes: {}", getLogPrefix(), entityID);
                 return Collections.singleton(entityID);
             }
-        } else {
-            log.debug("{} No entityIDs resolved from secondary indexes (Optional 'absent').", getLogPrefix());
-            return null;
         }
+        log.debug("{} No entityIDs resolved from secondary indexes (Optional 'absent').", getLogPrefix());
+        return null;
     }
     
     /**
@@ -835,10 +831,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         if (entityID != null) {
             log.debug("{} Resolving from origin source based on entityID: {}", getLogPrefix(), entityID);
             return resolveFromOriginSourceWithEntityID(criteria, entityID);
-        } else {
-            log.debug("{} Resolving from origin source based on non-entityID criteria", getLogPrefix());
-            return resolveFromOriginSourceWithoutEntityID(criteria);
         }
+        log.debug("{} Resolving from origin source based on non-entityID criteria", getLogPrefix());
+        return resolveFromOriginSourceWithoutEntityID(criteria);
         
     }
  
@@ -869,9 +864,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 log.debug("{} Metadata was resolved and stored by another thread " 
                         + "while this thread was waiting on the write lock", getLogPrefix());
                 return descriptors;
-            } else {
-                log.debug("{} Resolving metadata dynamically for entity ID: {}", getLogPrefix(), entityID);
             }
+            log.debug("{} Resolving metadata dynamically for entity ID: {}", getLogPrefix(), entityID);
             
             final Context contextFetchFromOriginSource = MetricsSupport.startTimer(timerFetchFromOriginSource);
             XMLObject root = null;
@@ -1095,9 +1089,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             releaseMetadataDOM(root);
             if (fromPersistentCache) {
                 throw new FilterException("Metadata filtering process produced a null XMLObject");
-            } else {
-                return;
             }
+            return;
         }
         
         if (filteredMetadata instanceof EntityDescriptor) {
@@ -1107,9 +1100,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                         getLogPrefix(), entityDescriptor.getEntityID(), expectedEntityID);
                 if (fromPersistentCache) {
                     throw new ResolverException("New metadata's entityID does not match expected entityID");
-                } else {
-                    return; 
                 }
+                return;
             }
             
             preProcessEntityDescriptor(entityDescriptor, getBackingStore());
@@ -1166,9 +1158,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 log.warn("{} Error cloning XMLObject, will use input root object as filter target", getLogPrefix(), e);
                 return input;
             }
-        } else {
-            return input;
         }
+        return input;
     }
     
     /** {@inheritDoc} */
@@ -1396,9 +1387,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         if (!isPersistentCachingEnabled()) {
             log.trace("{} Persistent caching is not enabled, skipping init from cache", getLogPrefix());
             return;
-        } else {
-            log.trace("{} Attempting to load and process entities from the persistent cache", getLogPrefix());
         }
+        
+        log.trace("{} Attempting to load and process entities from the persistent cache", getLogPrefix());
         
         final long start = System.nanoTime();
         try {
@@ -1601,7 +1592,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 @Nullable @NonnullElements @Unmodifiable @NotLive final Set<MetadataIndex> initIndexes) {
             super();
             mgmtDataMap = new ConcurrentHashMap<>();
-            secondaryIndexManager = new LockableMetadataIndexManager(initIndexes, 
+            secondaryIndexManager = new LockableMetadataIndexManager<>(initIndexes, 
                     new LockableMetadataIndexManager.EntityIDExtractionFunction()); 
 
         }
@@ -1634,11 +1625,10 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 entityData = mgmtDataMap.get(entityID);
                 if (entityData != null) {
                     return entityData;
-                } else {
-                    entityData = new EntityManagementData(entityID);
-                    mgmtDataMap.put(entityID, entityData);
-                    return entityData;
                 }
+                entityData = new EntityManagementData(entityID);
+                mgmtDataMap.put(entityID, entityData);
+                return entityData;
             }
         }
         

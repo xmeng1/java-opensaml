@@ -154,7 +154,7 @@ public class LDAPStorageServiceTest {
     @Test
     public void create() throws IOException {
         storageService.create(context, "mail", "principal@shibboleth.net", null);
-        StorageRecord rec = storageService.read(context, "mail");
+        StorageRecord<?> rec = storageService.read(context, "mail");
         Assert.assertNotNull(rec);
         Assert.assertEquals(rec.getValue(), "principal@shibboleth.net");
 

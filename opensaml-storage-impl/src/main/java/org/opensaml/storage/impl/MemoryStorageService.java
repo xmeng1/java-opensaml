@@ -50,7 +50,7 @@ public class MemoryStorageService extends AbstractMapBackedStorageService implem
     @Nonnull private final Logger log = LoggerFactory.getLogger(MemoryStorageService.class);
 
     /** Map of contexts. */
-    @NonnullAfterInit @NonnullElements private Map<String, Map<String, MutableStorageRecord>> contextMap;
+    @NonnullAfterInit @NonnullElements private Map<String, Map<String, MutableStorageRecord<?>>> contextMap;
     
     /** A shared lock to synchronize access. */
     @NonnullAfterInit private ReadWriteLock lock;
@@ -84,7 +84,7 @@ public class MemoryStorageService extends AbstractMapBackedStorageService implem
 
     /** {@inheritDoc} */
     @Override
-    @Nonnull @NonnullElements @Live protected Map<String, Map<String, MutableStorageRecord>> getContextMap() {
+    @Nonnull @NonnullElements @Live protected Map<String, Map<String, MutableStorageRecord<?>>> getContextMap() {
         return contextMap;
     }
 
@@ -112,10 +112,10 @@ public class MemoryStorageService extends AbstractMapBackedStorageService implem
                 try {
                     writeLock.lock();
                     
-                    final Collection<Map<String, MutableStorageRecord>> contexts = getContextMap().values();
-                    final Iterator<Map<String, MutableStorageRecord>> i = contexts.iterator();
+                    final Collection<Map<String, MutableStorageRecord<?>>> contexts = getContextMap().values();
+                    final Iterator<Map<String, MutableStorageRecord<?>>> i = contexts.iterator();
                     while (i.hasNext()) {
-                        final Map<String, MutableStorageRecord> context = i.next(); 
+                        final Map<String, MutableStorageRecord<?>> context = i.next(); 
                         if (reapWithLock(context, now)) {
                             purged = true;
                             if (context.isEmpty()) {

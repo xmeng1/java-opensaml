@@ -81,20 +81,20 @@ public class MarshallingTest extends XMLObjectBaseTestCase {
 
         SimpleXMLObjectBuilder sxoBuilder = (SimpleXMLObjectBuilder) builderFactory.getBuilder(simpleXMLObjectQName);
 
-        SimpleXMLObject sxObject = (SimpleXMLObject) sxoBuilder.buildObject();
+        SimpleXMLObject sxObject = sxoBuilder.buildObject();
 
-        SimpleXMLObject child1 = (SimpleXMLObject) sxoBuilder.buildObject();
+        SimpleXMLObject child1 = sxoBuilder.buildObject();
         child1.setValue("Content1");
         sxObject.getSimpleXMLObjects().add(child1);
 
-        SimpleXMLObject child2 = (SimpleXMLObject) sxoBuilder.buildObject();
+        SimpleXMLObject child2 = sxoBuilder.buildObject();
         child2.setValue("Content2");
         sxObject.getSimpleXMLObjects().add(child2);
 
-        SimpleXMLObject child3 = (SimpleXMLObject) sxoBuilder.buildObject();
+        SimpleXMLObject child3 = sxoBuilder.buildObject();
         sxObject.getSimpleXMLObjects().add(child3);
 
-        SimpleXMLObject grandchild1 = (SimpleXMLObject) sxoBuilder.buildObject();
+        SimpleXMLObject grandchild1 = sxoBuilder.buildObject();
         grandchild1.setValue("Content3");
         child3.getSimpleXMLObjects().add(grandchild1);
 

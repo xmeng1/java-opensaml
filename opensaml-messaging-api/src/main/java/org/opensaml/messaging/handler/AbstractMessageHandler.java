@@ -145,10 +145,9 @@ public abstract class AbstractMessageHandler extends AbstractInitializableCompon
         if (activationCondition.test(messageContext)) {
             log.debug("{} Activation condition for handler returned true", getLogPrefix());
             return true;
-        } else {
-            log.debug("{} Activation condition for handler returned false", getLogPrefix());
-            return false;
         }
+        log.debug("{} Activation condition for handler returned false", getLogPrefix());
+        return false;
     }
 
     /**

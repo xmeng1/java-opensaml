@@ -122,7 +122,7 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
         criteriaSet.add(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
         endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setLocation(location1);
-        criteriaSet.add(new EndpointCriterion<Endpoint>(endpoint));
+        criteriaSet.add(new EndpointCriterion<>(endpoint));
         keys = metadataIndex.generateKeys(criteriaSet);
         Assert.assertNotNull(keys);
         Assert.assertEquals(keys.size(), 1);
@@ -134,7 +134,7 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
         endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setLocation(location1);
         endpoint.setResponseLocation(responseLocation1);
-        criteriaSet.add(new EndpointCriterion<Endpoint>(endpoint));
+        criteriaSet.add(new EndpointCriterion<>(endpoint));
         keys = metadataIndex.generateKeys(criteriaSet);
         Assert.assertNotNull(keys);
         Assert.assertEquals(keys.size(), 2);
@@ -146,7 +146,7 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
         criteriaSet.add(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
         endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setLocation("https://www.example.com/cas/someEndpoint1/foo/bar/");
-        criteriaSet.add(new EndpointCriterion<Endpoint>(endpoint));
+        criteriaSet.add(new EndpointCriterion<>(endpoint));
         criteriaSet.add(new StartsWithLocationCriterion());
         keys = metadataIndex.generateKeys(criteriaSet);
         Assert.assertNotNull(keys);

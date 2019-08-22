@@ -106,7 +106,7 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
     private final Logger logger = LoggerFactory.getLogger(MemcachedStorageService.class);
 
     /** Handles conversion of {@link MemcachedStorageRecord} to bytes and vice versa. */
-    private final Transcoder<MemcachedStorageRecord> storageRecordTranscoder = new StorageRecordTranscoder();
+    private final Transcoder<MemcachedStorageRecord<?>> storageRecordTranscoder = new StorageRecordTranscoder();
 
     /** Handles conversion of strings to bytes and vice versa. */
     private final Transcoder<String> stringTranscoder = new StringTranscoder();
@@ -193,7 +193,7 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
         Constraint.isNotNull(StringSupport.trimOrNull(context), "Context cannot be null or empty");
         Constraint.isNotNull(StringSupport.trimOrNull(key), "Key cannot be null or empty");
         Constraint.isNotNull(StringSupport.trimOrNull(value), "Value cannot be null or empty");
-        final MemcachedStorageRecord record = new MemcachedStorageRecord(value, expiration);
+        final MemcachedStorageRecord<?> record = new MemcachedStorageRecord<>(value, expiration);
         final int expiry = record.getExpiry();
         Constraint.isGreaterThan(-1, expiry, "Expiration must be null or positive");
         String namespace = lookupNamespace(context);
@@ -220,10 +220,10 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
 
     /** {@inheritDoc} */
     @Override
-    public boolean create(@Nonnull @NotEmpty final String context,
+    public <T> boolean create(@Nonnull @NotEmpty final String context,
                           @Nonnull @NotEmpty final String key,
-                          @Nonnull final Object value,
-                          @Nonnull final StorageSerializer serializer,
+                          @Nonnull final T value,
+                          @Nonnull final StorageSerializer<T> serializer,
                           @Nullable @Positive final Long expiration) throws IOException {
         Constraint.isNotNull(serializer, "Serializer cannot be null");
         return create(context, key, serializer.serialize(value), expiration);
@@ -242,7 +242,7 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
 
     /** {@inheritDoc} */
     @Override
-    public StorageRecord read(@Nonnull @NotEmpty final String context,
+    public <T> StorageRecord<T> read(@Nonnull @NotEmpty final String context,
                               @Nonnull @NotEmpty final String key) throws IOException {
         Constraint.isNotNull(StringSupport.trimOrNull(context), "Context cannot be null or empty");
         Constraint.isNotNull(StringSupport.trimOrNull(key), "Key cannot be null or empty");
@@ -253,9 +253,9 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
         }
         final String cacheKey = memcachedKey(namespace, key);
         logger.debug("Reading entry at {} for context={}, key={}", cacheKey, context, key);
-        final CASValue<MemcachedStorageRecord> record;
+        final CASValue<MemcachedStorageRecord<?>> record;
         try {
-            record = handleAsyncResult(memcacheClient.asyncGets(cacheKey, storageRecordTranscoder));
+            record = this.handleAsyncResult(memcacheClient.asyncGets(cacheKey, storageRecordTranscoder));
         } catch (final RuntimeException e) {
             throw new IOException("Memcached operation failed", e);
         }
@@ -263,7 +263,7 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
             return null;
         }
         record.getValue().setVersion(record.getCas());
-        return record.getValue();
+        return (StorageRecord<T>) record.getValue();
     }
 
     /** {@inheritDoc} */
@@ -275,15 +275,15 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
 
     /** {@inheritDoc} */
     @Override
-    public Pair<Long, StorageRecord> read(@Nonnull @NotEmpty final String context,
+    public <T> Pair<Long, StorageRecord<T>> read(@Nonnull @NotEmpty final String context,
                                            @Nonnull @NotEmpty final String key,
                                            @Positive final long version) throws IOException {
         Constraint.isGreaterThan(0, version, "Version must be positive");
-        final StorageRecord record = read(context, key);
+        final StorageRecord<T> record = read(context, key);
         if (record == null) {
             return new Pair<>();
         }
-        final Pair<Long, StorageRecord> result = new Pair<>(record.getVersion(), null);
+        final Pair<Long, StorageRecord<T>> result = new Pair<>(record.getVersion(), null);
         if (version != record.getVersion()) {
             // Only set the record if it's not the same as the version requested
             result.setSecond(record);
@@ -300,7 +300,7 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
         Constraint.isNotNull(StringSupport.trimOrNull(context), "Context cannot be null or empty");
         Constraint.isNotNull(StringSupport.trimOrNull(key), "Key cannot be null or empty");
         Constraint.isNotNull(StringSupport.trimOrNull(value), "Value cannot be null or empty");
-        final MemcachedStorageRecord record = new MemcachedStorageRecord(value, expiration);
+        final MemcachedStorageRecord<?> record = new MemcachedStorageRecord<>(value, expiration);
         final int expiry = record.getExpiry();
         Constraint.isGreaterThan(-1, expiry, "Expiration must be null or positive");
         final String namespace = lookupNamespace(context);
@@ -315,10 +315,10 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
 
     /** {@inheritDoc} */
     @Override
-    public boolean update(@Nonnull @NotEmpty final String context,
+    public <T> boolean update(@Nonnull @NotEmpty final String context,
                           @Nonnull @NotEmpty final String key,
-                          @Nonnull final Object value,
-                          @Nonnull final StorageSerializer serializer,
+                          @Nonnull final T value,
+                          @Nonnull final StorageSerializer<T> serializer,
                           @Nullable @Positive final Long expiration) throws IOException {
         Constraint.isNotNull(serializer, "Serializer cannot be null");
         return update(context, key, serializer.serialize(value), expiration);
@@ -348,7 +348,7 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
         Constraint.isNotNull(StringSupport.trimOrNull(context), "Context cannot be null or empty");
         Constraint.isNotNull(StringSupport.trimOrNull(key), "Key cannot be null or empty");
         Constraint.isNotNull(StringSupport.trimOrNull(value), "Value cannot be null or empty");
-        final MemcachedStorageRecord record = new MemcachedStorageRecord(value, expiration);
+        final MemcachedStorageRecord<?> record = new MemcachedStorageRecord<>(value, expiration);
         final int expiry = record.getExpiry();
         Constraint.isGreaterThan(-1, expiry, "Expiration must be null or positive");
         final String namespace = lookupNamespace(context);
@@ -363,7 +363,7 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
                 memcacheClient.asyncCAS(cacheKey, version, expiry, record, storageRecordTranscoder));
         Long newVersion = null;
         if (CASResponse.OK == response) {
-            final CASValue<MemcachedStorageRecord> newRecord = handleAsyncResult(
+            final CASValue<MemcachedStorageRecord<?>> newRecord = handleAsyncResult(
                     memcacheClient.asyncGets(cacheKey, storageRecordTranscoder));
             if (newRecord != null) {
                 newVersion = newRecord.getCas();
@@ -377,11 +377,11 @@ public class MemcachedStorageService extends AbstractIdentifiableInitializableCo
 // Checkstyle: ParameterNumber OFF
     /** {@inheritDoc} */
     @Override
-    @Nullable public Long updateWithVersion(@Positive final long version,
+    @Nullable public <T> Long updateWithVersion(@Positive final long version,
                                   @Nonnull @NotEmpty final String context,
                                   @Nonnull @NotEmpty final String key,
-                                  @Nonnull final Object value,
-                                  @Nonnull final StorageSerializer serializer,
+                                  @Nonnull final T value,
+                                  @Nonnull final StorageSerializer<T> serializer,
                                   @Nullable @Positive final Long expiration)
             throws IOException, VersionMismatchException {
 

@@ -87,7 +87,7 @@ public class PopulateSignatureSigningParametersTest extends OpenSAMLInitBaseTest
     @Test public void testCopy() throws Exception {
         // Test copy from PRC to MessageContext
         action.setSignatureSigningParametersResolver(new MockResolver(true));
-        action.setExistingParametersContextLookupStrategy(new ChildContextLookup(SecurityParametersContext.class));
+        action.setExistingParametersContextLookupStrategy(new ChildContextLookup<>(SecurityParametersContext.class));
         action.setSecurityParametersContextLookupStrategy(
                 new ChildContextLookup<>(SecurityParametersContext.class, true).compose(
                         new OutboundMessageContextLookup()));

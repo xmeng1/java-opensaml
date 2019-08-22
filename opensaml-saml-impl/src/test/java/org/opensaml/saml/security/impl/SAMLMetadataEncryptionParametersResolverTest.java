@@ -749,8 +749,8 @@ public class SAMLMetadataEncryptionParametersResolverTest extends XMLObjectBaseT
     public class MapBasedKeyTransportAlgorithmPredicate implements KeyTransportAlgorithmPredicate {
         private Map<String,String> algoMap;
         
-        public MapBasedKeyTransportAlgorithmPredicate(Map<String,String> algoMap) {
-            this.algoMap = algoMap;
+        public MapBasedKeyTransportAlgorithmPredicate(Map<String,String> map) {
+            algoMap = map;
         }
         
         public boolean test(@Nullable SelectionInput input) {

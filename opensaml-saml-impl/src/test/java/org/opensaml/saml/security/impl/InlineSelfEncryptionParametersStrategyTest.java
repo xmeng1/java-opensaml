@@ -126,7 +126,7 @@ public class InlineSelfEncryptionParametersStrategyTest extends OpenSAMLInitBase
     public void testConfigLookup() {
         resolverCreds.add(cred1);
         
-        Function<ProfileRequestContext, List<EncryptionConfiguration>> configStrategy = new Function<ProfileRequestContext, List<EncryptionConfiguration>>() {
+        Function<ProfileRequestContext, List<EncryptionConfiguration>> configStrategy = new Function<>() {
             public List<EncryptionConfiguration> apply(@Nullable ProfileRequestContext input) {
                 BasicEncryptionConfiguration selfConfig = new BasicEncryptionConfiguration();
                 RSAOAEPParameters rsaParams = new RSAOAEPParameters();

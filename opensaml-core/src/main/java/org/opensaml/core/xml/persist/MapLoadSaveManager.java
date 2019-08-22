@@ -142,10 +142,9 @@ public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditional
     public void save(final String key, final T xmlObject, final boolean overwrite) throws IOException {
         if (!overwrite && exists(key)) {
             throw new IOException(String.format("Value already exists for key '%s'", key));
-        } else {
-            backingMap.put(key, xmlObject);
-            dataLastModified.put(key, Instant.now());
         }
+        backingMap.put(key, xmlObject);
+        dataLastModified.put(key, Instant.now());
     }
 
     /** {@inheritDoc} */
@@ -164,17 +163,17 @@ public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditional
         }
         if (backingMap.containsKey(newKey)) {
             throw new IOException(String.format("Specified new key already exists: %s", newKey));
-        } else {
-            backingMap.put(newKey, value);
-            backingMap.remove(currentKey);
-            
-            dataLastModified.put(newKey, dataLastModified.get(currentKey));
-            dataLastModified.remove(currentKey);
-            
-            updateLoadLastModified(newKey, getLoadLastModified(currentKey));
-            clearLoadLastModified(currentKey);
-            return true;
         }
+        
+        backingMap.put(newKey, value);
+        backingMap.remove(currentKey);
+        
+        dataLastModified.put(newKey, dataLastModified.get(currentKey));
+        dataLastModified.remove(currentKey);
+        
+        updateLoadLastModified(newKey, getLoadLastModified(currentKey));
+        clearLoadLastModified(currentKey);
+        return true;
     }
 
     /** {@inheritDoc} */

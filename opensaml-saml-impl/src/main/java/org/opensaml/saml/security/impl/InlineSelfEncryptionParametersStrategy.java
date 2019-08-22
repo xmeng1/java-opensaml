@@ -174,10 +174,9 @@ public class InlineSelfEncryptionParametersStrategy
         }
         if (baseConfigs != null) {
             return baseConfigs;
-        } else {
-            log.debug("No self-encryption EncryptionConfigurations were resolved, returning global configuration");
-            return Collections.singletonList(SecurityConfigurationSupport.getGlobalEncryptionConfiguration());
         }
+        log.debug("No self-encryption EncryptionConfigurations were resolved, returning global configuration");
+        return Collections.singletonList(SecurityConfigurationSupport.getGlobalEncryptionConfiguration());
     }
     
 }

@@ -149,14 +149,10 @@ public class XSBooleanValue {
         }
 
         if (numericRepresentation) {
-            if (value.booleanValue()) {
-                return "1";
-            } else {
-                return "0";
-            }
-        } else {
-            return value.toString();
+            return value.booleanValue() ? "1" : "0";
         }
+        
+        return value.toString();
     }
 
     /**

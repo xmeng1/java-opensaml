@@ -157,9 +157,8 @@ public class SAMLConfiguration {
         public String apply(final String input) {
             if (input == null) {
                 return null;
-            } else {
-                return input.toLowerCase();
             }
+            return input.toLowerCase();
         }
         
     }

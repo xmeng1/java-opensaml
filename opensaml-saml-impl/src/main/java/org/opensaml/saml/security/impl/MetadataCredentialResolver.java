@@ -230,9 +230,8 @@ public class MetadataCredentialResolver extends AbstractCriteriaFilteringCredent
         final UsageCriterion usageCriteria = criteriaSet.get(UsageCriterion.class);
         if (usageCriteria != null) {
             return usageCriteria.getUsage();
-        } else {
-            return UsageType.UNSPECIFIED;
-        } 
+        }
+        return UsageType.UNSPECIFIED; 
     }
     
     /**
@@ -351,9 +350,8 @@ public class MetadataCredentialResolver extends AbstractCriteriaFilteringCredent
                 log.debug("Resolved cached credentials from KeyDescriptor object metadata");
                 accumulator.addAll(cachedCreds);
                 return;
-            } else {
-                log.debug("Found no cached credentials in KeyDescriptor object metadata, resolving from KeyInfo");
             }
+            log.debug("Found no cached credentials in KeyDescriptor object metadata, resolving from KeyInfo");
         } finally {
             // Note: with the standard Java ReentrantReadWriteLock impl, you can not upgrade a read lock
             // to a write lock!  So have to release here and then acquire the write lock below.

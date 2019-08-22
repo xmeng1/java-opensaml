@@ -309,12 +309,10 @@ public class FilesystemLoadSaveManager<T extends XMLObject> extends AbstractCond
             if (success) {
                 clearLoadLastModified(key);
                 return true;
-            } else {
-                throw new IOException(String.format("Error removing target file: %s", file.getAbsolutePath()));
             }
-        } else {
-            return false;
+            throw new IOException(String.format("Error removing target file: %s", file.getAbsolutePath()));
         }
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -327,12 +325,11 @@ public class FilesystemLoadSaveManager<T extends XMLObject> extends AbstractCond
         final File newFile = buildFile(newKey);
         if (newFile.exists()) {
             throw new IOException(String.format("Specified new key already exists: %s", newKey));
-        } else {
-            Files.move(currentFile, newFile);
-            updateLoadLastModified(newKey, getLoadLastModified(currentKey));
-            clearLoadLastModified(currentKey);
-            return true;
         }
+        Files.move(currentFile, newFile);
+        updateLoadLastModified(newKey, getLoadLastModified(currentKey));
+        clearLoadLastModified(currentKey);
+        return true;
     }
     
     /**

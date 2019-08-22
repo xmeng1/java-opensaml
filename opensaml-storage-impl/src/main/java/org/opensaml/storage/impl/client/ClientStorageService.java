@@ -55,6 +55,7 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
 import net.shibboleth.utilities.java.support.net.CookieManager;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.security.DataExpiredException;
@@ -262,19 +263,23 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
     /** {@inheritDoc} */
     @Override
     public int getContextSize() {
-        return capabilityMap.get(getSource());
+        try {
+            return capabilityMap.get(getSource());
+        } catch (final IOException e) {
+            return capabilityMap.get(ClientStorageSource.COOKIE);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public int getKeySize() {
-        return capabilityMap.get(getSource());
+        return getContextSize();
     }
 
     /** {@inheritDoc} */
     @Override
     public long getValueSize() {
-        return capabilityMap.get(getSource());
+        return getContextSize();
     }
 
     // Checkstyle: CyclomaticComplexity ON
@@ -321,22 +326,33 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
 
     /** {@inheritDoc} */
     @Override
-    @Nonnull @NonnullElements @Live protected Map<String, Map<String, MutableStorageRecord>> getContextMap() {
+    @Nonnull @NonnullElements @Live protected Map<String, Map<String, MutableStorageRecord<?>>> getContextMap()
+            throws IOException {
         
-        final HttpSession session = Constraint.isNotNull(httpServletRequest.getSession(), "HttpSession cannot be null");
-        final Object store = Constraint.isNotNull(session.getAttribute(STORAGE_ATTRIBUTE + '.' + storageName),
-                "Storage object was not present in session");
-        return ((ClientStorageServiceStore) store).getContextMap();
+        try {
+            final HttpSession session = Constraint.isNotNull(httpServletRequest.getSession(),
+                    "HttpSession cannot be null");
+            final Object store = Constraint.isNotNull(session.getAttribute(STORAGE_ATTRIBUTE + '.' + storageName),
+                    "Storage object was not present in session");
+            return ((ClientStorageServiceStore) store).getContextMap();
+        } catch (final ConstraintViolationException e) {
+            throw new IOException(e);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void setDirty() {
-        final HttpSession session = Constraint.isNotNull(httpServletRequest.getSession(), "HttpSession cannot be null");
-        
-        final Object store = session.getAttribute(STORAGE_ATTRIBUTE + '.' + storageName);
-        if (store != null && store instanceof ClientStorageServiceStore) {
-            ((ClientStorageServiceStore) store).setDirty(true);
+    protected void setDirty() throws IOException {
+        try {
+            final HttpSession session = Constraint.isNotNull(httpServletRequest.getSession(),
+                    "HttpSession cannot be null");
+
+            final Object store = session.getAttribute(STORAGE_ATTRIBUTE + '.' + storageName);
+            if (store != null && store instanceof ClientStorageServiceStore) {
+                ((ClientStorageServiceStore) store).setDirty(true);
+            }
+        } catch (final ConstraintViolationException e) {
+            throw new IOException(e);
         }
     }
     
@@ -347,8 +363,10 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
      * returned by {@link #getLock()}.</p>
      *  
      * @return the source of the loaded data
+     * 
+     * @throws IOException to signal an error
      */
-    @Nonnull ClientStorageSource getSource() {
+    @Nonnull ClientStorageSource getSource() throws IOException {
        final Lock lock = getLock().readLock();
        try {
            lock.lock();
@@ -360,6 +378,8 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
                return ((ClientStorageServiceStore) object).getSource();
            }
            return ClientStorageSource.COOKIE;
+       } catch (final ConstraintViolationException e) {
+           throw new IOException(e);
        } finally {
            lock.unlock();
        }
@@ -372,8 +392,10 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
      * returned by {@link #getLock()}.</p>
      *  
      * @return true iff the {@link HttpSession} contains a storage object
+     * 
+     * @throws IOException to signal an error
      */
-    boolean isLoaded() {
+    boolean isLoaded() throws IOException {
        final Lock lock = getLock().readLock();
        try {
            lock.lock();
@@ -381,6 +403,8 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
            final HttpSession session = Constraint.isNotNull(httpServletRequest.getSession(),
                    "HttpSession cannot be null");
            return session.getAttribute(STORAGE_ATTRIBUTE + '.' + storageName) instanceof ClientStorageServiceStore;
+       } catch (final ConstraintViolationException e) {
+           throw new IOException(e);
        } finally {
            lock.unlock();
        }
@@ -501,7 +525,7 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
     public class ClientStorageServiceStore {
         
         /** The underlying map of data records. */
-        @Nonnull @NonnullElements private final Map<String, Map<String, MutableStorageRecord>> contextMap;
+        @Nonnull @NonnullElements private final Map<String, Map<String, MutableStorageRecord<?>>> contextMap;
         
         /** Data source. */
         @Nonnull private final ClientStorageSource source; 
@@ -540,7 +564,7 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
                     }
                     
                     // Create new context if necessary.
-                    Map<String,MutableStorageRecord> dataMap = contextMap.get(context.getKey());
+                    Map<String,MutableStorageRecord<?>> dataMap = contextMap.get(context.getKey());
                     if (dataMap == null) {
                         dataMap = new HashMap<>();
                         contextMap.put(context.getKey(), dataMap);
@@ -555,7 +579,7 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
                             exp = fields.getJsonNumber("x").longValueExact();
                         }
                         
-                        dataMap.put(record.getKey(), new MutableStorageRecord(fields.getString("v"), exp));
+                        dataMap.put(record.getKey(), new MutableStorageRecord<>(fields.getString("v"), exp));
                     }
                 }
                 setDirty(false);
@@ -572,7 +596,7 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
          * 
          * @return map of contexts to manipulate
          */
-        @Nonnull @NonnullElements @Live Map<String, Map<String, MutableStorageRecord>> getContextMap() {
+        @Nonnull @NonnullElements @Live Map<String, Map<String, MutableStorageRecord<?>>> getContextMap() {
             return contextMap;
         }
         
@@ -632,11 +656,11 @@ public class ClientStorageService extends AbstractMapBackedStorageService implem
                 final JsonGenerator gen = Json.createGenerator(sink);
                 
                 gen.writeStartObject();
-                for (final Map.Entry<String,Map<String, MutableStorageRecord>> context : contextMap.entrySet()) {
+                for (final Map.Entry<String,Map<String, MutableStorageRecord<?>>> context : contextMap.entrySet()) {
                     if (!context.getValue().isEmpty()) {
                         gen.writeStartObject(context.getKey());
-                        for (final Map.Entry<String,MutableStorageRecord> entry : context.getValue().entrySet()) {
-                            final MutableStorageRecord record = entry.getValue();
+                        for (final Map.Entry<String,MutableStorageRecord<?>> entry : context.getValue().entrySet()) {
+                            final MutableStorageRecord<?> record = entry.getValue();
                             final Long recexp = record.getExpiration();
                             if (recexp == null || recexp > now) {
                                 empty = false;

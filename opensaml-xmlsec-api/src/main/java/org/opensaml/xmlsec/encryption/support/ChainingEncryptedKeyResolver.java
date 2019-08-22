@@ -208,9 +208,8 @@ public class ChainingEncryptedKeyResolver extends AbstractEncryptedKeyResolver {
             tempKey = getNextKey();
             if (tempKey != null) {
                 return tempKey;
-            } else {
-                throw new NoSuchElementException("No more EncryptedKey elements are available");
             }
+            throw new NoSuchElementException("No more EncryptedKey elements are available");
         }
 
         /** {@inheritDoc} */
@@ -229,11 +228,10 @@ public class ChainingEncryptedKeyResolver extends AbstractEncryptedKeyResolver {
                 currentResolver = resolverIterator.next();
                 log.debug("Getting key iterator from next resolver: {}", currentResolver.getClass().toString());
                 return currentResolver.resolve(encryptedData).iterator();
-            } else {
-                log.debug("No more resolvers available in the resolver chain");
-                currentResolver = null;
-                return null;
             }
+            log.debug("No more resolvers available in the resolver chain");
+            currentResolver = null;
+            return null;
         }
 
         /**

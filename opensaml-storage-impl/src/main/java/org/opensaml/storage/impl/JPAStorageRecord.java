@@ -38,6 +38,8 @@ import org.opensaml.storage.MutableStorageRecord;
 
 /**
  * Implementation of {@link MutableStorageRecord} annotated for JPA.
+ * 
+ * @param <T> type of object
  */
 @Entity
 @Table(name = "StorageRecords")
@@ -58,7 +60,7 @@ import org.opensaml.storage.MutableStorageRecord;
     @NamedQuery(name = "JPAStorageRecord.deleteByExpiration",
             query = "DELETE FROM JPAStorageRecord r WHERE r.expiration <= :exp")})
 @IdClass(JPAStorageRecord.RecordId.class)
-public class JPAStorageRecord extends MutableStorageRecord {
+public class JPAStorageRecord<T> extends MutableStorageRecord<T> {
 
     /** Length of the context column. */
     public static final int CONTEXT_SIZE = 255;

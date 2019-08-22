@@ -153,13 +153,13 @@ public class BaseAssertionValidationTest extends XMLObjectBaseTestCase {
         return cred;
     }
     
-    protected void signAssertion(Assertion assertion, Credential credential) throws SecurityException, MarshallingException, SignatureException {
+    protected void signAssertion(Assertion a, Credential credential) throws SecurityException, MarshallingException, SignatureException {
         SignatureSigningParameters parameters = new SignatureSigningParameters();
         parameters.setSigningCredential(credential);
         parameters.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
         parameters.setSignatureReferenceDigestMethod(SignatureConstants.ALGO_ID_DIGEST_SHA256);
         parameters.setSignatureCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
-        SignatureSupport.signObject(assertion, parameters);
+        SignatureSupport.signObject(a, parameters);
     }
     
 }

@@ -150,7 +150,7 @@ public class HTTPArtifactEncoder extends BaseSAML1MessageEncoder {
             queryParams.add(new Pair<>("TARGET", relayState));
         }
 
-        final SAML1ArtifactBuilder artifactBuilder;
+        final SAML1ArtifactBuilder<?> artifactBuilder;
         final byte[] artifactType = getSAMLArtifactType(messageContext);
         if (artifactType != null) {
             artifactBuilder = SAMLConfigurationSupport.getSAML1ArtifactBuilderFactory()

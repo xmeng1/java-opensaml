@@ -17,6 +17,7 @@
 
 package org.opensaml.storage.impl.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -101,7 +102,13 @@ public class PopulateClientStorageLoadContext extends AbstractProfileAction {
         
         for (final ClientStorageService service : storageServices) {
             
-            if (!service.isLoaded()) {
+            try {
+                if (!service.isLoaded()) {
+                    loadCtx.getStorageKeys().add(service.getStorageName());
+                    ids.add(service.getId());
+                }
+            } catch (final IOException e) {
+                log.warn("{} Error checking load status of {}, assuming unloaded", getLogPrefix(), service.getId());
                 loadCtx.getStorageKeys().add(service.getStorageName());
                 ids.add(service.getId());
             }

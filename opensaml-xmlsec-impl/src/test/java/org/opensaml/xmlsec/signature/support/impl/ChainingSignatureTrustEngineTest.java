@@ -123,12 +123,12 @@ public class ChainingSignatureTrustEngineTest extends XMLObjectBaseTestCase {
 
         private Boolean trusted;
 
-        private MockSignatureTrustEngine(Boolean trusted) {
-            this.trusted = trusted;
+        private MockSignatureTrustEngine(Boolean flag) {
+            trusted = flag;
         }
 
         /** {@inheritDoc} */
-        public boolean validate(Signature token, CriteriaSet trustBasisCriteria) throws SecurityException {
+        public boolean validate(Signature tok, CriteriaSet trustBasisCriteria) throws SecurityException {
             if (trusted == null) {
                 throw new SecurityException("This means an error happened");
             }

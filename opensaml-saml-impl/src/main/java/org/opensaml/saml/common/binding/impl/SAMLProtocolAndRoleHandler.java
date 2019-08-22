@@ -60,7 +60,7 @@ public class SAMLProtocolAndRoleHandler extends AbstractMessageHandler {
     
     /** Optional lookup function for a context from which to copy the protocol and role data,
      * for example from a parent operation context. */
-    @Nullable private ContextDataLookupFunction<MessageContext, BaseContext> copyContextLookup;
+    @Nullable private ContextDataLookupFunction<MessageContext, ? extends BaseContext> copyContextLookup;
     
     /**
      * Set the optional lookup function for a context from which to copy the protocol and role data,
@@ -68,7 +68,8 @@ public class SAMLProtocolAndRoleHandler extends AbstractMessageHandler {
      * 
      * @param lookup the lookup function, may be null
      */
-    public void setCopyContextLookup(@Nullable final ContextDataLookupFunction<MessageContext, BaseContext> lookup) {
+    public void setCopyContextLookup(
+            @Nullable final ContextDataLookupFunction<MessageContext, ? extends BaseContext> lookup) {
        copyContextLookup = lookup; 
     }
     

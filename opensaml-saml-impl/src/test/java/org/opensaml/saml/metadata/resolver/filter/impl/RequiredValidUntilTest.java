@@ -84,8 +84,9 @@ public class RequiredValidUntilTest extends XMLObjectBaseTestCase {
     
     @Test
     public void testRequiredValidUntilAlreadyPast() throws Exception {
-        SAMLObjectBuilder<EntitiesDescriptor> entitiesDescriptorBuilder = 
-                (SAMLObjectBuilder<EntitiesDescriptor>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(EntitiesDescriptor.TYPE_NAME);
+        SAMLObjectBuilder<EntitiesDescriptor> entitiesDescriptorBuilder = (SAMLObjectBuilder<EntitiesDescriptor>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<EntitiesDescriptor>getBuilderOrThrow(
+                        EntitiesDescriptor.TYPE_NAME);
         EntitiesDescriptor descriptor = entitiesDescriptorBuilder.buildObject();
         descriptor.setValidUntil(Instant.now().minusMillis(10000));
 

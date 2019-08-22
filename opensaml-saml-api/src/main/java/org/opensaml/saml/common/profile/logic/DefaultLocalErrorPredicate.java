@@ -168,10 +168,9 @@ public class DefaultLocalErrorPredicate implements Predicate<ProfileRequestConte
         if (localEvents.contains(event)) {
             log.debug("Error event {} will be handled locally", event);
             return true;
-        } else {
-            log.debug("Error event {} will be handled with response", event);
-            return false;
         }
+        log.debug("Error event {} will be handled with response", event);
+        return false;
     }
 // Checkstyle: CyclomaticComplexity ON
 

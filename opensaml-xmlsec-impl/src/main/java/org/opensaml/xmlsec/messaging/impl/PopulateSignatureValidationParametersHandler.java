@@ -117,7 +117,7 @@ public class PopulateSignatureValidationParametersHandler extends AbstractMessag
         if (resolver == null) {
             throw new ComponentInitializationException("SignatureValidationParametersResolver cannot be null");
         } else if (configurationLookupStrategy == null) {
-            configurationLookupStrategy = new Function<MessageContext,List<SignatureValidationConfiguration>>() {
+            configurationLookupStrategy = new Function<>() {
                 public List<SignatureValidationConfiguration> apply(final MessageContext input) {
                     return Collections.singletonList(
                             SecurityConfigurationSupport.getGlobalSignatureValidationConfiguration());

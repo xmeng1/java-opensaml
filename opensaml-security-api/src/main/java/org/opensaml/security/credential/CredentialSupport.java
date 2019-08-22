@@ -49,9 +49,8 @@ public final class CredentialSupport {
         }
         if (credential.getPublicKey() != null) {
             return credential.getPublicKey();
-        } else {
-            return credential.getSecretKey();
         }
+        return credential.getSecretKey();
     }
 
     /**
@@ -66,9 +65,8 @@ public final class CredentialSupport {
         }
         if (credential.getPrivateKey() != null) {
             return credential.getPrivateKey();
-        } else {
-            return credential.getSecretKey();
         }
+        return credential.getSecretKey();
     }
 
     /**
@@ -83,9 +81,8 @@ public final class CredentialSupport {
         }
         if (credential.getPrivateKey() != null) {
             return credential.getPrivateKey();
-        } else {
-            return credential.getSecretKey();
         }
+        return credential.getSecretKey();
     }
 
     /**
@@ -100,9 +97,8 @@ public final class CredentialSupport {
         }
         if (credential.getPublicKey() != null) {
             return credential.getPublicKey();
-        } else {
-            return credential.getSecretKey();
         }
+        return credential.getSecretKey();
     }
 
     /**
@@ -126,9 +122,8 @@ public final class CredentialSupport {
             @Nullable final PrivateKey privateKey) {
         if (privateKey != null) {
             return new BasicCredential(publicKey, privateKey);
-        } else {
-            return new BasicCredential(publicKey);
         }
+        return new BasicCredential(publicKey);
     }
 
     /**
@@ -142,9 +137,8 @@ public final class CredentialSupport {
             @Nullable final PrivateKey privateKey) {
         if (privateKey != null) {
             return new BasicX509Credential(cert, privateKey);
-        } else {
-            return new BasicX509Credential(cert);
         }
+        return new BasicX509Credential(cert);
     }
 
 }

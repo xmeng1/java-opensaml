@@ -306,11 +306,10 @@ public class SAML20AssertionValidator {
             if (signatureRequired) {
                 context.setValidationFailureMessage("Assertion was required to be signed, but was not");
                 return ValidationResult.INVALID;
-            } else {
-                log.debug("Assertion was not required to be signed, and was not signed.  " 
-                        + "Skipping further signature evaluation");
-                return ValidationResult.VALID;
             }
+            log.debug("Assertion was not required to be signed, and was not signed.  " 
+                    + "Skipping further signature evaluation");
+            return ValidationResult.VALID;
         }
         
         if (trustEngine == null) {
@@ -360,13 +359,12 @@ public class SAML20AssertionValidator {
                 log.debug("Validation of signature of Assertion '{}' from Issuer '{}' was successful",
                         token.getID(), tokenIssuer);
                 return ValidationResult.VALID;
-            } else {
-                final String msg = String.format(
-                        "Signature of Assertion '%s' from Issuer '%s' was not valid", token.getID(), tokenIssuer);
-                log.warn(msg);
-                context.setValidationFailureMessage(msg);
-                return ValidationResult.INVALID;
             }
+            final String msg = String.format(
+                    "Signature of Assertion '%s' from Issuer '%s' was not valid", token.getID(), tokenIssuer);
+            log.warn(msg);
+            context.setValidationFailureMessage(msg);
+            return ValidationResult.INVALID;
         } catch (final SecurityException e) {
             final String msg = String.format(
                     "A problem was encountered evaluating the signature over Assertion with ID '%s': %s",

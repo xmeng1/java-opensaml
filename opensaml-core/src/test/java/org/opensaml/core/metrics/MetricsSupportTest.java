@@ -36,11 +36,11 @@ public class MetricsSupportTest {
     
     @BeforeClass
     public void setUpGauges() {
-        gauge1 = new Gauge<Integer>() {
+        gauge1 = new Gauge<>() {
             public Integer getValue() {
                 return 42;
             }};
-        gauge2 = new Gauge<Integer>() {
+        gauge2 = new Gauge<>() {
             public Integer getValue() {
                 return 100;
             }};

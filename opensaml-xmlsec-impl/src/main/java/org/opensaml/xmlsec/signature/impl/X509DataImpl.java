@@ -38,7 +38,7 @@ import org.opensaml.xmlsec.signature.X509SubjectName;
 public class X509DataImpl extends AbstractXMLObject implements X509Data {
 
     /** The list of XMLObject child elements. */
-    private final IndexedXMLObjectChildrenList indexedChildren;
+    private final IndexedXMLObjectChildrenList<XMLObject> indexedChildren;
 
     /**
      * Constructor.
@@ -49,12 +49,12 @@ public class X509DataImpl extends AbstractXMLObject implements X509Data {
      */
     protected X509DataImpl(final String namespaceURI, final String elementLocalName, final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        indexedChildren = new IndexedXMLObjectChildrenList(this);
+        indexedChildren = new IndexedXMLObjectChildrenList<>(this);
     }
 
     /** {@inheritDoc} */
     public List<XMLObject> getXMLObjects() {
-        return (List<XMLObject>) indexedChildren;
+        return indexedChildren;
     }
 
     /** {@inheritDoc} */
@@ -96,7 +96,7 @@ public class X509DataImpl extends AbstractXMLObject implements X509Data {
     public List<XMLObject> getOrderedChildren() {
         final ArrayList<XMLObject> children = new ArrayList<>();
 
-        children.addAll((List<XMLObject>) indexedChildren);
+        children.addAll(indexedChildren);
 
         if (children.size() == 0) {
             return null;

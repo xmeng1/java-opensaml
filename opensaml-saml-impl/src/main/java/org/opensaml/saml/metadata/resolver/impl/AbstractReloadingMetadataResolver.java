@@ -365,11 +365,10 @@ public abstract class AbstractReloadingMetadataResolver extends AbstractBatchMet
             if (t instanceof Exception) {
                 log.error("{} Error occurred while attempting to refresh metadata from '{}'", getLogPrefix(), mdId);
                 throw new ResolverException((Exception) t);
-            } else {
-                log.error("{} Error occurred while attempting to refresh metadata from '{}'", getLogPrefix(), mdId, t);
-                throw new ResolverException(String.format("Saw an error of type '%s' with message '%s'", 
-                        t.getClass().getName(), t.getMessage()));
             }
+            log.error("{} Error occurred while attempting to refresh metadata from '{}'", getLogPrefix(), mdId, t);
+            throw new ResolverException(String.format("Saw an error of type '%s' with message '%s'", 
+                    t.getClass().getName(), t.getMessage()));
         } finally {
             logCachedMetadataExpiration(now);
             

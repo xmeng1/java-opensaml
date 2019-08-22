@@ -68,9 +68,8 @@ public class EntityGroupName {
         
         if (obj instanceof EntityGroupName) {
             return name.equals(((EntityGroupName)obj).getName());
-        } else {
-            return false;
         }
+        return false;
     }
 
 }

@@ -135,9 +135,8 @@ public class BasicX509Credential extends BasicCredential implements X509Credenti
             final LazySet<X509Certificate> constructedChain = new LazySet<>();
             constructedChain.add(entityCert);
             return constructedChain;
-        } else {
-            return entityCertChain;
         }
+        return entityCertChain;
     }
 
     /**

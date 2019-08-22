@@ -66,7 +66,7 @@ public class AuthnRequestTest extends BaseComplexSAMLObjectTestCase {
         Assert.assertEquals(request.getSubject().getNameID().getValue(), "j.doe@company.com", "Subject/NameID contents");
         Audience audience = request.getConditions().getAudienceRestrictions().get(0).getAudiences().get(0);
         Assert.assertEquals(audience.getAudienceURI(), "urn:foo:sp.example.org", "Conditions/AudienceRestriction[1]/Audience[1] contents");
-        AuthnContextClassRef classRef = (AuthnContextClassRef) request.getRequestedAuthnContext().getAuthnContextClassRefs().get(0);
+        AuthnContextClassRef classRef = request.getRequestedAuthnContext().getAuthnContextClassRefs().get(0);
         Assert.assertEquals(classRef.getAuthnContextClassRef(), "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport", "RequestedAuthnContext/AuthnContextClassRef[1] contents");
     }
 

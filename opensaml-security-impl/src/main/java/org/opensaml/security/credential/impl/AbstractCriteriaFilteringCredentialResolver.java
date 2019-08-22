@@ -63,15 +63,15 @@ public abstract class AbstractCriteriaFilteringCredentialResolver extends Abstra
         final Set<Predicate<Credential>> predicates = getPredicates(criteriaSet);
         if (predicates.isEmpty()) {
             return storeCandidates;
-        } else {
-            Predicate<Credential> aggregatePredicate = null;
-            if (isSatisfyAllPredicates()) {
-                aggregatePredicate = PredicateSupport.and(predicates);
-            } else {
-                aggregatePredicate = PredicateSupport.or(predicates);
-            }
-            return Iterables.filter(storeCandidates, aggregatePredicate::test);
         }
+        
+        Predicate<Credential> aggregatePredicate = null;
+        if (isSatisfyAllPredicates()) {
+            aggregatePredicate = PredicateSupport.and(predicates);
+        } else {
+            aggregatePredicate = PredicateSupport.or(predicates);
+        }
+        return Iterables.filter(storeCandidates, aggregatePredicate::test);
     }
     
     /**

@@ -37,9 +37,8 @@ public abstract class AbstractSingletonFactory<Input, Output> implements Singlet
         if (output != null) {
             log.trace("Input key mapped to a non-null value, returning output");
             return output;
-        } else {
-            log.trace("Input key mapped to a null value");
         }
+        log.trace("Input key mapped to a null value");
         
         log.trace("Creating new output instance and inserting to factory map");
         output = createNewInstance(input);

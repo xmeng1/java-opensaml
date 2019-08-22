@@ -84,8 +84,8 @@ public class KeyReferenceTest extends XMLObjectProviderBaseTestCase {
         KeyReference ref = (KeyReference) buildXMLObject(KeyReference.DEFAULT_ELEMENT_NAME);
         
         ref.setURI(expectedURI);
-        ref.getUnknownXMLObjects().add((SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
-        ref.getUnknownXMLObjects().add((SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
+        ref.getUnknownXMLObjects().add(buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
+        ref.getUnknownXMLObjects().add(buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
         
         assertXMLEquals(expectedChildElementsDOM, ref);
     }

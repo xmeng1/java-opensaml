@@ -86,9 +86,8 @@ public final class SAMLSubjectNameIdentifierContext extends BaseContext {
         final SAMLObject samlObject = getSubjectNameIdentifier();
         if (samlObject instanceof NameIdentifier) {
             return (NameIdentifier) samlObject;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -104,9 +103,8 @@ public final class SAMLSubjectNameIdentifierContext extends BaseContext {
         final SAMLObject samlObject = getSubjectNameIdentifier();
         if (samlObject instanceof NameID) {
             return (NameID) samlObject;
-        } else {
-            return null;
         }
+        return null;
     }
     /**
      * Sets the name identifier, which must be either a SAML 1 {@link NameIdentifier} 
@@ -140,24 +138,21 @@ public final class SAMLSubjectNameIdentifierContext extends BaseContext {
                     (org.opensaml.saml.saml2.core.SubjectQuery) samlMessage;
             if (query.getSubject() != null) {
                 return query.getSubject().getNameID();
-            } else {
-                return null;
             }
+            return null;
         } else if (samlMessage instanceof org.opensaml.saml.saml2.core.AuthnRequest) {
             final org.opensaml.saml.saml2.core.AuthnRequest request = 
                     (org.opensaml.saml.saml2.core.AuthnRequest) samlMessage;
             if (request.getSubject() != null) {
                 return request.getSubject().getNameID();
-            } else {
-                return null;
             }
+            return null;
         } else if (samlMessage instanceof Request && ((Request) samlMessage).getSubjectQuery() != null) {
             final org.opensaml.saml.saml1.core.SubjectQuery query = ((Request) samlMessage).getSubjectQuery();
             if (query.getSubject() != null) {
                 return query.getSubject().getNameIdentifier();
-            } else {
-                return null;
             }
+            return null;
         } else if (samlMessage instanceof LogoutRequest) {
             log.debug("Ignoring LogoutRequest, Subject does not require processing");
         } else {

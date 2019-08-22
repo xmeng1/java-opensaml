@@ -118,9 +118,8 @@ public class KeyInfoReferenceProvider extends AbstractKeyInfoProvider {
             final String uri = ref.getURI();
             if (uri != null && uri.startsWith("#")) {
                 return ref;
-            } else {
-                log.debug("KeyInfoReference did not contain a same-document URI reference, cannot handle");
             }
+            log.debug("KeyInfoReference did not contain a same-document URI reference, cannot handle");
         }
         return null;
     }

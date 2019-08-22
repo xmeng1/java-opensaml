@@ -154,7 +154,7 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
         assertionsLookupStrategy = new AssertionStrategy();
 
         // Default strategy is a 16-byte secure random source.
-        idGeneratorLookupStrategy = new Function<ProfileRequestContext,IdentifierGenerationStrategy>() {
+        idGeneratorLookupStrategy = new Function<>() {
             public IdentifierGenerationStrategy apply(final ProfileRequestContext input) {
                 return new SecureRandomIdentifierGenerationStrategy();
             }
@@ -317,9 +317,8 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
             if (formats == null || formats.isEmpty()) {
                 log.debug("{} No candidate NameID formats, nothing to do", getLogPrefix());
                 return false;
-            } else {
-                log.debug("{} Candidate NameID formats: {}", getLogPrefix(), formats);
             }
+            log.debug("{} Candidate NameID formats: {}", getLogPrefix(), formats);
         }
         
         return true;

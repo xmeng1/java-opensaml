@@ -329,7 +329,7 @@ public class HTTPArtifactEncoder extends BaseSAML2MessageEncoder {
             throw new MessageEncodingException("Unable to obtain issuer or relying party for message encoding");
         }
         
-        final SAML2ArtifactBuilder artifactBuilder;
+        final SAML2ArtifactBuilder<?> artifactBuilder;
         final byte[] artifactType = getSAMLArtifactType(messageContext);
         if (artifactType != null) {
             artifactBuilder = SAMLConfigurationSupport.getSAML2ArtifactBuilderFactory()

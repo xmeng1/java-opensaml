@@ -77,17 +77,16 @@ public class MetadataQueryProtocolRequestURLBuilderTest {
         
         private String suffix;
         
-        public MockURLBuilder(String suffix) {
-            this.suffix = suffix;
+        public MockURLBuilder(String s) {
+            suffix = s;
         }
 
         /** {@inheritDoc} */
         public String buildURL(String baseURL, CriteriaSet criteria) {
             if (suffix == null) {
                 return null;
-            } else {
-                return baseURL + suffix;
             }
+            return baseURL + suffix;
         }
         
     }

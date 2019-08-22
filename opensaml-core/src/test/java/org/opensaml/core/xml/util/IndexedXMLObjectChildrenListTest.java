@@ -71,7 +71,6 @@ public class IndexedXMLObjectChildrenListTest {
      */
     @Test
     public void testSet() {
-        SimpleXMLObjectBuilder sxoBuilder = new SimpleXMLObjectBuilder();
         SimpleXMLObject parentObject = sxoBuilder.buildObject();
         IndexedXMLObjectChildrenList<SimpleXMLObject> indexedList = new IndexedXMLObjectChildrenList<>(
                 parentObject);

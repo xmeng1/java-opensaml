@@ -129,9 +129,8 @@ public class MessageLifetimeSecurityHandler extends AbstractMessageHandler {
             if (requiredRule) {
                 log.warn("{} Inbound SAML message issue instant not present in message context", getLogPrefix());
                 throw new MessageHandlerException("Inbound SAML message issue instant not present in message context");
-            } else {
-                return;
             }
+            return;
         }
 
         final Instant issueInstant = msgInfoContext.getMessageIssueInstant();

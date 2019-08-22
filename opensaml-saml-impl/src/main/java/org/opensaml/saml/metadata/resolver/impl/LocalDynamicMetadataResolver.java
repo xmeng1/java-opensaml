@@ -105,7 +105,7 @@ public class LocalDynamicMetadataResolver extends AbstractDynamicMetadataResolve
         if (sourceManager instanceof ConditionalLoadXMLObjectLoadSaveManager) {
             final String key = sourceKeyGenerator.apply(new CriteriaSet(new EntityIdCriterion(entityID)));
             if (key != null) {
-                ((ConditionalLoadXMLObjectLoadSaveManager)sourceManager).clearLoadLastModified(key);
+                ((ConditionalLoadXMLObjectLoadSaveManager<?>)sourceManager).clearLoadLastModified(key);
             }
         }
         
@@ -126,10 +126,9 @@ public class LocalDynamicMetadataResolver extends AbstractDynamicMetadataResolve
                 log.trace("{} Found no target in local source manager with key '{}'", getLogPrefix(), key);
             }
             return result;
-        } else {
-            log.trace("{} Could not generate source key from criteria, can not resolve", getLogPrefix());
-            return null;
         }
+        log.trace("{} Could not generate source key from criteria, can not resolve", getLogPrefix());
+        return null;
     }
     
 }

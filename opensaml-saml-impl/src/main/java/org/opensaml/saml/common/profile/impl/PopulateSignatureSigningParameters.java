@@ -184,7 +184,7 @@ public class PopulateSignatureSigningParameters
         if (resolver == null) {
             throw new ComponentInitializationException("SignatureSigningParametersResolver cannot be null");
         } else if (configurationLookupStrategy == null) {
-            configurationLookupStrategy = new Function<ProfileRequestContext,List<SignatureSigningConfiguration>>() {
+            configurationLookupStrategy = new Function<>() {
                 public List<SignatureSigningConfiguration> apply(final ProfileRequestContext input) {
                     return Collections.singletonList(
                             SecurityConfigurationSupport.getGlobalSignatureSigningConfiguration());
@@ -209,10 +209,9 @@ public class PopulateSignatureSigningParameters
         if (super.doPreExecute(profileRequestContext)) {
             log.debug("{} Signing enabled", getLogPrefix());
             return true;
-        } else {
-            log.debug("{} Signing not enabled", getLogPrefix());
-            return false;
         }
+        log.debug("{} Signing not enabled", getLogPrefix());
+        return false;
     }
 
 }

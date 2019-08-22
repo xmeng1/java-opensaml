@@ -53,12 +53,12 @@ public class DOMMetadataResolverTest extends XMLObjectBaseTestCase {
         URL mdURL = DOMMetadataResolverTest.class
                 .getResource("/org/opensaml/saml/saml2/metadata/InCommon-metadata.xml");
         mdFile = new File(mdURL.toURI());
-        FileInputStream fis = new FileInputStream(mdFile);
-        Document document = parserPool.parse(fis);
-        fis.close();
         
-
-        metadataProvider = new DOMMetadataResolver(document.getDocumentElement());
+        try (final FileInputStream fis = new FileInputStream(mdFile)) {
+            Document document = parserPool.parse(fis);
+            metadataProvider = new DOMMetadataResolver(document.getDocumentElement());
+        }
+        
         metadataProvider.setId("test");
         metadataProvider.initialize();
         
@@ -74,11 +74,9 @@ public class DOMMetadataResolverTest extends XMLObjectBaseTestCase {
     
     @Test
     public void testFilterFailureAndNoFailFast() throws URISyntaxException, XMLParserException, IOException, ResolverException {
-        FileInputStream fis = new FileInputStream(mdFile);
-        Document document = parserPool.parse(fis);
-        fis.close();
-        
-        try {
+
+        try (final FileInputStream fis = new FileInputStream(mdFile)) {
+            Document document = parserPool.parse(fis);
             metadataProvider = new DOMMetadataResolver(document.getDocumentElement());
             metadataProvider.setMetadataFilter(new MockFailureFilter());
             metadataProvider.setFailFastInitialization(false);

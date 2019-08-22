@@ -121,10 +121,9 @@ public class SAMLMDClientCertAuthSecurityHandler extends BaseClientCertAuthSecur
             log.trace("Found authenticatable entityID '{}' from context: {}", 
                     entityContext.getEntityId(), entityContext.getClass().getName());
             return entityContext.getEntityId();
-        } else {
-            log.trace("Authenticatable entityID context was not present: {}", entityContext.getClass().getName());
-            return null;
         }
+        log.trace("Authenticatable entityID context was not present: {}", entityContext.getClass().getName());
+        return null;
     }
 
     /** {@inheritDoc} */

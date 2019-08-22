@@ -42,7 +42,7 @@ public class MetadataIndexStoreTest extends OpenSAMLInitBaseTestCase {
     
     @BeforeMethod
     protected void setUp() {
-        store = new MetadataIndexStore();
+        store = new MetadataIndexStore<>();
         key1 = new SimpleStringMetadataIndexKey("foo");
         key2 = new SimpleStringMetadataIndexKey("bar");
         a = (EntityDescriptor) XMLObjectSupport.buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);

@@ -86,7 +86,7 @@ public class SOAPClientPipelineNameMappingPredicate implements Predicate<Message
             soapClientContextLookup = lookupStrategy;
         } else {
             soapClientContextLookup =
-                    new ChildContextLookup(SOAPClientContext.class).compose( 
+                    new ChildContextLookup<>(SOAPClientContext.class).compose( 
                             new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
         }
     }

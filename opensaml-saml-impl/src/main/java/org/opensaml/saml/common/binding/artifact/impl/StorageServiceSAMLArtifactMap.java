@@ -165,7 +165,7 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
             throw new IOException("Length of artifact (" + artifact.length() + ") exceeds storage capabilities");
         }
 
-        final StorageRecord record = getStorageService().read(STORAGE_CONTEXT, artifact);
+        final StorageRecord<SAMLArtifactMapEntry> record = getStorageService().read(STORAGE_CONTEXT, artifact);
 
         if (record == null) {
             log.debug("No unexpired entry found for artifact: {}", artifact);
@@ -173,7 +173,7 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
         }
 
         log.debug("Found valid entry for artifact: {}", artifact);
-        return (SAMLArtifactMapEntry) record.getValue((StorageSerializer) getEntryFactory(), STORAGE_CONTEXT, artifact);
+        return record.getValue((StorageSerializer<SAMLArtifactMapEntry>) getEntryFactory(), STORAGE_CONTEXT, artifact);
     }
 
     /** {@inheritDoc} */
@@ -194,7 +194,7 @@ public class StorageServiceSAMLArtifactMap extends AbstractInitializableComponen
 
         final boolean success =
                 getStorageService().create(STORAGE_CONTEXT, artifact, artifactEntry,
-                        (StorageSerializer) getEntryFactory(),
+                        (StorageSerializer<SAMLArtifactMapEntry>) getEntryFactory(),
                         Instant.now().plus(getArtifactLifetime()).toEpochMilli());
         if (!success) {
             throw new IOException("A duplicate artifact was generated");

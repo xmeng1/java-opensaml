@@ -263,9 +263,8 @@ public final class SignatureSupport {
         final String trimmed = StringSupport.trimOrNull(uri);
         if (trimmed == null) {
             return false;
-        } else {
-            return C14N_ALGORITHMS.contains(trimmed);
         }
+        return C14N_ALGORITHMS.contains(trimmed);
     }
     
     /**
@@ -285,7 +284,7 @@ public final class SignatureSupport {
         Constraint.isNotNull(parameters, "Signature signing parameters cannot be null");
 
         final XMLObjectBuilder<Signature> signatureBuilder =
-                (XMLObjectBuilder<Signature>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+                XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilderOrThrow(
                         Signature.DEFAULT_ELEMENT_NAME);
         final Signature signature = signatureBuilder.buildObject(Signature.DEFAULT_ELEMENT_NAME);
 

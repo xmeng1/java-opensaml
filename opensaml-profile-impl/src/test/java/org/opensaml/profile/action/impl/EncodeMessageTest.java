@@ -134,9 +134,8 @@ public class EncodeMessageTest {
         protected void doEncode() throws MessageEncodingException {
             if (throwException) {
                 throw new MessageEncodingException();
-            } else {
-                message = ((MockMessage) getMessageContext().getMessage()).getEncoded();
             }
+            message = ((MockMessage) getMessageContext().getMessage()).getEncoded();
         }
     }
  

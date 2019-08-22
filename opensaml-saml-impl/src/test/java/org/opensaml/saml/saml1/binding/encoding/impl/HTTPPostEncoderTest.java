@@ -57,7 +57,6 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
     private VelocityEngine velocityEngine;
 
     @BeforeMethod
-    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         velocityEngine = new VelocityEngine();
         velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");

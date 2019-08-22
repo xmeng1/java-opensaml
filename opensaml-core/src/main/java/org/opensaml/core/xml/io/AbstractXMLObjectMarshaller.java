@@ -261,10 +261,9 @@ public abstract class AbstractXMLObjectMarshaller implements Marshaller {
                                 + ", child of " + xmlObject.getElementQName();
                         log.error(errorMsg);
                         throw new MarshallingException(errorMsg);
-                    } else {
-                        log.trace("No marshaller was registered for {}, child of {}. Using default marshaller",
-                                childXMLObject.getElementQName(), xmlObject.getElementQName());
                     }
+                    log.trace("No marshaller was registered for {}, child of {}. Using default marshaller",
+                            childXMLObject.getElementQName(), xmlObject.getElementQName());
                 }
 
                 log.trace("Marshalling {} and adding it to DOM", childXMLObject.getElementQName());

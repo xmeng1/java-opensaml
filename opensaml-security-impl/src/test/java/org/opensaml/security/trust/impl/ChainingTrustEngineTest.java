@@ -123,12 +123,12 @@ public class ChainingTrustEngineTest {
         
         private Boolean trusted;
         
-        private FooEngine(Boolean trusted) {
-            this.trusted = trusted;
+        private FooEngine(Boolean flag) {
+            trusted = flag;
         }
 
         /** {@inheritDoc} */
-        public boolean validate(FooToken token, CriteriaSet trustBasisCriteria) throws SecurityException {
+        public boolean validate(FooToken token1, CriteriaSet trustBasisCriteria) throws SecurityException {
             if (trusted == null) {
                 throw new SecurityException("This means an error happened");
             }
@@ -142,12 +142,12 @@ public class ChainingTrustEngineTest {
         
         private Boolean trusted;
         
-        private SuperEngine(Boolean trusted) {
-            this.trusted = trusted;
+        private SuperEngine(Boolean flag) {
+            trusted = flag;
         }
 
         /** {@inheritDoc} */
-        public boolean validate(SuperToken token, CriteriaSet trustBasisCriteria) throws SecurityException {
+        public boolean validate(SuperToken token1, CriteriaSet trustBasisCriteria) throws SecurityException {
             if (trusted == null) {
                 throw new SecurityException("This means an error happened");
             }

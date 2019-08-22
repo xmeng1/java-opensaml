@@ -80,7 +80,7 @@ public class MetadataIndexManager<T> {
         if (initIndexes != null) {
             for (final MetadataIndex index : initIndexes) {
                 log.trace("Initializing manager for index: {}", index);
-                indexes.put(index, new MetadataIndexStore());
+                indexes.put(index, new MetadataIndexStore<T>());
             }
         }
     }
@@ -152,9 +152,9 @@ public class MetadataIndexManager<T> {
             //      (i.e. no MetadataIndexKeys were generated for any criteria)
             // Returning absent here allows to distinguish these cases from the empty set case above.
             return Optional.absent();
-        } else {
-            return Optional.of(items);
         }
+        
+        return Optional.of(items);
     }
     
     /**

@@ -121,11 +121,10 @@ public class RegexRequestURLBuilder implements Function<CriteriaSet, String> {
                 log.debug("Regular expression '{}' matched successfully against entity ID '{}', returning '{}'", 
                         pattern.pattern(), entityID, result);
                 return result;
-            } else {
-                log.debug("Regular expression '{}' did not match against entity ID '{}', returning null", 
-                        pattern.pattern(), entityID);
-                return null;
             }
+            log.debug("Regular expression '{}' did not match against entity ID '{}', returning null", 
+                    pattern.pattern(), entityID);
+            return null;
         } catch (final Throwable t) {
             log.warn("Error evaluating regular expression '{}' against entity ID '{}'", pattern.pattern(), entityID, t);
             return null;

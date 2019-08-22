@@ -661,16 +661,16 @@ public class PKIXSignatureTrustEngineTest extends XMLObjectBaseTestCase {
         child.setValue("SomeSimpleValueAsTextContent");
         sxo.getSimpleXMLObjects().add(child);
         
-        Signature signature = (Signature) buildXMLObject(Signature.DEFAULT_ELEMENT_NAME);
-        signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
-        signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
-        signature.setSigningCredential(signingX509Cred);
+        Signature sig = (Signature) buildXMLObject(Signature.DEFAULT_ELEMENT_NAME);
+        sig.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+        sig.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
+        sig.setSigningCredential(signingX509Cred);
         
         DocumentInternalIDContentReference idContentRef = new DocumentInternalIDContentReference(sxo.getId());
         idContentRef.setDigestAlgorithm(SignatureConstants.ALGO_ID_DIGEST_SHA1);
         idContentRef.getTransforms().add(SignatureConstants.TRANSFORM_ENVELOPED_SIGNATURE);
         idContentRef.getTransforms().add(SignatureConstants.TRANSFORM_C14N_EXCL_OMIT_COMMENTS);
-        signature.getContentReferences().add(idContentRef);
+        sig.getContentReferences().add(idContentRef);
         
         if (emitKeyInfo) {
             X509KeyInfoGeneratorFactory kiFactory = new X509KeyInfoGeneratorFactory();
@@ -688,10 +688,10 @@ public class PKIXSignatureTrustEngineTest extends XMLObjectBaseTestCase {
             } catch (SecurityException e) {
                 Assert.fail("Error generating KeyInfo from signing credential: " + e);
             }
-            signature.setKeyInfo(keyInfo);
+            sig.setKeyInfo(keyInfo);
         }        
         
-        sxo.setSignature(signature);
+        sxo.setSignature(sig);
         
         try {
             XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(sxo).marshall(sxo);
@@ -699,7 +699,7 @@ public class PKIXSignatureTrustEngineTest extends XMLObjectBaseTestCase {
             Assert.fail("Error marshalling object for signing: " + e);
         }
         
-        Signer.signObject(signature);
+        Signer.signObject(sig);
         
         /*
         try {

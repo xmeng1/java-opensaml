@@ -156,13 +156,14 @@ public class KeyInfoConfirmationDataTypeTest extends XMLObjectProviderBaseTestCa
     }
     
     public KeyInfoConfirmationDataType buildXMLObject() {
-        SAMLObjectBuilder builder = 
-            (SAMLObjectBuilder) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(KeyInfoConfirmationDataType.TYPE_NAME);
+        SAMLObjectBuilder<KeyInfoConfirmationDataType> builder = (SAMLObjectBuilder<KeyInfoConfirmationDataType>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<KeyInfoConfirmationDataType>getBuilderOrThrow(
+                        KeyInfoConfirmationDataType.TYPE_NAME);
         
         if(builder == null){
             Assert.fail("Unable to retrieve builder for object QName " + KeyInfoConfirmationDataType.TYPE_NAME);
         }
-        return (KeyInfoConfirmationDataType) builder.buildObject();
+        return builder.buildObject();
     }
 
 }

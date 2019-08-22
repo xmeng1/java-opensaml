@@ -350,9 +350,8 @@ public class HttpSOAPClient extends AbstractInitializableComponent implements SO
                         + " Fault Message: " + msg);
                 faultException.setFault(fault);
                 throw faultException;
-            } else {
-                throw new SOAPClientException("HTTP status code was 500 but SOAP response did not contain a Body");
             }
+            throw new SOAPClientException("HTTP status code was 500 but SOAP response did not contain a Body");
         } catch (final IOException e) {
             throw new SOAPClientException("Unable to read response", e);
         }

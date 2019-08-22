@@ -105,23 +105,23 @@ public class EntityIDDigestGenerator implements Function<CriteriaSet, String> {
     protected String buildKey(@Nonnull final String keyValue) {
         if (prefix == null && suffix == null) {
             return keyValue;
-        } else {
-            final StringBuffer buffer = new StringBuffer();
-            if (prefix != null) {
-                buffer.append(prefix);
-                if (separator != null) {
-                    buffer.append(separator);
-                }
-            }
-            buffer.append(keyValue);
-            if (suffix != null) {
-                if (separator != null) {
-                    buffer.append(separator);
-                }
-                buffer.append(suffix);
-            }
-            return buffer.toString();
         }
+        
+        final StringBuffer buffer = new StringBuffer();
+        if (prefix != null) {
+            buffer.append(prefix);
+            if (separator != null) {
+                buffer.append(separator);
+            }
+        }
+        buffer.append(keyValue);
+        if (suffix != null) {
+            if (separator != null) {
+                buffer.append(separator);
+            }
+            buffer.append(suffix);
+        }
+        return buffer.toString();
     }
     
 }

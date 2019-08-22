@@ -131,9 +131,8 @@ public class PredicateFilter implements MetadataFilter {
             if (Direction.EXCLUDE.equals(direction) == condition.test(entity)) {
                 log.trace("Filtering out entity {} ", entity.getEntityID());
                 return null;
-            } else {
-                return metadata;
             }
+            return metadata;
         } else {
             log.error("Unrecognised metadata type {}", metadata.getClass().getSimpleName());
             return null;

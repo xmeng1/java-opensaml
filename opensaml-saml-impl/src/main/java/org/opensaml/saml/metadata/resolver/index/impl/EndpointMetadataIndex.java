@@ -138,9 +138,8 @@ public class EndpointMetadataIndex implements MetadataIndex {
             final HashSet<MetadataIndexKey> result = new HashSet<>();
             result.addAll(processCriteria(criteriaSet, roleCrit.getRole(), endpointCrit.getEndpoint()));
             return result;
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -215,9 +214,9 @@ public class EndpointMetadataIndex implements MetadataIndex {
                 log.warn("Could not parse URL '{}', will not generate path segment variants", location, e);
             }
             return result;
-        } else {
-            return Collections.singleton(location);
         }
+        
+        return Collections.singleton(location);
     }
 
 

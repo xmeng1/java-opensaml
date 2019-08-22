@@ -35,7 +35,7 @@ import org.opensaml.xmlsec.signature.SPKISexp;
 public class SPKIDataImpl extends AbstractXMLObject implements SPKIData {
     
     /** The list of XMLObject child elements. */
-    private final IndexedXMLObjectChildrenList indexedChildren;
+    private final IndexedXMLObjectChildrenList<XMLObject> indexedChildren;
 
     /**
      * Constructor.
@@ -46,12 +46,12 @@ public class SPKIDataImpl extends AbstractXMLObject implements SPKIData {
      */
     protected SPKIDataImpl(final String namespaceURI, final String elementLocalName, final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        indexedChildren = new IndexedXMLObjectChildrenList(this);
+        indexedChildren = new IndexedXMLObjectChildrenList<>(this);
     }
 
     /** {@inheritDoc} */
     public List<XMLObject> getXMLObjects() {
-        return (List<XMLObject>) this.indexedChildren;
+        return this.indexedChildren;
     }
 
     /** {@inheritDoc} */
@@ -68,7 +68,7 @@ public class SPKIDataImpl extends AbstractXMLObject implements SPKIData {
     public List<XMLObject> getOrderedChildren() {
         final ArrayList<XMLObject> children = new ArrayList<>();
         
-        children.addAll((List<XMLObject>) indexedChildren);
+        children.addAll(indexedChildren);
         
         if (children.size() == 0) {
             return null;

@@ -179,9 +179,8 @@ public class AddNameIdentifierToSubjects extends AbstractProfileAction {
         if (formats == null || formats.isEmpty()) {
             log.debug("{} No candidate NameIdentifier formats, nothing to do", getLogPrefix());
             return false;
-        } else {
-            log.debug("{} Candidate NameIdentifier formats: {}", getLogPrefix(), formats);
         }
+        log.debug("{} Candidate NameIdentifier formats: {}", getLogPrefix(), formats);
         
         return true;
     }

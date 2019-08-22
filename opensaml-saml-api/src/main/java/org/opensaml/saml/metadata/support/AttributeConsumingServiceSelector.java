@@ -241,9 +241,8 @@ public class AttributeConsumingServiceSelector {
         if (firstNoDefault != null) {
             log.debug("Selected first AttributeConsumingService with no explicit isDefault");
             return firstNoDefault;
-        } else {
-            log.debug("Selected first AttributeConsumingService with explicit isDefault of false");
-            return candidates.get(0);
         }
+        log.debug("Selected first AttributeConsumingService with explicit isDefault of false");
+        return candidates.get(0);
     }
 }

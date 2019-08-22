@@ -95,9 +95,8 @@ public final class SAMLMessageSecuritySupport {
         final String normalized = StringSupport.trimOrNull(scheme);
         if (normalized == null) {
             return false;
-        } else {
-            return SAMLConfigurationSupport.getAllowedBindingURLSchemes().contains(normalized.toLowerCase());
         }
+        return SAMLConfigurationSupport.getAllowedBindingURLSchemes().contains(normalized.toLowerCase());
     }
 
 }

@@ -95,9 +95,8 @@ public abstract class BaseSAMLXMLSignatureSecurityHandler extends BaseTrustEngin
         final SecurityParametersContext secParams = messageContext.getSubcontext(SecurityParametersContext.class);
         if (secParams == null || secParams.getSignatureValidationParameters() == null) {
             return null;
-        } else {
-            return secParams.getSignatureValidationParameters().getSignatureTrustEngine();
         }
+        return secParams.getSignatureValidationParameters().getSignatureTrustEngine();
     }
 
     /** {@inheritDoc} */

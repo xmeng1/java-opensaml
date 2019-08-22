@@ -447,7 +447,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final String selfEntityID = resolveSelfEntityID(peerRoleDescriptor);
         
             // TODO can assume/enforce response as ArtifactResponse here?
-            final InOutOperationContext opContext = new SAMLSOAPClientContextBuilder()
+            final InOutOperationContext opContext = new SAMLSOAPClientContextBuilder<>()
                     .setOutboundMessage(buildArtifactResolveRequestMessage(
                             artifact, ars.getLocation(), peerRoleDescriptor, selfEntityID))
                     .setProtocol(SAMLConstants.SAML20P_NS)
@@ -462,10 +462,9 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final Object response = opContext.getInboundMessageContext().getMessage();
             if (response instanceof ArtifactResponse) {
                 return validateAndExtractResponseMessage((ArtifactResponse) response);
-            } else {
-                throw new MessageDecodingException("SOAP message payload was not an instance of ArtifactResponse: " 
-                        + response.getClass().getName());
             }
+            throw new MessageDecodingException("SOAP message payload was not an instance of ArtifactResponse: " 
+                    + response.getClass().getName());
         } catch (final MessageException | SOAPException | SecurityException e) {
             throw new MessageDecodingException("Error dereferencing artifact", e);
         }
@@ -542,9 +541,8 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final String selfEntityID = getSelfEntityIDResolver().resolveSingle(criteria);
             if (selfEntityID == null) {
                 throw new MessageDecodingException("Unable to resolve self entityID from peer RoleDescriptor");
-            } else {
-                return selfEntityID;
             }
+            return selfEntityID;
         } catch (final ResolverException e) {
             throw new MessageDecodingException("Fatal error resolving self entityID from peer RoleDescriptor", e);
         }
@@ -598,9 +596,8 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final ArtifactResolutionService ars = artifactEndpointResolver.resolveSingle(criteriaSet);
             if (ars != null) {
                 return ars;
-            } else {
-                throw new MessageDecodingException("Unable to resolve ArtifactResolutionService endpoint");
             }
+            throw new MessageDecodingException("Unable to resolve ArtifactResolutionService endpoint");
         } catch (final ResolverException e) {
             throw new MessageDecodingException("Unable to resolve ArtifactResolutionService endpoint");
         }

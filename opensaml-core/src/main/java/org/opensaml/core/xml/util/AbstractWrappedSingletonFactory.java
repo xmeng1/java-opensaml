@@ -185,10 +185,9 @@ public abstract class AbstractWrappedSingletonFactory<Input, Output>
             if (outputRef.get() != null) {
                 log.trace("WeakReference referent was non-null, returning referent");
                 return outputRef.get();
-            } else {
-                log.trace("WeakReference referent was null, removing WeakReference entry from map");
-                map.remove(input);
             }
+            log.trace("WeakReference referent was null, removing WeakReference entry from map");
+            map.remove(input);
         }
         return null;
     }

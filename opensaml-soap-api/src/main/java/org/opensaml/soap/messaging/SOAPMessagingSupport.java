@@ -448,9 +448,8 @@ public final class SOAPMessagingSupport {
         final SOAP11Context soap11Context = getSOAP11Context(messageContext, false);
         if (soap11Context != null) {
             return soap11Context.getFault();
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**

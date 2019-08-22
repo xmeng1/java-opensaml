@@ -67,7 +67,7 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
         try {
             writeLock.lock();
             
-            final Map<String,Map<String,MutableStorageRecord>> contextMap;
+            final Map<String,Map<String,MutableStorageRecord<?>>> contextMap;
             try {
                 contextMap = getContextMap();
             } catch (final Exception e) {
@@ -75,14 +75,14 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
             }
             
             // Create new context if necessary.
-            Map<String, MutableStorageRecord> dataMap = contextMap.get(context);
+            Map<String, MutableStorageRecord<?>> dataMap = contextMap.get(context);
             if (dataMap == null) {
-                dataMap = new HashMap();
+                dataMap = new HashMap<>();
                 contextMap.put(context, dataMap);
             }
             
             // Check for a duplicate.
-            final StorageRecord record = dataMap.get(key);
+            final StorageRecord<?> record = dataMap.get(key);
             if (record != null) {
                 // Not yet expired?
                 final Long exp = record.getExpiration();
@@ -93,7 +93,7 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
                 // It's dead, so we can just remove it now and create the new record.
             }
             
-            dataMap.put(key, new MutableStorageRecord(value, expiration));
+            dataMap.put(key, new MutableStorageRecord<>(value, expiration));
             log.trace("Inserted record '{}' in context '{}' with expiration '{}'",
                     new Object[] { key, context, expiration });
             
@@ -107,14 +107,14 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
     
     /** {@inheritDoc} */
     @Override
-    @Nullable public StorageRecord read(@Nonnull @NotEmpty final String context,
+    @Nullable public <T> StorageRecord<T> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key) throws IOException {
-        return readImpl(context, key, null).getSecond();
+        return this.<T>readImpl(context, key, null).getSecond();
     }
 
     /** {@inheritDoc} */
     @Override
-    @Nonnull public Pair<Long, StorageRecord> read(@Nonnull @NotEmpty final String context,
+    @Nonnull public <T> Pair<Long, StorageRecord<T>> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key, final long version) throws IOException {
         return readImpl(context, key, version);
     }
@@ -176,18 +176,18 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
         try {
             writeLock.lock();
             
-            final Map<String,Map<String,MutableStorageRecord>> contextMap;
+            final Map<String,Map<String,MutableStorageRecord<?>>> contextMap;
             try {
                 contextMap = getContextMap();
             } catch (final Exception e) {
                 throw new IOException(e);
             }
 
-            final Map<String, MutableStorageRecord> dataMap = contextMap.get(context);
+            final Map<String, MutableStorageRecord<?>> dataMap = contextMap.get(context);
             if (dataMap != null) {    
                 setDirty();
                 final Long now = System.currentTimeMillis();
-                for (final MutableStorageRecord record : dataMap.values()) {
+                for (final MutableStorageRecord<?> record : dataMap.values()) {
                     final Long exp = record.getExpiration();
                     if (exp == null || now < exp) {
                         record.setExpiration(expiration);
@@ -230,7 +230,7 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
         try {
             writeLock.lock();
             
-            final Map<String,Map<String,MutableStorageRecord>> contextMap;
+            final Map<String,Map<String,MutableStorageRecord<?>>> contextMap;
             
             try {
                 contextMap = getContextMap();
@@ -238,7 +238,7 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
                 throw new IOException(e);
             }
             
-            final Map<String, MutableStorageRecord> dataMap = contextMap.get(context);
+            final Map<String, MutableStorageRecord<?>> dataMap = contextMap.get(context);
             if (dataMap != null) {
                 if (reapWithLock(dataMap, System.currentTimeMillis())) {
                     setDirty();
@@ -265,25 +265,28 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
      * 
      * <p>This method is guaranteed to be called under cover the lock returned by {{@link #getLock()}.</p>
      * 
-     * TODO: this method needs to be able to throw IOException to deal with unexpected scenarios without
-     * raising unchecked exceptions.
-     * 
      * @return map of contexts to manipulate
+     * 
+     * @throws IOException to signal errors
      */
-    @Nonnull @NonnullElements @Live protected abstract Map<String, Map<String, MutableStorageRecord>> getContextMap();
+    @Nonnull @NonnullElements @Live
+    protected abstract Map<String, Map<String, MutableStorageRecord<?>>> getContextMap() throws IOException;
 
     /**
      * A callback to indicate that data has been modified.
      * 
      * <p>This method is guaranteed to be called under cover the lock returned by {{@link #getLock()}.</p>
+     * 
+     * @throws IOException to signal an error
      */
-    protected void setDirty() {
+    protected void setDirty() throws IOException {
         
     }
     
     /**
      * Internal method to implement read functions.
      *
+     * @param <T>           type of object 
      * @param context       a storage context label
      * @param key           a key unique to context
      * @param version       only return record if newer than optionally supplied version
@@ -291,14 +294,14 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
      * @return  a pair consisting of the version of the record read back, if any, and the record itself
      * @throws IOException  if errors occur in the read process 
      */
-    @Nonnull protected Pair<Long, StorageRecord> readImpl(@Nonnull @NotEmpty final String context,
+    @Nonnull protected <T> Pair<Long,StorageRecord<T>> readImpl(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key, @Nullable final Long version) throws IOException {
 
         final Lock readLock = getLock().readLock();
         try {
             readLock.lock();
             
-            final Map<String,Map<String,MutableStorageRecord>> contextMap;
+            final Map<String,Map<String,MutableStorageRecord<?>>> contextMap;
             
             try {
                 contextMap = getContextMap();
@@ -306,30 +309,30 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
                 throw new IOException(e);
             }
             
-            final Map<String, MutableStorageRecord> dataMap = contextMap.get(context);
+            final Map<String, MutableStorageRecord<?>> dataMap = contextMap.get(context);
             if (dataMap == null) {
                 log.debug("Read failed, context '{}' not found", context);
-                return new Pair();
+                return new Pair<>();
             }
 
-            final StorageRecord record = dataMap.get(key);
+            final StorageRecord<?> record = dataMap.get(key);
             if (record == null) {
                 log.debug("Read failed, key '{}' not found in context '{}'", key, context);
-                return new Pair();
-            } else {
-                final Long exp = record.getExpiration();
-                if (exp != null && System.currentTimeMillis() >= exp) {
-                    log.debug("Read failed, key '{}' expired in context '{}'", key, context);
-                    return new Pair();
-                }
+                return new Pair<>();
+            }
+            
+            final Long exp = record.getExpiration();
+            if (exp != null && System.currentTimeMillis() >= exp) {
+                log.debug("Read failed, key '{}' expired in context '{}'", key, context);
+                return new Pair<>();
             }
             
             if (version != null && record.getVersion() == version) {
                 // Nothing's changed, so just echo back the version.
-                return new Pair(version, null);
+                return new Pair<>(version, null);
             }
             
-            return new Pair(record.getVersion(), record);
+            return new Pair<>(record.getVersion(), (StorageRecord<T>) record);
             
         } finally {
             readLock.unlock();
@@ -358,29 +361,29 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
         try {
             writeLock.lock();
             
-            final Map<String,Map<String,MutableStorageRecord>> contextMap;
+            final Map<String,Map<String,MutableStorageRecord<?>>> contextMap;
             try {
                 contextMap = getContextMap();
             } catch (final Exception e) {
                 throw new IOException(e);
             }
 
-            final Map<String, MutableStorageRecord> dataMap = contextMap.get(context);
+            final Map<String, MutableStorageRecord<?>> dataMap = contextMap.get(context);
             if (dataMap == null) {
                 log.debug("Update failed, context '{}' not found", context);
                 return null;
             }
             
-            final MutableStorageRecord record = dataMap.get(key);
+            final MutableStorageRecord<?> record = dataMap.get(key);
             if (record == null) {
                 log.debug("Update failed, key '{}' not found in context '{}'", key, context);
                 return null;
-            } else {
-                final Long exp = record.getExpiration();
-                if (exp != null && System.currentTimeMillis() >= exp) {
-                    log.debug("Update failed, key '{}' expired in context '{}'", key, context);
-                    return null;
-                }
+            }
+            
+            final Long exp = record.getExpiration();
+            if (exp != null && System.currentTimeMillis() >= exp) {
+                log.debug("Update failed, key '{}' expired in context '{}'", key, context);
+                return null;
             }
     
             if (version != null && version != record.getVersion()) {
@@ -426,20 +429,20 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
         try {
             writeLock.lock();
 
-            final Map<String,Map<String,MutableStorageRecord>> contextMap;
+            final Map<String,Map<String,MutableStorageRecord<?>>> contextMap;
             try {
                 contextMap = getContextMap();
             } catch (final Exception e) {
                 throw new IOException(e);
             }
             
-            final Map<String, MutableStorageRecord> dataMap = contextMap.get(context);
+            final Map<String, MutableStorageRecord<?>> dataMap = contextMap.get(context);
             if (dataMap == null) {
                 log.debug("Deleting record '{}' in context '{}'....context not found", key, context);
                 return false;
             }
 
-            final MutableStorageRecord record = dataMap.get(key);
+            final MutableStorageRecord<?> record = dataMap.get(key);
             if (record == null) {
                 log.debug("Deleting record '{}' in context '{}'....key not found", key, context);
                 return false;
@@ -469,11 +472,11 @@ public abstract class AbstractMapBackedStorageService extends AbstractStorageSer
      * 
      * @return  true iff anything was purged
      */
-    protected boolean reapWithLock(@Nonnull @NonnullElements final Map<String, MutableStorageRecord> dataMap,
+    protected boolean reapWithLock(@Nonnull @NonnullElements final Map<String, MutableStorageRecord<?>> dataMap,
             final long expiration) {
         
-        return Iterables.removeIf(dataMap.entrySet(), new Predicate<Entry<String, MutableStorageRecord>>() {
-                public boolean test(@Nullable final Entry<String, MutableStorageRecord> entry) {
+        return Iterables.removeIf(dataMap.entrySet(), new Predicate<Entry<String, MutableStorageRecord<?>>>() {
+                public boolean test(@Nullable final Entry<String, MutableStorageRecord<?>> entry) {
                     final Long exp = entry.getValue().getExpiration();
                     return exp != null && exp <= expiration;
                 }

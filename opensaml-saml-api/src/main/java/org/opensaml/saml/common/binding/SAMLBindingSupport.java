@@ -65,9 +65,8 @@ public final class SAMLBindingSupport {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class);
         if (bindingContext == null) { 
             return null;
-        } else {
-            return bindingContext.getRelayState();
         }
+        return bindingContext.getRelayState();
     }
     
     /**
@@ -138,16 +137,16 @@ public final class SAMLBindingSupport {
                 throw new BindingException("The endpoint response location " + endpoint.getResponseLocation()
                         + " is not a valid URL", e);
             }
-        } else {
-            if (Strings.isNullOrEmpty(endpoint.getLocation())) {
-                throw new BindingException("Relying party endpoint location was null or empty.");
-            }
-            try {
-                return new URI(endpoint.getLocation());
-            } catch (final URISyntaxException e) {
-                throw new BindingException("The endpoint location " + endpoint.getLocation()
-                        + " is not a valid URL", e);
-            }
+        }
+        
+        if (Strings.isNullOrEmpty(endpoint.getLocation())) {
+            throw new BindingException("Relying party endpoint location was null or empty.");
+        }
+        try {
+            return new URI(endpoint.getLocation());
+        } catch (final URISyntaxException e) {
+            throw new BindingException("The endpoint location " + endpoint.getLocation()
+                    + " is not a valid URL", e);
         }
     }
     
@@ -199,14 +198,13 @@ public final class SAMLBindingSupport {
                 "SAML message was not present in message context");
         if (samlMessage instanceof SignableSAMLObject && ((SignableSAMLObject)samlMessage).isSigned()) {
             return true;
-        } else {
-            final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class);
-            if (bindingContext != null) {
-                return bindingContext.hasBindingSignature();
-            } else {
-                return false;
-            }
         }
+        
+        final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class);
+        if (bindingContext != null) {
+            return bindingContext.hasBindingSignature();
+        }
+        return false;
     }
 
     /**
@@ -225,9 +223,8 @@ public final class SAMLBindingSupport {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class);
         if (bindingContext != null && bindingContext.getBindingDescriptor() != null) {
             return bindingContext.getBindingDescriptor().isSignatureCapable();
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**

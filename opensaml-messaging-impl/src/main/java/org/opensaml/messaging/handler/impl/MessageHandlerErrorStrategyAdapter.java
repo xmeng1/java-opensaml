@@ -135,23 +135,20 @@ public class MessageHandlerErrorStrategyAdapter extends AbstractMessageHandler {
                         if (rethrowIfHandled) {
                             log.trace("Based on config, rethrowing the handled error");
                             throw t;
-                        } else {
-                            log.trace("Based on config, swallowing the handled error");
-                            return;
                         }
-                    } else {
-                        log.trace("Handler indicates it did NOT handle the error, continuing with remaining handlers");
-                        continue;
+                        log.trace("Based on config, swallowing the handled error");
+                        return;
                     }
+                    log.trace("Handler indicates it did NOT handle the error, continuing with remaining handlers");
+                    continue;
                 }
             }
             log.trace("No error handler handled the thrown error");
             if (rethrowIfNotHandled) {
                 log.trace("Based on config, rethrowing the unhandled error");
                 throw t;
-            } else {
-                log.trace("Based on config, swallowing the unhandled error");
             }
+            log.trace("Based on config, swallowing the unhandled error");
         }
     }
 

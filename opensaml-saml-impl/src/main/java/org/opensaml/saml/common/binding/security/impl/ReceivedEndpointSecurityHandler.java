@@ -171,11 +171,10 @@ public class ReceivedEndpointSecurityHandler extends AbstractMessageHandler {
                         getLogPrefix());
                 throw new MessageHandlerException(
                         "SAML message intended destination (required by binding) was not present");
-            } else {
-                log.debug("{} SAML message intended destination endpoint was empty, not required by binding, skipping",
-                        getLogPrefix());
-                return;
             }
+            log.debug("{} SAML message intended destination endpoint was empty, not required by binding, skipping",
+                    getLogPrefix());
+            return;
         }
         
         final String receiverEndpoint;
@@ -199,9 +198,8 @@ public class ReceivedEndpointSecurityHandler extends AbstractMessageHandler {
             log.error("{} SAML message intended destination endpoint '{}' did not match the recipient endpoint '{}'",
                     getLogPrefix(), messageDestination, receiverEndpoint);
             throw new MessageHandlerException("SAML message failed received endpoint check");
-        } else {
-            log.debug("{} SAML message intended destination endpoint matched recipient endpoint", getLogPrefix());
         }
+        log.debug("{} SAML message intended destination endpoint matched recipient endpoint", getLogPrefix());
     }
 
 }

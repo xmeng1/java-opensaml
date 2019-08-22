@@ -51,7 +51,7 @@ public class SimpleRetrievalMethodEncryptedKeyResolverTest extends XMLObjectBase
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0));
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0).getEncryptedData());
         
-        EncryptedData encData = (EncryptedData) sxo.getSimpleXMLObjects().get(0).getEncryptedData();
+        EncryptedData encData = sxo.getSimpleXMLObjects().get(0).getEncryptedData();
         
         Assert.assertNotNull(encData.getKeyInfo());
         Assert.assertFalse(encData.getKeyInfo().getRetrievalMethods().isEmpty());
@@ -76,7 +76,7 @@ public class SimpleRetrievalMethodEncryptedKeyResolverTest extends XMLObjectBase
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0));
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0).getEncryptedData());
         
-        EncryptedData encData = (EncryptedData) sxo.getSimpleXMLObjects().get(0).getEncryptedData();
+        EncryptedData encData = sxo.getSimpleXMLObjects().get(0).getEncryptedData();
         
         Assert.assertNotNull(encData.getKeyInfo());
         Assert.assertFalse(encData.getKeyInfo().getRetrievalMethods().isEmpty());
@@ -102,7 +102,7 @@ public class SimpleRetrievalMethodEncryptedKeyResolverTest extends XMLObjectBase
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0));
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0).getEncryptedData());
         
-        EncryptedData encData = (EncryptedData) sxo.getSimpleXMLObjects().get(0).getEncryptedData();
+        EncryptedData encData = sxo.getSimpleXMLObjects().get(0).getEncryptedData();
         
         Assert.assertNotNull(encData.getKeyInfo());
         Assert.assertFalse(encData.getKeyInfo().getRetrievalMethods().isEmpty());
@@ -126,7 +126,7 @@ public class SimpleRetrievalMethodEncryptedKeyResolverTest extends XMLObjectBase
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0));
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0).getEncryptedData());
         
-        EncryptedData encData = (EncryptedData) sxo.getSimpleXMLObjects().get(0).getEncryptedData();
+        EncryptedData encData = sxo.getSimpleXMLObjects().get(0).getEncryptedData();
         
         Assert.assertNotNull(encData.getKeyInfo());
         Assert.assertFalse(encData.getKeyInfo().getRetrievalMethods().isEmpty());
@@ -152,7 +152,7 @@ public class SimpleRetrievalMethodEncryptedKeyResolverTest extends XMLObjectBase
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0));
         Assert.assertNotNull(sxo.getSimpleXMLObjects().get(0).getEncryptedData());
         
-        EncryptedData encData = (EncryptedData) sxo.getSimpleXMLObjects().get(0).getEncryptedData();
+        EncryptedData encData = sxo.getSimpleXMLObjects().get(0).getEncryptedData();
         
         Assert.assertNotNull(encData.getKeyInfo());
         Assert.assertFalse(encData.getKeyInfo().getRetrievalMethods().isEmpty());

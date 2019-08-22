@@ -79,7 +79,7 @@ public class SAMLProtocolAndRoleHandlerTest {
     
     @Test
     public void testCopySource() throws ComponentInitializationException, MessageHandlerException {
-        handler.setCopyContextLookup(new RecursiveTypedParentContextLookup(InOutOperationContext.class));
+        handler.setCopyContextLookup(new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
         handler.initialize();
         
         final InOutOperationContext opContext = new InOutOperationContext(messageContext, new MessageContext());
@@ -97,7 +97,7 @@ public class SAMLProtocolAndRoleHandlerTest {
     
     @Test
     public void testCopySourceWithEntityClass() throws ComponentInitializationException, MessageHandlerException {
-        handler.setCopyContextLookup(new RecursiveTypedParentContextLookup(InOutOperationContext.class));
+        handler.setCopyContextLookup(new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
         handler.setEntityContextClass(SAMLPresenterEntityContext.class);
         handler.initialize();
         
@@ -130,7 +130,7 @@ public class SAMLProtocolAndRoleHandlerTest {
     
     @Test(expectedExceptions=MessageHandlerException.class)
     public void testResolverWithNoCopySource() throws ComponentInitializationException, MessageHandlerException {
-        handler.setCopyContextLookup(new RecursiveTypedParentContextLookup(InOutOperationContext.class));
+        handler.setCopyContextLookup(new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
         handler.initialize();
         
         handler.invoke(messageContext);

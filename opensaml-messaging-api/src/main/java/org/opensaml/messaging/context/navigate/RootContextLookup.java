@@ -17,9 +17,13 @@
 
 package org.opensaml.messaging.context.navigate;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.BaseContext;
+
+import net.shibboleth.utilities.java.support.annotation.ParameterName;
+import net.shibboleth.utilities.java.support.logic.Constraint;
 
 /**
  * A {@link ContextDataLookupFunction} that gets the root of context tree.
@@ -30,6 +34,23 @@ import org.opensaml.messaging.context.BaseContext;
 public class RootContextLookup<StartContext extends BaseContext, RootContext extends BaseContext> implements
         ContextDataLookupFunction<StartContext, RootContext> {
 
+    /** Class type being returned. */
+    @Nullable private final Class<RootContext> claz;
+
+    /** Constructor. */
+    public RootContextLookup() {
+        claz = null;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param targetClass the type to return
+     */
+    public RootContextLookup(@Nonnull @ParameterName(name="targetClass") final Class<RootContext> targetClass) {
+        claz = Constraint.isNotNull(targetClass, "RootContext type cannot be null");
+    }
+    
     /** {@inheritDoc} */
     @Nullable public RootContext apply(@Nullable final BaseContext input) {
         if (input == null) {
@@ -37,10 +58,17 @@ public class RootContextLookup<StartContext extends BaseContext, RootContext ext
         }
 
         if (input.getParent() == null){
+            if (claz != null) {
+                if (claz.isInstance(input)) {
+                    return claz.cast(input);
+                }
+                throw new ClassCastException("Root context was not of the expected type");
+            }
+            
             return (RootContext) input;
-        } else {
-            return apply(input.getParent());
         }
+        
+        return apply(input.getParent());
     }
     
 }

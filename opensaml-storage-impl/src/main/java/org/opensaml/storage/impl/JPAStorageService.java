@@ -116,8 +116,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
         super.doDestroy();
     }
 
-    // Checkstyle: MethodLength OFF
-    // Checkstyle: CyclomaticComplexity OFF
+// Checkstyle: CyclomaticComplexity|MethodLength OFF
     /** {@inheritDoc} */
     @Override public boolean create(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
             @Nonnull @NotEmpty final String value, @Nullable @Positive final Long expiration) throws IOException {
@@ -131,7 +130,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     manager = entityManagerFactory.createEntityManager();
                     transaction = manager.getTransaction();
                     transaction.begin();
-                    JPAStorageRecord entity =
+                    JPAStorageRecord<?> entity =
                             manager.find(JPAStorageRecord.class, new JPAStorageRecord.RecordId(context, key),
                                     LockModeType.PESSIMISTIC_WRITE);
                     if (entity != null) {
@@ -145,7 +144,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                         // It's dead, reset the version for merge.
                         entity.resetVersion();
                     } else {
-                        entity = new JPAStorageRecord();
+                        entity = new JPAStorageRecord<>();
                         entity.setContext(context);
                         entity.setKey(key);
                     }
@@ -179,9 +178,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
             closeEntityManager(manager);
         }
     }
-
-    // Checkstyle: CyclomaticComplexity ON
-    // Checkstyle: MethodLength ON
+// Checkstyle: CyclomaticComplexity|MethodLength ON
 
     /**
      * Returns all records from the store.
@@ -189,7 +186,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      * @return all records or an empty list
      * @throws IOException if errors occur in the read process
      */
-    @Nonnull @NonnullElements public List<StorageRecord> readAll() throws IOException {
+    @Nonnull @NonnullElements public List<?> readAll() throws IOException {
         EntityManager manager = null;
         try {
             manager = entityManagerFactory.createEntityManager();
@@ -208,7 +205,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      * @return all records in the context or an empty list
      * @throws IOException if errors occur in the read process
      */
-    @Nonnull @NonnullElements public List<StorageRecord> readAll(@Nonnull @NotEmpty final String context)
+    @Nonnull @NonnullElements public List<?> readAll(@Nonnull @NotEmpty final String context)
             throws IOException {
         EntityManager manager = null;
         try {
@@ -241,13 +238,13 @@ public class JPAStorageService extends AbstractStorageService implements Storage
     }
 
     /** {@inheritDoc} */
-    @Override @Nullable public StorageRecord read(@Nonnull @NotEmpty final String context,
+    @Override @Nullable public <T> StorageRecord<T> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key) throws IOException {
-        return readImpl(context, key, null).getSecond();
+        return this.<T>readImpl(context, key, null).getSecond();
     }
 
     /** {@inheritDoc} */
-    @Override @Nonnull public Pair<Long, StorageRecord> read(@Nonnull @NotEmpty final String context,
+    @Override @Nonnull public <T> Pair<Long, StorageRecord<T>> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key, @Positive final long version) throws IOException {
         return readImpl(context, key, version);
     }
@@ -257,6 +254,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      * Reads the record matching the supplied parameters. Returns an empty pair if the record cannot be found or is
      * expired.
      * 
+     * @param <T> type of object
      * @param context to search for
      * @param key to search for
      * @param version to match
@@ -264,7 +262,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      * @return pair of version and storage record
      * @throws IOException if errors occur in the read process
      */
-    @Nonnull protected Pair<Long, StorageRecord> readImpl(@Nonnull @NotEmpty final String context,
+    @Nonnull protected <T> Pair<Long, StorageRecord<T>> readImpl(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key, @Positive final Long version) throws IOException {
         EntityManager manager = null;
         EntityTransaction transaction = null;
@@ -272,24 +270,23 @@ public class JPAStorageService extends AbstractStorageService implements Storage
             manager = entityManagerFactory.createEntityManager();
             transaction = manager.getTransaction();
             transaction.begin();
-            final JPAStorageRecord entity =
+            final JPAStorageRecord<T> entity =
                     manager.find(JPAStorageRecord.class, new JPAStorageRecord.RecordId(context, key),
                             LockModeType.PESSIMISTIC_READ);
             if (entity == null) {
                 log.debug("Read failed, key '{}' not found in context '{}'", key, context);
                 return new Pair<>();
-            } else {
-                final Long exp = entity.getExpiration();
-                if (exp != null && System.currentTimeMillis() >= exp) {
-                    log.debug("Read failed, key '{}' expired in context '{}'", key, context);
-                    return new Pair();
-                }
+            }
+            final Long exp = entity.getExpiration();
+            if (exp != null && System.currentTimeMillis() >= exp) {
+                log.debug("Read failed, key '{}' expired in context '{}'", key, context);
+                return new Pair<>();
             }
             if (version != null && entity.getVersion() == version) {
                 // Nothing's changed, so just echo back the version.
-                return new Pair(version, null);
+                return new Pair<>(version, null);
             }
-            return new Pair<Long, StorageRecord>(entity.getVersion(), entity);
+            return new Pair<>(entity.getVersion(), entity);
         } catch (final Exception e) {
             log.error("Error reading record '{}' in context '{}'", key, context, e);
             rollbackTransaction(transaction);
@@ -358,18 +355,18 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     manager = entityManagerFactory.createEntityManager();
                     transaction = manager.getTransaction();
                     transaction.begin();
-                    final JPAStorageRecord entity =
+                    final JPAStorageRecord<?> entity =
                             manager.find(JPAStorageRecord.class, new JPAStorageRecord.RecordId(context, key),
                                     LockModeType.PESSIMISTIC_WRITE);
                     if (entity == null) {
                         log.debug("Update failed, key '{}' not found in context '{}'", key, context);
                         return null;
-                    } else {
-                        final Long exp = entity.getExpiration();
-                        if (exp != null && System.currentTimeMillis() >= exp) {
-                            log.debug("Update failed, key '{}' expired in context '{}'", key, context);
-                            return null;
-                        }
+                    }
+                    
+                    final Long exp = entity.getExpiration();
+                    if (exp != null && System.currentTimeMillis() >= exp) {
+                        log.debug("Update failed, key '{}' expired in context '{}'", key, context);
+                        return null;
                     }
 
                     if (version != null && entity.getVersion() != version) {
@@ -450,7 +447,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     manager = entityManagerFactory.createEntityManager();
                     transaction = manager.getTransaction();
                     transaction.begin();
-                    final JPAStorageRecord entity =
+                    final JPAStorageRecord<?> entity =
                             manager.find(JPAStorageRecord.class, new JPAStorageRecord.RecordId(context, key),
                                     LockModeType.PESSIMISTIC_WRITE);
                     if (entity == null) {

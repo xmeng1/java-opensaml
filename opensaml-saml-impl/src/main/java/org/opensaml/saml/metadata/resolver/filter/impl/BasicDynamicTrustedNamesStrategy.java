@@ -81,10 +81,9 @@ public class BasicDynamicTrustedNamesStrategy implements Function<XMLObject, Set
         
         if (rawResult != null) {
             return new HashSet<>(StringSupport.normalizeStringCollection(rawResult));
-        } else {
-            return Collections.emptySet();
         }
         
+        return Collections.emptySet();
     }
 
 }

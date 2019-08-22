@@ -118,7 +118,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
         responseLookupStrategy = new MessageLookup<>(Response.class).compose(new OutboundMessageContextLookup());
         
         // Default pulls from servlet request.
-        addressLookupStrategy = new Function<ProfileRequestContext,String>() {
+        addressLookupStrategy = new Function<>() {
             public String apply(final ProfileRequestContext input) {
                 final String address = getHttpServletRequest() != null ? getHttpServletRequest().getRemoteAddr() : null;
                 log.debug("{} Setting confirmation data Address to {}", getLogPrefix(),
@@ -128,7 +128,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
         };
         
         // Default pulls from inbound message context and a SAMLMessageInfoContext child.
-        inResponseToLookupStrategy = new Function<ProfileRequestContext,String>() {
+        inResponseToLookupStrategy = new Function<>() {
             public String apply(final ProfileRequestContext input) {
                 if (response != null && response.getInResponseTo() != null) {
                     log.debug("{} Setting confirmation data InResponseTo to {}", getLogPrefix(),
@@ -141,7 +141,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
         };
         
         // Default pulls from SAML endpoint on outbound message context.
-        recipientLookupStrategy = new Function<ProfileRequestContext,String>() {
+        recipientLookupStrategy = new Function<>() {
             public String apply(final ProfileRequestContext input) {
                 if (input.getOutboundMessageContext() != null) {
                     try {
@@ -161,7 +161,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
         };
         
         // Default is 5 minutes.
-        lifetimeLookupStrategy = new Function<ProfileRequestContext,Long>() {
+        lifetimeLookupStrategy = new Function<>() {
             public Long apply(final ProfileRequestContext input) {
                 log.debug("{} Setting confirmation data NotOnOrAfter to 5 minutes from now", getLogPrefix());
                 return 5 * 60 * 1000L;

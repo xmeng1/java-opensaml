@@ -74,7 +74,7 @@ public class DefaultEndpointResolverTest extends XMLObjectBaseTestCase {
                         AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         ep.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         ep.setLocation(LOCATION);
-        endpointCrit = new EndpointCriterion(ep, false);
+        endpointCrit = new EndpointCriterion<>(ep, false);
     }
 
     @Test(expectedExceptions = ResolverException.class)
@@ -90,7 +90,7 @@ public class DefaultEndpointResolverTest extends XMLObjectBaseTestCase {
     
     @Test
     public void testSignedRequest() throws ResolverException {
-        final CriteriaSet crits = new CriteriaSet(new EndpointCriterion(endpointCrit.getEndpoint(), true));
+        final CriteriaSet crits = new CriteriaSet(new EndpointCriterion<>(endpointCrit.getEndpoint(), true));
         final AssertionConsumerService ep = resolver.resolveSingle(crits);
         Assert.assertNotNull(ep);
         Assert.assertSame(ep, endpointCrit.getEndpoint());
@@ -99,7 +99,7 @@ public class DefaultEndpointResolverTest extends XMLObjectBaseTestCase {
     /** SP requests an endpoint but we don't support the binding. */
     @Test
     public void testSignedRequestBadBinding() throws ResolverException {
-        final CriteriaSet crits = new CriteriaSet(new EndpointCriterion(endpointCrit.getEndpoint(), true),
+        final CriteriaSet crits = new CriteriaSet(new EndpointCriterion<>(endpointCrit.getEndpoint(), true),
                 new BindingCriterion(Collections.<String>emptyList()));
         final AssertionConsumerService ep = resolver.resolveSingle(crits);
         Assert.assertNull(ep);

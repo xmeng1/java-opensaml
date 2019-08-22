@@ -224,9 +224,8 @@ public class WSSecuritySAML20AssertionTokenSecurityHandler extends AbstractMessa
         if (getAssertionValidator() == null) {
             if (getAssertionValidatorLookup() == null) {
                 throw new ComponentInitializationException("Both Assertion validator and lookup function were null");
-            } else {
-                log.info("Assertion validator is null, must be resovleable via the lookup function");
             }
+            log.info("Assertion validator is null, must be resovleable via the lookup function");
         }
     }
 
@@ -313,11 +312,10 @@ public class WSSecuritySAML20AssertionTokenSecurityHandler extends AbstractMessa
                             WSSecurityConstants.SOAP_FAULT_INVALID_SECURITY_TOKEN, 
                             "The SAML 2.0 Assertion token was invalid", null, null, null);
                     throw new MessageHandlerException("Assertion token validation result was INVALID"); 
-                } else {
-                    token.setValidationStatus(ValidationStatus.INVALID);
-                    token.setSubjectConfirmation((SubjectConfirmation) validationContext.getDynamicParameters()
-                            .get(SAML2AssertionValidationParameters.CONFIRMED_SUBJECT_CONFIRMATION));
                 }
+                token.setValidationStatus(ValidationStatus.INVALID);
+                token.setSubjectConfirmation((SubjectConfirmation) validationContext.getDynamicParameters()
+                        .get(SAML2AssertionValidationParameters.CONFIRMED_SUBJECT_CONFIRMATION));
                 break;
             case INDETERMINATE:
                 log.warn("Assertion token validation was INDETERMINATE. Reason: {}", validationMsg);
@@ -326,11 +324,10 @@ public class WSSecuritySAML20AssertionTokenSecurityHandler extends AbstractMessa
                             WSSecurityConstants.SOAP_FAULT_INVALID_SECURITY_TOKEN, 
                             "The SAML 2.0 Assertion token's validity could not be determined", null, null, null);
                     throw new MessageHandlerException("Assertion token validation result was INDETERMINATE"); 
-                } else {
-                    token.setValidationStatus(ValidationStatus.INDETERMINATE);
-                    token.setSubjectConfirmation((SubjectConfirmation) validationContext.getDynamicParameters()
-                            .get(SAML2AssertionValidationParameters.CONFIRMED_SUBJECT_CONFIRMATION));
                 }
+                token.setValidationStatus(ValidationStatus.INDETERMINATE);
+                token.setSubjectConfirmation((SubjectConfirmation) validationContext.getDynamicParameters()
+                        .get(SAML2AssertionValidationParameters.CONFIRMED_SUBJECT_CONFIRMATION));
                 break;
             default:
                 log.warn("Assertion validation result indicated an unknown value: {}", validationResult);

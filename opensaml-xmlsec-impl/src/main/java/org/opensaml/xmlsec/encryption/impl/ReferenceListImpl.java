@@ -35,7 +35,7 @@ import org.opensaml.xmlsec.encryption.ReferenceType;
 public class ReferenceListImpl extends AbstractXMLObject implements ReferenceList {
     
     /** ReferenceType child elements. */
-    private final IndexedXMLObjectChildrenList indexedChildren;
+    private final IndexedXMLObjectChildrenList<ReferenceType> indexedChildren;
     
     /**
      * Constructor.
@@ -47,12 +47,12 @@ public class ReferenceListImpl extends AbstractXMLObject implements ReferenceLis
     protected ReferenceListImpl(final String namespaceURI, final String elementLocalName,
             final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        indexedChildren = new IndexedXMLObjectChildrenList<ReferenceType>(this);
+        indexedChildren = new IndexedXMLObjectChildrenList<>(this);
     }
 
     /** {@inheritDoc} */
     public List<ReferenceType> getReferences() {
-        return (List<ReferenceType>) indexedChildren;
+        return indexedChildren;
     }
 
     /** {@inheritDoc} */
@@ -69,7 +69,7 @@ public class ReferenceListImpl extends AbstractXMLObject implements ReferenceLis
     public List<XMLObject> getOrderedChildren() {
         final ArrayList<XMLObject> children = new ArrayList<>();
         
-        children.addAll((List<XMLObject>) indexedChildren);
+        children.addAll(indexedChildren);
         
         if (children.size() == 0) {
             return null;

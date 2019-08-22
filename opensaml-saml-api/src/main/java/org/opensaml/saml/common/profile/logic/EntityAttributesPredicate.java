@@ -207,10 +207,9 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
         // Then we determine whether the overall set of tag containers is AND or OR.
         if (matchAll) {
             return Iterables.all(candidateSet, matcher::test);
-        } else {
-            if (Iterables.tryFind(candidateSet, matcher::test).isPresent()) {
-                return true;
-            }
+        }
+        if (Iterables.tryFind(candidateSet, matcher::test).isPresent()) {
+            return true;
         }
 
         return false;
@@ -426,7 +425,7 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
          */
         @Nonnull List<String> getPossibleAttributeValuesAsStrings(final @Nonnull Attribute attribute) {
             final List<XMLObject> cvals = attribute.getAttributeValues();
-            final List<String> result = new ArrayList<String>(cvals.size()*2);
+            final List<String> result = new ArrayList<>(cvals.size()*2);
             for (final XMLObject cval : cvals) {
                 result.addAll(xmlObjectToStrings(cval));
             }

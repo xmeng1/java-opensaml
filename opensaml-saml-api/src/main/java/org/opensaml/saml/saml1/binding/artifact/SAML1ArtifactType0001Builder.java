@@ -95,9 +95,8 @@ public class SAML1ArtifactType0001Builder implements SAML1ArtifactBuilder<SAML1A
         if (artifactContext != null) {
             if (artifactContext.getSourceEntityId() != null) {
                 return artifactContext.getSourceEntityId(); 
-            } else {
-                log.warn("SAMLArtifactContext did not contain a source entityID");
             }
+            log.warn("SAMLArtifactContext did not contain a source entityID");
         } else {
             log.warn("Message context did not contain a SAMLArtifactContext");
         }

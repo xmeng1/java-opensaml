@@ -191,9 +191,8 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
         } else if (getPeerRoleDescriptor() != null) {
             if (getPeerRoleDescriptor().getSchemaType() != null) {
                 return getPeerRoleDescriptor().getSchemaType();
-            } else {
-                return getPeerRoleDescriptor().getElementQName();
             }
+            return getPeerRoleDescriptor().getElementQName();
         } else {
              return null;
         }
@@ -269,9 +268,8 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     @Nullable public Function<MessageContext,CriteriaSet> getTLSCriteriaSetStrategy() {
         if (tlsCriteriaSetStrategy != null) {
             return tlsCriteriaSetStrategy;
-        } else {
-            return new DefaultTLSCriteriaSetStrategy();
         }
+        return new DefaultTLSCriteriaSetStrategy();
     }
 
     /**

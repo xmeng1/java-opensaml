@@ -118,9 +118,8 @@ public class HTTPPostSimpleSignEncoder extends HTTPPostEncoder {
                 final String kiXML = SerializeSupport.nodeToString(marshaller.marshall(keyInfo));
                 final String kiBase64 = Base64Support.encode(kiXML.getBytes(), Base64Support.UNCHUNKED);
                 return kiBase64;
-            } else {
-                return null;
             }
+            return null;
         } catch (final SecurityException e) {
             log.error("Error generating KeyInfo from signing credential", e);
             throw new MessageEncodingException("Error generating KeyInfo from signing credential", e);

@@ -52,10 +52,9 @@ public class HTTPEntityIDRequestURLBuilder implements Function<CriteriaSet, Stri
         if (entityID.toLowerCase().startsWith("http:") || entityID.toLowerCase().startsWith("https:")) {
             log.debug("Saw entityID with HTTP/HTTPS URL syntax, returning the entityID itself as request URL");
             return entityID;
-        } else {
-            log.debug("EntityID was not an HTTP or HTTPS URL, could not construct request URL on that basis");
-            return null;
         }
+        log.debug("EntityID was not an HTTP or HTTPS URL, could not construct request URL on that basis");
+        return null;
     }
 
 

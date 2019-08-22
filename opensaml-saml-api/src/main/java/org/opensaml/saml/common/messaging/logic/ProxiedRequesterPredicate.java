@@ -61,9 +61,8 @@ public class ProxiedRequesterPredicate implements Predicate<MessageContext> {
         final ProxiedRequesterContext ctx = input != null ? input.getSubcontext(ProxiedRequesterContext.class) : null;
         if (ctx != null) {
             return !Collections.disjoint(entityIds, ctx.getRequesters());
-        } else {
-            return false;
         }
+        return false;
     }
 
 }

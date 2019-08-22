@@ -32,9 +32,8 @@ public class SAMLMessageInfoContextIssueInstantFunction
     @Nullable public Instant apply(@Nullable final SAMLMessageInfoContext input) {
         if (input != null) {
             return input.getMessageIssueInstant();
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

@@ -126,9 +126,8 @@ public class PipelineFactoryHttpSOAPClient extends AbstractPipelineHttpSOAPClien
             log.debug("Resolved pipeline name: {}", resolvedPipelineName);
             if (resolvedPipelineName != null) {
                 return newPipeline(resolvedPipelineName);
-            } else {
-                return newPipeline();
             }
+            return newPipeline();
         } catch (final SOAPException e) {
             log.warn("Problem resolving pipeline instance with name: {}", resolvedPipelineName, e);
             throw e;
@@ -184,9 +183,8 @@ public class PipelineFactoryHttpSOAPClient extends AbstractPipelineHttpSOAPClien
     @Nullable protected String resolvePipelineName(@Nonnull final InOutOperationContext operationContext) {
         if (pipelineNameStrategy != null) {
             return pipelineNameStrategy.apply(operationContext);
-        } else {
-            return null;
         }
+        return null;
     }
     
     
@@ -204,9 +202,8 @@ public class PipelineFactoryHttpSOAPClient extends AbstractPipelineHttpSOAPClien
             final SOAPClientContext context = opContext.getSubcontext(SOAPClientContext.class);
             if (context != null) {
                 return context.getPipelineName();
-            } else {
-                return null;
             }
+            return null;
         }
         
     }

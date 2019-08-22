@@ -173,9 +173,8 @@ public class SAML2HTTPPostSimpleSignSecurityHandler extends BaseSAMLSimpleSignat
         if (Strings.isNullOrEmpty(kiBase64)) {
             log.debug("Form control data did not contain a KeyInfo");
             return Collections.emptyList();
-        } else {
-            log.debug("Found a KeyInfo in form control data, extracting validation credentials");
         }
+        log.debug("Found a KeyInfo in form control data, extracting validation credentials");
 
         final Unmarshaller unmarshaller =
                 XMLObjectProviderRegistrySupport.getUnmarshallerFactory().getUnmarshaller(KeyInfo.DEFAULT_ELEMENT_NAME);

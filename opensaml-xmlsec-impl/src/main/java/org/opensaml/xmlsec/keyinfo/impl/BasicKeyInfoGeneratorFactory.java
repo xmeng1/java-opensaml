@@ -206,9 +206,8 @@ public class BasicKeyInfoGeneratorFactory implements KeyInfoGeneratorFactory {
             final List<XMLObject> children = keyInfo.getOrderedChildren();
             if (children != null && children.size() > 0) {
                 return keyInfo;
-            } else {
-                return null;
             }
+            return null;
         }
         
         /** Process the values of {@link Credential#getKeyNames()}.

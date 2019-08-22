@@ -217,8 +217,9 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
     }
 
     /** {@inheritDoc} */
-    @Override public boolean create(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
-            @Nonnull final Object value, @Nonnull final StorageSerializer serializer,
+    @Override
+    public <T> boolean create(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
+            @Nonnull final T value, @Nonnull final StorageSerializer<T> serializer,
             @Nullable @Positive final Long expiration) throws IOException {
         return create(context, key, serializer.serialize(value), expiration);
     }
@@ -231,7 +232,7 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
 
     /** {@inheritDoc} */
     @Override @Nullable public Object read(@Nonnull final Object value) throws IOException {
-        final StorageRecord record = read(AnnotationSupport.getContext(value), AnnotationSupport.getKey(value));
+        final StorageRecord<?> record = read(AnnotationSupport.getContext(value), AnnotationSupport.getKey(value));
         if (record != null) {
             AnnotationSupport.setValue(value, record.getValue());
             AnnotationSupport.setExpiration(value, record.getExpiration());
@@ -241,18 +242,20 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
     }
 
     /** {@inheritDoc} */
-    @Override public boolean update(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
-            @Nonnull final Object value, @Nonnull final StorageSerializer serializer,
+    @Override
+    public <T> boolean update(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
+            @Nonnull final T value, @Nonnull final StorageSerializer<T> serializer,
             @Nullable @Positive final Long expiration) throws IOException {
         return update(context, key, serializer.serialize(value), expiration);
     }
 
     /** {@inheritDoc} */
     // Checkstyle: ParameterNumber OFF
-    @Override @Nullable public Long updateWithVersion(@Positive final long version,
-            @Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key, @Nonnull final Object value,
-            @Nonnull final StorageSerializer serializer, @Nullable @Positive final Long expiration) throws IOException,
-            VersionMismatchException {
+    @Override
+    @Nullable public <T> Long updateWithVersion(@Positive final long version,
+            @Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key, @Nonnull final T value,
+            @Nonnull final StorageSerializer<T> serializer, @Nullable @Positive final Long expiration)
+                    throws IOException, VersionMismatchException {
         return updateWithVersion(version, context, key, serializer.serialize(value), expiration);
     }
 

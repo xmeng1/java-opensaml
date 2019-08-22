@@ -291,10 +291,9 @@ public abstract class AbstractMetadataResolver extends AbstractIdentifiableIniti
                 log.error("{} Metadata provider failed to properly initialize, fail-fast=true, halting", 
                         getLogPrefix());
                 throw e;
-            } else {
-                log.error("{} Metadata provider failed to properly initialize, fail-fast=false, "
-                        + "continuing on in a degraded state", getLogPrefix(), e);
             }
+            log.error("{} Metadata provider failed to properly initialize, fail-fast=false, "
+                    + "continuing on in a degraded state", getLogPrefix(), e);
         }
     }
 
@@ -376,9 +375,8 @@ public abstract class AbstractMetadataResolver extends AbstractIdentifiableIniti
         if (getMetadataFilter() != null) {
             log.debug("{} Applying metadata filter", getLogPrefix());
             return getMetadataFilter().filter(metadata, newFilterContext());
-        } else {
-            return metadata;
         }
+        return metadata;
     }
 
     /**
@@ -477,9 +475,8 @@ public abstract class AbstractMetadataResolver extends AbstractIdentifiableIniti
         final List<EntityDescriptor> descriptors = getBackingStore().getIndexedDescriptors().get(entityID);
         if (descriptors != null) {
             return new ArrayList<>(descriptors);
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     /**

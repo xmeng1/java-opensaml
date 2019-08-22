@@ -129,9 +129,8 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
     @Nullable protected Predicate<MessageContext> adapt(@Nullable final Predicate<ProfileRequestContext> predicate) {
         if (predicate == null) {
             return null;
-        } else {
-            return Predicates.compose(predicate::test, PRC_LOOKUP::apply);
         }
+        return Predicates.compose(predicate::test, PRC_LOOKUP::apply);
     }
 
     /**
@@ -147,9 +146,8 @@ public abstract class AbstractHandlerDelegatingProfileAction<DelegateType extend
             @Nullable final Function<ProfileRequestContext, T> function) {
         if (function == null) {
             return null;
-        } else {
-            return function.compose(PRC_LOOKUP);
         }
+        return function.compose(PRC_LOOKUP);
     }
 
     /** {@inheritDoc} */

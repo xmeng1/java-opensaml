@@ -103,9 +103,8 @@ public class BasicSignatureSigningParametersResolver
         final SignatureSigningParameters params = resolveSingle(criteria);
         if (params != null) {
             return Collections.singletonList(params);
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */
@@ -135,9 +134,8 @@ public class BasicSignatureSigningParametersResolver
         if (validate(params)) {
             logResult(params);
             return params;
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -236,9 +234,8 @@ public class BasicSignatureSigningParametersResolver
                     params.setSigningCredential(credential);
                     params.setSignatureAlgorithm(algorithm);
                     return;
-                } else {
-                    log.trace("Credential failed eval against algorithm: {}", algorithm);
                 }
+                log.trace("Credential failed eval against algorithm: {}", algorithm);
             }
         }
         

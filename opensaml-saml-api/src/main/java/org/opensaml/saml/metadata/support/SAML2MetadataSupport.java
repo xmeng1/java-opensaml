@@ -75,10 +75,9 @@ public final class SAML2MetadataSupport {
         if (firstNoDefault != null) {
             log.debug("Selected first IndexedEndpoint with no explicit isDefault");
             return firstNoDefault;
-        } else  {
-            log.debug("Selected first IndexedEndpoint with explicit isDefault of false");
-            return candidates.get(0);
         }
+        log.debug("Selected first IndexedEndpoint with explicit isDefault of false");
+        return candidates.get(0);
         
     }
     

@@ -38,7 +38,7 @@ public class TransformImpl extends AbstractXMLObject implements Transform {
     private String algorithm;
     
     /** "any" children. */
-    private final IndexedXMLObjectChildrenList indexedChildren;
+    private final IndexedXMLObjectChildrenList<XMLObject> indexedChildren;
 
     /**
      * Constructor.
@@ -64,7 +64,7 @@ public class TransformImpl extends AbstractXMLObject implements Transform {
 
     /** {@inheritDoc} */
     public List<XMLObject> getAllChildren() {
-        return (List<XMLObject>) indexedChildren ;
+        return indexedChildren ;
     }
 
     /** {@inheritDoc} */
@@ -81,7 +81,7 @@ public class TransformImpl extends AbstractXMLObject implements Transform {
     public List<XMLObject> getOrderedChildren() {
         final ArrayList<XMLObject> children = new ArrayList<>();
         
-        children.addAll((List<XMLObject>) indexedChildren);
+        children.addAll(indexedChildren);
         
         if (children.size() == 0) {
             return null;

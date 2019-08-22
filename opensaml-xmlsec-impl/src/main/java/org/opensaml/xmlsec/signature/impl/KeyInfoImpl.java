@@ -45,7 +45,7 @@ import org.opensaml.xmlsec.signature.X509Data;
 public class KeyInfoImpl extends AbstractXMLObject implements KeyInfo {
     
     /** The list of XMLObject child elements. */
-    private final IndexedXMLObjectChildrenList indexedChildren;
+    private final IndexedXMLObjectChildrenList<XMLObject> indexedChildren;
     
     /** The Id attribute value. */
     private String id;
@@ -59,7 +59,7 @@ public class KeyInfoImpl extends AbstractXMLObject implements KeyInfo {
      */
     protected KeyInfoImpl(final String namespaceURI, final String elementLocalName, final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        indexedChildren = new IndexedXMLObjectChildrenList(this);
+        indexedChildren = new IndexedXMLObjectChildrenList<>(this);
     }
     
     /** {@inheritDoc} */
@@ -76,7 +76,7 @@ public class KeyInfoImpl extends AbstractXMLObject implements KeyInfo {
 
     /** {@inheritDoc} */
     public List<XMLObject> getXMLObjects() {
-        return (List<XMLObject>) indexedChildren;
+        return indexedChildren;
     }
 
     /** {@inheritDoc} */

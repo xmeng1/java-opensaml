@@ -72,11 +72,10 @@ public abstract class AbstractConditionalProfileAction extends AbstractProfileAc
         
         if (activationCondition.test(profileRequestContext)) {
             return super.doPreExecute(profileRequestContext);
-        } else {
-            LoggerFactory.getLogger(AbstractConditionalProfileAction.class).debug(
-                    "{} Activation condition for action returned false", getLogPrefix());
-            return false;
         }
+        LoggerFactory.getLogger(AbstractConditionalProfileAction.class).debug(
+                "{} Activation condition for action returned false", getLogPrefix());
+        return false;
     }
 
 }

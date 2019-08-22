@@ -159,9 +159,8 @@ public abstract class AbstractBatchMetadataResolver extends AbstractMetadataReso
         final XMLObject cached = getBackingStore().getCachedOriginalMetadata();
         if (cached != null && cached instanceof TimeBoundSAMLObject) {
             return ((TimeBoundSAMLObject)cached).getValidUntil();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -169,9 +168,8 @@ public abstract class AbstractBatchMetadataResolver extends AbstractMetadataReso
         final XMLObject cached = getBackingStore().getCachedOriginalMetadata();
         if (cached == null) {
             return null;
-        } else {
-            return isValid(cached);
         }
+        return isValid(cached);
     }
 
     /** {@inheritDoc} */
@@ -353,7 +351,7 @@ public abstract class AbstractBatchMetadataResolver extends AbstractMetadataReso
         protected BatchEntityBackingStore(
                 @Nullable @NonnullElements @Unmodifiable @NotLive final Set<MetadataIndex> initIndexes) {
             super();
-            secondaryIndexManager = new MetadataIndexManager(initIndexes, 
+            secondaryIndexManager = new MetadataIndexManager<>(initIndexes, 
                     new MetadataIndexManager.IdentityExtractionFunction());
         }
 

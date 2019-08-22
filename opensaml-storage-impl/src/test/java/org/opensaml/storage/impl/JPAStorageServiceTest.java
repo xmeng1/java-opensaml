@@ -54,10 +54,10 @@ public class JPAStorageServiceTest extends StorageServiceTest {
     private Object[][] contexts;
 
     public JPAStorageServiceTest() {
-        final SecureRandom random = new SecureRandom();
+        final SecureRandom random1 = new SecureRandom();
         contexts = new Object[10][1];
         for (int i = 0; i < 10; i++) {
-            contexts[i] = new Object[] {Long.toString(random.nextLong()), };
+            contexts[i] = new Object[] {Long.toString(random1.nextLong()), };
         }
     }
 
@@ -95,11 +95,11 @@ public class JPAStorageServiceTest extends StorageServiceTest {
     @AfterClass
     protected void tearDown() {
         try {
-            List<String> contexts = storageService.readContexts();
-            for (String ctx : contexts) {
+            List<String> contexts1 = storageService.readContexts();
+            for (String ctx : contexts1) {
                 storageService.deleteContext(ctx);
             }
-            List<StorageRecord> recs = storageService.readAll();
+            List<?> recs = storageService.readAll();
             Assert.assertEquals(recs.size(), 0);
         } catch (IOException e){ 
             throw new RuntimeException(e);
@@ -122,7 +122,7 @@ public class JPAStorageServiceTest extends StorageServiceTest {
         } catch (InterruptedException e) {
             throw new IOException(e);
         }
-        List<StorageRecord> recs = storageService.readAll(context);
+        List<?> recs = storageService.readAll(context);
         Assert.assertEquals(recs.size(), 0);
     }
 
@@ -134,7 +134,7 @@ public class JPAStorageServiceTest extends StorageServiceTest {
     @Test(dataProvider = "contexts", singleThreaded = false, threadPoolSize = 25, invocationCount = 100)
     public void multithread(final String context) throws IOException {
         shared.create(context, "mt", "bar", System.currentTimeMillis() + 300000);
-        StorageRecord rec = shared.read(context, "mt");
+        StorageRecord<?> rec = shared.read(context, "mt");
         Assert.assertNotNull(rec);
         shared.update(context, "mt", "baz", System.currentTimeMillis() + 300000);
         rec = shared.read(context, "mt");
@@ -147,8 +147,8 @@ public class JPAStorageServiceTest extends StorageServiceTest {
     public void multithreadCaseSensitiveKey() throws IOException {
         shared.create("unit_test", "foo", "bar", null);
         shared.create("unit_test", "FOO", "bar", null);
-        StorageRecord rec1 = shared.read("unit_test", "foo");
-        StorageRecord rec2 = shared.read("unit_test", "FOO");
+        StorageRecord<?> rec1 = shared.read("unit_test", "foo");
+        StorageRecord<?> rec2 = shared.read("unit_test", "FOO");
         Assert.assertNotNull(rec1);
         Assert.assertNotNull(rec2);
         Assert.assertNotEquals(rec1, rec2);
@@ -158,8 +158,8 @@ public class JPAStorageServiceTest extends StorageServiceTest {
     public void keyCollision() throws IOException {
         shared.create("unit_test", "dlo1", "value", null);
         shared.create("unit_test", "dn11", "value", null);
-        StorageRecord rec1 = shared.read("unit_test", "dlo1");
-        StorageRecord rec2 = shared.read("unit_test", "dn11");
+        StorageRecord<?> rec1 = shared.read("unit_test", "dlo1");
+        StorageRecord<?> rec2 = shared.read("unit_test", "dn11");
         Assert.assertNotNull(rec1);
         Assert.assertNotNull(rec2);
         Assert.assertNotEquals(rec1, rec2);
@@ -191,8 +191,8 @@ public class JPAStorageServiceTest extends StorageServiceTest {
     public void caseSensitiveContext() throws IOException {
         shared.create("foo", "bar", "value", null);
         shared.create("FOO", "bar", "value", null);
-        StorageRecord rec1 = shared.read("foo", "bar");
-        StorageRecord rec2 = shared.read("FOO", "bar");
+        StorageRecord<?> rec1 = shared.read("foo", "bar");
+        StorageRecord<?> rec2 = shared.read("FOO", "bar");
         Assert.assertNotNull(rec1);
         Assert.assertNotNull(rec2);
         Assert.assertNotEquals(rec1, rec2);
@@ -225,8 +225,8 @@ public class JPAStorageServiceTest extends StorageServiceTest {
     public void caseSensitiveKey() throws IOException {
         shared.create("unit_test", "foo", "value", null);
         shared.create("unit_test", "FOO", "value", null);
-        StorageRecord rec1 = shared.read("unit_test", "foo");
-        StorageRecord rec2 = shared.read("unit_test", "FOO");
+        StorageRecord<?> rec1 = shared.read("unit_test", "foo");
+        StorageRecord<?> rec2 = shared.read("unit_test", "FOO");
         Assert.assertNotNull(rec1);
         Assert.assertNotNull(rec2);
         Assert.assertNotEquals(rec1, rec2);
@@ -262,7 +262,7 @@ public class JPAStorageServiceTest extends StorageServiceTest {
             sb.append(UUID.randomUUID());
         }
         shared.create("unit_test", "large", sb.toString(), System.currentTimeMillis() + 300000);
-        StorageRecord rec = shared.read("unit_test", "large");
+        StorageRecord<?> rec = shared.read("unit_test", "large");
         Assert.assertNotNull(rec);
         Assert.assertEquals(sb.toString(), rec.getValue());
     }

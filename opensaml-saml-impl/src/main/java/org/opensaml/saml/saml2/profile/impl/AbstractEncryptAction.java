@@ -199,7 +199,7 @@ public abstract class AbstractEncryptAction extends AbstractConditionalProfileAc
             }
             if (encryptToSelfParametersStrategy != null) {
                 final List<EncryptionParameters> selfParams = encryptToSelfParametersStrategy.apply(
-                        new Pair<ProfileRequestContext, EncryptionParameters>(profileRequestContext, params));
+                        new Pair<>(profileRequestContext, params));
                 if (selfParams != null && !selfParams.isEmpty()) {
                     log.debug("{} Saw {} self-encryption parameters", getLogPrefix(), selfParams.size());
                     for (final EncryptionParameters selfParam : selfParams) {

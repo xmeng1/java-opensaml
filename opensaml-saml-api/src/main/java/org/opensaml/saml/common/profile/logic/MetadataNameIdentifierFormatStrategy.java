@@ -100,9 +100,8 @@ public class MetadataNameIdentifierFormatStrategy implements Function<ProfileReq
                     if (mdCtx != null && mdCtx.getRoleDescriptor() != null
                             && mdCtx.getRoleDescriptor() instanceof SSODescriptor) {
                         return (SSODescriptor) mdCtx.getRoleDescriptor();
-                    } else {
-                        log.debug("No SAMLMetadataContext or SSODescriptor role available");
                     }
+                    log.debug("No SAMLMetadataContext or SSODescriptor role available");
                 } else {
                     log.debug("No SAMLPeerEntityContext available");
                 }

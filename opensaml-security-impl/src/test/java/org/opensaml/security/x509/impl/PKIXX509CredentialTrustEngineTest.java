@@ -198,7 +198,7 @@ public class PKIXX509CredentialTrustEngineTest extends XMLObjectBaseTestCase {
     private BasicX509Credential getCredential(String entityCertFileName, String ... chainMembers) {
         X509Certificate entityCert = getCertificate(entityCertFileName);
         
-        BasicX509Credential cred = new BasicX509Credential(entityCert);
+        BasicX509Credential cred1 = new BasicX509Credential(entityCert);
         
         HashSet<X509Certificate> certChain = new HashSet<>();
         certChain.add(entityCert);
@@ -207,9 +207,9 @@ public class PKIXX509CredentialTrustEngineTest extends XMLObjectBaseTestCase {
             certChain.add( getCertificate(member) );
         }
         
-        cred.setEntityCertificateChain(certChain);
+        cred1.setEntityCertificateChain(certChain);
         
-        return cred;
+        return cred1;
     }
     
     private PKIXX509CredentialTrustEngine getEngine(Collection<X509Certificate> certs,

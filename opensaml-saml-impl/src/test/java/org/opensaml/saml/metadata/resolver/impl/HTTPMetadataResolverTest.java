@@ -332,7 +332,7 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         final InputStream certStream = FileBackedHTTPMetadataResolver.class.getResourceAsStream((HTTPMetadataResolverTest.DATA_PATH + cert));
         final X509Certificate rootCert = X509Support.decodeCertificate(ByteStreams.toByteArray(certStream));
         final PKIXValidationInformation info = new BasicPKIXValidationInformation(Collections.singletonList(rootCert), null, 5);
-        final Set<String> trustedNames = (Set<String>) (name != null ? Collections.singleton(name) : Collections.emptySet());
+        final Set<String> trustedNames = name != null ? Collections.singleton(name) : Collections.emptySet();
         final StaticPKIXValidationInformationResolver resolver = new StaticPKIXValidationInformationResolver(Collections.singletonList(info), trustedNames);
         return new PKIXX509CredentialTrustEngine(resolver,
                 new CertPathPKIXTrustEvaluator(),

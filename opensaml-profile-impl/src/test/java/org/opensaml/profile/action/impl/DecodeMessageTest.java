@@ -117,15 +117,14 @@ public class DecodeMessageTest {
         protected void doDecode() throws MessageDecodingException {
             if (throwException) {
                 throw new MessageDecodingException();
-            } else {
-                final MessageContext messageContext = new MessageContext();
-                if (message != null) {
-                    messageContext.setMessage(message);
-                } else {
-                    messageContext.setMessage(new MockMessage());
-                }
-                setMessageContext(messageContext);
             }
+            final MessageContext messageContext = new MessageContext();
+            if (message != null) {
+                messageContext.setMessage(message);
+            } else {
+                messageContext.setMessage(new MockMessage());
+            }
+            setMessageContext(messageContext);
         }
 
     }

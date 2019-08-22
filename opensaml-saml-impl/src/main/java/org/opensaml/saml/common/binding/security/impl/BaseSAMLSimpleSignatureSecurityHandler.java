@@ -135,9 +135,8 @@ public abstract class BaseSAMLSimpleSignatureSecurityHandler extends AbstractMes
         if (secParams == null || secParams.getSignatureValidationParameters() == null 
                 || secParams.getSignatureValidationParameters().getSignatureTrustEngine() == null) {
             throw new MessageHandlerException("No SignatureTrustEngine was available from the MessageContext");
-        } else {
-            trustEngine = secParams.getSignatureValidationParameters().getSignatureTrustEngine();
         }
+        trustEngine = secParams.getSignatureValidationParameters().getSignatureTrustEngine();
         
         return true;
     }
@@ -210,11 +209,10 @@ public abstract class BaseSAMLSimpleSignatureSecurityHandler extends AbstractMes
                     peerContext.setAuthenticated(true);
                 }
                 return;
-            } else {
-                log.warn("{} Validation of request simple signature failed for context issuer: {}", getLogPrefix(),
-                        contextEntityID);
-                throw new MessageHandlerException("Validation of request simple signature failed for context issuer");
             }
+            log.warn("{} Validation of request simple signature failed for context issuer: {}", getLogPrefix(),
+                    contextEntityID);
+            throw new MessageHandlerException("Validation of request simple signature failed for context issuer");
         }
             
         final String derivedEntityID = deriveSignerEntityID(messageContext);
@@ -231,11 +229,10 @@ public abstract class BaseSAMLSimpleSignatureSecurityHandler extends AbstractMes
                     peerContext.setAuthenticated(true);
                 }
                 return;
-            } else {
-                log.warn("{} Validation of request simple signature failed for derived issuer: {}", getLogPrefix(),
-                        derivedEntityID);
-                throw new MessageHandlerException("Validation of request simple signature failed for derived issuer");
             }
+            log.warn("{} Validation of request simple signature failed for derived issuer: {}", getLogPrefix(),
+                    derivedEntityID);
+            throw new MessageHandlerException("Validation of request simple signature failed for derived issuer");
         }
         
         log.warn("{} Neither context nor derived issuer available, cannot attempt SAML simple signature validation",
@@ -273,22 +270,20 @@ public abstract class BaseSAMLSimpleSignatureSecurityHandler extends AbstractMes
                     log.debug("{} Simple signature validation (with no request-derived credentials) was successful",
                             getLogPrefix());
                     return true;
-                } else {
-                    log.warn("{} Simple signature validation (with no request-derived credentials) failed",
-                            getLogPrefix());
-                    return false;
                 }
-            } else {
-                for (final Credential cred : candidateCredentials) {
-                    if (engine.validate(signature, signedContent, algorithmURI, criteriaSet, cred)) {
-                        log.debug("{} Simple signature validation succeeded with a request-derived credential",
-                                getLogPrefix());
-                        return true;
-                    }
-                }
-                log.warn("{} Signature validation using request-derived credentials failed", getLogPrefix());
+                log.warn("{} Simple signature validation (with no request-derived credentials) failed",
+                        getLogPrefix());
                 return false;
             }
+            for (final Credential cred : candidateCredentials) {
+                if (engine.validate(signature, signedContent, algorithmURI, criteriaSet, cred)) {
+                    log.debug("{} Simple signature validation succeeded with a request-derived credential",
+                            getLogPrefix());
+                    return true;
+                }
+            }
+            log.warn("{} Signature validation using request-derived credentials failed", getLogPrefix());
+            return false;
         } catch (final SecurityException e) {
             log.warn("{} Error evaluating the request's simple signature using the trust engine", getLogPrefix(), e);
             throw new MessageHandlerException("Error during trust engine evaluation of the simple signature", e);

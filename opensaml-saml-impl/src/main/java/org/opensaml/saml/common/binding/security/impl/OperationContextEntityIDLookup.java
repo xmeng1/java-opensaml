@@ -39,7 +39,7 @@ public class OperationContextEntityIDLookup implements ContextDataLookupFunction
     
     /** Parent operation context lookup function. */
     @Nonnull private RecursiveTypedParentContextLookup<MessageContext,InOutOperationContext> parentLookup = 
-            new RecursiveTypedParentContextLookup(InOutOperationContext.class);
+            new RecursiveTypedParentContextLookup<>(InOutOperationContext.class);
     
     /**
      * Constructor.

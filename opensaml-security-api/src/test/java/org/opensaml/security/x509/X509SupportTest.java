@@ -396,7 +396,7 @@ public class X509SupportTest {
         Set<Integer> nameTypes = new HashSet<>();
         nameTypes.add(altNameTypeDNS);
 
-        List altNames = getAltNames(cert, nameTypes);
+        List<?> altNames = getAltNames(cert, nameTypes);
         Assert.assertNotNull(altNames, "X509Support.getAltNames() returned null");
 
         Assert.assertTrue(altNames.contains(altNameDNS), "Failed to find expected KeyName value");
@@ -419,7 +419,7 @@ public class X509SupportTest {
         Set<Integer> nameTypes = new HashSet<>();
         nameTypes.add(altNameTypeURI);
 
-        List altNames = getAltNames(cert, nameTypes);
+        List<?> altNames = getAltNames(cert, nameTypes);
         Assert.assertNotNull(altNames, "X509Support.getAltNames() returned null");
 
         Assert.assertTrue(altNames.contains(altNameURN), "Failed to find expected KeyName value");
@@ -442,7 +442,7 @@ public class X509SupportTest {
         Set<Integer> nameTypes = new HashSet<>();
         nameTypes.add(altNameTypeURI);
 
-        List altNames = getAltNames(cert, nameTypes);
+        List<?> altNames = getAltNames(cert, nameTypes);
         Assert.assertNotNull(altNames, "X509Support.getAltNames() returned null");
 
         Assert.assertTrue(altNames.contains(altNameURL), "Failed to find expected KeyName value");
@@ -465,7 +465,7 @@ public class X509SupportTest {
         Set<Integer> nameTypes = new HashSet<>();
         nameTypes.add(altNameTypeIP);
 
-        List altNames = getAltNames(cert, nameTypes);
+        List<?> altNames = getAltNames(cert, nameTypes);
         Assert.assertNotNull(altNames, "X509Support.getAltNames() returned null");
 
         Assert.assertTrue(altNames.contains(altNameIP), "Failed to find expected KeyName value");
@@ -490,7 +490,7 @@ public class X509SupportTest {
         nameTypes.add(altNameTypeURI);
         nameTypes.add(altNameTypeIP);
 
-        List altNames = getAltNames(cert, nameTypes);
+        List<?> altNames = getAltNames(cert, nameTypes);
         Assert.assertNotNull(altNames, "X509Support.getAltNames() returned null");
 
         Assert.assertTrue(altNames.contains(altNameDNS), "Failed to find expected KeyName value");
@@ -517,7 +517,7 @@ public class X509SupportTest {
         nameTypes.add(altNameTypeURI);
         nameTypes.add(altNameTypeIP);
 
-        List altNames = getAltNames(cert, nameTypes);
+        List<?> altNames = getAltNames(cert, nameTypes);
         Assert.assertNotNull(altNames, "X509Support.getAltNames() returned null");
 
         Assert.assertTrue(altNames.contains(altNameDNS), "Failed to find expected KeyName value");
@@ -613,7 +613,7 @@ public class X509SupportTest {
      * @param nameTypes set of Integers identifying which alt name types to extract
      * @return list of alt name value Objects
      */
-    private List getAltNames(X509Certificate cert, Set<Integer> nameTypes) {
+    private List<?> getAltNames(X509Certificate cert, Set<Integer> nameTypes) {
         Integer[] array = new Integer[nameTypes.size()];
         nameTypes.toArray(array);
         return X509Support.getAltNames(cert, array);

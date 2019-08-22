@@ -162,11 +162,10 @@ public abstract class AbstractNameIDPolicyPredicate extends AbstractInitializabl
             log.debug("Applying policy to NameIdentifier with Format {}",
                     format != null ? format : NameIdentifier.UNSPECIFIED);
             return doApply(requesterId, responderId, format, target.getNameQualifier(), null);
-        } else {
-            log.debug("Policy checking disabled for NameIdentifier Format {}",
-                    format != null ? format : NameIdentifier.UNSPECIFIED);
-            return true;
         }
+        log.debug("Policy checking disabled for NameIdentifier Format {}",
+                format != null ? format : NameIdentifier.UNSPECIFIED);
+        return true;
     }
 
     /**
@@ -185,10 +184,9 @@ public abstract class AbstractNameIDPolicyPredicate extends AbstractInitializabl
         if (formats.contains(format != null ? format : NameID.UNSPECIFIED)) {
             log.debug("Applying policy to NameID with Format {}", format != null ? format : NameID.UNSPECIFIED);
             return doApply(requesterId, responderId, format, target.getNameQualifier(), target.getSPNameQualifier());
-        } else {
-            log.debug("Policy checking disabled for NameID Format {}", format != null ? format : NameID.UNSPECIFIED);
-            return true;
         }
+        log.debug("Policy checking disabled for NameID Format {}", format != null ? format : NameID.UNSPECIFIED);
+        return true;
     }
     
     /**
@@ -207,11 +205,10 @@ public abstract class AbstractNameIDPolicyPredicate extends AbstractInitializabl
         if (formats.contains(format != null ? format : NameID.UNSPECIFIED)) {
             log.debug("Applying policy to NameIDPolicy with Format {}", format != null ? format : NameID.UNSPECIFIED);
             return doApply(requesterId, responderId, format, null, target.getSPNameQualifier());
-        } else {
-            log.debug("Policy checking disabled for NameIDPolicy with Format {}",
-                    format != null ? format : NameID.UNSPECIFIED);
-            return true;
         }
+        log.debug("Policy checking disabled for NameIDPolicy with Format {}",
+                format != null ? format : NameID.UNSPECIFIED);
+        return true;
     }
     
     /**

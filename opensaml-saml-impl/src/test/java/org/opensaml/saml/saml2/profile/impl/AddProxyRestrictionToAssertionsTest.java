@@ -102,8 +102,8 @@ public class AddProxyRestrictionToAssertionsTest extends OpenSAMLInitBaseTestCas
      * response.
      */
     @Test public void testSingleAssertionWithExistingCondition() throws Exception {
-        final SAMLObjectBuilder<Conditions> conditionsBuilder =
-                (SAMLObjectBuilder<Conditions>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
                         Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
 

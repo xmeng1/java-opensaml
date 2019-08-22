@@ -90,8 +90,8 @@ public class PopulateSignatureSigningParametersHandlerTest extends OpenSAMLInitB
         // Test copy from PRC to MessageContext
         handler.setSignatureSigningParametersResolver(new MockResolver(true));
         handler.setExistingParametersContextLookupStrategy(
-                new ChildContextLookup(SecurityParametersContext.class).compose(
-                        new ParentProfileRequestContextLookup()));
+                new ChildContextLookup<>(SecurityParametersContext.class).compose(
+                        new ParentProfileRequestContextLookup<>()));
         handler.setSecurityParametersContextLookupStrategy(
                 new ChildContextLookup<MessageContext,SecurityParametersContext>(SecurityParametersContext.class, true));
         handler.initialize();

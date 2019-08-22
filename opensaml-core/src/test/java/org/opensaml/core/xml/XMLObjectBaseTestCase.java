@@ -175,15 +175,13 @@ public abstract class XMLObjectBaseTestCase extends OpenSAMLInitBaseTestCase {
         } catch (final XMLParserException e) {
             if (propagateErrors) {
                 throw e;
-            } else {
-                Assert.fail("Unable to parse element file " + elementFile);
             }
+            Assert.fail("Unable to parse element file " + elementFile);
         } catch (final UnmarshallingException e) {
             if (propagateErrors) {
                 throw e;
-            } else {
-                Assert.fail("Unmarshalling failed when parsing element file " + elementFile + ": " + e);
             }
+            Assert.fail("Unmarshalling failed when parsing element file " + elementFile + ": " + e);
         }
 
         return null;

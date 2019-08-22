@@ -261,10 +261,10 @@ public class PredicateRoleDescriptorResolver extends AbstractIdentifiedInitializ
         if (!entityDescriptorsSource.iterator().hasNext()) {
             log.debug("Resolved no EntityDescriptors via underlying MetadataResolver, returning empty collection");
             return Collections.emptySet();
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Resolved {} source EntityDescriptors", Iterables.size(entityDescriptorsSource));
-            }
+        }
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Resolved {} source EntityDescriptors", Iterables.size(entityDescriptorsSource));
         }
         
         final Predicate<? super RoleDescriptor> predicate = isRequireValidMetadata() ? IS_VALID_PREDICATE 

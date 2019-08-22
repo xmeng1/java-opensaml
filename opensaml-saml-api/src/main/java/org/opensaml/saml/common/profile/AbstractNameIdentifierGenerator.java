@@ -314,12 +314,10 @@ public abstract class AbstractNameIdentifierGenerator<NameIdType extends SAMLObj
                         || !Objects.equals(idpNameQualifier,
                                 defaultIdPNameQualifierLookupStrategy.apply(profileRequestContext))) {
                     return idpNameQualifier;
-                } else {
-                    return null;
                 }
-            } else {
-                return idpNameQualifier;
+                return null;
             }
+            return idpNameQualifier;
         } else if (!omitQualifiers && defaultIdPNameQualifierLookupStrategy != null) {
             return defaultIdPNameQualifierLookupStrategy.apply(profileRequestContext);
         } else {
@@ -341,12 +339,10 @@ public abstract class AbstractNameIdentifierGenerator<NameIdType extends SAMLObj
                         || !Objects.equals(spNameQualifier,
                                 defaultSPNameQualifierLookupStrategy.apply(profileRequestContext))) {
                     return spNameQualifier;
-                } else {
-                    return null;
                 }
-            } else {
-                return spNameQualifier;
+                return null;
             }
+            return spNameQualifier;
         } else if (!omitQualifiers && defaultSPNameQualifierLookupStrategy != null) {
             return defaultSPNameQualifierLookupStrategy.apply(profileRequestContext);
         } else {

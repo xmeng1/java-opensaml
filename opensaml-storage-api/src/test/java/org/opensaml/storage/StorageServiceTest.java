@@ -87,7 +87,7 @@ public abstract class StorageServiceTest {
         }
         
         for (int i = 1; i <= 100; i++) {
-            StorageRecord rec = shared.read(context, Integer.toString(i));
+            StorageRecord<?> rec = shared.read(context, Integer.toString(i));
             Assert.assertNotNull(rec);
             Assert.assertEquals(rec.getValue(), Integer.toString(i + 1));
         }
@@ -98,7 +98,7 @@ public abstract class StorageServiceTest {
         }
 
         for (int i = 1; i <= 100; i++) {
-            StorageRecord rec = shared.read(context, Integer.toString(i));
+            StorageRecord<?> rec = shared.read(context, Integer.toString(i));
             Assert.assertNotNull(rec);
             Assert.assertEquals(rec.getValue(), Integer.toString(i + 2));
         }
@@ -110,7 +110,7 @@ public abstract class StorageServiceTest {
         
         for (int i = 1; i <= 100; i++) {
             shared.delete(context, Integer.toString(i));
-            StorageRecord rec = shared.read(context, Integer.toString(i));
+            StorageRecord<?> rec = shared.read(context, Integer.toString(i));
             Assert.assertNull(rec);
         }
     }
@@ -128,7 +128,7 @@ public abstract class StorageServiceTest {
         Thread.sleep(5150);
         
         for (int i = 1; i <= 100; i++) {
-            StorageRecord rec = shared.read(context, Integer.toString(i));
+            StorageRecord<?> rec = shared.read(context, Integer.toString(i));
             Assert.assertNull(rec);
         }
     }
@@ -151,7 +151,7 @@ public abstract class StorageServiceTest {
             // expected
         }
         
-        StorageRecord rec = shared.read(context, key);
+        StorageRecord<?> rec = shared.read(context, key);
         Assert.assertNotNull(rec);
         Assert.assertEquals(rec.getVersion(), 2);
     }
@@ -206,32 +206,32 @@ public abstract class StorageServiceTest {
             return context;
         }
         
-        public void setContext(String context) {
-            this.context = context;
+        public void setContext(String c) {
+            context = c;
         }
         
         public String getKey() {
             return key;
         }
         
-        public void setKey(String key) {
-            this.key = key;
+        public void setKey(String k) {
+            key = k;
         }
         
         public String getValue() {
             return value;
         }
         
-        public void setValue(String value) {
-            this.value = value;
+        public void setValue(String val) {
+            value = val;
         }
         
         public long getExpiration() {
             return expiration;
         }
         
-        public void setExpiration(long expiration) {
-            this.expiration = expiration;
+        public void setExpiration(long exp) {
+            expiration = exp;
         }
         
     }

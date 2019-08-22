@@ -199,10 +199,9 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
             if (isFailFastInitialization()) {
                 log.error("{} Metadata backup file path was invalid, initialization is fatal", getLogPrefix());
                 throw new ComponentInitializationException("Metadata backup file path was invalid", e);
-            } else {
-                log.error("{} Metadata backup file path was invalid, continuing without known good backup file", 
-                        getLogPrefix());
             }
+            log.error("{} Metadata backup file path was invalid, continuing without known good backup file", 
+                    getLogPrefix());
         }
         
         try {
@@ -314,10 +313,9 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
                     log.error("{} " + errMsg, getLogPrefix(), ioe);
                     throw new ResolverException(errMsg, ioe);
                 }
-            } else {
-                log.error("{} Unable to read metadata from remote server and backup does not exist", getLogPrefix());
-                throw new ResolverException("Unable to read metadata from remote server and backup does not exist");
             }
+            log.error("{} Unable to read metadata from remote server and backup does not exist", getLogPrefix());
+            throw new ResolverException("Unable to read metadata from remote server and backup does not exist");
         }
     }
 
@@ -342,9 +340,8 @@ public class FileBackedHTTPMetadataResolver extends HTTPMetadataResolver {
             log.debug("{} Detected initialization from backup file, scheduling next refresh from HTTP in {}ms", 
                     getLogPrefix(), getBackupFileInitNextRefreshDelay());
             return getBackupFileInitNextRefreshDelay();
-        } else {
-            return super.computeNextRefreshDelay(expectedExpiration);
         }
+        return super.computeNextRefreshDelay(expectedExpiration);
     }
 
     /** {@inheritDoc} */

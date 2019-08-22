@@ -42,7 +42,7 @@ public class PGPDataImpl extends AbstractXMLObject implements PGPData {
     private PGPKeyPacket pgpKeyPacket;
     
     /** List of &lt;any&gt; wildcard XMLObject children. */
-    private final IndexedXMLObjectChildrenList xmlChildren;
+    private final IndexedXMLObjectChildrenList<XMLObject> xmlChildren;
 
     /**
      * Constructor.
@@ -53,7 +53,7 @@ public class PGPDataImpl extends AbstractXMLObject implements PGPData {
      */
     protected PGPDataImpl(final String namespaceURI, final String elementLocalName, final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        xmlChildren = new IndexedXMLObjectChildrenList(this);
+        xmlChildren = new IndexedXMLObjectChildrenList<>(this);
     }
 
     /** {@inheritDoc} */
@@ -78,7 +78,7 @@ public class PGPDataImpl extends AbstractXMLObject implements PGPData {
 
     /** {@inheritDoc} */
     public List<XMLObject> getUnknownXMLObjects() {
-        return (List<XMLObject>) xmlChildren;
+        return xmlChildren;
     }
     /** {@inheritDoc} */
     public List<XMLObject> getUnknownXMLObjects(final QName typeOrName) {
@@ -95,7 +95,7 @@ public class PGPDataImpl extends AbstractXMLObject implements PGPData {
         if (pgpKeyPacket != null) {
             children.add(pgpKeyPacket);
         }
-        children.addAll((List<XMLObject>) xmlChildren);
+        children.addAll(xmlChildren);
         
         if (children.size() == 0) {
             return null;

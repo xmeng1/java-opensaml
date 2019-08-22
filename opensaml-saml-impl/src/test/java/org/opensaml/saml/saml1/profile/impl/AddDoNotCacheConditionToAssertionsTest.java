@@ -88,8 +88,8 @@ public class AddDoNotCacheConditionToAssertionsTest extends OpenSAMLInitBaseTest
      * response.
      */
     @Test public void testSingleAssertionWithExistingCondition() throws Exception {
-        final SAMLObjectBuilder<Conditions> conditionsBuilder =
-                (SAMLObjectBuilder<Conditions>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
                         Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
 
@@ -114,13 +114,13 @@ public class AddDoNotCacheConditionToAssertionsTest extends OpenSAMLInitBaseTest
 
     /** Test that an addition DoNotCache is not added if an assertion already contains one. */
     @Test public void testSingleAssertionWithExistingDoNotCacheCondition() throws Exception {
-        final SAMLObjectBuilder<DoNotCacheCondition> dncConditionBuilder =
-                (SAMLObjectBuilder<DoNotCacheCondition>) XMLObjectProviderRegistrySupport.getBuilderFactory()
-                        .getBuilder(DoNotCacheCondition.DEFAULT_ELEMENT_NAME);
+        final SAMLObjectBuilder<DoNotCacheCondition> dncConditionBuilder = (SAMLObjectBuilder<DoNotCacheCondition>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<DoNotCacheCondition>getBuilderOrThrow(
+                        DoNotCacheCondition.DEFAULT_ELEMENT_NAME);
         final DoNotCacheCondition dncCondition = dncConditionBuilder.buildObject();
 
-        final SAMLObjectBuilder<Conditions> conditionsBuilder =
-                (SAMLObjectBuilder<Conditions>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
                         Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
         conditions.getDoNotCacheConditions().add(dncCondition);

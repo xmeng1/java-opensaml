@@ -46,9 +46,8 @@ public class SOAPClientDestinationURILookup implements Function<MessageContext, 
         
         if (opContext.getSubcontext(SOAPClientContext.class) == null) {
             return null;
-        } else {
-            return opContext.getSubcontext(SOAPClientContext.class).getDestinationURI();
         }
+        return opContext.getSubcontext(SOAPClientContext.class).getDestinationURI();
     }
 
 }

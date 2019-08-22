@@ -37,7 +37,6 @@ import org.w3c.dom.Element;
  */
 public abstract class WSBaseTestCase extends XMLObjectBaseTestCase {
 
-    @SuppressWarnings("unchecked")
     protected <T extends XMLObject> T marshallAndUnmarshall(T object)
             throws Exception {
         QName name= object.getElementQName();

@@ -112,10 +112,9 @@ public class URLEvaluatingMessageChannelSecurity extends AbstractMessageChannelS
                 log.warn("Unable to parse resolved target URL: {}", url, e);
                 return false;
             }
-        } else {
-            log.warn("No target URL resolved, skipping MessageChannelSecurityContext population");
-            return false;
         }
+        log.warn("No target URL resolved, skipping MessageChannelSecurityContext population");
+        return false;
     }
 
     /** {@inheritDoc} */

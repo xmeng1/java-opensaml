@@ -141,16 +141,17 @@ public class ReplayCache extends AbstractIdentifiableInitializableComponent {
         }
 
         try {
-            final StorageRecord entry = storage.read(context, key);
+            final StorageRecord<?> entry = storage.read(context, key);
             if (entry == null) {
                 log.debug("Value '{}' was not a replay, adding to cache with expiration time {}", s, expires);
                 storage.create(context, key, "x", expires.toEpochMilli());
                 return true;
-            } else {
-                log.debug("Replay of value '{}' detected in cache, expires at {}", s,
-                        Instant.ofEpochMilli(entry.getExpiration()));
-                return false;
             }
+            
+            log.debug("Replay of value '{}' detected in cache, expires at {}", s,
+                    Instant.ofEpochMilli(entry.getExpiration()));
+            return false;
+            
         } catch (final IOException e) {
             log.error("Exception reading/writing to storage service, returning {}", strict ? "failure" : "success", e);
             return !strict;

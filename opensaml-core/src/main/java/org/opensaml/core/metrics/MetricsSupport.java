@@ -127,9 +127,8 @@ public final class MetricsSupport {
                 if (replaceExisting) {
                     metricRegistry.remove(name);
                     return metricRegistry.register(name, metric);
-                } else {
-                    throw e;
                 }
+                throw e;
             }
         }
         
@@ -237,11 +236,7 @@ public final class MetricsSupport {
      * @return the timer context, or null if the input timer was null
      */
     @Nullable public static Context startTimer(@Nullable final Timer timer) {
-        if (timer != null) {
-            return timer.time();
-        } else {
-            return null;
-        }
+        return timer != null ? timer.time() : null;
     }
     
     /**
@@ -252,10 +247,7 @@ public final class MetricsSupport {
      * @return the elapsed time in nanoseconds, or null if the input context was null
      */
     @Nullable public static Long stopTimer(@Nullable final Context context) {
-        if (context != null) {
-            return context.stop();
-        } else {
-            return null;
-        }
+        return context != null ? context.stop() : null;
     }
+
 }

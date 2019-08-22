@@ -137,9 +137,8 @@ public class SAMLArtifactMetadataIndex implements MetadataIndex {
             }
             
             return results;
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -423,13 +422,11 @@ public class SAMLArtifactMetadataIndex implements MetadataIndex {
                 final ArtifactSourceLocationMetadataIndexKey other = (ArtifactSourceLocationMetadataIndexKey) obj;
                 if (this.isCanonicalizedLowerCase == other.isCanonicalizedLowerCase) {
                     return this.canonicalizedLocation.equals(other.canonicalizedLocation);
-                } else {
-                    if (this.isCanonicalizedLowerCase) {
-                        return this.canonicalizedLocation.equals(other.location.toLowerCase());
-                    } else {
-                        return other.canonicalizedLocation.equals(this.location.toLowerCase());
-                    }
                 }
+                if (this.isCanonicalizedLowerCase) {
+                    return this.canonicalizedLocation.equals(other.location.toLowerCase());
+                }
+                return other.canonicalizedLocation.equals(this.location.toLowerCase());
             }
 
             return false;

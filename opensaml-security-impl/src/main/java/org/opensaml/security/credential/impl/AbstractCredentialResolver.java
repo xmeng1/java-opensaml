@@ -36,9 +36,8 @@ public abstract class AbstractCredentialResolver implements CredentialResolver {
         final Iterable<Credential> creds = resolve(criteriaSet);
         if (creds.iterator().hasNext()) {
             return creds.iterator().next();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /** {@inheritDoc} */

@@ -110,11 +110,11 @@ public class MemcachedStorageServiceTest {
             throws IOException {
         assertNull(service.read(context, key));
         assertTrue(service.create(context, key, value, 5000L));
-        final StorageRecord r1 = service.read(context, key);
+        final StorageRecord<?> r1 = service.read(context, key);
         assertNotNull(r1);
         assertEquals(r1.getValue(), value);
         assertTrue(service.update(context, key, updatedValue, 5000L));
-        final StorageRecord r2 = service.read(context, key);
+        final StorageRecord<?> r2 = service.read(context, key);
         assertNotNull(r2);
         assertEquals(r2.getValue(), updatedValue);
         assertTrue(service.delete(context, key));
@@ -128,19 +128,19 @@ public class MemcachedStorageServiceTest {
             throws IOException, VersionMismatchException {
         assertNull(service.read(context, key));
         assertTrue(service.create(context, key, value, 5000L));
-        final StorageRecord r1 = service.read(context, key);
+        final StorageRecord<?> r1 = service.read(context, key);
         assertNotNull(r1);
         assertEquals(r1.getValue(), value);
         final Long updatedVersion = service.updateWithVersion(r1.getVersion(), context, key, updatedValue, 5000L);
         assertTrue((updatedVersion > r1.getVersion()));
-        final Pair<Long, StorageRecord> pair1 = service.read(context, key, r1.getVersion());
+        final Pair<Long, StorageRecord<String>> pair1 = service.read(context, key, r1.getVersion());
         assertEquals(pair1.getFirst(), updatedVersion);
         assertEquals(pair1.getSecond().getValue(), updatedValue);
-        final Pair<Long, StorageRecord> pair2 = service.read(context, key, updatedVersion);
+        final Pair<Long, StorageRecord<String>> pair2 = service.read(context, key, updatedVersion);
         assertEquals(pair2.getFirst(), updatedVersion);
         assertNull(pair2.getSecond());
         assertFalse(service.deleteWithVersion(r1.getVersion(), context, key));
-        final Pair<Long, StorageRecord> pair3 = service.read(context, key, updatedVersion);
+        final Pair<Long, StorageRecord<String>> pair3 = service.read(context, key, updatedVersion);
         assertEquals(pair3.getFirst(), updatedVersion);
         assertNull(pair3.getSecond());
         assertTrue(service.deleteWithVersion(updatedVersion, context, key));
@@ -177,7 +177,7 @@ public class MemcachedStorageServiceTest {
         final String key = "expiration_test_key";
         final String value = "Oh well, oh well, oh well, oh well";
         assertTrue(service.create(context, key, value, 30000L));
-        final StorageRecord record = service.read(context, key);
+        final StorageRecord<?> record = service.read(context, key);
         assertNotNull(record);
         assertEquals(record.getValue(), value);
         assertTrue(service.updateExpiration(context, key, System.currentTimeMillis() - 5000));

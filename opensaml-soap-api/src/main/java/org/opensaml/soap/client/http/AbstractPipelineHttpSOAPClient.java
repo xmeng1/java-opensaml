@@ -70,12 +70,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SOAP client that is based on {@link HttpClientMessagePipeline}.
- * 
- * @param <OutboundMessageType> the outbound message type
- * @param <InboundMessageType> the inbound message type
  */
 @ThreadSafe
-public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, InboundMessageType> 
+public abstract class AbstractPipelineHttpSOAPClient 
         extends AbstractInitializableComponent implements SOAPClient {
 
     /** Class logger. */
@@ -398,9 +395,8 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
                 operationContext.getOutboundMessageContext().getSubcontext(HttpClientSecurityContext.class);
         if (securityContext != null) {
             return securityContext.getSecurityParameters();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

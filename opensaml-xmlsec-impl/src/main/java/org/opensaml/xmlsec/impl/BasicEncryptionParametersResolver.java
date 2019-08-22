@@ -49,8 +49,6 @@ import com.google.common.collect.Collections2;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.logic.PredicateSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
@@ -132,9 +130,8 @@ public class BasicEncryptionParametersResolver extends AbstractSecurityParameter
         final EncryptionParameters params = resolveSingle(criteria);
         if (params != null) {
             return Collections.singletonList(params);
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */
@@ -168,9 +165,8 @@ public class BasicEncryptionParametersResolver extends AbstractSecurityParameter
         if (validate(params, encryptionOptional)) {
             logResult(params);
             return params;
-        } else {
-            return null;
         }
+        return null;
         
     }
 
@@ -219,24 +215,6 @@ public class BasicEncryptionParametersResolver extends AbstractSecurityParameter
         }
     }
 
-    /**
-     * Validate that the {@link EncryptionParameters} instance has all the required properties populated.
-     * 
-     * <p>Equivalent to: {@link #validate(EncryptionParameters, boolean)} called with false</p>
-     * 
-     * @param params the parameters instance to evaluate
-     * 
-     * @return true if parameters instance passes validation, false otherwise
-     * 
-     * @deprecated use {@link #validate(EncryptionParameters, boolean)}.
-     */
-    @Deprecated
-    protected boolean validate(@Nonnull final EncryptionParameters params) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".validate(EncryptionParameters)", 
-                null, "validate(EncryptionParameters, boolean)");
-        return validate(params, false);
-    }
-    
 // Checkstyle: CyclomaticComplexity OFF
     /**
      * Validate that the {@link EncryptionParameters} instance has all the required properties populated.
@@ -342,11 +320,10 @@ public class BasicEncryptionParametersResolver extends AbstractSecurityParameter
                     params.setDataEncryptionCredential(dataEncryptionCredential);
                     params.setDataEncryptionAlgorithm(dataEncryptionAlgorithm);
                     break;
-                } else {
-                    log.debug("Unable to resolve data encryption algorithm for credential with key type '{}', " 
-                            + "considering other credentials", 
-                            CredentialSupport.extractEncryptionKey(dataEncryptionCredential).getAlgorithm());
                 }
+                log.debug("Unable to resolve data encryption algorithm for credential with key type '{}', " 
+                        + "considering other credentials", 
+                        CredentialSupport.extractEncryptionKey(dataEncryptionCredential).getAlgorithm());
             }
         }
         
@@ -361,11 +338,10 @@ public class BasicEncryptionParametersResolver extends AbstractSecurityParameter
                 params.setKeyTransportEncryptionCredential(keyTransportCredential);
                 params.setKeyTransportEncryptionAlgorithm(keyTransportAlgorithm);
                 break;
-            } else {
-                log.debug("Unable to resolve key transport algorithm for credential with key type '{}', " 
-                        + "considering other credentials", 
-                        CredentialSupport.extractEncryptionKey(keyTransportCredential).getAlgorithm());
             }
+            log.debug("Unable to resolve key transport algorithm for credential with key type '{}', " 
+                    + "considering other credentials", 
+                    CredentialSupport.extractEncryptionKey(keyTransportCredential).getAlgorithm());
         }
         
         resolveAndPopulateRSAOAEPParams(params, criteria, whitelistBlacklistPredicate);
@@ -546,9 +522,8 @@ public class BasicEncryptionParametersResolver extends AbstractSecurityParameter
             log.trace("Data encryption credential was null, selecting algorithm based on effective algorithms alone");
             if (!dataEncryptionAlgorithms.isEmpty()) {
                 return dataEncryptionAlgorithms.get(0);
-            } else {
-                return null;
             }
+            return null;
         }
         
         for (final String algorithm : dataEncryptionAlgorithms) {

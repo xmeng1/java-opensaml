@@ -63,7 +63,7 @@ public class AttributeMapTest extends XMLObjectBaseTestCase {
 
     @BeforeMethod
     protected void setUp() throws Exception {
-        xsAnyBuilder = (XMLObjectBuilder<XSAny>) builderFactory.getBuilder(XSAny.TYPE_NAME);
+        xsAnyBuilder = builderFactory.<XSAny>getBuilderOrThrow(XSAny.TYPE_NAME);
         owner = xsAnyBuilder.buildObject(elementName);
         attributeMap = owner.getUnknownAttributes();
     }
@@ -181,13 +181,12 @@ public class AttributeMapTest extends XMLObjectBaseTestCase {
         return new Namespace(uri, prefix);
     }
     
-    private boolean equals(Namespace ns1, Namespace ns2) {
-        if (Objects.equals(ns1.getNamespaceURI(), ns1.getNamespaceURI()) 
-                && Objects.equals(ns2.getNamespacePrefix(), ns2.getNamespacePrefix())) {
+    private boolean equals(Namespace nsa, Namespace nsb) {
+        if (Objects.equals(nsa.getNamespaceURI(), nsa.getNamespaceURI()) 
+                && Objects.equals(nsb.getNamespacePrefix(), nsb.getNamespacePrefix())) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
 }

@@ -624,7 +624,7 @@ public class KeyInfoSupportTest extends XMLObjectBaseTestCase {
         Assert.assertNotNull(x509Cert, "X509Certificate was null");
 
         java.security.cert.X509Certificate javaCert = null;
-        javaCert = (java.security.cert.X509Certificate) KeyInfoSupport.getCertificate(x509Cert);
+        javaCert = KeyInfoSupport.getCertificate(x509Cert);
 
         Assert.assertEquals(javaCert, javaCert1, "Inserted X509Certificate was not the expected value");
 
@@ -647,7 +647,7 @@ public class KeyInfoSupportTest extends XMLObjectBaseTestCase {
         Assert.assertNotNull(x509CRL, "X509CRL was null");
 
         java.security.cert.X509CRL javaCRL = null;
-        javaCRL = (java.security.cert.X509CRL) KeyInfoSupport.getCRL(x509CRL);
+        javaCRL = KeyInfoSupport.getCRL(x509CRL);
 
         Assert.assertEquals(javaCRL, javaCRL1, "Inserted X509CRL was not the expected value");
 

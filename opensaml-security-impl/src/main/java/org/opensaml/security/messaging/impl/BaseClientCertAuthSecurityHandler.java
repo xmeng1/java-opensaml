@@ -146,9 +146,8 @@ public abstract class BaseClientCertAuthSecurityHandler extends BaseTrustEngineS
                 messageContext.getSubcontext(ClientTLSSecurityParametersContext.class);
         if (secContext == null || secContext.getValidationParameters() == null)  {
             return null;
-        } else {
-            return secContext.getValidationParameters().getX509TrustEngine();
         }
+        return secContext.getValidationParameters().getX509TrustEngine();
     }
 
     /** {@inheritDoc} */
@@ -169,9 +168,8 @@ public abstract class BaseClientCertAuthSecurityHandler extends BaseTrustEngineS
         if (secContext == null || secContext.getValidationParameters() == null 
                 || secContext.getValidationParameters().getCertificateNameOptions() == null)  {
             throw new MessageHandlerException("CertificateNameOptions was not available from the MessageContext");
-        } else {
-            certNameOptions = secContext.getValidationParameters().getCertificateNameOptions();
         }
+        certNameOptions = secContext.getValidationParameters().getCertificateNameOptions();
         
         return true;
     }
@@ -413,10 +411,9 @@ public abstract class BaseClientCertAuthSecurityHandler extends BaseTrustEngineS
                 log.debug("{} Authentication succeeded for presenter entity ID derived from CN: {}", getLogPrefix(),
                         candidatePresenter);
                 return candidatePresenter;
-            } else {
-                log.debug("{} Authentication failed for presenter entity ID derived from CN: {}", getLogPrefix(),
-                        candidatePresenter);
             }
+            log.debug("{} Authentication failed for presenter entity ID derived from CN: {}", getLogPrefix(),
+                    candidatePresenter);
         }
         return null;
     }
@@ -440,10 +437,9 @@ public abstract class BaseClientCertAuthSecurityHandler extends BaseTrustEngineS
                 log.debug("{} Authentication succeeded for presenter entity ID derived from subject DN: {}",
                         getLogPrefix(), candidatePresenter);
                 return candidatePresenter;
-            } else {
-                log.debug("{} Authentication failed for presenter entity ID derived from subject DN: {}",
-                        getLogPrefix(), candidatePresenter); 
             }
+            log.debug("{} Authentication failed for presenter entity ID derived from subject DN: {}",
+                    getLogPrefix(), candidatePresenter);
         }
         return null;
     }
@@ -470,10 +466,9 @@ public abstract class BaseClientCertAuthSecurityHandler extends BaseTrustEngineS
                     log.debug("{} Authentication succeeded for presenter entity ID derived from subject alt name: {}",
                             getLogPrefix(), altName);
                     return altName;
-                } else {
-                    log.debug("{} Authentication failed for presenter entity ID derived from subject alt name: {}",
-                            getLogPrefix(), altName);
                 }
+                log.debug("{} Authentication failed for presenter entity ID derived from subject alt name: {}",
+                        getLogPrefix(), altName);
             }
         }
         return null;
@@ -529,7 +524,7 @@ public abstract class BaseClientCertAuthSecurityHandler extends BaseTrustEngineS
             @Nonnull final Integer altNameType) {
         log.debug("{} Extracting alt names from certificate of type: {}", getLogPrefix(), altNameType.toString());
         final Integer[] nameTypes = new Integer[] {altNameType};
-        final List altNames = X509Support.getAltNames(cert, nameTypes);
+        final List<?> altNames = X509Support.getAltNames(cert, nameTypes);
         final List<String> names = new ArrayList<>();
         for (final Object altNameValue : altNames) {
             if (!(altNameValue instanceof String)) {

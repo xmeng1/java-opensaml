@@ -63,37 +63,37 @@ public class EncryptionMethodImpl extends AbstractXMLObject implements Encryptio
 
     /** {@inheritDoc} */
     public String getAlgorithm() {
-        return this.algorithm;
+        return algorithm;
     }
 
     /** {@inheritDoc} */
     public void setAlgorithm(final String newAlgorithm) {
-        this.algorithm = prepareForAssignment(this.algorithm, newAlgorithm);
+        algorithm = prepareForAssignment(algorithm, newAlgorithm);
     }
 
     /** {@inheritDoc} */
     public KeySize getKeySize() {
-        return this.keySize;
+        return keySize;
     }
 
     /** {@inheritDoc} */
     public void setKeySize(final KeySize newKeySize) {
-        this.keySize = prepareForAssignment(this.keySize, newKeySize);
+        keySize = prepareForAssignment(keySize, newKeySize);
     }
 
     /** {@inheritDoc} */
     public OAEPparams getOAEPparams() {
-        return this.oaepParams;
+        return oaepParams;
     }
 
     /** {@inheritDoc} */
     public void setOAEPparams(final OAEPparams newOAEPparams) {
-        this.oaepParams = prepareForAssignment(this.oaepParams, newOAEPparams);
+        oaepParams = prepareForAssignment(oaepParams, newOAEPparams);
     }
 
     /** {@inheritDoc} */
     public List<XMLObject> getUnknownXMLObjects() {
-        return this.unknownChildren;
+        return unknownChildren;
     }
     /** {@inheritDoc} */
     public List<XMLObject> getUnknownXMLObjects(final QName typeOrName) {

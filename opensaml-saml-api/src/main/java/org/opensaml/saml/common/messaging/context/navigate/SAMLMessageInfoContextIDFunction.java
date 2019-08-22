@@ -29,9 +29,8 @@ public class SAMLMessageInfoContextIDFunction implements ContextDataLookupFuncti
     @Nullable public String apply(@Nullable final SAMLMessageInfoContext input) {
         if (input != null) {
             return input.getMessageId();
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

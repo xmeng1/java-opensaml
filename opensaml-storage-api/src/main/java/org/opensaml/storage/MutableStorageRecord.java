@@ -24,8 +24,10 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
 /**
  * Exposes mutation of {@link StorageRecord} properties.
+ * 
+ * @param <T> type of record
  */
-public class MutableStorageRecord extends StorageRecord {
+public class MutableStorageRecord<T> extends StorageRecord<T> {
     
     /**
      * Constructor.

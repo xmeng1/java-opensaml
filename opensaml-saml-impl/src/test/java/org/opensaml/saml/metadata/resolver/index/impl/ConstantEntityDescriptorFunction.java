@@ -35,8 +35,8 @@ public class ConstantEntityDescriptorFunction implements Function<EntityDescript
     
     private String value;
     
-    public ConstantEntityDescriptorFunction(String value) {
-        this.value = Constraint.isNotNull(StringSupport.trimOrNull(value), "Value was null or empty");
+    public ConstantEntityDescriptorFunction(String val) {
+        value = Constraint.isNotNull(StringSupport.trimOrNull(val), "Value was null or empty");
     }
 
 

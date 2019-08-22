@@ -175,7 +175,7 @@ public class PopulateSignatureSigningParametersHandler extends AbstractMessageHa
         if (resolver == null) {
             throw new ComponentInitializationException("SignatureSigningParametersResolver cannot be null");
         } else if (configurationLookupStrategy == null) {
-            configurationLookupStrategy = new Function<MessageContext,List<SignatureSigningConfiguration>>() {
+            configurationLookupStrategy = new Function<>() {
                 public List<SignatureSigningConfiguration> apply(final MessageContext input) {
                     return Collections.singletonList(
                             SecurityConfigurationSupport.getGlobalSignatureSigningConfiguration());
@@ -191,10 +191,9 @@ public class PopulateSignatureSigningParametersHandler extends AbstractMessageHa
         if (super.doPreInvoke(messageContext)) {
             log.debug("{} Signing enabled", getLogPrefix());
             return true;
-        } else {
-            log.debug("{} Signing not enabled", getLogPrefix());
-            return false;
         }
+        log.debug("{} Signing not enabled", getLogPrefix());
+        return false;
     }
     
 // Checkstyle: CyclomaticComplexity|ReturnCount OFF

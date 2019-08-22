@@ -103,8 +103,8 @@ public class AddAudienceRestrictionToAssertionsTest extends OpenSAMLInitBaseTest
      * response.
      */
     @Test public void testSingleAssertionWithExistingCondition() throws Exception {
-        final SAMLObjectBuilder<Conditions> conditionsBuilder =
-                (SAMLObjectBuilder<Conditions>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
                         Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
 
@@ -129,13 +129,13 @@ public class AddAudienceRestrictionToAssertionsTest extends OpenSAMLInitBaseTest
 
     /** Test that an addition condition is not added if an assertion already contains one. */
     @Test public void testSingleAssertionWithExistingAudienceCondition() throws Exception {
-        final SAMLObjectBuilder<AudienceRestrictionCondition> conditionBuilder =
-                (SAMLObjectBuilder<AudienceRestrictionCondition>) XMLObjectProviderRegistrySupport.getBuilderFactory()
-                        .getBuilder(AudienceRestrictionCondition.DEFAULT_ELEMENT_NAME);
+        final SAMLObjectBuilder<AudienceRestrictionCondition> conditionBuilder = (SAMLObjectBuilder<AudienceRestrictionCondition>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<AudienceRestrictionCondition>getBuilderOrThrow(
+                        AudienceRestrictionCondition.DEFAULT_ELEMENT_NAME);
         final AudienceRestrictionCondition condition = conditionBuilder.buildObject();
 
-        final SAMLObjectBuilder<Conditions> conditionsBuilder =
-                (SAMLObjectBuilder<Conditions>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
                         Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
         conditions.getAudienceRestrictionConditions().add(condition);

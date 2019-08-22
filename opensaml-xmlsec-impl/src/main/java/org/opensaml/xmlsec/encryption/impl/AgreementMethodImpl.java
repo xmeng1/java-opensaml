@@ -49,7 +49,7 @@ public class AgreementMethodImpl extends AbstractXMLObject implements AgreementM
     private RecipientKeyInfo recipientKeyInfo;
     
     /** List of wildcard &lt;any&gt; XMLObject children. */
-    private IndexedXMLObjectChildrenList xmlChildren;
+    private IndexedXMLObjectChildrenList<XMLObject> xmlChildren;
 
     /**
      * Constructor.
@@ -61,17 +61,17 @@ public class AgreementMethodImpl extends AbstractXMLObject implements AgreementM
     protected AgreementMethodImpl(final String namespaceURI, final String elementLocalName,
             final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        xmlChildren = new IndexedXMLObjectChildrenList(this);
+        xmlChildren = new IndexedXMLObjectChildrenList<>(this);
     }
 
     /** {@inheritDoc} */
     public String getAlgorithm() {
-        return this.algorithm;
+        return algorithm;
     }
 
     /** {@inheritDoc} */
     public void setAlgorithm(final String newAlgorithm) {
-        this.algorithm = prepareForAssignment(this.algorithm, newAlgorithm);
+        algorithm = prepareForAssignment(algorithm, newAlgorithm);
     }
 
     /** {@inheritDoc} */
@@ -81,36 +81,36 @@ public class AgreementMethodImpl extends AbstractXMLObject implements AgreementM
 
     /** {@inheritDoc} */
     public void setKANonce(final KANonce newKANonce) {
-        this.kaNonce = prepareForAssignment(this.kaNonce, newKANonce);
+        kaNonce = prepareForAssignment(kaNonce, newKANonce);
     }
 
     /** {@inheritDoc} */
     public OriginatorKeyInfo getOriginatorKeyInfo() {
-        return this.originatorKeyInfo;
+        return originatorKeyInfo;
     }
 
     /** {@inheritDoc} */
     public void setOriginatorKeyInfo(final OriginatorKeyInfo newOriginatorKeyInfo) {
-        this.originatorKeyInfo = prepareForAssignment(this.originatorKeyInfo, newOriginatorKeyInfo);
+        originatorKeyInfo = prepareForAssignment(originatorKeyInfo, newOriginatorKeyInfo);
     }
 
     /** {@inheritDoc} */
     public RecipientKeyInfo getRecipientKeyInfo() {
-        return this.recipientKeyInfo;
+        return recipientKeyInfo;
     }
 
     /** {@inheritDoc} */
     public void setRecipientKeyInfo(final RecipientKeyInfo newRecipientKeyInfo) {
-        this.recipientKeyInfo = prepareForAssignment(this.recipientKeyInfo, newRecipientKeyInfo);
+        recipientKeyInfo = prepareForAssignment(recipientKeyInfo, newRecipientKeyInfo);
     }
 
     /** {@inheritDoc} */
     public List<XMLObject> getUnknownXMLObjects() {
-        return (List<XMLObject>) this.xmlChildren;
+        return xmlChildren;
     }
     /** {@inheritDoc} */
     public List<XMLObject> getUnknownXMLObjects(final QName typeOrName) {
-        return (List<XMLObject>) this.xmlChildren.subList(typeOrName);
+        return (List<XMLObject>) xmlChildren.subList(typeOrName);
     }
 
     /** {@inheritDoc} */

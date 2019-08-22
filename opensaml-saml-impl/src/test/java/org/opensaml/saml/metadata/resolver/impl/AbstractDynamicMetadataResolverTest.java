@@ -119,7 +119,6 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
     
     @BeforeMethod
     protected void setUpEntityData() throws MarshallingException, IOException, SecurityException, SignatureException {
-        ByteArrayOutputStream baos = null;
         
         id1 = "urn:test:entity:1";
         ed1 = buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
@@ -127,11 +126,11 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         ed1.getRoleDescriptors().add((RoleDescriptor) buildXMLObject(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
         SignatureSupport.signObject(ed1, signingParams);
         Assert.assertTrue(ed1.isSigned());
-        baos = new ByteArrayOutputStream();
-        XMLObjectSupport.marshallToOutputStream(ed1, baos);
-        baos.flush();
-        baos.close();
-        Assert.assertNotNull(ed1.getDOM());
+        
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            XMLObjectSupport.marshallToOutputStream(ed1, baos);
+            Assert.assertNotNull(ed1.getDOM());
+        }
         
         id2 = "urn:test:entity:2";
         ed2 = buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
@@ -139,11 +138,11 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         ed2.getRoleDescriptors().add((RoleDescriptor) buildXMLObject(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
         SignatureSupport.signObject(ed2, signingParams);
         Assert.assertTrue(ed2.isSigned());
-        baos = new ByteArrayOutputStream();
-        XMLObjectSupport.marshallToOutputStream(ed2, baos);
-        baos.flush();
-        baos.close();
-        Assert.assertNotNull(ed2.getDOM());
+        
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            XMLObjectSupport.marshallToOutputStream(ed2, baos);
+            Assert.assertNotNull(ed2.getDOM());
+        }
         
         id3 = "urn:test:entity:3";
         ed3 = buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
@@ -151,12 +150,11 @@ public class AbstractDynamicMetadataResolverTest extends XMLObjectBaseTestCase {
         ed3.getRoleDescriptors().add((RoleDescriptor) buildXMLObject(IDPSSODescriptor.DEFAULT_ELEMENT_NAME));
         SignatureSupport.signObject(ed3, signingParams);
         Assert.assertTrue(ed3.isSigned());
-        baos = new ByteArrayOutputStream();
-        XMLObjectSupport.marshallToOutputStream(ed3, baos);
-        baos.flush();
-        baos.close();
-        Assert.assertNotNull(ed3.getDOM());
         
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            XMLObjectSupport.marshallToOutputStream(ed3, baos);
+            Assert.assertNotNull(ed3.getDOM());
+        }
     }
     
     @BeforeMethod

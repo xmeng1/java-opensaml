@@ -35,7 +35,7 @@ public final class WSSecurityContext extends BaseContext {
     //TODO implement support for remaining items of WS-Security data model
     
     /** List of known WS-Security tokens. */
-    private LazyList<Token> tokens;
+    private LazyList<Token<?>> tokens;
     
     /** Value for Timestamp Created. */
     private Instant timestampCreated;
@@ -54,7 +54,7 @@ public final class WSSecurityContext extends BaseContext {
      * 
      * @return the list of tokens
      */
-    @Nonnull public List<Token> getTokens() {
+    @Nonnull public List<Token<?>> getTokens() {
         return tokens;
     }
 

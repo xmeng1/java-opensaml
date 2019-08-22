@@ -158,9 +158,8 @@ public class ExplicitKeySignatureTrustEngine extends BaseSignatureTrustEngine<It
                     if (evaluateTrust(candidateCredential, trustedCredentials)) {
                         log.debug("Successfully established trust of supplied candidate credential");
                         return true;
-                    } else {
-                        log.debug("Failed to establish trust of supplied candidate credential");
                     }
+                    log.debug("Failed to establish trust of supplied candidate credential");
                 }
             } catch (final SecurityException e) {
                 // Java 7 now throws this exception under conditions such as mismatched key sizes.

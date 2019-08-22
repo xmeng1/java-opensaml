@@ -88,10 +88,9 @@ public abstract class AbstractEndpointResolver<EndpointType extends Endpoint>
             final EndpointType endpoint = (EndpointType) criteria.get(EndpointCriterion.class).getEndpoint();
             if (doCheckEndpoint(criteria, endpoint)) {
                 return Collections.<EndpointType>singletonList(endpoint);
-            } else {
-                log.debug("{} Requested endpoint was rejected by extended validation process", getLogPrefix());
-                return Collections.emptyList();
             }
+            log.debug("{} Requested endpoint was rejected by extended validation process", getLogPrefix());
+            return Collections.emptyList();
         }
         
         final List<EndpointType> candidates = getCandidatesFromMetadata(criteria);
@@ -115,10 +114,9 @@ public abstract class AbstractEndpointResolver<EndpointType extends Endpoint>
             final EndpointType endpoint = (EndpointType) criteria.get(EndpointCriterion.class).getEndpoint();
             if (doCheckEndpoint(criteria, endpoint)) {
                 return endpoint;
-            } else {
-                log.debug("{} Requested endpoint was rejected by extended validation process", getLogPrefix());
-                return null;
             }
+            log.debug("{} Requested endpoint was rejected by extended validation process", getLogPrefix());
+            return null;
         }
         
         for (final EndpointType candidate : getCandidatesFromMetadata(criteria)) {
@@ -155,7 +153,7 @@ public abstract class AbstractEndpointResolver<EndpointType extends Endpoint>
             throw new ResolverException("CriteriaSet cannot be null");
         }
 
-        final EndpointCriterion epCriterion = criteria.get(EndpointCriterion.class);
+        final EndpointCriterion<EndpointType> epCriterion = criteria.get(EndpointCriterion.class);
         if (epCriterion == null) {
             throw new ResolverException("EndpointCriterion not supplied");
         }
@@ -172,9 +170,9 @@ public abstract class AbstractEndpointResolver<EndpointType extends Endpoint>
      * @return true iff the supplied endpoint via {@link EndpointCriterion} should be returned
      */
     private boolean canUseRequestedEndpoint(@Nonnull final CriteriaSet criteria) {
-        final EndpointCriterion epc = criteria.get(EndpointCriterion.class);
+        final EndpointCriterion<EndpointType> epc = criteria.get(EndpointCriterion.class);
         if (epc.isTrusted()) {
-            final EndpointType requestedEndpoint = (EndpointType) epc.getEndpoint();
+            final EndpointType requestedEndpoint = epc.getEndpoint();
             if (requestedEndpoint.getBinding() != null && (requestedEndpoint.getLocation() != null
                     || requestedEndpoint.getResponseLocation() != null)) {
                 return true;
@@ -206,7 +204,7 @@ public abstract class AbstractEndpointResolver<EndpointType extends Endpoint>
         }
         
         // Determine the QName type of endpoints to extract based on candidate type.
-        final EndpointCriterion epCriterion = criteria.get(EndpointCriterion.class);
+        final EndpointCriterion<EndpointType> epCriterion = criteria.get(EndpointCriterion.class);
         QName endpointType = epCriterion.getEndpoint().getSchemaType();
         if (endpointType == null) {
             endpointType = epCriterion.getEndpoint().getElementQName();
@@ -241,7 +239,7 @@ public abstract class AbstractEndpointResolver<EndpointType extends Endpoint>
         // the first not marked false.
         EndpointType hardDefault = null;
         EndpointType softDefault = null;
-        final LinkedList<EndpointType> toReturn = new LinkedList();
+        final LinkedList<EndpointType> toReturn = new LinkedList<>();
         for (final Endpoint endpoint : candidates) {
             if (hardDefault == null && endpoint instanceof IndexedEndpoint) {
                 final Boolean flag = ((IndexedEndpoint) endpoint).isDefault();

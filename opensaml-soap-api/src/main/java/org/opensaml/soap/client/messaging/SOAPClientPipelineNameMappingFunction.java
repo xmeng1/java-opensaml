@@ -87,7 +87,7 @@ public class SOAPClientPipelineNameMappingFunction<T> implements Function<Messag
             soapClientContextLookup = lookupStrategy;
         } else {
             soapClientContextLookup =
-                    new ChildContextLookup(SOAPClientContext.class).compose( 
+                    new ChildContextLookup<>(SOAPClientContext.class).compose( 
                             new RecursiveTypedParentContextLookup<>(InOutOperationContext.class));
         }
     }

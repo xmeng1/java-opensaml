@@ -34,12 +34,10 @@ public class CurrentOrPreviousEventLookup implements Function<ProfileRequestCont
             final EventContext eventCtx = input.getSubcontext(EventContext.class);
             if (eventCtx != null && eventCtx.getEvent() != null) {
                 return eventCtx;
-            } else {
-                return input.getSubcontext(PreviousEventContext.class);
             }
-        } else {
-            return null;
+            return input.getSubcontext(PreviousEventContext.class);
         }
+        return null;
     }
     
 }
