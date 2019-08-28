@@ -159,6 +159,7 @@ public class OneTimeUseConditionValidator implements ConditionValidator {
             expires = (Duration) raw;
         } else if (raw instanceof Long) {
             expires = Duration.ofMillis((Long) raw);
+            // V4 deprecation, remove in V5
             DeprecationSupport.warn(ObjectType.CONFIGURATION,
                     SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES, null, Duration.class.getName());
         }

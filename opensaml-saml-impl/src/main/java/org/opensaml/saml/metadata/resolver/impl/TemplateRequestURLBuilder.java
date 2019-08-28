@@ -34,10 +34,8 @@ import com.google.common.net.UrlEscapers;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.velocity.Template;
 
 /**
@@ -87,70 +85,6 @@ public class TemplateRequestURLBuilder implements Function<CriteriaSet, String> 
     
     /** Enum value indicating whether and how to encode the entity ID value before substitution. */
     private EncodingStyle entityIDEncodingStyle;
-    
-    /**
-     * Constructor.
-     * 
-     * <p>The template character set will be US ASCII.</p>
-     *
-     * @param engine the {@link VelocityEngine} instance to use
-     * @param templateString the Velocity template string
-     * @param encoded true if entity ID should be URL form-encoded prior to substitution, false otherwise
-     * 
-     * @deprecated Replacement is the variant which accepts an instance of {@link EncodingStyle}
-     */
-    @Deprecated 
-    public TemplateRequestURLBuilder(@Nonnull final VelocityEngine engine, 
-            @Nonnull @NotEmpty final String templateString, final boolean encoded) {
-        this(engine, templateString, encoded ? EncodingStyle.form : EncodingStyle.none, null, 
-                StandardCharsets.US_ASCII);
-        
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".constructor", null,
-                "variant accepting EncodingStyle enum");
-    }
-    /**
-     * Constructor.
-     * 
-     * <p>The template character set will be US ASCII.</p>
-     *
-     * @param engine the {@link VelocityEngine} instance to use
-     * @param templateString the Velocity template string
-     * @param transform function which transforms the entityID prior to substitution, may be null
-     * @param encoded true if entity ID should be URL form-encoded prior to substitution, false otherwise
-     * 
-     * @deprecated Replacement is the variant which accepts an instance of {@link EncodingStyle}
-     */
-    @Deprecated
-    public TemplateRequestURLBuilder(@Nonnull final VelocityEngine engine, 
-            @Nonnull @NotEmpty final String templateString, final boolean encoded, 
-            @Nullable final Function<String, String> transform) {
-        this(engine, templateString, encoded ? EncodingStyle.form : EncodingStyle.none, transform, 
-                StandardCharsets.US_ASCII);
-        
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".constructor", null,
-                "variant accepting EncodingStyle enum");
-    }
-    
-    /**
-     * Constructor.
-     *
-     * @param engine the {@link VelocityEngine} instance to use
-     * @param templateString the Velocity template string
-     * @param encoded true if entity ID should be URL form-encoded prior to substitution, false otherwise
-     * @param transform function which transforms the entityID prior to substitution, may be null
-     * @param charSet character set of the template, may be null
-     * 
-     * @deprecated Replacement is the variant which accepts an instance of {@link EncodingStyle}
-     */
-    @Deprecated
-    public TemplateRequestURLBuilder(@Nonnull final VelocityEngine engine, 
-            @Nonnull @NotEmpty final String templateString, final boolean encoded, 
-            @Nullable final Function<String, String> transform, @Nullable final Charset charSet) {
-        this(engine, templateString, encoded ? EncodingStyle.form : EncodingStyle.none, transform, charSet);
-        
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".constructor", null,
-                "variant accepting EncodingStyle enum");
-    }
     
     /**
      * Constructor.
@@ -262,6 +196,5 @@ public class TemplateRequestURLBuilder implements Function<CriteriaSet, String> 
             return null;
         }
     }
-
 
 }

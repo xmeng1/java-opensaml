@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLPeerUnverifiedException;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
@@ -36,8 +35,6 @@ import net.shibboleth.utilities.java.support.component.AbstractInitializableComp
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 import org.apache.http.HttpResponse;
@@ -302,25 +299,7 @@ public abstract class AbstractPipelineHttpSOAPClient
      */
     @Nonnull protected abstract HttpClientMessagePipeline newPipeline() 
             throws SOAPException;
-    
-    /**
-     * Check that trust engine evaluation of the server TLS credential was actually performed.
-     * 
-     * @param context the current HTTP context instance in use
-     * @param request the HTTP URI request
-     * @throws SSLPeerUnverifiedException thrown if the TLS credential was not actually evaluated by the trust engine
-     * 
-     * @deprecated use {@link HttpClientSecuritySupport#checkTLSCredentialEvaluated(HttpClientContext, String)}
-     */
-    @Deprecated
-    protected void checkTLSCredentialTrusted(@Nonnull final HttpClientContext context, 
-            @Nonnull final HttpUriRequest request) throws SSLPeerUnverifiedException {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".checkTLSCredentialTrusted", null,
-                "HttpClientSecuritySupport.checkTLSCredentialEvaluated");
         
-        HttpClientSecuritySupport.checkTLSCredentialEvaluated(context, request.getURI().getScheme());
-    }
-    
     /**
      * Build the {@link HttpUriRequest} instance to be executed by the HttpClient.
      * 

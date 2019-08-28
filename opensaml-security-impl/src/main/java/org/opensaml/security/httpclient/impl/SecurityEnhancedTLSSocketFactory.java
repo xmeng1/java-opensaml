@@ -48,6 +48,7 @@ import org.opensaml.security.x509.tls.impl.ThreadLocalX509CredentialContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.httpclient.HttpClientSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
@@ -247,39 +248,14 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
      * and {@link CriteriaSet} supplied by the caller via the {@link HttpContext}.
      * 
      * @param socket the socket instance being processed
-     * @param context the HttpClient context being processed
-     * 
-     * @throws IOException if the server TLS credential is untrusted, or if there is a fatal error
-     *           attempting trust evaluation.
-     *           
-     * @deprecated use {@link #performTrustEval(Socket, String, HttpContext)}
-     */
-    @Deprecated
-    protected void performTrustEval(@Nonnull final Socket socket, @Nonnull final HttpContext context) 
-            throws IOException {
-        //TODO when we remove this deprecated method, change called method to @Nonnull for hostname
-        DeprecationSupport.warn(ObjectType.METHOD, getClass().getName() + ".performTrustEval(Socket, HttpContext)",
-                null, null);
-        performTrustEval(socket, null, context);
-    }
-    
-// Checkstyle: ReturnCount OFF
-    /**
-     * Perform trust evaluation by extracting the server TLS {@link X509Credential} from the 
-     * {@link SSLSession} and evaluating it via a
-     * {@link TrustEngine}<code>&lt;</code>{@link org.opensaml.security.credential.Credential}<code>&gt;</code>
-     * and {@link CriteriaSet} supplied by the caller via the {@link HttpContext}.
-     * 
-     * @param socket the socket instance being processed
      * @param hostname the hostname being processed
      * @param context the HttpClient context being processed
      * 
      * @throws IOException if the server TLS credential is untrusted, or if there is a fatal error
      *           attempting trust evaluation.
      */
-    protected void performTrustEval(@Nonnull final Socket socket, @Nullable final String hostname, 
+    protected void performTrustEval(@Nonnull final Socket socket, @Nonnull @NotEmpty final String hostname, 
             @Nonnull final HttpContext context) throws IOException {
-        //TODO Really hostname should be @Nonnull, change when we remove deprecated performTrustEval(...)
         
         if (!(socket instanceof SSLSocket)) {
             log.debug("Socket was not an instance of SSLSocket, skipping trust eval");
@@ -289,20 +265,20 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
         
         log.debug("Attempting to evaluate server TLS credential against supplied TrustEngine and CriteriaSet");
         
-        @SuppressWarnings("unchecked") final
-        TrustEngine<? super X509Credential> trustEngine = (TrustEngine<? super X509Credential>) context.getAttribute(
-                HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE);
+        @SuppressWarnings("unchecked")
+        final TrustEngine<? super X509Credential> trustEngine =
+            (TrustEngine<? super X509Credential>) context.getAttribute(
+                    HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE);
         if (trustEngine == null) {
             if (isTrustEngineRequired()) {
                 log.warn("The required trust engine was not supplied by the caller, failing socket TLS creation");
                 throw new SSLPeerUnverifiedException("The required trust engine was not supplied by the caller");
-            } else  {
-                log.debug("No trust engine supplied by caller, skipping trust eval");
-                return;
             }
-        } else {
-            log.trace("Saw trust engine of type: {}", trustEngine.getClass().getName());
+            log.debug("No trust engine supplied by caller, skipping trust eval");
+            return;
         }
+        
+        log.trace("Saw trust engine of type: {}", trustEngine.getClass().getName());
         
         CriteriaSet criteriaSet = (CriteriaSet) context.getAttribute(
                 HttpClientSecurityConstants.CONTEXT_KEY_CRITERIA_SET);
@@ -310,9 +286,7 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
             log.debug("No criteria set supplied by caller, building new criteria set with signing " 
                     + "and trusted names criteria");
             criteriaSet = new CriteriaSet(new UsageCriterion(UsageType.SIGNING));
-            if (hostname != null) {
-                criteriaSet.add(new TrustedNamesCriterion(Collections.singleton(hostname)));
-            }
+            criteriaSet.add(new TrustedNamesCriterion(Collections.singleton(hostname)));
         } else {
             log.trace("Saw CriteriaSet: {}", criteriaSet);
         }
@@ -333,9 +307,8 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
                     log.debug("Credential evaluated as untrusted, failure indicated as fatal");
                     throw new SSLPeerUnverifiedException(
                             "Trust engine could not establish trust of server TLS credential");
-                } else {
-                    log.debug("Credential evaluated as untrusted, failure indicated as non-fatal");
                 }
+                log.debug("Credential evaluated as untrusted, failure indicated as non-fatal");
             }
         } catch (final SecurityException e) {
             log.error("Trust engine error evaluating credential", e);
@@ -343,7 +316,6 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
         }
         
     }
-// Checkstyle: ReturnCount ON
 
     /**
      * Extract the server TLS {@link X509Credential} from the supplied {@link SSLSocket}.

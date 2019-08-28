@@ -41,30 +41,6 @@ public class TemplateRequestURLBuilderTest {
     }
     
     @Test
-    @SuppressWarnings("deprecation")
-    public void testEncodedQueryParamLegacy() {
-        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", true);
-        
-        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/?entity=http%3A%2F%2Fexample.org%2Fidp");
-    }
-    
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testMDQStyleLegacy() {
-        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/entities/${entityID}", true);
-        
-        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/entities/http%3A%2F%2Fexample.org%2Fidp");
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testWellKnownLocationStyleLegacy() {
-        function = new TemplateRequestURLBuilder(engine, "${entityID}", false);
-        
-        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://example.org/idp");
-    }
-    
-    @Test
     public void testEncodedQueryParam() {
         function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", EncodingStyle.form);
         

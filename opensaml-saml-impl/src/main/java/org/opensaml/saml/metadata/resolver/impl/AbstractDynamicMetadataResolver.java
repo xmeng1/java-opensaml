@@ -81,8 +81,6 @@ import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.primitive.TimerSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -794,26 +792,6 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         }
         log.debug("{} No entityIDs resolved from secondary indexes (Optional 'absent').", getLogPrefix());
         return null;
-    }
-    
-    /**
-     * Fetch metadata from an origin source based on the input criteria, store it in the backing store 
-     * and then return it.
-     * 
-     * @param criteria the input criteria set
-     * @return the resolved metadata
-     * @throws ResolverException  if there is a fatal error attempting to resolve the metadata
-     * 
-     * @deprecated instead use {@link #resolveFromOriginSource(CriteriaSet, String)}
-     */
-    @Deprecated
-    @Nonnull @NonnullElements 
-    protected Iterable<EntityDescriptor> resolveFromOriginSource(
-            @Nonnull final CriteriaSet criteria) throws ResolverException {
-        
-        DeprecationSupport.warnOnce(ObjectType.METHOD, "resolveFromOriginSource", null, "2-arg same-named method");
-        
-        return resolveFromOriginSource(criteria, resolveEntityID(criteria));
     }
     
     /**

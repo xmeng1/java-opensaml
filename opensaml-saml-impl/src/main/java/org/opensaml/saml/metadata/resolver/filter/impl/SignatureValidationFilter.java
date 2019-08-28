@@ -50,8 +50,6 @@ import org.slf4j.LoggerFactory;
 import net.shibboleth.utilities.java.support.annotation.ParameterName;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 /**
@@ -195,39 +193,7 @@ public class SignatureValidationFilter implements MetadataFilter {
     public void setRequireSignedRoot(final boolean require) {
         requireSignedRoot = require;
     }
-    
-    /**
-     * Get whether incoming metadata's root element is required to be signed.
-     * 
-     * <p>Defaults to <code>true</code>.</p>
-     * 
-     * @return whether incoming metadata is required to be signed
-     * 
-     * @deprecated use instead {@link #getRequireSignedRoot()}
-     */
-    @Deprecated
-    public boolean getRequireSignature() {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".getRequireSignature", null,
-                "getRequireSignedRoot");
-        return getRequireSignedRoot();
-    }
-
-    /**
-     * Set whether incoming metadata's root element is required to be signed.
-     * 
-     * <p>Defaults to <code>true</code>.</p>
-     * 
-     * @param require whether incoming metadata is required to be signed
-     * 
-     * @deprecated use instead {@link #setRequireSignedRoot(boolean)}
-     */
-    @Deprecated
-    public void setRequireSignature(final boolean require) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setRequireSignature", null,
-                "setRequireSignedRoot");
-        setRequireSignedRoot(require);
-    }
- 
+     
     /**
      * Get the optional set of default criteria used as input to the trust engine.
      * 
@@ -310,9 +276,8 @@ public class SignatureValidationFilter implements MetadataFilter {
                 log.trace("RoleDescriptor member '{}' was not signed, skipping signature processing...",
                         roleChild.getElementQName());
                 continue;
-            } else {
-                log.trace("Processing signed RoleDescriptor member: {}", roleChild.getElementQName());
             }
+            log.trace("Processing signed RoleDescriptor member: {}", roleChild.getElementQName());
             
             try {
                 final String roleID = getRoleIDToken(entityID, roleChild);
@@ -386,9 +351,8 @@ public class SignatureValidationFilter implements MetadataFilter {
                 log.trace("EntityDescriptor member '{}' was not signed, skipping signature processing...",
                         entityChild.getEntityID());
                 continue;
-            } else {
-                log.trace("Processing signed EntityDescriptor member: {}", entityChild.getEntityID());
             }
+            log.trace("Processing signed EntityDescriptor member: {}", entityChild.getEntityID());
             
             try {
                 processEntityDescriptor(entityChild, context, false);
@@ -577,9 +541,8 @@ public class SignatureValidationFilter implements MetadataFilter {
         final MetadataSource metadataSource = context.get(MetadataSource.class);
         if (metadataSource != null) {
             return metadataSource.isTrusted();
-        } else {
-            return false;
         }
+        return false;
     }
 
 }
