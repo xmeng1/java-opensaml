@@ -219,7 +219,7 @@ public class AddNameIDToSubjectsTest extends XMLObjectBaseTestCase {
         addAssertions();
         final AuthnRequest request = SAML2ActionTestingSupport.buildAuthnRequest();
         final NameIDPolicy policy = policyBuilder.buildObject();
-        policy.setFormat(NameID.PERSISTENT);
+        policy.setFormat(NameID.UNSPECIFIED);
         policy.setSPNameQualifier("foo");
         request.setNameIDPolicy(policy);
         prc.getInboundMessageContext().setMessage(request);
@@ -238,6 +238,7 @@ public class AddNameIDToSubjectsTest extends XMLObjectBaseTestCase {
         Subject subject = assertion.getSubject();
         Assert.assertNull(subject);
         
+        policy.setFormat(NameID.PERSISTENT);
         policy.setSPNameQualifier("http://affiliation.example.org");
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);

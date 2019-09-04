@@ -201,14 +201,7 @@ public abstract class AbstractNameIDPolicyPredicate extends AbstractInitializabl
         final String requesterId = requesterIdLookupStrategy != null ? requesterIdLookupStrategy.apply(input) : null;
         final String responderId = responderIdLookupStrategy != null ? responderIdLookupStrategy.apply(input) : null;
 
-        final String format = target.getFormat();
-        if (formats.contains(format != null ? format : NameID.UNSPECIFIED)) {
-            log.debug("Applying policy to NameIDPolicy with Format {}", format != null ? format : NameID.UNSPECIFIED);
-            return doApply(requesterId, responderId, format, null, target.getSPNameQualifier());
-        }
-        log.debug("Policy checking disabled for NameIDPolicy with Format {}",
-                format != null ? format : NameID.UNSPECIFIED);
-        return true;
+        return doApply(requesterId, responderId, target.getFormat(), null, target.getSPNameQualifier());
     }
     
     /**
