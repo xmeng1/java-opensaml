@@ -60,7 +60,9 @@ public final class SignatureValidator {
      * @return the SignatureValidationProvider
      * @throws SignatureException if a SignatureValidationProvider could not be loaded
      */
-    @Nonnull private static SignatureValidationProvider getSignatureValidationProvider() throws SignatureException {
+    @Nonnull private static synchronized SignatureValidationProvider getSignatureValidationProvider()
+            throws SignatureException {
+
         if (validatorInstance == null) {
             final ServiceLoader<SignatureValidationProvider> loader =
                     ServiceLoader.load(SignatureValidationProvider.class);
