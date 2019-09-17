@@ -17,45 +17,45 @@
 
 package org.opensaml.saml.saml2.metadata;
 
+import javax.annotation.Nonnull;
+
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
+
 /**
  * A type safe enumeration of contact types used by {@link org.opensaml.saml.saml2.metadata.ContactPerson}.
  */
-public final class ContactPersonTypeEnumeration {
+public enum ContactPersonTypeEnumeration {
 
     /** "technical" contact type. */
-    public static final ContactPersonTypeEnumeration TECHNICAL = new ContactPersonTypeEnumeration("technical");
+    TECHNICAL("technical"),
 
     /** "support" contact type. */
-    public static final ContactPersonTypeEnumeration SUPPORT = new ContactPersonTypeEnumeration("support");
+    SUPPORT("support"),
 
     /** "administrative" contact type. */
-    public static final ContactPersonTypeEnumeration ADMINISTRATIVE =
-            new ContactPersonTypeEnumeration("administrative");
+    ADMINISTRATIVE("administrative"),
 
     /** "billing" contact type. */
-    public static final ContactPersonTypeEnumeration BILLING = new ContactPersonTypeEnumeration("billing");
+    BILLING("billing"),
 
     /** "other" contact type. */
-    public static final ContactPersonTypeEnumeration OTHER = new ContactPersonTypeEnumeration("other");
+    OTHER("other");
 
-    /** the contact type. */
-    private String type;
+    /** The contact type. */
+    @Nonnull @NotEmpty private String type;
 
     /**
      * Constructor.
      * 
      * @param providedType the contact type
      */
-    protected ContactPersonTypeEnumeration(final String providedType) {
+    private ContactPersonTypeEnumeration(@Nonnull @NotEmpty final String providedType) {
         type = providedType;
     }
 
-    /**
-     * Gets the contact type as a string.
-     * 
-     * @return the contact type
-     */
+    /** {@inheritDoc} */
     public String toString() {
         return type;
     }
+
 }

@@ -67,18 +67,15 @@ public class ContactPersonUnmarshaller extends AbstractSAMLObjectUnmarshaller {
 
         if (attribute.getNamespaceURI() == null) {
             if (attribute.getLocalName().equals(ContactPerson.CONTACT_TYPE_ATTRIB_NAME)) {
-                if (ContactPersonTypeEnumeration.TECHNICAL.toString().equals(attribute.getValue())) {
-                    person.setType(ContactPersonTypeEnumeration.TECHNICAL);
-                } else if (ContactPersonTypeEnumeration.SUPPORT.toString().equals(attribute.getValue())) {
-                    person.setType(ContactPersonTypeEnumeration.SUPPORT);
-                } else if (ContactPersonTypeEnumeration.ADMINISTRATIVE.toString().equals(attribute.getValue())) {
-                    person.setType(ContactPersonTypeEnumeration.ADMINISTRATIVE);
-                } else if (ContactPersonTypeEnumeration.BILLING.toString().equals(attribute.getValue())) {
-                    person.setType(ContactPersonTypeEnumeration.BILLING);
-                } else if (ContactPersonTypeEnumeration.OTHER.toString().equals(attribute.getValue())) {
-                    person.setType(ContactPersonTypeEnumeration.OTHER);
-                } else {
-                    super.processAttribute(samlObject, attribute);
+                try {
+                    if (attribute.getValue() != null) {
+                        person.setType(ContactPersonTypeEnumeration.valueOf(attribute.getValue().toUpperCase()));
+                    } else {
+                        throw new UnmarshallingException("Saw an empty value for contactType attribute");
+                    }
+                } catch (final IllegalArgumentException e) {
+                    throw new UnmarshallingException("Saw an invalid value for contactType attribute: "
+                            + attribute.getValue());
                 }
             } else {
                 super.processAttribute(samlObject, attribute);
