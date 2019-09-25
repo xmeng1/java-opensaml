@@ -19,6 +19,7 @@ package org.opensaml.saml.saml2.binding.encoding.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -138,13 +139,15 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         try {
             final String messageStr = SerializeSupport.nodeToString(marshallMessage(message));
 
-            final ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-            final Deflater deflater = new Deflater(Deflater.DEFLATED, true);
-            final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(bytesOut, deflater);
-            deflaterStream.write(messageStr.getBytes("UTF-8"));
-            deflaterStream.finish();
+            try (final ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+                    final DeflaterOutputStream deflaterStream =
+                            new NoWrapAutoEndDeflaterOutputStream(bytesOut, Deflater.DEFLATED)) {
 
-            return Base64Support.encode(bytesOut.toByteArray(), Base64Support.UNCHUNKED);
+                deflaterStream.write(messageStr.getBytes("UTF-8"));
+                deflaterStream.finish();
+
+                return Base64Support.encode(bytesOut.toByteArray(), Base64Support.UNCHUNKED);
+            }
         } catch (final IOException e) {
             throw new MessageEncodingException("Unable to DEFLATE and Base64 encode SAML message", e);
         }
@@ -292,5 +295,31 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         }
 
         return b64Signature;
+    }
+
+    /** A subclass of {@link DeflaterOutputStream} which defaults in a no-wrap {@link Deflater} instance and
+     * closes it when the stream is closed.
+     */
+    private class NoWrapAutoEndDeflaterOutputStream extends DeflaterOutputStream {
+
+        /**
+         * Creates a new output stream with a default no-wrap compressor and buffer size,
+         * and the specified compression level.
+         *
+         * @param os the output stream
+         * @param level the compression level (0-9)
+         */
+        public NoWrapAutoEndDeflaterOutputStream(final OutputStream os, final int level) {
+            super(os, new Deflater(level, true));
+        }
+
+        /** {@inheritDoc} */
+        public void close() throws IOException {
+            if (def != null) {
+                def.end();
+            }
+            super.close();
+        }
+
     }
 }
