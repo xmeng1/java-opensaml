@@ -25,6 +25,6 @@ package org.opensaml.saml.common.messaging.context;
  * This context will often contain subcontexts, whose data is construed to be scoped to that self entity.
  * </p>
  */
-public class SAMLSelfEntityContext extends AbstractSAMLEntityContext {
+public final class SAMLSelfEntityContext extends AbstractSAMLEntityContext {
 
 }

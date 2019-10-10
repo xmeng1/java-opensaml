@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.xacml.ctx.RequestType;
 import org.opensaml.xacml.ctx.ResponseType;
 import org.opensaml.xacml.profile.saml.XACMLAuthzDecisionStatementType;
 
 /** A concrete implementation of {@link org.opensaml.xacml.profile.saml.XACMLAuthzDecisionStatementType}. */
-public class XACMLAuthzDecisionStatementTypeImpl extends AbstractSAMLObject implements XACMLAuthzDecisionStatementType {
+public class XACMLAuthzDecisionStatementTypeImpl extends AbstractXMLObject implements XACMLAuthzDecisionStatementType {
 
     /** The request of the authorization request. */
     private RequestType request;

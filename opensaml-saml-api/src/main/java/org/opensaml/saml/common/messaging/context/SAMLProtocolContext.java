@@ -27,7 +27,7 @@ import org.opensaml.messaging.context.BaseContext;
 /**
  * Subcontext that carries information about the ongoing SAML protocol.
  */
-public class SAMLProtocolContext extends BaseContext {
+public final class SAMLProtocolContext extends BaseContext {
 
     /** The SAML protocol in use. */
     @Nullable @NotEmpty private String protocol;

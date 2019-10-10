@@ -20,11 +20,12 @@ package org.opensaml.saml.ext.saml2delrestrict.impl;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.ext.saml2delrestrict.Delegate;
 import org.w3c.dom.Element;
 
 import com.google.common.base.Strings;
+
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 
 /**
  * Marshaller for instances of {@link Delegate}.
@@ -36,9 +37,8 @@ public class DelegateMarshaller extends AbstractSAMLObjectMarshaller {
         final Delegate delegate = (Delegate) xmlObject;
         
         if (delegate.getDelegationInstant() != null) {
-            final String delInstant =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(delegate.getDelegationInstant());
-            domElement.setAttributeNS(null, Delegate.DELEGATION_INSTANT_ATTRIB_NAME, delInstant);
+            AttributeSupport.appendDateTimeAttribute(domElement,
+                    Delegate.DELEGATION_INSTANT_ATTRIB_QNAME, delegate.getDelegationInstant());
         }
         if (!Strings.isNullOrEmpty(delegate.getConfirmationMethod())) {
             domElement.setAttributeNS(null, Delegate.CONFIRMATION_METHOD_ATTRIB_NAME, delegate.getConfirmationMethod());

@@ -21,13 +21,13 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.AuthnContext;
 import org.opensaml.saml.saml2.core.AuthnStatement;
 import org.opensaml.saml.saml2.core.SubjectLocality;
@@ -35,7 +35,7 @@ import org.opensaml.saml.saml2.core.SubjectLocality;
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.AuthnStatement}.
  */
-public class AuthnStatementImpl extends AbstractSAMLObject implements AuthnStatement {
+public class AuthnStatementImpl extends AbstractXMLObject implements AuthnStatement {
 
     /** Subject Locality of the Authentication Statement. */
     private SubjectLocality subjectLocality;
@@ -44,13 +44,13 @@ public class AuthnStatementImpl extends AbstractSAMLObject implements AuthnState
     private AuthnContext authnContext;
 
     /** Time of the authentication. */
-    private DateTime authnInstant;
+    private Instant authnInstant;
 
     /** Index of the session. */
     private String sessionIndex;
 
     /** Time at which the session ends. */
-    private DateTime sessionNotOnOrAfter;
+    private Instant sessionNotOnOrAfter;
 
     /**
      * Constructor.
@@ -85,12 +85,12 @@ public class AuthnStatementImpl extends AbstractSAMLObject implements AuthnState
     }
 
     /** {@inheritDoc} */
-    public DateTime getAuthnInstant() {
+    public Instant getAuthnInstant() {
         return authnInstant;
     }
 
     /** {@inheritDoc} */
-    public void setAuthnInstant(final DateTime newAuthnInstant) {
+    public void setAuthnInstant(final Instant newAuthnInstant) {
         this.authnInstant = prepareForAssignment(this.authnInstant, newAuthnInstant);
     }
 
@@ -105,12 +105,12 @@ public class AuthnStatementImpl extends AbstractSAMLObject implements AuthnState
     }
 
     /** {@inheritDoc} */
-    public DateTime getSessionNotOnOrAfter() {
+    public Instant getSessionNotOnOrAfter() {
         return sessionNotOnOrAfter;
     }
 
     /** {@inheritDoc} */
-    public void setSessionNotOnOrAfter(final DateTime newSessionNotOnOrAfter) {
+    public void setSessionNotOnOrAfter(final Instant newSessionNotOnOrAfter) {
         this.sessionNotOnOrAfter = prepareForAssignment(this.sessionNotOnOrAfter, newSessionNotOnOrAfter);
     }
 

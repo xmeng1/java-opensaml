@@ -88,7 +88,7 @@ public class DecryptAssertions extends AbstractDecryptAction {
     @Nullable private Assertion processEncryptedAssertion(@Nonnull final ProfileRequestContext profileRequestContext,
             @Nonnull final EncryptedAssertion encAssert) throws DecryptionException {
         
-        if (!getDecryptionPredicate().apply(
+        if (!getDecryptionPredicate().test(
                 new Pair<ProfileRequestContext,EncryptedElementType>(profileRequestContext, encAssert))) {
             return null;
         }

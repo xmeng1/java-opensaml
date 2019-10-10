@@ -29,7 +29,6 @@ import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.messaging.context.ChannelBindingsContext;
 import org.opensaml.saml.ext.saml2cb.ChannelBindings;
-import org.opensaml.saml.saml2.ecp.Response;
 import org.opensaml.soap.messaging.SOAPMessagingSupport;
 import org.opensaml.soap.messaging.context.SOAP11Context;
 import org.opensaml.soap.soap11.Envelope;
@@ -42,12 +41,12 @@ public class AddChannelBindingsHeaderHandlerTest extends OpenSAMLInitBaseTestCas
     
     private ChannelBindingsContext cbc;
     
-    private MessageContext<Response> messageCtx;
+    private MessageContext messageCtx;
     
     private AddChannelBindingsHeaderHandler handler;
     
     @BeforeMethod public void setUp() throws ComponentInitializationException {
-        messageCtx = new MessageContext<>();
+        messageCtx = new MessageContext();
         
         final ChannelBindings cb = ((SAMLObjectBuilder<ChannelBindings>)
                 XMLObjectProviderRegistrySupport.getBuilderFactory().<ChannelBindings>getBuilderOrThrow(

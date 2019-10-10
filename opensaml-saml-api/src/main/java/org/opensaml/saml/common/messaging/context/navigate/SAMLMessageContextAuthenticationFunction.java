@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.common.messaging.context.navigate;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -25,8 +27,6 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.messaging.context.AbstractAuthenticatableSAMLEntityContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
-
-import com.google.common.base.Function;
 
 /**
  * Function that returns the authenticated state of a configured {@link AbstractAuthenticatableSAMLEntityContext},

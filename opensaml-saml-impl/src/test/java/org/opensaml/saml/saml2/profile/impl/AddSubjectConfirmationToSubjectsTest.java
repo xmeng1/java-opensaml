@@ -41,7 +41,7 @@ import org.testng.annotations.Test;
 /** Test for {@link AddSubjectConfirmationToSubjects}. */
 public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCase {
     
-    private ProfileRequestContext<AuthnRequest,Response> prc;
+    private ProfileRequestContext prc;
     
     private AddSubjectConfirmationToSubjects action;
     
@@ -75,7 +75,7 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage().getAssertions().isEmpty());
+        Assert.assertTrue(((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().isEmpty());
     }
 
     @Test void testSuccess() throws ComponentInitializationException {
@@ -87,13 +87,13 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        Assertion assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(0);
+        Assertion assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0);
         Subject subject = assertion.getSubject();
         Assert.assertNotNull(subject);
         Assert.assertEquals(subject.getSubjectConfirmations().size(), 1);
         Assert.assertEquals(subject.getSubjectConfirmations().get(0).getMethod(), SubjectConfirmation.METHOD_BEARER);
         
-        assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(1);
+        assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(1);
         subject = assertion.getSubject();
         Assert.assertNotNull(subject);
         Assert.assertEquals(subject.getSubjectConfirmations().size(), 1);
@@ -104,7 +104,7 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         Assert.assertNull(data.getRecipient());
         Assert.assertNotNull(data.getNotOnOrAfter());
         Assert.assertEquals(data.getAddress(), "127.0.0.1");
-        Assert.assertEquals(data.getInResponseTo(), prc.getInboundMessageContext().getMessage().getID());
+        Assert.assertEquals(data.getInResponseTo(), ((AuthnRequest) prc.getInboundMessageContext().getMessage()).getID());
     }
     
     /** Set up the test message with some assertions. */
@@ -115,7 +115,7 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         prc.getOutboundMessageContext().setMessage(response);
         prc.getInboundMessageContext().setMessage(SAML2ActionTestingSupport.buildAuthnRequest());
         prc.getInboundMessageContext().getSubcontext(SAMLMessageInfoContext.class, true);
-        response.setInResponseTo(prc.getInboundMessageContext().getMessage().getID());
+        response.setInResponseTo(((AuthnRequest) prc.getInboundMessageContext().getMessage()).getID());
     }
     
 }

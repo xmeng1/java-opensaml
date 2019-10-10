@@ -118,7 +118,8 @@ public class Encrypter {
         Constraint.isNotNull(encryptedKeyUnmarshaller, "EncryptedKey unmarshaller not configured");
 
         final XMLObjectBuilderFactory builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
-        keyInfoBuilder = (XMLSignatureBuilder<KeyInfo>) builderFactory.getBuilder(KeyInfo.DEFAULT_ELEMENT_NAME);
+        keyInfoBuilder = (XMLSignatureBuilder<KeyInfo>) builderFactory.<KeyInfo>getBuilderOrThrow(
+                KeyInfo.DEFAULT_ELEMENT_NAME);
         Constraint.isNotNull(keyInfoBuilder, "KeyInfo builder not configured");
     }
 
@@ -427,9 +428,8 @@ public class Encrypter {
         if (EncryptionConstants.ALGO_ID_KEYTRANSPORT_RSAOAEP11.equals(encryptionAlgorithmURI) 
                 && rsaOAEPParams != null) {
             return rsaOAEPParams.getMaskGenerationFunction();
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -445,12 +445,10 @@ public class Encrypter {
                 final byte[] oaepParams = Base64Support.decode(base64Params);
                 if (oaepParams.length == 0) {
                     return null;
-                } else {
-                    return oaepParams;
                 }
-            } else {
-                return null;
+                return oaepParams;
             }
+            return null;
         } catch (final RuntimeException e) {
             throw new EncryptionException(String.format("Error decoding OAEPParams data '%s'", base64Params), e);
         }
@@ -658,10 +656,9 @@ public class Encrypter {
         if (kekParams == null) {
             if (allowEmpty) {
                 return;
-            } else {
-                log.error("Key encryption parameters are required");
-                throw new EncryptionException("Key encryption parameters are required");
             }
+            log.error("Key encryption parameters are required");
+            throw new EncryptionException("Key encryption parameters are required");
         }
         final Key key = CredentialSupport.extractEncryptionKey(kekParams.getEncryptionCredential());
         if (key == null) {
@@ -692,10 +689,9 @@ public class Encrypter {
         if (kekParamsList == null || kekParamsList.isEmpty()) {
             if (allowEmpty) {
                 return;
-            } else {
-                log.error("Key encryption parameters list may not be empty");
-                throw new EncryptionException("Key encryption parameters list may not be empty");
             }
+            log.error("Key encryption parameters list may not be empty");
+            throw new EncryptionException("Key encryption parameters list may not be empty");
         }
         for (final KeyEncryptionParameters kekParams : kekParamsList) {
             checkParams(kekParams, false);

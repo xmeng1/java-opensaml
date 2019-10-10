@@ -29,20 +29,18 @@ import javax.annotation.Nullable;
  * also be more functional or operational in nature, for example providing "views" onto the message 
  * and/or message context data.
  * </p>
- *
- * @param <MessageType> the message type of the message context 
  */
-public class MessageContext<MessageType> extends BaseContext {
+public final class MessageContext extends BaseContext {
 
     /** The message represented. */
-    @Nullable private MessageType msg;
+    @Nullable private Object msg;
 
     /**
      * Get the message represented by the message context.
      * 
      * @return the message
      */
-    @Nullable public MessageType getMessage() {
+    @Nullable public Object getMessage() {
         return msg;
     }
 
@@ -51,7 +49,7 @@ public class MessageContext<MessageType> extends BaseContext {
      * 
      * @param message the message
      */
-    public void setMessage(@Nullable final MessageType message) {
+    public void setMessage(@Nullable final Object message) {
         msg = message;
     }
 

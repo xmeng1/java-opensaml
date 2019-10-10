@@ -17,11 +17,12 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.saml.common.AbstractSignableSAMLObject;
@@ -42,10 +43,10 @@ public class EntitiesDescriptorImpl extends AbstractSignableSAMLObject implement
     private String id;
 
     /** validUntil attribute. */
-    private DateTime validUntil;
+    private Instant validUntil;
 
     /** cacheDurection attribute. */
-    private Long cacheDuration;
+    private Duration cacheDuration;
 
     /** Extensions child. */
     private Extensions extensions;
@@ -94,27 +95,26 @@ public class EntitiesDescriptorImpl extends AbstractSignableSAMLObject implement
             return true;
         }
         
-        final DateTime now = new DateTime();
-        return now.isBefore(validUntil);
+        return Instant.now().isBefore(validUntil);
     }
 
     /** {@inheritDoc} */
-    public DateTime getValidUntil() {
+    public Instant getValidUntil() {
         return validUntil;
     }
 
     /** {@inheritDoc} */
-    public void setValidUntil(final DateTime newValidUntil) {
+    public void setValidUntil(final Instant newValidUntil) {
         validUntil = prepareForAssignment(validUntil, newValidUntil);
     }
 
     /** {@inheritDoc} */
-    public Long getCacheDuration() {
+    public Duration getCacheDuration() {
         return cacheDuration;
     }
 
     /** {@inheritDoc} */
-    public void setCacheDuration(final Long duration) {
+    public void setCacheDuration(final Duration duration) {
         cacheDuration = prepareForAssignment(cacheDuration, duration);
     }
 

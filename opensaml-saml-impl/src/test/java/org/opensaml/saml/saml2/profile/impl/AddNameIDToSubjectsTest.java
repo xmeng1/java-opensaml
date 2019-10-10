@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -54,7 +55,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 
 /** Test for {@link AddNameIDToSubjects}. */
@@ -219,7 +219,7 @@ public class AddNameIDToSubjectsTest extends XMLObjectBaseTestCase {
         addAssertions();
         final AuthnRequest request = SAML2ActionTestingSupport.buildAuthnRequest();
         final NameIDPolicy policy = policyBuilder.buildObject();
-        policy.setFormat(NameID.PERSISTENT);
+        policy.setFormat(NameID.UNSPECIFIED);
         policy.setSPNameQualifier("foo");
         request.setNameIDPolicy(policy);
         prc.getInboundMessageContext().setMessage(request);
@@ -238,6 +238,7 @@ public class AddNameIDToSubjectsTest extends XMLObjectBaseTestCase {
         Subject subject = assertion.getSubject();
         Assert.assertNull(subject);
         
+        policy.setFormat(NameID.PERSISTENT);
         policy.setSPNameQualifier("http://affiliation.example.org");
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);

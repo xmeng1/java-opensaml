@@ -22,12 +22,12 @@ import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTE
 import static org.opensaml.security.httpclient.HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLPeerUnverifiedException;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
@@ -35,8 +35,6 @@ import net.shibboleth.utilities.java.support.component.AbstractInitializableComp
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 import org.apache.http.HttpResponse;
@@ -67,16 +65,11 @@ import org.opensaml.soap.common.SOAPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-
 /**
  * SOAP client that is based on {@link HttpClientMessagePipeline}.
- * 
- * @param <OutboundMessageType> the outbound message type
- * @param <InboundMessageType> the inbound message type
  */
 @ThreadSafe
-public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, InboundMessageType> 
+public abstract class AbstractPipelineHttpSOAPClient 
         extends AbstractInitializableComponent implements SOAPClient {
 
     /** Class logger. */
@@ -89,7 +82,7 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
     @Nullable private HttpClientSecurityParameters httpClientSecurityParameters;
     
     /** Strategy for building the criteria set which is input to the TLS trust engine. */
-    @Nullable private Function<InOutOperationContext<?, ?>, CriteriaSet> tlsCriteriaSetStrategy;
+    @Nullable private Function<InOutOperationContext,CriteriaSet> tlsCriteriaSetStrategy;
     
     /** Constructor. */
     public AbstractPipelineHttpSOAPClient() {
@@ -167,7 +160,7 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
      * 
      * @return the strategy function, or null
      */
-    @Nullable public Function<InOutOperationContext<?, ?>, CriteriaSet> getTLSCriteriaSetStrategy() {
+    @Nullable public Function<InOutOperationContext,CriteriaSet> getTLSCriteriaSetStrategy() {
         return tlsCriteriaSetStrategy;
     }
     
@@ -178,7 +171,7 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
      * 
      * @param function the strategy function, or null
      */
-    public void setTLSCriteriaSetStrategy(@Nullable final Function<InOutOperationContext<?, ?>, CriteriaSet> function) {
+    public void setTLSCriteriaSetStrategy(@Nullable final Function<InOutOperationContext,CriteriaSet> function) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         
@@ -192,7 +185,7 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
         Constraint.isNotNull(endpoint, "Endpoint cannot be null");
         Constraint.isNotNull(operationContext, "Operation context cannot be null");
         
-        HttpClientMessagePipeline<InboundMessageType, OutboundMessageType> pipeline = null;
+        HttpClientMessagePipeline pipeline = null;
         try {
             // Store the endpoint URI
             operationContext.getSubcontext(SOAPClientContext.class, true).setDestinationURI(endpoint);
@@ -207,7 +200,7 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
             
             final HttpUriRequest httpRequest = buildHttpRequest(endpoint, operationContext);
             // Request encoding + outbound transport handling
-            final HttpClientRequestMessageEncoder<OutboundMessageType> encoder = pipeline.getEncoder();
+            final HttpClientRequestMessageEncoder encoder = pipeline.getEncoder();
             encoder.setHttpRequest(httpRequest);
             encoder.setMessageContext(operationContext.getOutboundMessageContext());
             encoder.initialize();
@@ -224,7 +217,7 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
             HttpClientSecuritySupport.checkTLSCredentialEvaluated(httpContext, httpRequest.getURI().getScheme());
             
             // Response decoding
-            final HttpClientResponseMessageDecoder<InboundMessageType> decoder = pipeline.getDecoder();
+            final HttpClientResponseMessageDecoder decoder = pipeline.getDecoder();
             decoder.setHttpResponse(httpResponse);
             decoder.initialize();
             decoder.decode();
@@ -279,8 +272,8 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
      * 
      * @throws SOAPException if there is an error obtaining a new pipeline instance
      */
-    @Nonnull protected HttpClientMessagePipeline<InboundMessageType, OutboundMessageType> 
-            resolvePipeline(@Nonnull final InOutOperationContext operationContext) throws SOAPException {
+    @Nonnull protected HttpClientMessagePipeline resolvePipeline(@Nonnull final InOutOperationContext operationContext)
+            throws SOAPException {
         try {
             return newPipeline();
         } catch (final SOAPException e) {
@@ -304,27 +297,9 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
      * 
      * @throws SOAPException if there is an error obtaining a new pipeline instance
      */
-    @Nonnull protected abstract HttpClientMessagePipeline<InboundMessageType, OutboundMessageType> newPipeline() 
+    @Nonnull protected abstract HttpClientMessagePipeline newPipeline() 
             throws SOAPException;
-    
-    /**
-     * Check that trust engine evaluation of the server TLS credential was actually performed.
-     * 
-     * @param context the current HTTP context instance in use
-     * @param request the HTTP URI request
-     * @throws SSLPeerUnverifiedException thrown if the TLS credential was not actually evaluated by the trust engine
-     * 
-     * @deprecated use {@link HttpClientSecuritySupport#checkTLSCredentialEvaluated(HttpClientContext, String)}
-     */
-    @Deprecated
-    protected void checkTLSCredentialTrusted(@Nonnull final HttpClientContext context, 
-            @Nonnull final HttpUriRequest request) throws SSLPeerUnverifiedException {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".checkTLSCredentialTrusted", null,
-                "HttpClientSecuritySupport.checkTLSCredentialEvaluated");
         
-        HttpClientSecuritySupport.checkTLSCredentialEvaluated(context, request.getURI().getScheme());
-    }
-    
     /**
      * Build the {@link HttpUriRequest} instance to be executed by the HttpClient.
      * 
@@ -399,9 +374,8 @@ public abstract class AbstractPipelineHttpSOAPClient<OutboundMessageType, Inboun
                 operationContext.getOutboundMessageContext().getSubcontext(HttpClientSecurityContext.class);
         if (securityContext != null) {
             return securityContext.getSecurityParameters();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

@@ -20,14 +20,12 @@ package org.opensaml.saml.common.binding.impl;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.binding.impl.SAMLOutboundDestinationHandler;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
-import org.opensaml.saml.saml2.metadata.Endpoint;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -38,17 +36,18 @@ import org.testng.annotations.Test;
 public class SAMLOutboundDestinationHandlerTest extends XMLObjectBaseTestCase {
     
     private SAMLOutboundDestinationHandler handler;
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     @BeforeMethod
     public void setUp() {
-        SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
-                .getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
-        Endpoint samlEndpoint = endpointBuilder.buildObject();
+        SAMLObjectBuilder<AssertionConsumerService> endpointBuilder =
+                (SAMLObjectBuilder<AssertionConsumerService>) builderFactory.<AssertionConsumerService>getBuilderOrThrow(
+                        AssertionConsumerService.DEFAULT_ELEMENT_NAME);
+        AssertionConsumerService samlEndpoint = endpointBuilder.buildObject();
         samlEndpoint.setLocation("http://example.org");
         
         handler = new SAMLOutboundDestinationHandler();
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).
             getSubcontext(SAMLEndpointContext.class, true).setEndpoint(samlEndpoint);
     }
@@ -56,8 +55,9 @@ public class SAMLOutboundDestinationHandlerTest extends XMLObjectBaseTestCase {
     @Test
     public void testSAML1Response() throws MessageHandlerException {
         SAMLObjectBuilder<org.opensaml.saml.saml1.core.Response> requestBuilder = 
-                (SAMLObjectBuilder<org.opensaml.saml.saml1.core.Response>) builderFactory
-                .getBuilder(org.opensaml.saml.saml1.core.Response.DEFAULT_ELEMENT_NAME);
+                (SAMLObjectBuilder<org.opensaml.saml.saml1.core.Response>)
+                builderFactory.<org.opensaml.saml.saml1.core.Response>getBuilderOrThrow(
+                        org.opensaml.saml.saml1.core.Response.DEFAULT_ELEMENT_NAME);
         org.opensaml.saml.saml1.core.Response samlMessage = requestBuilder.buildObject();
         messageContext.setMessage(samlMessage);
         
@@ -70,8 +70,9 @@ public class SAMLOutboundDestinationHandlerTest extends XMLObjectBaseTestCase {
     
     @Test
     public void testSAML2Request() throws MessageHandlerException {
-        SAMLObjectBuilder<AuthnRequest> requestBuilder = (SAMLObjectBuilder<AuthnRequest>) builderFactory
-                .getBuilder(AuthnRequest.DEFAULT_ELEMENT_NAME);
+        SAMLObjectBuilder<AuthnRequest> requestBuilder =
+                (SAMLObjectBuilder<AuthnRequest>) builderFactory.<AuthnRequest>getBuilderOrThrow(
+                        AuthnRequest.DEFAULT_ELEMENT_NAME);
         AuthnRequest samlMessage = requestBuilder.buildObject();
         messageContext.setMessage(samlMessage);
         
@@ -85,8 +86,9 @@ public class SAMLOutboundDestinationHandlerTest extends XMLObjectBaseTestCase {
     @Test
     public void testSAML2Response() throws MessageHandlerException {
         SAMLObjectBuilder<org.opensaml.saml.saml2.core.Response> requestBuilder = 
-                (SAMLObjectBuilder<org.opensaml.saml.saml2.core.Response>) builderFactory
-                .getBuilder(org.opensaml.saml.saml2.core.Response.DEFAULT_ELEMENT_NAME);
+                (SAMLObjectBuilder<org.opensaml.saml.saml2.core.Response>)
+                builderFactory.<org.opensaml.saml.saml2.core.Response>getBuilderOrThrow(
+                        org.opensaml.saml.saml2.core.Response.DEFAULT_ELEMENT_NAME);
         org.opensaml.saml.saml2.core.Response samlMessage = requestBuilder.buildObject();
         messageContext.setMessage(samlMessage);
         

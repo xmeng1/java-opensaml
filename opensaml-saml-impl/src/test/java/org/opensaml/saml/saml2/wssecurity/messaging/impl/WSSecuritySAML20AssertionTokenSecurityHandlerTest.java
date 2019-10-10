@@ -20,6 +20,7 @@ package org.opensaml.saml.saml2.wssecurity.messaging.impl;
 import java.net.URISyntaxException;
 import java.security.KeyException;
 import java.security.cert.CertificateException;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,15 +61,13 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
-
 /**
  *
  */
 public class WSSecuritySAML20AssertionTokenSecurityHandlerTest extends XMLObjectBaseTestCase {
     private WSSecuritySAML20AssertionTokenSecurityHandler handler;
     
-    private MessageContext<XMLObject> messageContext;
+    private MessageContext messageContext;
     private MockHttpServletRequest httpServletRequest;
     private Assertion assertion;
     private SubjectConfirmation subjectConfirmation;
@@ -293,11 +292,11 @@ public class WSSecuritySAML20AssertionTokenSecurityHandlerTest extends XMLObject
     // Helper classes and methods
     //
 
-    private MessageContext<XMLObject> buildMessageContext() {
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
-        messageContext.getSubcontext(SAMLSelfEntityContext.class, true).setEntityId(rpEntityID);
+    private MessageContext buildMessageContext() {
+        final MessageContext mc = new MessageContext();
+        mc.getSubcontext(SAMLSelfEntityContext.class, true).setEntityId(rpEntityID);
         XMLObject payload = buildXMLObject(simpleXMLObjectQName);
-        messageContext.setMessage(payload);
+        mc.setMessage(payload);
         if (assertion == null) {
             throw new RuntimeException("Assertion wasn't built");
         }
@@ -311,9 +310,9 @@ public class WSSecuritySAML20AssertionTokenSecurityHandlerTest extends XMLObject
         security.getUnknownXMLObjects().add(assertion);
         envelope.getHeader().getUnknownXMLObjects().add(security);
         
-        messageContext.getSubcontext(SOAP11Context.class, true).setEnvelope(envelope);
+        mc.getSubcontext(SOAP11Context.class, true).setEnvelope(envelope);
         
-        return messageContext;
+        return mc;
     }
 
     private MockHttpServletRequest buildHttpServletRequest() throws URISyntaxException, CertificateException {
@@ -327,14 +326,14 @@ public class WSSecuritySAML20AssertionTokenSecurityHandlerTest extends XMLObject
     }
 
     private Assertion buildAssertion() throws SecurityException, MarshallingException, SignatureException {
-        Assertion assertion = SAML2ActionTestingSupport.buildAssertion();
-        assertion.setIssuer(SAML2ActionTestingSupport.buildIssuer(issuerEntityID));
-        assertion.setSubject(SAML2ActionTestingSupport.buildSubject("barney"));
+        Assertion a = SAML2ActionTestingSupport.buildAssertion();
+        a.setIssuer(SAML2ActionTestingSupport.buildIssuer(issuerEntityID));
+        a.setSubject(SAML2ActionTestingSupport.buildSubject("barney"));
         subjectConfirmation = buildXMLObject(SubjectConfirmation.DEFAULT_ELEMENT_NAME);
         subjectConfirmation.setMethod(SubjectConfirmation.METHOD_BEARER);
-        assertion.getSubject().getSubjectConfirmations().add(subjectConfirmation);
-        assertion.getAuthnStatements().add(SAML2ActionTestingSupport.buildAuthnStatement());
-        return assertion;
+        a.getSubject().getSubjectConfirmations().add(subjectConfirmation);
+        a.getAuthnStatements().add(SAML2ActionTestingSupport.buildAuthnStatement());
+        return a;
     }
     
     
@@ -355,12 +354,11 @@ public class WSSecuritySAML20AssertionTokenSecurityHandlerTest extends XMLObject
             
             if (isThrowException) {
                 throw new AssertionValidationException();
-            } else {
-                if (confirmedSubjectConfirmation != null) {
-                    context.getDynamicParameters().put(SAML2AssertionValidationParameters.CONFIRMED_SUBJECT_CONFIRMATION, confirmedSubjectConfirmation);
-                }
-                return validationResult;
             }
+            if (confirmedSubjectConfirmation != null) {
+                context.getDynamicParameters().put(SAML2AssertionValidationParameters.CONFIRMED_SUBJECT_CONFIRMATION, confirmedSubjectConfirmation);
+            }
+            return validationResult;
         }
     }
     

@@ -15,31 +15,36 @@
  * limitations under the License.
  */
 
-package org.opensaml.saml.metadata.resolver;
+package org.opensaml.saml.metadata.resolver.filter.data.impl;
 
-import javax.annotation.Nullable;
-
-import org.joda.time.DateTime;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext.Data;
 
 /**
- * Extended {@link RefreshableMetadataResolver}.
+ * Data object for {@link MetadataFilterContext} intended to hold information about the source of the
+ * metadata currently being processed.
  */
-public interface ExtendedRefreshableMetadataResolver extends RefreshableMetadataResolver {
-    
-    //TODO promote methods up and remove in 4.0.0
-    
-    /**
-     * Gets the time the last successful refresh cycle occurred.
-     * 
-     * @return time the last successful refresh cycle occurred
-     */
-    @Nullable public DateTime getLastSuccessfulRefresh();
+public class MetadataSource implements Data {
+
+    /** Flag indicating whether the metadata source is trusted. */
+    private boolean trusted;
 
     /**
-     * Gets whether the last refresh cycle was successful.
-     * 
-     * @return true if last refresh cycle was successful, false if not
+     * Get whether the metadata source is trusted.
+     *
+     * @return true if trusted, false if not
      */
-    @Nullable public Boolean wasLastRefreshSuccess();
+    public boolean isTrusted() {
+        return trusted;
+    }
+
+    /**
+     * Set whether the metadata source is trusted.
+     *
+     * @param flag true if trusted, false if not
+     */
+    public void setTrusted(final boolean flag) {
+        this.trusted = flag;
+    }
 
 }

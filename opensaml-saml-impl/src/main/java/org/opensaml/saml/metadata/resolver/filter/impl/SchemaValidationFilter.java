@@ -17,8 +17,6 @@
 
 package org.opensaml.saml.metadata.resolver.filter.impl;
 
-import java.io.InputStream;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.transform.dom.DOMSource;
@@ -28,17 +26,13 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.xml.SAMLSchemaBuilder;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import net.shibboleth.utilities.java.support.annotation.ParameterName;
-import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
-import net.shibboleth.utilities.java.support.primitive.StringSupport;
-import net.shibboleth.utilities.java.support.xml.ClasspathResolver;
 import net.shibboleth.utilities.java.support.xml.SchemaBuilder;
 
 /**
@@ -61,53 +55,13 @@ public class SchemaValidationFilter implements MetadataFilter {
      * @param builder SAML schema source to use
      */
     public SchemaValidationFilter(@Nonnull @ParameterName(name="builder") final SAMLSchemaBuilder builder) {
-        this(builder, null);
+        samlSchemaBuilder = Constraint.isNotNull(builder, "SAMLSchemaBuilder cannot be null");
     }
 
-    /**
-     * Constructor.
-     * 
-     * <p>Specifying extension schemas should be done by explicitly injecting a
-     * pre-configured {@link SchemaBuilder} using the non-deprecated constructor. Using this
-     * version results in an internally constructed {@link SchemaBuilder} using classpath-based
-     * schema resolution of any extensions or imports, with other settings left to their
-     * defaults.</p>
-     * 
-     * @deprecated
-     * 
-     * @param builder SAML schema source to use
-     * @param extensionSchemas classpath-based location of metadata extension schemas
-     */
-    @Deprecated public SchemaValidationFilter(@Nonnull @ParameterName(name="builder") final SAMLSchemaBuilder builder,
-            @Nullable @NonnullElements @ParameterName(name="extensionSchemas") final String[] extensionSchemas) {
-        samlSchemaBuilder = Constraint.isNotNull(builder, "SAMLSchemaBuilder cannot be null");
-        
-        if (extensionSchemas != null) {
-            log.info("Overriding SchemaBuilder used to construct schemas to accomodate extension schemas");
-            
-            DeprecationSupport.warn(ObjectType.METHOD,
-                    getClass().getName() + ".SchemaValidationFilter(SAMLSchemaBuilder, String[])", null,
-                    "SchemaValidationFilter(SAMLSchemaBuilder)");
-            
-            final SchemaBuilder overriddenSchemaBuilder = new SchemaBuilder();
-            overriddenSchemaBuilder.setResourceResolver(new ClasspathResolver());
-            final Class<SAMLSchemaBuilder> clazz = SAMLSchemaBuilder.class;
-            for (final String extension : extensionSchemas) {
-                final String trimmed = StringSupport.trimOrNull(extension);
-                if (trimmed != null) {
-                    final InputStream stream = clazz.getResourceAsStream(trimmed);
-                    if (stream != null) {
-                        overriddenSchemaBuilder.addSchema(stream);
-                    }
-                }
-            }
-            samlSchemaBuilder.setSchemaBuilder(overriddenSchemaBuilder);
-        }
-    }
-        
     /** {@inheritDoc} */
     @Override
-    @Nullable public XMLObject filter(@Nullable final XMLObject metadata) throws FilterException {
+    @Nullable public XMLObject filter(@Nullable final XMLObject metadata, @Nonnull final MetadataFilterContext context)
+            throws FilterException {
         if (metadata == null) {
             return null;
         }

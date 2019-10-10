@@ -19,14 +19,14 @@ package org.opensaml.saml.ext.saml2mdquery.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdquery.ActionNamespace;
 
 /**
  * Concrete implementation of {@link ActionNamespace}.
  */
-public class ActionNamespaceImpl extends AbstractSAMLObject implements ActionNamespace {
+public class ActionNamespaceImpl extends AbstractXMLObject implements ActionNamespace {
 
     /** Action namespace value. */
     private String value;

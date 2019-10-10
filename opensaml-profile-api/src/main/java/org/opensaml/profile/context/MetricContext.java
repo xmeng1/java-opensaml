@@ -42,7 +42,7 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
  * Child context that supplies instructions to the runtime actions
  * about timers to start and stop to measure performance.
  */
-public class MetricContext extends BaseContext {
+public final class MetricContext extends BaseContext {
     
     /**
      * Map of objects to timer names to start and objects to stop the timer.

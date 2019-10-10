@@ -18,6 +18,7 @@
 package org.opensaml.saml.common.binding.artifact.impl;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import net.shibboleth.utilities.java.support.xml.XMLAssertTestNG;
 
@@ -42,7 +43,6 @@ public class BasicSAMLArtifactMapTest extends XMLObjectBaseTestCase {
     private String artifact = "the-artifact";
     private String issuerId = "urn:test:issuer";
     private String rpId = "urn:test:rp";
-    private long lifetime = 60 * 5 * 1000L;
 
     private SAMLObject samlObject;
     private Document origDocument;
@@ -56,7 +56,7 @@ public class BasicSAMLArtifactMapTest extends XMLObjectBaseTestCase {
         samlObject.releaseDOM();
 
         artifactMap = new BasicSAMLArtifactMap();
-        artifactMap.setArtifactLifetime(lifetime);
+        artifactMap.setArtifactLifetime(Duration.ofMinutes(5));
         artifactMap.initialize();
     }
 
@@ -102,7 +102,7 @@ public class BasicSAMLArtifactMapTest extends XMLObjectBaseTestCase {
     public void testEntryExpiration() throws Exception {
         // lifetime of 1 second should do it
         artifactMap = new BasicSAMLArtifactMap();
-        artifactMap.setArtifactLifetime(1000);
+        artifactMap.setArtifactLifetime(Duration.ofSeconds(1));
         artifactMap.initialize();
 
         Assert.assertFalse(artifactMap.contains(artifact));

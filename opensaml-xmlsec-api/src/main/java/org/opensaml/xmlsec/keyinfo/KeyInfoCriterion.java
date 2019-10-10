@@ -75,9 +75,8 @@ public final class KeyInfoCriterion implements Criterion {
     public int hashCode() {
         if (keyInfo != null) {
             return keyInfo.hashCode();
-        } else {
-            return super.hashCode();
         }
+        return super.hashCode();
     }
 
     /** {@inheritDoc} */

@@ -143,7 +143,7 @@ public class FilesystemMetadataResolverTest extends XMLObjectBaseTestCase {
      */
     @Test(expectedExceptions = {ResolverException.class})
     public void testDisappearingMetadataFile() throws IOException, ResolverException {
-        File targetFile = new File(System.getProperty("java.io.tmpdir"), "filesystem-md-provider-test.xml");
+        File targetFile = new File(System.getProperty("java.io.tmpdir"), "filesystem-md-provider-disappearing.xml");
         if (targetFile.exists()) {
             Assert.assertTrue(targetFile.delete());
         }
@@ -173,7 +173,7 @@ public class FilesystemMetadataResolverTest extends XMLObjectBaseTestCase {
      */
     @Test
     public void testRecoveryFromNoFailFast() throws IOException, InterruptedException {
-        File targetFile = new File(System.getProperty("java.io.tmpdir"), "filesystem-md-provider-test.xml");
+        File targetFile = new File(System.getProperty("java.io.tmpdir"), "filesystem-md-provider-failfast.xml");
         if (targetFile.exists()) {
             Assert.assertTrue(targetFile.delete());
         }

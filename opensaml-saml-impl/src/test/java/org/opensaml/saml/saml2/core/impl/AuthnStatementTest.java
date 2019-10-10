@@ -20,8 +20,9 @@ package org.opensaml.saml.saml2.core.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.saml2.core.AuthnContext;
 import org.opensaml.saml.saml2.core.AuthnStatement;
@@ -33,13 +34,13 @@ import org.opensaml.saml.saml2.core.SubjectLocality;
 public class AuthnStatementTest extends XMLObjectProviderBaseTestCase {
 
     /** Expected AuthnInstant value */
-    private DateTime expectedAuthnInstant;
+    private Instant expectedAuthnInstant;
 
     /** Expected SessionIndex value */
     private String expectedSessionIndex;
 
     /** Expected SessionNotOnOrAfter value */
-    private DateTime expectedSessionNotOnOrAfter;
+    private Instant expectedSessionNotOnOrAfter;
 
     /** Constructor */
     public AuthnStatementTest() {
@@ -50,9 +51,9 @@ public class AuthnStatementTest extends XMLObjectProviderBaseTestCase {
 
     @BeforeMethod
     protected void setUp() throws Exception {
-        expectedAuthnInstant = new DateTime(1984, 8, 26, 10, 01, 30, 43, ISOChronology.getInstanceUTC());
+        expectedAuthnInstant = Instant.parse("1984-08-26T10:01:30.043Z");
         expectedSessionIndex = "index";
-        expectedSessionNotOnOrAfter = new DateTime(1984, 8, 26, 10, 11, 30, 43, ISOChronology.getInstanceUTC());
+        expectedSessionNotOnOrAfter = Instant.parse("1984-08-26T10:11:30.043Z");
     }
 
     /** {@inheritDoc} */
@@ -60,7 +61,7 @@ public class AuthnStatementTest extends XMLObjectProviderBaseTestCase {
     public void testSingleElementUnmarshall() {
         AuthnStatement authnStatement = (AuthnStatement) unmarshallElement(singleElementFile);
 
-        DateTime authnInstant = authnStatement.getAuthnInstant();
+        Instant authnInstant = authnStatement.getAuthnInstant();
         Assert.assertEquals(authnInstant, expectedAuthnInstant,
                 "AuthnInstant was " + authnInstant + ", expected " + expectedAuthnInstant);
     }
@@ -70,7 +71,7 @@ public class AuthnStatementTest extends XMLObjectProviderBaseTestCase {
     public void testSingleElementOptionalAttributesUnmarshall() {
         AuthnStatement authnStatement = (AuthnStatement) unmarshallElement(singleElementOptionalAttributesFile);
 
-        DateTime authnInstant = authnStatement.getAuthnInstant();
+        Instant authnInstant = authnStatement.getAuthnInstant();
         Assert.assertEquals(authnInstant, expectedAuthnInstant,
                 "AuthnInstant was " + authnInstant + ", expected " + expectedAuthnInstant);
 
@@ -78,7 +79,7 @@ public class AuthnStatementTest extends XMLObjectProviderBaseTestCase {
         Assert.assertEquals(sessionIndex, expectedSessionIndex,
                 "SessionIndex was " + sessionIndex + ", expected " + expectedSessionIndex);
 
-        DateTime sessionNotOnOrAfter = authnStatement.getSessionNotOnOrAfter();
+        Instant sessionNotOnOrAfter = authnStatement.getSessionNotOnOrAfter();
         Assert.assertEquals(sessionNotOnOrAfter,
                 expectedSessionNotOnOrAfter, "SessionNotOnOrAfter was " + sessionNotOnOrAfter + ", expected " + expectedSessionNotOnOrAfter);
     }

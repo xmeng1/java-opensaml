@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.metadata.EncryptionMethod;
 import org.opensaml.saml.saml2.metadata.KeyDescriptor;
 import org.opensaml.security.credential.UsageType;
@@ -32,7 +32,7 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.metadata.KeyDescriptor}.
  */
-public class KeyDescriptorImpl extends AbstractSAMLObject implements KeyDescriptor {
+public class KeyDescriptorImpl extends AbstractXMLObject implements KeyDescriptor {
 
     /** Key usage type. */
     private UsageType keyUseType;

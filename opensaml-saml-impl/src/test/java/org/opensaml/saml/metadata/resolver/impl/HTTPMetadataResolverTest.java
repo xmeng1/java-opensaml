@@ -17,7 +17,8 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -30,6 +31,7 @@ import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.security.credential.impl.StaticCredentialResolver;
+import org.opensaml.security.httpclient.HttpClientSecurityParameters;
 import org.opensaml.security.httpclient.impl.SecurityEnhancedTLSSocketFactory;
 import org.opensaml.security.trust.TrustEngine;
 import org.opensaml.security.trust.impl.ExplicitKeyTrustEngine;
@@ -43,8 +45,11 @@ import org.opensaml.security.x509.impl.CertPathPKIXTrustEvaluator;
 import org.opensaml.security.x509.impl.PKIXX509CredentialTrustEngine;
 import org.opensaml.security.x509.impl.StaticPKIXValidationInformationResolver;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import com.google.common.io.ByteStreams;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
@@ -58,29 +63,35 @@ import net.shibboleth.utilities.java.support.resolver.ResolverException;
  */
 public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     
-    private static final String DATA_PATH = "/org/opensaml/saml/metadata/resolver/impl/";
-    
     private HttpClientBuilder httpClientBuilder;
 
-    private String metadataURL;
+    private String metadataURLHttp;
+    private String metadataURLHttps;
     private String badMDURL;
     private String entityID;
     private HTTPMetadataResolver metadataProvider;
     private CriteriaSet criteriaSet;
+
+    static final String DATA_PATH = "/org/opensaml/saml/metadata/resolver/impl/";
     
+    @BeforeClass
+    protected void setUpClass() {
+        metadataURLHttps = RepositorySupport.buildHTTPSResourceURL("java-opensaml", "opensaml-saml-impl/src/test/resources/org/opensaml/saml/metadata/resolver/impl/08ced64cddc9f1578598b2cf71ae747b11d11472.xml");
+        metadataURLHttp = RepositorySupport.buildHTTPResourceURL("java-opensaml", "opensaml-saml-impl/src/test/resources/org/opensaml/saml/metadata/resolver/impl/08ced64cddc9f1578598b2cf71ae747b11d11472.xml", false);
+    }
+
     @BeforeMethod
-    protected void setUp() throws Exception {
+    protected void setUpMethod() throws Exception {
         httpClientBuilder = new HttpClientBuilder();
-        
-       metadataURL = RepositorySupport.buildHTTPSResourceURL("java-opensaml", "opensaml-saml-impl/src/test/resources/org/opensaml/saml/metadata/resolver/impl/08ced64cddc9f1578598b2cf71ae747b11d11472.xml");
         
         badMDURL = "http://www.google.com/";
         entityID = "https://www.example.org/sp";
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttp);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
         metadataProvider.initialize();
+        
         
         criteriaSet = new CriteriaSet(new EntityIdCriterion(entityID));
     }
@@ -140,7 +151,7 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         // Make sure resolver works when TrustEngine socket factory is configured but just using an HTTP URL.
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory(false));
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
         metadataProvider.initialize();
@@ -155,10 +166,13 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         // Make sure resolver works when TrustEngine socket factory is configured but just using an HTTP URL.
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
-        metadataProvider.setTLSTrustEngine(buildExplicitKeyTrustEngine("repo-entity.crt"));
+
+        final HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+        params.setTLSTrustEngine(HTTPMetadataResolverTest.buildExplicitKeyTrustEngine("repo-entity.crt"));
+        metadataProvider.setHttpClientSecurityParameters(params);
         metadataProvider.initialize();
         
         EntityDescriptor descriptor = metadataProvider.resolveSingle(criteriaSet);
@@ -170,7 +184,7 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     public void testHTTPSNoTrustEngine() throws Exception  {
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory(false));
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
         metadataProvider.initialize();
@@ -184,10 +198,14 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     public void testHTTPSTrustEngineExplicitKey() throws Exception  {
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
-        metadataProvider.setTLSTrustEngine(buildExplicitKeyTrustEngine("repo-entity.crt"));
+
+        final HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+        params.setTLSTrustEngine(HTTPMetadataResolverTest.buildExplicitKeyTrustEngine("repo-entity.crt"));
+        metadataProvider.setHttpClientSecurityParameters(params);
+
         metadataProvider.initialize();
         
         EntityDescriptor descriptor = metadataProvider.resolveSingle(criteriaSet);
@@ -200,10 +218,14 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     public void testHTTPSTrustEngineInvalidKey() throws Exception  {
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
-        metadataProvider.setTLSTrustEngine(buildExplicitKeyTrustEngine("badKey.crt"));
+
+        final HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+        params.setTLSTrustEngine(HTTPMetadataResolverTest.buildExplicitKeyTrustEngine("badKey.crt"));
+        metadataProvider.setHttpClientSecurityParameters(params);
+
         metadataProvider.initialize();
         
         EntityDescriptor descriptor = metadataProvider.resolveSingle(criteriaSet);
@@ -215,10 +237,14 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     public void testHTTPSTrustEngineValidPKIX() throws Exception  {
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
-        metadataProvider.setTLSTrustEngine(buildPKIXTrustEngine("repo-rootCA.crt", null, false));
+
+        final HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+        params.setTLSTrustEngine(HTTPMetadataResolverTest.buildPKIXTrustEngine("repo-rootCA.crt", null, false));
+        metadataProvider.setHttpClientSecurityParameters(params);
+
         metadataProvider.initialize();
         
         EntityDescriptor descriptor = metadataProvider.resolveSingle(criteriaSet);
@@ -230,10 +256,14 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     public void testHTTPSTrustEngineValidPKIXExplicitName() throws Exception  {
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
-        metadataProvider.setTLSTrustEngine(buildPKIXTrustEngine("repo-rootCA.crt", "*.shibboleth.net", true));
+
+        final HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+        params.setTLSTrustEngine(HTTPMetadataResolverTest.buildPKIXTrustEngine("repo-rootCA.crt", "test.shibboleth.net", true));
+        metadataProvider.setHttpClientSecurityParameters(params);
+
         metadataProvider.initialize();
         
         EntityDescriptor descriptor = metadataProvider.resolveSingle(criteriaSet);
@@ -245,10 +275,14 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     public void testHTTPSTrustEngineInvalidPKIX() throws Exception  {
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
-        metadataProvider.setTLSTrustEngine(buildPKIXTrustEngine("badCA.crt", null, false));
+
+        final HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+        params.setTLSTrustEngine(HTTPMetadataResolverTest.buildPKIXTrustEngine("badCA.crt", null, false));
+        metadataProvider.setHttpClientSecurityParameters(params);
+
         metadataProvider.initialize();
         
         EntityDescriptor descriptor = metadataProvider.resolveSingle(criteriaSet);
@@ -260,10 +294,14 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     public void testHTTPSTrustEngineValidPKIXInvalidName() throws Exception  {
         httpClientBuilder.setTLSSocketFactory(buildTrustEngineSocketFactory());
         
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
-        metadataProvider.setTLSTrustEngine(buildPKIXTrustEngine("repo-rootCA.crt", "foobar.shibboleth.net", true));
+
+        final HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+        params.setTLSTrustEngine(HTTPMetadataResolverTest.buildPKIXTrustEngine("repo-rootCA.crt", "foobar.shibboleth.net", true));
+        metadataProvider.setHttpClientSecurityParameters(params);
+
         metadataProvider.initialize();
         
         EntityDescriptor descriptor = metadataProvider.resolveSingle(criteriaSet);
@@ -274,26 +312,47 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
     @Test(expectedExceptions=ComponentInitializationException.class)
     public void testHTTPSTrustEngineWrongSocketFactory() throws Exception  {
         // Trust engine set, but appropriate socket factory not set
-        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURL);
+        metadataProvider = new HTTPMetadataResolver(httpClientBuilder.buildClient(), metadataURLHttps);
         metadataProvider.setParserPool(parserPool);
         metadataProvider.setId("test");
-        metadataProvider.setTLSTrustEngine(buildExplicitKeyTrustEngine("repo-entity.crt"));
+
+        final HttpClientSecurityParameters params = new HttpClientSecurityParameters();
+        params.setTLSTrustEngine(HTTPMetadataResolverTest.buildExplicitKeyTrustEngine("repo-entity.crt"));
+        metadataProvider.setHttpClientSecurityParameters(params);
+
         metadataProvider.initialize();
         
         EntityDescriptor descriptor = metadataProvider.resolveSingle(criteriaSet);
         Assert.assertNotNull(descriptor, "Retrieved entity descriptor was null");
         Assert.assertEquals(descriptor.getEntityID(), entityID, "Entity's ID does not match requested ID");
     }
-    
-    
-    
     // Helpers
     
-    private LayeredConnectionSocketFactory buildTrustEngineSocketFactory() {
+    public static TrustEngine<? super X509Credential> buildPKIXTrustEngine(String cert, String name, boolean nameCheckEnabled) throws URISyntaxException, CertificateException, IOException {
+        final InputStream certStream = FileBackedHTTPMetadataResolver.class.getResourceAsStream((HTTPMetadataResolverTest.DATA_PATH + cert));
+        final X509Certificate rootCert = X509Support.decodeCertificate(ByteStreams.toByteArray(certStream));
+        final PKIXValidationInformation info = new BasicPKIXValidationInformation(Collections.singletonList(rootCert), null, 5);
+        final Set<String> trustedNames = name != null ? Collections.singleton(name) : Collections.emptySet();
+        final StaticPKIXValidationInformationResolver resolver = new StaticPKIXValidationInformationResolver(Collections.singletonList(info), trustedNames);
+        return new PKIXX509CredentialTrustEngine(resolver,
+                new CertPathPKIXTrustEvaluator(),
+                (nameCheckEnabled ? new BasicX509CredentialNameEvaluator() : null));
+    }
+
+    public static TrustEngine<? super X509Credential> buildExplicitKeyTrustEngine(String cert) throws URISyntaxException, CertificateException, IOException {
+        
+        final InputStream certStream = FileBackedHTTPMetadataResolver.class.getResourceAsStream(HTTPMetadataResolverTest.DATA_PATH + cert);
+        final X509Certificate entityCert = X509Support.decodeCertificate(ByteStreams.toByteArray(certStream));
+        final X509Credential entityCredential = new BasicX509Credential(entityCert);
+        return new ExplicitKeyTrustEngine(new StaticCredentialResolver(entityCredential));
+        
+    }
+
+    public static LayeredConnectionSocketFactory buildTrustEngineSocketFactory() {
         return buildTrustEngineSocketFactory(true);
     }
     
-    private LayeredConnectionSocketFactory buildTrustEngineSocketFactory(boolean trustEngineRequired) {
+    public static LayeredConnectionSocketFactory buildTrustEngineSocketFactory(boolean trustEngineRequired) {
         SecurityEnhancedTLSSocketFactory factory = new SecurityEnhancedTLSSocketFactory(
                 HttpClientSupport.buildNoTrustTLSSocketFactory(),
                 SSLConnectionSocketFactory.STRICT_HOSTNAME_VERIFIER,
@@ -302,22 +361,4 @@ public class HTTPMetadataResolverTest extends XMLObjectBaseTestCase {
         return factory;
     }
 
-    private TrustEngine<? super X509Credential> buildExplicitKeyTrustEngine(String cert) throws URISyntaxException, CertificateException {
-        File certFile = new File(this.getClass().getResource(DATA_PATH + cert).toURI());
-        X509Certificate entityCert = X509Support.decodeCertificate(certFile);
-        X509Credential entityCredential = new BasicX509Credential(entityCert);
-        return new ExplicitKeyTrustEngine(new StaticCredentialResolver(entityCredential));
-    }
-    
-    private TrustEngine<? super X509Credential> buildPKIXTrustEngine(String cert, String name, boolean nameCheckEnabled) throws URISyntaxException, CertificateException {
-        File certFile = new File(this.getClass().getResource(DATA_PATH + cert).toURI());
-        X509Certificate rootCert = X509Support.decodeCertificate(certFile);
-        PKIXValidationInformation info = new BasicPKIXValidationInformation(Collections.singletonList(rootCert), null, 5);
-        Set<String> trustedNames = (Set<String>) (name != null ? Collections.singleton(name) : Collections.emptySet());
-        StaticPKIXValidationInformationResolver resolver = new StaticPKIXValidationInformationResolver(Collections.singletonList(info), trustedNames);
-        return new PKIXX509CredentialTrustEngine(resolver, 
-                new CertPathPKIXTrustEvaluator(),
-                (nameCheckEnabled ? new BasicX509CredentialNameEvaluator() : null));
-    }
-    
 }

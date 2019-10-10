@@ -19,14 +19,15 @@ package org.opensaml.saml.metadata.resolver.filter.impl;
 
 import java.io.File;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.common.SAMLObjectBuilder;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.metadata.resolver.impl.FilesystemMetadataResolver;
 import org.opensaml.saml.metadata.resolver.impl.FilesystemMetadataResolverTest;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
@@ -49,6 +50,7 @@ public class RequiredValidUntilTest extends XMLObjectBaseTestCase {
     @Test
     public void testRequiredValidUntil() throws Exception {
         RequiredValidUntilFilter filter = new RequiredValidUntilFilter();
+        filter.setMaxValidityInterval(Duration.ZERO);
 
         FilesystemMetadataResolver metadataProvider = new FilesystemMetadataResolver(metadataFile);
         metadataProvider.setParserPool(parserPool);
@@ -63,26 +65,8 @@ public class RequiredValidUntilTest extends XMLObjectBaseTestCase {
 
     @Test
     public void testRequiredValidUntilWithMaxValidity() throws Exception {
-        RequiredValidUntilFilter filter = new RequiredValidUntilFilter(1);
-
-        FilesystemMetadataResolver metadataProvider = new FilesystemMetadataResolver(metadataFile);
-        metadataProvider.setParserPool(parserPool);
-        metadataProvider.setId("test");
-        metadataProvider.setMetadataFilter(filter);
-
-        try {
-            metadataProvider.initialize();
-            Assert.fail("Filter accepted metadata with longer than allowed validity period.");
-        } catch (ComponentInitializationException e) {
-            // we expect this
-            return;
-        }
-    }
-    
-    @Test
-    public void testRequiredValidUntilWithMaxValiditySetter() throws Exception {
         RequiredValidUntilFilter filter = new RequiredValidUntilFilter();
-        filter.setMaxValidityInterval(1);
+        filter.setMaxValidityInterval(Duration.ofSeconds(1));
 
         FilesystemMetadataResolver metadataProvider = new FilesystemMetadataResolver(metadataFile);
         metadataProvider.setParserPool(parserPool);
@@ -97,19 +81,21 @@ public class RequiredValidUntilTest extends XMLObjectBaseTestCase {
             return;
         }
     }
-
     
     @Test
     public void testRequiredValidUntilAlreadyPast() throws Exception {
-        SAMLObjectBuilder<EntitiesDescriptor> entitiesDescriptorBuilder = 
-                (SAMLObjectBuilder<EntitiesDescriptor>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(EntitiesDescriptor.TYPE_NAME);
+        SAMLObjectBuilder<EntitiesDescriptor> entitiesDescriptorBuilder = (SAMLObjectBuilder<EntitiesDescriptor>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<EntitiesDescriptor>getBuilderOrThrow(
+                        EntitiesDescriptor.TYPE_NAME);
         EntitiesDescriptor descriptor = entitiesDescriptorBuilder.buildObject();
-        descriptor.setValidUntil(new DateTime(ISOChronology.getInstanceUTC()).minus(10000));
+        descriptor.setValidUntil(Instant.now().minusMillis(10000));
 
-        RequiredValidUntilFilter filter = new RequiredValidUntilFilter(-1);
-        filter.filter(descriptor);
+        RequiredValidUntilFilter filter = new RequiredValidUntilFilter();
+        filter.setMaxValidityInterval(Duration.ofSeconds(-1));
+        filter.filter(descriptor, new MetadataFilterContext());
         
         filter = new RequiredValidUntilFilter();
-        filter.filter(descriptor);
+        filter.filter(descriptor, new MetadataFilterContext());
     }
+    
 }

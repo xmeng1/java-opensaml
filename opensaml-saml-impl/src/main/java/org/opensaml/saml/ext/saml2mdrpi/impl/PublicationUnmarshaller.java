@@ -17,13 +17,13 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
 import org.opensaml.saml.ext.saml2mdrpi.Publication;
 import org.w3c.dom.Attr;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * An unmarshaller for {@link Publication}.
@@ -38,7 +38,7 @@ public class PublicationUnmarshaller extends AbstractSAMLObjectUnmarshaller {
             if (Publication.PUBLISHER_ATTRIB_NAME.equals(attribute.getName())) {
                 info.setPublisher(attribute.getValue());
             } else if (Publication.CREATION_INSTANT_ATTRIB_NAME.equals(attribute.getName())) {
-                info.setCreationInstant(new DateTime(attribute.getValue(), ISOChronology.getInstanceUTC()));
+                info.setCreationInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (Publication.PUBLICATION_ID_ATTRIB_NAME.equals(attribute.getName())) {
                 info.setPublicationId(attribute.getValue());
             } else {

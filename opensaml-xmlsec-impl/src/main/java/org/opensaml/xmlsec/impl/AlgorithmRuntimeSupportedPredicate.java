@@ -17,13 +17,13 @@
 
 package org.opensaml.xmlsec.impl;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
 import org.opensaml.xmlsec.algorithm.AlgorithmRegistry;
-
-import com.google.common.base.Predicate;
 
 /**
  * A predicate which evaluates whether a cryptographic algorithm URI is effectively supported by
@@ -44,7 +44,7 @@ public class AlgorithmRuntimeSupportedPredicate implements Predicate<String> {
     }
 
     /** {@inheritDoc} */
-    public boolean apply(@Nullable final String input) {
+    public boolean test(@Nullable final String input) {
         return registry.isRuntimeSupported(input);
     }
 

@@ -18,6 +18,7 @@
 package org.opensaml.saml.saml1.profile.impl;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,9 +45,6 @@ import org.opensaml.saml.saml1.core.Request;
 import org.opensaml.saml.saml1.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that resolves SAML 1.x artifacts inside a {@link Request} located via a lookup strategy,
@@ -94,12 +92,9 @@ public class ResolveArtifacts extends AbstractProfileAction {
     
     /** Constructor. */
     public ResolveArtifacts() {
-        requestLookupStrategy =
-                Functions.compose(new MessageLookup<>(Request.class), new InboundMessageContextLookup());
-        responseLookupStrategy =
-                Functions.compose(new MessageLookup<>(Response.class), new OutboundMessageContextLookup());
-        requesterLookupStrategy =
-                Functions.compose(new SAMLMessageContextIssuerFunction(), new InboundMessageContextLookup());
+        requestLookupStrategy = new MessageLookup<>(Request.class).compose(new InboundMessageContextLookup());
+        responseLookupStrategy = new MessageLookup<>(Response.class).compose(new OutboundMessageContextLookup());
+        requesterLookupStrategy = new SAMLMessageContextIssuerFunction().compose(new InboundMessageContextLookup());
     }
     
     /**

@@ -17,6 +17,8 @@
 
 package org.opensaml.messaging.handler;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.annotation.Prototype;
@@ -29,17 +31,13 @@ import org.opensaml.messaging.context.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
  * A base abstract implementation of {@link MessageHandler}.
- * 
- * @param <MessageType> the type of message being handled
  */
 @Prototype
-public abstract class AbstractMessageHandler<MessageType> extends AbstractInitializableComponent implements
-        MessageHandler<MessageType> {
+public abstract class AbstractMessageHandler extends AbstractInitializableComponent implements MessageHandler {
     
     /** Logger. */
     private Logger log = LoggerFactory.getLogger(AbstractMessageHandler.class);
@@ -81,7 +79,7 @@ public abstract class AbstractMessageHandler<MessageType> extends AbstractInitia
     }
 
     /** {@inheritDoc} */
-    @Override public void invoke(@Nonnull final MessageContext<MessageType> messageContext)
+    @Override public void invoke(@Nonnull final MessageContext messageContext)
             throws MessageHandlerException {
         Constraint.isNotNull(messageContext, "Message context cannot be null");
 
@@ -142,15 +140,14 @@ public abstract class AbstractMessageHandler<MessageType> extends AbstractInitia
      * 
      * @throws MessageHandlerException if there is a problem executing the handler pre-routine
      */
-    protected boolean doPreInvoke(@Nonnull final MessageContext<MessageType> messageContext)
+    protected boolean doPreInvoke(@Nonnull final MessageContext messageContext)
             throws MessageHandlerException {
-        if (activationCondition.apply(messageContext)) {
+        if (activationCondition.test(messageContext)) {
             log.debug("{} Activation condition for handler returned true", getLogPrefix());
             return true;
-        } else {
-            log.debug("{} Activation condition for handler returned false", getLogPrefix());
-            return false;
         }
+        log.debug("{} Activation condition for handler returned false", getLogPrefix());
+        return false;
     }
 
     /**
@@ -159,7 +156,7 @@ public abstract class AbstractMessageHandler<MessageType> extends AbstractInitia
      * @param messageContext the message context on which to invoke the handler
      * @throws MessageHandlerException if there is an error invoking the handler on the message context
      */
-    protected abstract void doInvoke(@Nonnull final MessageContext<MessageType> messageContext)
+    protected abstract void doInvoke(@Nonnull final MessageContext messageContext)
             throws MessageHandlerException;
 
     /**
@@ -172,7 +169,7 @@ public abstract class AbstractMessageHandler<MessageType> extends AbstractInitia
      * 
      * @param messageContext the message context on which the handler was invoked
      */
-    protected void doPostInvoke(@Nonnull final MessageContext<MessageType> messageContext) {
+    protected void doPostInvoke(@Nonnull final MessageContext messageContext) {
     }
 
     /**
@@ -196,7 +193,7 @@ public abstract class AbstractMessageHandler<MessageType> extends AbstractInitia
      * @param messageContext the message context on which the handler was invoked
      * @param e an exception raised by the {@link #doInvoke} method
      */
-    protected void doPostInvoke(@Nonnull final MessageContext<MessageType> messageContext, @Nonnull final Exception e) {
+    protected void doPostInvoke(@Nonnull final MessageContext messageContext, @Nonnull final Exception e) {
         doPostInvoke(messageContext);
     }
 

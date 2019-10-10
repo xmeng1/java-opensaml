@@ -76,6 +76,7 @@ public interface StorageService extends IdentifiedComponent {
      * Creates a new record in the store with an expiration, using a custom serialization
      * process for an arbitrary object.
      * 
+     * @param <T>           type of record
      * @param context       a storage context label
      * @param key           a key unique to context
      * @param value         object to store
@@ -85,8 +86,8 @@ public interface StorageService extends IdentifiedComponent {
      * @return  true iff record was inserted, false iff a duplicate was found
      * @throws IOException  if fatal errors occur in the insertion process
      */
-    boolean create(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
-            @Nonnull final Object value, @Nonnull final StorageSerializer serializer,
+    <T> boolean create(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
+            @Nonnull final T value, @Nonnull final StorageSerializer<T> serializer,
             @Nullable @Positive final Long expiration) throws IOException;
     
     /**
@@ -106,13 +107,14 @@ public interface StorageService extends IdentifiedComponent {
     /**
      * Returns an existing record from the store, if one exists.
      *
+     * @param <T>           type of record
      * @param context       a storage context label
      * @param key           a key unique to context
      * 
      * @return  the record read back, if present, or null
      * @throws IOException  if errors occur in the read process 
      */
-    @Nullable StorageRecord read(@Nonnull @NotEmpty final String context,
+    @Nullable <T> StorageRecord<T> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key) throws IOException;
 
     /**
@@ -139,6 +141,7 @@ public interface StorageService extends IdentifiedComponent {
      * If null, the record either didn't exist (if the first member was also null) or the record
      * was the same version as that supplied by the caller.</p>
      * 
+     * @param <T>           type of record
      * @param context       a storage context label
      * @param key           a key unique to context
      * @param version       only return record if newer than supplied version
@@ -146,7 +149,7 @@ public interface StorageService extends IdentifiedComponent {
      * @return  a pair consisting of the version of the record read back, if any, and the record itself
      * @throws IOException  if errors occur in the read process 
      */
-    @Nonnull Pair<Long, StorageRecord> read(@Nonnull @NotEmpty final String context,
+    @Nonnull <T> Pair<Long, StorageRecord<T>> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key, @Positive final long version) throws IOException;
     
     
@@ -184,6 +187,7 @@ public interface StorageService extends IdentifiedComponent {
     /**
      * Updates an existing record in the store using a custom serialization strategy.
      * 
+     * @param <T>           type of record
      * @param context       a storage context label
      * @param key           a key unique to context
      * @param value         updated value
@@ -193,13 +197,14 @@ public interface StorageService extends IdentifiedComponent {
      * @return true if the update succeeded, false if the record does not exist 
      * @throws IOException  if errors occur in the update process 
      */
-    boolean update(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
-            @Nonnull final Object value, @Nonnull final StorageSerializer serializer,
+    <T> boolean update(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
+            @Nonnull final T value, @Nonnull final StorageSerializer<T> serializer,
             @Nullable @Positive final Long expiration) throws IOException;
     
     /**
      * Updates an existing record in the store, if a version matches, using a custom serialization strategy.
-     * 
+     *
+     * @param <T>           type of record
      * @param version       only update if the current version matches this value
      * @param context       a storage context label
      * @param key           a key unique to context
@@ -212,9 +217,9 @@ public interface StorageService extends IdentifiedComponent {
      * @throws VersionMismatchException if the record has already been updated to a newer version
      */
     // Checkstyle: ParameterNumber OFF
-    @Nullable Long updateWithVersion(@Positive final long version, @Nonnull @NotEmpty final String context,
-            @Nonnull @NotEmpty final String key, @Nonnull final Object value,
-            @Nonnull final StorageSerializer serializer, @Nullable @Positive final Long expiration)
+    @Nullable <T> Long updateWithVersion(@Positive final long version, @Nonnull @NotEmpty final String context,
+            @Nonnull @NotEmpty final String key, @Nonnull final T value,
+            @Nonnull final StorageSerializer<T> serializer, @Nullable @Positive final Long expiration)
                     throws IOException, VersionMismatchException;
     // Checkstyle: ParameterNumber ON
 

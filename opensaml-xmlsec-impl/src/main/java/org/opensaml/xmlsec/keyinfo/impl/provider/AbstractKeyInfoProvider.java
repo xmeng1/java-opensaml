@@ -68,9 +68,8 @@ public abstract class AbstractKeyInfoProvider implements KeyInfoProvider {
         // Just want to provide a single place to build credential contexts for a provider.
         if (kiContext != null) {
             return new KeyInfoCredentialContext(kiContext.getKeyInfo());
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

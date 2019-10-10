@@ -21,26 +21,20 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
-import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
-
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml2.common.CacheableSAMLObject;
 import org.opensaml.saml.saml2.common.TimeBoundSAMLObject;
 import org.opensaml.saml.saml2.metadata.AffiliationDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
+
 /**
- * A thread safe Marshaller for {@link org.opensaml.saml.saml2.metadata.AffiliationDescriptor} objects.
+ * A thread safe Marshaller for {@link AffiliationDescriptor} objects.
  */
 public class AffiliationDescriptorMarshaller extends AbstractSAMLObjectMarshaller {
-
-    /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(AffiliationDescriptorMarshaller.class);
 
     /** {@inheritDoc} */
     protected void marshallAttributes(final XMLObject samlElement, final Element domElement)
@@ -60,19 +54,17 @@ public class AffiliationDescriptorMarshaller extends AbstractSAMLObjectMarshalle
 
         // Set the validUntil attribute
         if (descriptor.getValidUntil() != null) {
-            log.debug("Writting validUntil attribute to AffiliationDescriptor DOM element");
-            final String validUntilStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(descriptor.getValidUntil());
-            domElement.setAttributeNS(null, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME, validUntilStr);
+            AttributeSupport.appendDateTimeAttribute(domElement, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_QNAME,
+                    descriptor.getValidUntil());
         }
 
         // Set the cacheDuration attribute
         if (descriptor.getCacheDuration() != null) {
-            log.debug("Writting cacheDuration attribute to AffiliationDescriptor DOM element");
-            final String cacheDuration = DOMTypeSupport.longToDuration(descriptor.getCacheDuration());
-            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME, cacheDuration);
+            AttributeSupport.appendDurationAttribute(domElement, CacheableSAMLObject.CACHE_DURATION_ATTRIB_QNAME,
+                    descriptor.getCacheDuration());
         }
 
         marshallUnknownAttributes(descriptor, domElement);
     }
+    
 }

@@ -53,9 +53,8 @@ public class BasicClientTLSValidationParametersResolver implements ClientTLSVali
         final ClientTLSValidationParameters params = resolveSingle(criteria);
         if (params != null) {
             return Collections.singletonList(params);
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */

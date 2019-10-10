@@ -92,11 +92,9 @@ public final class EvaluableCredentialCriteriaRegistry {
                 log.error("Error instantiating new EvaluableCredentialCriterion instance", e);
                 throw new SecurityException("Could not create new EvaluableCredentialCriterion", e);
             }
-        } else {
-            log.debug("Registry could not locate evaluable criteria for criteria class {}", criteria.getClass()
-                    .getName());
-            return null;
         }
+        log.debug("Registry could not locate evaluable criteria for criteria class {}", criteria.getClass().getName());
+        return null;
     }
 
     /**
@@ -220,17 +218,17 @@ public final class EvaluableCredentialCriteriaRegistry {
             final String evaluatorName = mappings.getProperty(criteriaName);
 
             final ClassLoader classLoader = XMLObjectProviderRegistrySupport.class.getClassLoader();
-            Class criteriaClass = null;
+            Class<? extends Criterion> criteriaClass = null;
             try {
-                criteriaClass = classLoader.loadClass(criteriaName);
+                criteriaClass = (Class<? extends Criterion>) classLoader.loadClass(criteriaName);
             } catch (final ClassNotFoundException e) {
                 log.error("Could not find criteria class '{}', skipping registration", criteriaName);
                 continue;
             }
 
-            Class evaluableClass = null;
+            Class<? extends EvaluableCredentialCriterion> evaluableClass = null;
             try {
-                evaluableClass = classLoader.loadClass(evaluatorName);
+                evaluableClass = (Class<? extends EvaluableCredentialCriterion>) classLoader.loadClass(evaluatorName);
             } catch (final ClassNotFoundException e) {
                 log.error("Could not find evaluator class '{}', skipping registration", criteriaName);
                 continue;

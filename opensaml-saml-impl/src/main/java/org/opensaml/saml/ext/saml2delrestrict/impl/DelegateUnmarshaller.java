@@ -17,8 +17,6 @@
 
 package org.opensaml.saml.ext.saml2delrestrict.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
@@ -27,6 +25,8 @@ import org.opensaml.saml.saml2.core.BaseID;
 import org.opensaml.saml.saml2.core.EncryptedID;
 import org.opensaml.saml.saml2.core.NameID;
 import org.w3c.dom.Attr;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * Unmarshaller for instances of {@link Delegate}.
@@ -42,7 +42,7 @@ public class DelegateUnmarshaller extends AbstractSAMLObjectUnmarshaller {
             if (Delegate.CONFIRMATION_METHOD_ATTRIB_NAME.equals(attrName)) {
                 delegate.setConfirmationMethod(attribute.getValue());
             } else if (Delegate.DELEGATION_INSTANT_ATTRIB_NAME.equals(attrName)) {
-                delegate.setDelegationInstant(new DateTime(attribute.getValue(), ISOChronology.getInstanceUTC()));
+                delegate.setDelegationInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

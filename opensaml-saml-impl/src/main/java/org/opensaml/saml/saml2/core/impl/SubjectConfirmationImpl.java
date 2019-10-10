@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.BaseID;
 import org.opensaml.saml.saml2.core.EncryptedID;
 import org.opensaml.saml.saml2.core.NameID;
@@ -32,7 +32,7 @@ import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.SubjectConfirmation}.
  */
-public class SubjectConfirmationImpl extends AbstractSAMLObject implements SubjectConfirmation {
+public class SubjectConfirmationImpl extends AbstractXMLObject implements SubjectConfirmation {
 
     /** BaseID child element. */
     private BaseID baseID;

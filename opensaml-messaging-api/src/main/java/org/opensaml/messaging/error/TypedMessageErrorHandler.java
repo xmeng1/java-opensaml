@@ -20,10 +20,8 @@ package org.opensaml.messaging.error;
 /**
  * A specialization of error handler that explicitly indicates that it is capable of handling 
  * one or more types of throwable errors.
- * 
- * @param <MessageType> the type of message being handled
  */
-public interface TypedMessageErrorHandler<MessageType> extends MessageErrorHandler<MessageType> {
+public interface TypedMessageErrorHandler extends MessageErrorHandler {
     
     /**
      * Indicates whether the message error handle is capable of handling the specified error.

@@ -30,10 +30,8 @@ import org.opensaml.messaging.context.MessageContext;
  * <p>
  * The data on which the decoder operates is supplied in an implementation-specific manner.
  * </p>
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public interface MessageDecoder<MessageType> extends InitializableComponent, DestructableComponent {
+public interface MessageDecoder extends InitializableComponent, DestructableComponent {
 
     /**
      * Decode message data from the source and store it so that it may be retrieved via {@link #getMessageContext()}.
@@ -47,5 +45,5 @@ public interface MessageDecoder<MessageType> extends InitializableComponent, Des
      * 
      * @return the decoded message context
      */
-    MessageContext<MessageType> getMessageContext();
+    MessageContext getMessageContext();
 }

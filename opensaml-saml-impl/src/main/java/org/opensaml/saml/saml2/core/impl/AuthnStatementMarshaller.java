@@ -24,9 +24,10 @@ package org.opensaml.saml.saml2.core.impl;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml2.core.AuthnStatement;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 
 /**
  * A thread-safe Marshaller for {@link org.opensaml.saml.saml2.core.AuthnStatement}.
@@ -39,9 +40,8 @@ public class AuthnStatementMarshaller extends AbstractSAMLObjectMarshaller {
         final AuthnStatement authnStatement = (AuthnStatement) samlObject;
 
         if (authnStatement.getAuthnInstant() != null) {
-            final String authnInstantStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(
+            AttributeSupport.appendDateTimeAttribute(domElement, AuthnStatement.AUTHN_INSTANT_ATTRIB_QNAME,
                     authnStatement.getAuthnInstant());
-            domElement.setAttributeNS(null, AuthnStatement.AUTHN_INSTANT_ATTRIB_NAME, authnInstantStr);
         }
 
         if (authnStatement.getSessionIndex() != null) {
@@ -49,9 +49,9 @@ public class AuthnStatementMarshaller extends AbstractSAMLObjectMarshaller {
         }
 
         if (authnStatement.getSessionNotOnOrAfter() != null) {
-            final String sessionNotOnOrAfterStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(
+            AttributeSupport.appendDateTimeAttribute(domElement, AuthnStatement.SESSION_NOT_ON_OR_AFTER_ATTRIB_QNAME,
                     authnStatement.getSessionNotOnOrAfter());
-            domElement.setAttributeNS(null, AuthnStatement.SESSION_NOT_ON_OR_AFTER_ATTRIB_NAME, sessionNotOnOrAfterStr);
         }
     }
+    
 }

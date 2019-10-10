@@ -17,6 +17,9 @@
 
 package org.opensaml.saml.saml2.profile.impl;
 
+import java.time.Instant;
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
@@ -24,10 +27,8 @@ import javax.xml.namespace.QName;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
-import net.shibboleth.utilities.java.support.security.SecureRandomIdentifierGenerationStrategy;
+import net.shibboleth.utilities.java.support.security.impl.SecureRandomIdentifierGenerationStrategy;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.messaging.context.MessageContext;
@@ -43,8 +44,6 @@ import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.StatusResponseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * Abstract action that creates an empty object derived from {@link StatusResponseType},
@@ -86,11 +85,7 @@ public abstract class AbstractResponseShellAction<MessageType extends StatusResp
     /** Constructor. */
     public AbstractResponseShellAction() {
         // Default strategy is a 16-byte secure random source.
-        idGeneratorLookupStrategy = new Function<ProfileRequestContext,IdentifierGenerationStrategy>() {
-            public IdentifierGenerationStrategy apply(final ProfileRequestContext input) {
-                return new SecureRandomIdentifierGenerationStrategy();
-            }
-        };
+        idGeneratorLookupStrategy = prc -> new SecureRandomIdentifierGenerationStrategy();
     }
     
     /**
@@ -132,6 +127,10 @@ public abstract class AbstractResponseShellAction<MessageType extends StatusResp
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
+        if (!super.doPreExecute(profileRequestContext)) {
+            return false;
+        }
+        
         final MessageContext outboundMessageCtx = profileRequestContext.getOutboundMessageContext();
         if (outboundMessageCtx == null) {
             log.debug("{} No outbound message context", getLogPrefix());
@@ -156,7 +155,7 @@ public abstract class AbstractResponseShellAction<MessageType extends StatusResp
 
         outboundMessageCtx.setMessage(null);
         
-        return super.doPreExecute(profileRequestContext);
+        return true;
     }
 
     /** {@inheritDoc} */
@@ -180,7 +179,7 @@ public abstract class AbstractResponseShellAction<MessageType extends StatusResp
         final MessageType response = responseBuilder.buildObject();
 
         response.setID(idGenerator.generateIdentifier());
-        response.setIssueInstant(new DateTime(ISOChronology.getInstanceUTC()));
+        response.setIssueInstant(Instant.now());
         response.setStatus(status);
         response.setVersion(SAMLVersion.VERSION_20);
 

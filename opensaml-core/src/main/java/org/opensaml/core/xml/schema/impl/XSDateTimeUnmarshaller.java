@@ -17,11 +17,11 @@
 
 package org.opensaml.core.xml.schema.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.BaseXMLObjectUnmarshaller;
 import org.opensaml.core.xml.schema.XSDateTime;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * Thread-safe unmarshaller for {@link org.opensaml.core.xml.schema.XSDateTime} objects.
@@ -35,7 +35,7 @@ public class XSDateTimeUnmarshaller extends BaseXMLObjectUnmarshaller{
     protected void processElementContent(final XMLObject xmlObject, final String elementContent) {
         final XSDateTime xsDateTime = (XSDateTime) xmlObject;
         
-        xsDateTime.setValue(new DateTime(elementContent).withChronology(ISOChronology.getInstanceUTC()));
+        xsDateTime.setValue(DOMTypeSupport.stringToInstant(elementContent));
     }
 
 }

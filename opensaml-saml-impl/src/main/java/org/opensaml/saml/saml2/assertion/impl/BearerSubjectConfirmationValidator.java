@@ -62,9 +62,8 @@ public class BearerSubjectConfirmationValidator extends AbstractSubjectConfirmat
         
         if (Objects.equals(confirmation.getMethod(), SubjectConfirmation.METHOD_BEARER)) {
             return ValidationResult.VALID;
-        } else {
-            return ValidationResult.INDETERMINATE;
         }
+        return ValidationResult.INDETERMINATE;
             
     }
 }

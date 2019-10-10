@@ -17,17 +17,16 @@
 
 package org.opensaml.saml.metadata.resolver.filter.impl;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
-
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.slf4j.Logger;
@@ -46,63 +45,57 @@ public class RequiredValidUntilFilter implements MetadataFilter {
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(RequiredValidUntilFilter.class);
 
-    /** The maximum interval, in milliseconds, between now and the <code>validUntil</code> date. */
-    @Duration private long maxValidityInterval;
+    /** The maximum interval between now and the <code>validUntil</code> date. Defaults to 14 days. */
+    @Nullable private Duration maxValidityInterval;
 
     /** Constructor. */
     public RequiredValidUntilFilter() {
-        this(0);
+        maxValidityInterval = Duration.ofDays(14);
     }
 
     /**
-     * Constructor.
+     * Get the maximum interval between now and the <code>validUntil</code> date.
+     * A value &lt;=0 indicates that there is no restriction.
      * 
-     * @param maxValidity maximum interval, in seconds, between now and the <code>validUntil</code> date
+     * @return maximum interval between now and the <code>validUntil</code> date
      */
-    public RequiredValidUntilFilter(final long maxValidity) {
-        maxValidityInterval = maxValidity * 1000;
-    }
-
-    /**
-     * Get the maximum interval, in milliseconds, between now and the <code>validUntil</code> date.
-     * A value of less than 1 indicates that there is no restriction.
-     * 
-     * @return maximum interval, in milliseconds, between now and the <code>validUntil</code> date
-     */
-    @Duration public long getMaxValidityInterval() {
+    @Nullable public Duration getMaxValidityInterval() {
         return maxValidityInterval;
     }
     
     /**
-     * Set the maximum interval, in milliseconds, between now and the <code>validUntil</code> date.
-     * A value of less than 1 indicates that there is no restriction.
+     * Set the maximum interval between now and the <code>validUntil</code> date.
+     * A value &lt;=0 indicates that there is no restriction.
      * 
-     * @param validity time in milliseconds between now and the <code>validUntil</code> date
+     * @param validity time between now and the <code>validUntil</code> date
      */
-    @Duration public void setMaxValidityInterval(@Duration final long validity) {
-        maxValidityInterval = validity;
+    public void setMaxValidityInterval(@Nullable final Duration validity) {
+        if (validity != null && !validity.isNegative() && !validity.isZero()) {
+            maxValidityInterval = validity;
+        } else {
+            maxValidityInterval = null;
+        }
     }
 
     /** {@inheritDoc} */
-    @Override
-    @Nullable public XMLObject filter(@Nullable final XMLObject metadata) throws FilterException {
+    @Nullable public XMLObject filter(@Nullable final XMLObject metadata, @Nonnull final MetadataFilterContext context)
+            throws FilterException {
         if (metadata == null) {
             return null;
         }
         
-        final DateTime validUntil = getValidUntil(metadata);
+        final Instant validUntil = getValidUntil(metadata);
 
         if (validUntil == null) {
             throw new FilterException("Metadata did not include a validUntil attribute");
         }
 
-        final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-        if (maxValidityInterval > 0 && validUntil.isAfter(now)) {
-            final long validityInterval = validUntil.getMillis() - now.getMillis();
-            if (validityInterval > maxValidityInterval) {
+        final Instant now = Instant.now();
+        if (maxValidityInterval != null && validUntil.isAfter(now)) {
+            final long validityInterval = validUntil.toEpochMilli() - now.toEpochMilli();
+            if (Duration.ofMillis(validityInterval).compareTo(maxValidityInterval) > 0) {
                 throw new FilterException(String.format("Metadata's validity interval %s is larger than is allowed %s", 
-                        DOMTypeSupport.longToDuration(validityInterval),
-                        DOMTypeSupport.longToDuration(maxValidityInterval)));
+                        Duration.ofMillis(validityInterval), maxValidityInterval));
             }
         }
         
@@ -119,7 +112,7 @@ public class RequiredValidUntilFilter implements MetadataFilter {
      * @throws FilterException thrown if the given XML object is not an {@link EntitiesDescriptor} or
      *             {@link EntityDescriptor}
      */
-    @Nullable protected DateTime getValidUntil(@Nonnull final XMLObject metadata) throws FilterException {
+    @Nullable protected Instant getValidUntil(@Nonnull final XMLObject metadata) throws FilterException {
         if (metadata instanceof EntitiesDescriptor) {
             return ((EntitiesDescriptor) metadata).getValidUntil();
         } else if (metadata instanceof EntityDescriptor) {

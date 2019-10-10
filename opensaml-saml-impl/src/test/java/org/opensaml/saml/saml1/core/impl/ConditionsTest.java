@@ -23,10 +23,11 @@ package org.opensaml.saml.saml1.core.impl;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml1.core.AudienceRestrictionCondition;
@@ -44,12 +45,12 @@ public class ConditionsTest extends XMLObjectProviderBaseTestCase {
     /**
      * Representation of NotBefore in test file.
      */
-    private final DateTime expectedNotBeforeDate;
+    private final Instant expectedNotBeforeDate;
 
     /**
      * Representation of NotOnOrAfter in test file.
      */
-    private final DateTime expectedNotOnOfAfter;
+    private final Instant expectedNotOnOfAfter;
 
     /**
      * Constructor
@@ -59,14 +60,8 @@ public class ConditionsTest extends XMLObjectProviderBaseTestCase {
         singleElementFile = "/org/opensaml/saml/saml1/impl/singleConditions.xml";
         singleElementOptionalAttributesFile = "/org/opensaml/saml/saml1/impl/singleConditionsAttributes.xml";
         childElementsFile = "/org/opensaml/saml/saml1/impl/ConditionsWithChildren.xml";
-        //
-        // NotBefore="1970-01-01T01:00:00.123Z"
-        //
-        expectedNotBeforeDate = new DateTime(1970, 1, 01, 01, 00, 00, 123, ISOChronology.getInstanceUTC());
-        //
-        // NotOnOrAfter="1970-01-01T00:00:01.000Z"
-        //
-        expectedNotOnOfAfter = new DateTime(1970, 1, 01, 00, 00, 01, 0, ISOChronology.getInstanceUTC());
+        expectedNotBeforeDate = Instant.parse("1970-01-01T01:00:00.123Z");
+        expectedNotOnOfAfter = Instant.parse("1970-01-01T00:00:01Z");
         
         qname = new QName(SAMLConstants.SAML1_NS, Conditions.DEFAULT_ELEMENT_LOCAL_NAME, SAMLConstants.SAML1_PREFIX);
     }
@@ -78,7 +73,7 @@ public class ConditionsTest extends XMLObjectProviderBaseTestCase {
 
         conditions = (Conditions) unmarshallElement(singleElementFile);
 
-        DateTime date = conditions.getNotBefore();
+        Instant date = conditions.getNotBefore();
         Assert.assertNull(date, "NotBefore attribute has a value of " + date + ", expected no value");
 
         date = conditions.getNotOnOrAfter();

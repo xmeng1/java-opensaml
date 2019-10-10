@@ -17,21 +17,21 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationInfo;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationPolicy;
 
 /**
  * Concrete Implementation of {@link RegistrationInfo}.
  */
-public class RegistrationInfoImpl extends AbstractSAMLObject implements RegistrationInfo {
+public class RegistrationInfoImpl extends AbstractXMLObject implements RegistrationInfo {
 
     /** The policies. */
     private XMLObjectChildrenList<RegistrationPolicy> registrationPolicies;
@@ -40,7 +40,7 @@ public class RegistrationInfoImpl extends AbstractSAMLObject implements Registra
     private String registrationAuthority;
 
     /** The registration instant. */
-    private DateTime registrationInstant;
+    private Instant registrationInstant;
 
     /**
      * Constructor.
@@ -69,13 +69,13 @@ public class RegistrationInfoImpl extends AbstractSAMLObject implements Registra
 
     /** {@inheritDoc} */
     @Override
-    public DateTime getRegistrationInstant() {
+    public Instant getRegistrationInstant() {
         return registrationInstant;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setRegistrationInstant(final DateTime dateTime) {
+    public void setRegistrationInstant(final Instant dateTime) {
         registrationInstant = prepareForAssignment(registrationInstant, dateTime);
     }
 
@@ -92,4 +92,5 @@ public class RegistrationInfoImpl extends AbstractSAMLObject implements Registra
         children.addAll(registrationPolicies);
         return children;
     }
+    
 }

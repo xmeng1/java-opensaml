@@ -47,11 +47,8 @@ import org.w3c.dom.Element;
 
 /**
  * Basic SOAP 1.1 encoder for HTTP transport.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public class HTTPSOAP11Encoder<MessageType extends XMLObject> 
-        extends BaseHttpServletResponseXMLMessageEncoder<MessageType> {
+public class HTTPSOAP11Encoder extends BaseHttpServletResponseXMLMessageEncoder {
 
     /** Class logger. */
     private final Logger log = LoggerFactory.getLogger(HTTPSOAP11Encoder.class);
@@ -75,8 +72,8 @@ public class HTTPSOAP11Encoder<MessageType extends XMLObject>
     
     /** {@inheritDoc} */
     public void prepareContext() throws MessageEncodingException {
-        final MessageContext<MessageType> messageContext = getMessageContext();
-        XMLObject payload = null;
+        final MessageContext messageContext = getMessageContext();
+        Object payload = null;
         
         final Fault fault = SOAPMessagingSupport.getSOAP11Fault(messageContext);
         if (fault != null) {
@@ -88,16 +85,15 @@ public class HTTPSOAP11Encoder<MessageType extends XMLObject>
             payload = messageContext.getMessage();
         }
         
-        if (payload == null) {
-            throw new MessageEncodingException("No outbound message or Fault contained in message context");
+        if (payload == null || !(payload instanceof XMLObject)) {
+            throw new MessageEncodingException("No outbound XML message or Fault contained in message context");
         }
         
         if (payload instanceof Envelope) {
             storeSOAPEnvelope((Envelope) payload);
         } else {
-            buildAndStoreSOAPMessage(payload);
+            buildAndStoreSOAPMessage((XMLObject) payload);
         }
-        
     }
 
     /** {@inheritDoc} */

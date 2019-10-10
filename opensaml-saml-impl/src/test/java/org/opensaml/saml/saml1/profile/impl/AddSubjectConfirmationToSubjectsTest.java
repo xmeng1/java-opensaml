@@ -42,7 +42,7 @@ import org.testng.annotations.Test;
 /** Test for {@link AddSubjectConfirmationToSubjects}. */
 public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCase {
     
-    private ProfileRequestContext<Object,Response> prc;
+    private ProfileRequestContext prc;
     
     private AddSubjectConfirmationToSubjects action;
     
@@ -75,20 +75,20 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage().getAssertions().isEmpty());
+        Assert.assertTrue(((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().isEmpty());
     }
 
     @Test
     public void testNoStatements() throws ComponentInitializationException {
         prc.getOutboundMessageContext().setMessage(SAML1ActionTestingSupport.buildResponse());
-        prc.getOutboundMessageContext().getMessage().getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
+        ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
         
         action.setMethods(Collections.singleton(ConfirmationMethod.METHOD_BEARER));
         action.initialize();
         
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage().getAssertions().get(0).getStatements().isEmpty());
+        Assert.assertTrue(((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0).getStatements().isEmpty());
     }
 
     @Test void testSingle() throws ComponentInitializationException {
@@ -100,7 +100,7 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        Assertion assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(0);
+        Assertion assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0);
         Subject subject = assertion.getAuthenticationStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getSubjectConfirmation());
@@ -108,7 +108,7 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         Assert.assertEquals(subject.getSubjectConfirmation().getConfirmationMethods().get(0).getConfirmationMethod(),
                 ConfirmationMethod.METHOD_BEARER);
 
-        assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(1);
+        assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(1);
         subject = assertion.getAttributeStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getSubjectConfirmation());
@@ -126,7 +126,7 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        Assertion assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(0);
+        Assertion assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0);
         Subject subject = assertion.getAuthenticationStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getSubjectConfirmation());
@@ -136,7 +136,7 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         Assert.assertEquals(subject.getSubjectConfirmation().getConfirmationMethods().get(1).getConfirmationMethod(),
                 ConfirmationMethod.METHOD_SENDER_VOUCHES);
 
-        assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(1);
+        assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(1);
         subject = assertion.getAttributeStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getSubjectConfirmation());
@@ -158,7 +158,7 @@ public class AddSubjectConfirmationToSubjectsTest extends OpenSAMLInitBaseTestCa
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        Assertion assertion = prc.getOutboundMessageContext().getMessage().getAssertions().get(0);
+        Assertion assertion = ((Response) prc.getOutboundMessageContext().getMessage()).getAssertions().get(0);
         Subject subject = assertion.getAuthenticationStatements().get(0).getSubject();
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getSubjectConfirmation());

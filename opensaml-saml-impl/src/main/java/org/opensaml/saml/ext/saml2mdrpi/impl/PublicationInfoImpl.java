@@ -17,21 +17,21 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdrpi.PublicationInfo;
 import org.opensaml.saml.ext.saml2mdrpi.UsagePolicy;
 
 /**
  * Concrete {@link PublicationInfo}.
  */
-public class PublicationInfoImpl extends AbstractSAMLObject implements PublicationInfo {
+public class PublicationInfoImpl extends AbstractXMLObject implements PublicationInfo {
 
     /** The policies. */
     private XMLObjectChildrenList<UsagePolicy> usagePolicies;
@@ -40,7 +40,7 @@ public class PublicationInfoImpl extends AbstractSAMLObject implements Publicati
     private String publisher;
 
     /** The creation instant. */
-    private DateTime creationInstant;
+    private Instant creationInstant;
 
     /** The publicationId. */
     private String publicationId;
@@ -72,13 +72,13 @@ public class PublicationInfoImpl extends AbstractSAMLObject implements Publicati
 
     /** {@inheritDoc} */
     @Override
-    public DateTime getCreationInstant() {
+    public Instant getCreationInstant() {
         return creationInstant;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setCreationInstant(final DateTime dateTime) {
+    public void setCreationInstant(final Instant dateTime) {
         creationInstant = prepareForAssignment(creationInstant, dateTime);
     }
 

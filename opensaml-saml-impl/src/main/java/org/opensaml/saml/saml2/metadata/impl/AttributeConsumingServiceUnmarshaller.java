@@ -46,7 +46,7 @@ public class AttributeConsumingServiceUnmarshaller extends AbstractSAMLObjectUnm
         } else if (childSAMLObject instanceof ServiceDescription) {
             service.getDescriptions().add((ServiceDescription) childSAMLObject);
         } else if (childSAMLObject instanceof RequestedAttribute) {
-            service.getRequestAttributes().add((RequestedAttribute) childSAMLObject);
+            service.getRequestedAttributes().add((RequestedAttribute) childSAMLObject);
         } else {
             super.processChildElement(parentSAMLObject, childSAMLObject);
         }

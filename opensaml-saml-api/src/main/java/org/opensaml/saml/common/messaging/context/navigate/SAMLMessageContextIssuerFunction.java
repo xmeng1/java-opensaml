@@ -17,13 +17,13 @@
 
 package org.opensaml.saml.common.messaging.context.navigate;
 
+import java.util.function.Function;
+
 import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.messaging.context.SAMLSelfEntityContext;
-
-import com.google.common.base.Function;
 
 /**
  * Function that returns the entityID from a {@link SAMLPeerEntityContext} or {@link SAMLSelfEntityContext}.

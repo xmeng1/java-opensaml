@@ -20,7 +20,6 @@ package org.opensaml.saml.common.binding.security.impl;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.security.impl.EndpointURLSchemeSecurityHandler;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
@@ -39,8 +38,8 @@ public class EndpointURLSchemeSecurityHandlerTest extends XMLObjectBaseTestCase 
         AssertionConsumerService endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setLocation("http://idp.example.com/sso");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
-        messageContext.setMessage((SAMLObject) buildXMLObject(AuthnRequest.DEFAULT_ELEMENT_NAME));
+        final MessageContext messageContext = new MessageContext();
+        messageContext.setMessage(buildXMLObject(AuthnRequest.DEFAULT_ELEMENT_NAME));
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
             .getSubcontext(SAMLEndpointContext.class, true).setEndpoint(endpoint);
         
@@ -53,8 +52,8 @@ public class EndpointURLSchemeSecurityHandlerTest extends XMLObjectBaseTestCase 
         AssertionConsumerService endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setResponseLocation("http://sp.example.com/acs");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
-        messageContext.setMessage((SAMLObject) buildXMLObject(Response.DEFAULT_ELEMENT_NAME));
+        final MessageContext messageContext = new MessageContext();
+        messageContext.setMessage(buildXMLObject(Response.DEFAULT_ELEMENT_NAME));
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
             .getSubcontext(SAMLEndpointContext.class, true).setEndpoint(endpoint);
         
@@ -67,8 +66,8 @@ public class EndpointURLSchemeSecurityHandlerTest extends XMLObjectBaseTestCase 
         AssertionConsumerService endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setLocation("badscheme://idp.example.com/sso");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
-        messageContext.setMessage((SAMLObject) buildXMLObject(AuthnRequest.DEFAULT_ELEMENT_NAME));
+        final MessageContext messageContext = new MessageContext();
+        messageContext.setMessage(buildXMLObject(AuthnRequest.DEFAULT_ELEMENT_NAME));
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
             .getSubcontext(SAMLEndpointContext.class, true).setEndpoint(endpoint);
         
@@ -81,8 +80,8 @@ public class EndpointURLSchemeSecurityHandlerTest extends XMLObjectBaseTestCase 
         AssertionConsumerService endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setResponseLocation("badscheme://sp.example.com/acs");
         
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
-        messageContext.setMessage((SAMLObject) buildXMLObject(Response.DEFAULT_ELEMENT_NAME));
+        final MessageContext messageContext = new MessageContext();
+        messageContext.setMessage(buildXMLObject(Response.DEFAULT_ELEMENT_NAME));
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
             .getSubcontext(SAMLEndpointContext.class, true).setEndpoint(endpoint);
         

@@ -17,21 +17,19 @@
 
 package org.opensaml.messaging.handler.impl;
 
-import javax.annotation.Nullable;
-
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.messaging.handler.impl.CheckMandatoryIssuer;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 /** Unit test for {@link CheckMandatoryIssuer}. */
 public class CheckMandatoryIssuerTest {
 
     @Test public void testWithIssuer() throws Exception {
         final CheckMandatoryIssuer action = new CheckMandatoryIssuer();
-        action.setIssuerLookupStrategy(new MockIssuer("issuer"));
+        action.setIssuerLookupStrategy(FunctionSupport.constant("issuer"));
         action.initialize();
 
         final MessageContext mc = new MessageContext();
@@ -40,25 +38,11 @@ public class CheckMandatoryIssuerTest {
 
     @Test(expectedExceptions=MessageHandlerException.class) public void testNoIssuer() throws Exception {
         final CheckMandatoryIssuer action = new CheckMandatoryIssuer();
-        action.setIssuerLookupStrategy(new MockIssuer(null));
+        action.setIssuerLookupStrategy(FunctionSupport.constant(null));
         action.initialize();
 
         final MessageContext mc = new MessageContext();
         action.invoke(mc);
     }
-    
-    private class MockIssuer implements Function<MessageContext,String> {
 
-        final String issuer;
-        
-        MockIssuer(@Nullable final String s) {
-            issuer = s;
-        }
-        
-        /** {@inheritDoc} */
-        public String apply(MessageContext input) {
-            return issuer;
-        }
-        
-    }
 }

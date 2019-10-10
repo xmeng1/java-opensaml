@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opensaml</groupId>
         <artifactId>opensaml-parent</artifactId>
-        <version>3.4.1-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../opensaml-parent</relativePath>
     </parent>
 
@@ -27,18 +27,28 @@
             <artifactId>opensaml-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-messaging-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         
-        <!--  TODO ideally we don't want xmlsec-api dependent on Apache xmlsec, xmlsec-impl.  -->
         <dependency>
-            <groupId>org.apache.santuario</groupId>
-            <artifactId>xmlsec</artifactId>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
         </dependency>
-        
+
+        <dependency>
+        	<groupId>com.google.code.findbugs</groupId>
+        	<artifactId>jsr305</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.guava</groupId>
+        	<artifactId>guava</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.cryptacular</groupId>
             <artifactId>cryptacular</artifactId>
@@ -47,6 +57,16 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
+        </dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+
+        <dependency>
+            <groupId>${httpclient.groupId}</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
 
         <!-- Provided Dependencies -->

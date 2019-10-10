@@ -50,7 +50,7 @@ public class MockMessage {
 
     /**
      * Get the encoded form of the message properties, which will be in the form 
-     * "key1=value1&key2=value2&...&keyN=valueN", sorted ascending by key.
+     * "key1=value1&amp;key2=value2&amp;...&amp;keyN=valueN", sorted ascending by key.
      * 
      * @return the encoded form of the message
      */

@@ -19,6 +19,7 @@ package org.opensaml.saml.security.impl;
 
 import java.security.Key;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,8 +51,6 @@ import org.opensaml.xmlsec.signature.DigestMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-
 /**
  * A specialization of {@link BasicEncryptionParametersResolver} which resolves
  * credentials and algorithm preferences against SAML metadata via a {@link MetadataCredentialResolver}.
@@ -71,10 +70,10 @@ import com.google.common.base.Predicate;
 public class SAMLMetadataEncryptionParametersResolver extends BasicEncryptionParametersResolver {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(SAMLMetadataEncryptionParametersResolver.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(SAMLMetadataEncryptionParametersResolver.class);
     
     /** Metadata credential resolver. */
-    private MetadataCredentialResolver credentialResolver;
+    @Nonnull private MetadataCredentialResolver credentialResolver;
     
     /**
      * Flag indicating whether the resolver should attempt to merge RSAOAEPParameters
@@ -269,8 +268,8 @@ public class SAMLMetadataEncryptionParametersResolver extends BasicEncryptionPar
         if (digestMethods.size() > 0) {
             final DigestMethod digestMethod = (DigestMethod) digestMethods.get(0);
             final String digestAlgorithm = StringSupport.trimOrNull(digestMethod.getAlgorithm());
-            if (digestAlgorithm != null && whitelistBlacklistPredicate.apply(digestAlgorithm)
-                    && algoSupportPredicate.apply(digestAlgorithm)) {
+            if (digestAlgorithm != null && whitelistBlacklistPredicate.test(digestAlgorithm)
+                    && algoSupportPredicate.test(digestAlgorithm)) {
                 params.setDigestMethod(digestAlgorithm);
             }
         }
@@ -280,7 +279,7 @@ public class SAMLMetadataEncryptionParametersResolver extends BasicEncryptionPar
             if (mgfs.size() > 0) {
                 final MGF mgf = (MGF) mgfs.get(0);
                 final String mgfAlgorithm = StringSupport.trimOrNull(mgf.getAlgorithm());
-                if (mgfAlgorithm != null && whitelistBlacklistPredicate.apply(mgfAlgorithm)) {
+                if (mgfAlgorithm != null && whitelistBlacklistPredicate.test(mgfAlgorithm)) {
                     params.setMaskGenerationFunction(mgfAlgorithm);
                 }
             }
@@ -327,14 +326,14 @@ public class SAMLMetadataEncryptionParametersResolver extends BasicEncryptionPar
                 final String algorithm = encryptionMethod.getAlgorithm();
                 log.trace("Evaluating SAML metadata EncryptionMethod algorithm for key transport: {}", algorithm);
                 if (isKeyTransportAlgorithm(algorithm) 
-                        && whitelistBlacklistPredicate.apply(algorithm) 
-                        && getAlgorithmRuntimeSupportedPredicate().apply(algorithm)
+                        && whitelistBlacklistPredicate.test(algorithm) 
+                        && getAlgorithmRuntimeSupportedPredicate().test(algorithm)
                         && credentialSupportsEncryptionMethod(keyTransportCredential, encryptionMethod)
                         && evaluateEncryptionMethodChildren(encryptionMethod, criteria, whitelistBlacklistPredicate)) {
                     
                     boolean accepted = true;
                     if (keyTransportPredicate != null) {
-                        accepted = keyTransportPredicate.apply(new KeyTransportAlgorithmPredicate.SelectionInput(
+                        accepted = keyTransportPredicate.test(new KeyTransportAlgorithmPredicate.SelectionInput(
                                 algorithm, dataEncryptionAlgorithm, keyTransportCredential));
                     }
                     
@@ -382,8 +381,8 @@ public class SAMLMetadataEncryptionParametersResolver extends BasicEncryptionPar
                 final String algorithm = encryptionMethod.getAlgorithm();
                 log.trace("Evaluating SAML metadata EncryptionMethod algorithm for data encryption: {}", algorithm);
                 if (isDataEncryptionAlgorithm(algorithm) 
-                        && whitelistBlacklistPredicate.apply(algorithm)
-                        && getAlgorithmRuntimeSupportedPredicate().apply(algorithm)
+                        && whitelistBlacklistPredicate.test(algorithm)
+                        && getAlgorithmRuntimeSupportedPredicate().test(algorithm)
                         && evaluateEncryptionMethodChildren(encryptionMethod, criteria, whitelistBlacklistPredicate)) {
                     log.debug("Resolved data encryption algorithm URI from SAML metadata EncryptionMethod: {}",
                             algorithm);
@@ -447,8 +446,8 @@ public class SAMLMetadataEncryptionParametersResolver extends BasicEncryptionPar
             final DigestMethod digestMethod = (DigestMethod) digestMethods.get(0);
             final String digestAlgorithm = StringSupport.trimOrNull(digestMethod.getAlgorithm());
             if (digestAlgorithm != null) {
-                if (!whitelistBlacklistPredicate.apply(digestAlgorithm) 
-                        || !algoSupportPredicate.apply(digestAlgorithm)) {
+                if (!whitelistBlacklistPredicate.test(digestAlgorithm) 
+                        || !algoSupportPredicate.test(digestAlgorithm)) {
                     log.debug("Rejecting RSA OAEP EncryptionMethod due to unsupported or disallowed DigestMethod: {}",
                             digestAlgorithm);
                     return false;
@@ -462,7 +461,7 @@ public class SAMLMetadataEncryptionParametersResolver extends BasicEncryptionPar
                 final MGF mgf = (MGF) mgfs.get(0);
                 final String mgfAlgorithm = StringSupport.trimOrNull(mgf.getAlgorithm());
                 if (mgfAlgorithm != null) {
-                    if (!whitelistBlacklistPredicate.apply(mgfAlgorithm)) {
+                    if (!whitelistBlacklistPredicate.test(mgfAlgorithm)) {
                         log.debug("Rejecting RSA OAEP EncryptionMethod due to disallowed MGF: {}", mgfAlgorithm);
                         return false;
                     }

@@ -17,9 +17,9 @@
 
 package org.opensaml.saml.metadata.criteria.entity;
 
-import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import java.util.function.Predicate;
 
-import com.google.common.base.Predicate;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 
 import net.shibboleth.utilities.java.support.resolver.Criterion;
 

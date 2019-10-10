@@ -23,6 +23,6 @@ package org.opensaml.profile.context;
  *
  * @param <EventType> the event type of the context 
  */
-public class PreviousEventContext<EventType> extends EventContext {
+public final class PreviousEventContext<EventType> extends EventContext {
 
 }

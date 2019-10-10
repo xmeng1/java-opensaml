@@ -17,6 +17,8 @@
 
 package org.opensaml.profile.logic;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.ServletRequest;
@@ -30,8 +32,6 @@ import org.opensaml.profile.context.AccessControlContext;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
 
 /**
  * Access control implementation based on a predicate over a {@link ProfileRequestContext}.
@@ -74,16 +74,15 @@ public class PredicateAccessControl extends AbstractIdentifiableInitializableCom
             final AccessControlContext acc = prc.getSubcontext(AccessControlContext.class, true);
             acc.setOperation(operation);
             acc.setResource(resource);
-            if (predicate.apply(prc)) {
+            if (predicate.test(prc)) {
                 prc.removeSubcontext(acc);
                 log.debug("{} Granted access based on predicate (Operation: {}, Resource: {})",
                         new Object[] {getLogPrefix(), operation, resource});
                 return true;
-            } else {
-                prc.removeSubcontext(acc);
-                log.warn("{} Denied request based on predicate (Operation: {}, Resource: {})",
-                        new Object[] {getLogPrefix(), operation, resource});
             }
+            prc.removeSubcontext(acc);
+            log.warn("{} Denied request based on predicate (Operation: {}, Resource: {})",
+                    new Object[] {getLogPrefix(), operation, resource});
         } else {
             log.warn("{} Denied request based on predicate, missing ProfileRequestContext (Operation: {}, Resource: {})"
                     , new Object[] {getLogPrefix(), operation, resource});

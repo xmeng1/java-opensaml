@@ -17,6 +17,8 @@
 
 package org.opensaml.profile.logic;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -24,10 +26,8 @@ import net.shibboleth.utilities.java.support.annotation.ParameterName;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.messaging.context.navigate.RecursiveTypedParentContextLookup;
 import org.opensaml.profile.context.ProfileRequestContext;
-
-import com.google.common.base.Predicate;
+import org.opensaml.profile.context.navigate.ParentProfileRequestContextLookup;
 
 /**
  * A {@link Predicate} which adapts an existing {@link ProfileRequestContext} predicate
@@ -45,13 +45,15 @@ import com.google.common.base.Predicate;
  * via {@link org.opensaml.messaging.handler.AbstractMessageHandler#setActivationCondition(Predicate)}.
  * </p>
  */
-public class MessageContextPredicateAdapter implements Predicate<MessageContext> {
-    
-    /** The adapted predicate. */
-    private Predicate<ProfileRequestContext> adapted;
+public class MessageContextPredicateAdapter
+        implements net.shibboleth.utilities.java.support.logic.Predicate<MessageContext> {
     
     /** The lookup function for the ProfileRequestContext. */
-    private RecursiveTypedParentContextLookup<MessageContext, ProfileRequestContext> prcLookup; 
+    @Nonnull private static final ParentProfileRequestContextLookup<MessageContext> PRC_LOOKUP
+        = new ParentProfileRequestContextLookup<>();
+    
+    /** The adapted predicate. */
+    @Nonnull private Predicate<ProfileRequestContext> adapted;
     
     /** Flag indicating whether failure to resolve a parent ProfileRequestContext satisfies the predicate. */
     private boolean noPRCSatisfies;
@@ -81,22 +83,20 @@ public class MessageContextPredicateAdapter implements Predicate<MessageContext>
                 @ParameterName(name = "unresolvedSatisfies") final boolean unresolvedSatisfies) {
         adapted = Constraint.isNotNull(prcPredicate, "The adapted predicate may not be null");
         noPRCSatisfies = unresolvedSatisfies;
-        prcLookup = new RecursiveTypedParentContextLookup<>(ProfileRequestContext.class);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final MessageContext input) {
+    public boolean test(@Nullable final MessageContext input) {
         if (input == null) {
             return false;
         }
         
-        final ProfileRequestContext prc = prcLookup.apply(input);
+        final ProfileRequestContext prc = PRC_LOOKUP.apply(input);
         if (prc == null) {
             return noPRCSatisfies;
         }
         
-        return adapted.apply(prc);
+        return adapted.test(prc);
     }
 
 }

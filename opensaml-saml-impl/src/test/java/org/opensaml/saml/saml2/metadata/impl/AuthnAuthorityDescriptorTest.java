@@ -20,13 +20,14 @@ package org.opensaml.saml.saml2.metadata.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.Extensions;
@@ -48,10 +49,10 @@ public class AuthnAuthorityDescriptorTest extends XMLObjectProviderBaseTestCase 
     protected List<String> expectedSupportedProtocols;
 
     /** Expected cacheDuration value in miliseconds */
-    protected long expectedCacheDuration;
+    protected Duration expectedCacheDuration;
 
     /** Expected validUntil value */
-    protected DateTime expectedValidUntil;
+    protected Instant expectedValidUntil;
 
     /** Expected errorURL value */
     protected String expectedErrorURL;
@@ -84,8 +85,8 @@ public class AuthnAuthorityDescriptorTest extends XMLObjectProviderBaseTestCase 
     @BeforeMethod protected void setUp() throws Exception {
         expectedSupportedProtocols = new ArrayList<>();
         expectedSupportedProtocols.add(SAMLConstants.SAML20P_NS);
-        expectedCacheDuration = 90000;
-        expectedValidUntil = new DateTime(2005, 12, 7, 10, 21, 0, 0, ISOChronology.getInstanceUTC());
+        expectedCacheDuration = Duration.ofSeconds(90);
+        expectedValidUntil = Instant.parse("2005-12-07T10:21:00Z");
         expectedErrorURL = "http://example.org";
         //
         // Element counts
@@ -105,10 +106,10 @@ public class AuthnAuthorityDescriptorTest extends XMLObjectProviderBaseTestCase 
         Assert.assertEquals(protoEnum, expectedSupportedProtocols,
                 "Supported protocol enumeration was not equal to expected enumeration");
 
-        Long duration = authnAuthorityObj.getCacheDuration();
+        Duration duration = authnAuthorityObj.getCacheDuration();
         Assert.assertNull(duration, "cacheDuration attribute has a value of " + duration + ", expected no value");
 
-        DateTime validUntil = authnAuthorityObj.getValidUntil();
+        Instant validUntil = authnAuthorityObj.getValidUntil();
         Assert.assertNull(validUntil, "validUntil attribute has a value of " + validUntil + ", expected no value");
 
         String errorURL = authnAuthorityObj.getErrorURL();
@@ -124,11 +125,11 @@ public class AuthnAuthorityDescriptorTest extends XMLObjectProviderBaseTestCase 
         Assert.assertEquals(protoEnum, expectedSupportedProtocols,
                 "Supported protocol enumeration was not equal to expected enumeration");
 
-        long duration = authnAuthorityObj.getCacheDuration().longValue();
+        Duration duration = authnAuthorityObj.getCacheDuration();
         Assert.assertEquals(duration, expectedCacheDuration, "cacheDuration attribute has a value of " + duration
                 + ", expected a value of " + expectedCacheDuration);
 
-        DateTime validUntil = authnAuthorityObj.getValidUntil();
+        Instant validUntil = authnAuthorityObj.getValidUntil();
         Assert.assertEquals(expectedValidUntil.compareTo(validUntil), 0,
                 "validUntil attribute value did not match expected value");
 

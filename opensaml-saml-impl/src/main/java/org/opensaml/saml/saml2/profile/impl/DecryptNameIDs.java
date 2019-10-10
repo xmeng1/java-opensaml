@@ -117,7 +117,7 @@ public class DecryptNameIDs extends AbstractDecryptAction {
     @Nullable private NameID processEncryptedID(@Nonnull final ProfileRequestContext profileRequestContext,
             @Nonnull final EncryptedID encID) throws DecryptionException {
         
-        if (!getDecryptionPredicate().apply(
+        if (!getDecryptionPredicate().test(
                 new Pair<ProfileRequestContext,EncryptedElementType>(profileRequestContext, encID))) {
             return null;
         }
@@ -146,7 +146,7 @@ public class DecryptNameIDs extends AbstractDecryptAction {
     @Nullable private NewID processNewEncryptedID(@Nonnull final ProfileRequestContext profileRequestContext,
             @Nonnull final NewEncryptedID encID) throws DecryptionException {
         
-        if (!getDecryptionPredicate().apply(
+        if (!getDecryptionPredicate().test(
                 new Pair<ProfileRequestContext,EncryptedElementType>(profileRequestContext, encID))) {
             return null;
         }

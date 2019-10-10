@@ -27,17 +27,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opensaml.messaging.context.BaseContext;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
 import com.google.common.net.InetAddresses;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.net.IPRange;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 
 /**
  * A {@link Predicate} that checks if a request is from a set of one or more {@link IPRange}s.
@@ -53,29 +50,6 @@ public class IPRangePredicate implements Predicate<BaseContext> {
     /** Constructor. */
     IPRangePredicate() {
         addressRanges = Collections.emptyList();
-    }
-    
-    /**
-     * Set the address ranges to check against.
-     * 
-     * <p>This version is deprecated because Spring doesn't handle converting strings
-     * to Iterable.</p>
-     * 
-     * @param ranges    address ranges to check against
-     * 
-     * @deprecated
-     */
-    @Deprecated
-    public void setAddressRanges(@Nonnull @NonnullElements final Iterable<IPRange> ranges) {
-        DeprecationSupport.warn(ObjectType.METHOD, getClass().getName() + ".setAddressRanges(Iterable)", null,
-                "setRanges(Collection)");
-
-        Constraint.isNotNull(ranges, "Address range collection cannot be null");
-        
-        addressRanges = new ArrayList<>();
-        for (final IPRange range : Iterables.filter(ranges, Predicates.notNull())) {
-            addressRanges.add(range);
-        }
     }
     
     /**
@@ -101,8 +75,7 @@ public class IPRangePredicate implements Predicate<BaseContext> {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final BaseContext input) {
+    public boolean test(@Nullable final BaseContext input) {
         final String address = httpRequest != null ? httpRequest.getRemoteAddr() : null;
         if (address == null || !InetAddresses.isInetAddress(address)) {
             return false;

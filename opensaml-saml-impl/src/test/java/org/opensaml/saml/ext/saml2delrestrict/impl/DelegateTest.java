@@ -20,8 +20,9 @@ package org.opensaml.saml.ext.saml2delrestrict.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.ext.saml2delrestrict.Delegate;
 import org.opensaml.saml.saml2.core.NameID;
@@ -31,7 +32,7 @@ import org.opensaml.saml.saml2.core.NameID;
  */
 public class DelegateTest extends XMLObjectProviderBaseTestCase {
 
-    private DateTime expectedDelegationInstant;
+    private Instant expectedDelegationInstant;
     
     private String expectedConfirmationMethod;
     
@@ -45,7 +46,7 @@ public class DelegateTest extends XMLObjectProviderBaseTestCase {
 
     @BeforeMethod
     protected void setUp() throws Exception {
-        expectedDelegationInstant = new DateTime(1984, 8, 26, 10, 01, 30, 43, ISOChronology.getInstanceUTC());
+        expectedDelegationInstant = Instant.parse("1984-08-26T10:01:30.043Z");
         expectedConfirmationMethod = "urn:oasis:names:tc:SAML:2.0:cm:bearer";
     }
 
@@ -64,7 +65,7 @@ public class DelegateTest extends XMLObjectProviderBaseTestCase {
         
         Assert.assertNotNull(delegate);
 
-        DateTime instant = delegate.getDelegationInstant();
+        Instant instant = delegate.getDelegationInstant();
         Assert.assertEquals(instant, expectedDelegationInstant, "DelegationInstant was unexpected value");
 
         String cm = delegate.getConfirmationMethod();

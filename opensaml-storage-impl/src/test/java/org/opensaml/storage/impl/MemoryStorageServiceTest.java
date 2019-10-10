@@ -17,6 +17,8 @@
 
 package org.opensaml.storage.impl;
 
+import java.time.Duration;
+
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
@@ -36,7 +38,7 @@ public class MemoryStorageServiceTest extends StorageServiceTest {
     @Nonnull protected StorageService getStorageService() {
         MemoryStorageService ss = new MemoryStorageService();
         ss.setId("test");
-        ss.setCleanupInterval(1000);
+        ss.setCleanupInterval(Duration.ofSeconds(1));
         return ss;
     }
         

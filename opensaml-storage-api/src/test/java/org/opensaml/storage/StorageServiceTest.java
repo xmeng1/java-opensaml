@@ -87,7 +87,7 @@ public abstract class StorageServiceTest {
         }
         
         for (int i = 1; i <= 100; i++) {
-            StorageRecord rec = shared.read(context, Integer.toString(i));
+            StorageRecord<?> rec = shared.read(context, Integer.toString(i));
             Assert.assertNotNull(rec);
             Assert.assertEquals(rec.getValue(), Integer.toString(i + 1));
         }
@@ -98,7 +98,7 @@ public abstract class StorageServiceTest {
         }
 
         for (int i = 1; i <= 100; i++) {
-            StorageRecord rec = shared.read(context, Integer.toString(i));
+            StorageRecord<?> rec = shared.read(context, Integer.toString(i));
             Assert.assertNotNull(rec);
             Assert.assertEquals(rec.getValue(), Integer.toString(i + 2));
         }
@@ -110,7 +110,7 @@ public abstract class StorageServiceTest {
         
         for (int i = 1; i <= 100; i++) {
             shared.delete(context, Integer.toString(i));
-            StorageRecord rec = shared.read(context, Integer.toString(i));
+            StorageRecord<?> rec = shared.read(context, Integer.toString(i));
             Assert.assertNull(rec);
         }
     }
@@ -125,10 +125,10 @@ public abstract class StorageServiceTest {
             shared.create(context, Integer.toString(i), Integer.toString(i + 1), System.currentTimeMillis() + 5000);
         }
 
-        Thread.sleep(5000);
+        Thread.sleep(5150);
         
         for (int i = 1; i <= 100; i++) {
-            StorageRecord rec = shared.read(context, Integer.toString(i));
+            StorageRecord<?> rec = shared.read(context, Integer.toString(i));
             Assert.assertNull(rec);
         }
     }
@@ -151,7 +151,7 @@ public abstract class StorageServiceTest {
             // expected
         }
         
-        StorageRecord rec = shared.read(context, key);
+        StorageRecord<?> rec = shared.read(context, key);
         Assert.assertNotNull(rec);
         Assert.assertEquals(rec.getVersion(), 2);
     }
@@ -172,14 +172,14 @@ public abstract class StorageServiceTest {
         Assert.assertEquals(o1.getValue(), o2.getValue());
         
         o2.setValue("foo");
-        o2.setExpiration(System.currentTimeMillis() + 5000);
+        o2.setExpiration(System.currentTimeMillis() + 10000);
         shared.update(o2);
         
         shared.read(o1);
         Assert.assertEquals(o1.getValue(), "foo");
         Assert.assertEquals(o1.getExpiration(), o2.getExpiration());
         
-        Thread.sleep(5000);
+        Thread.sleep(10100);
         
         Assert.assertNull(shared.read(o2));
     }
@@ -199,39 +199,39 @@ public abstract class StorageServiceTest {
             context = Long.toString(random.nextLong());
             key = Long.toString(random.nextLong());
             value = Long.toString(random.nextLong());
-            expiration = System.currentTimeMillis() + 5000;
+            expiration = System.currentTimeMillis() + 60000;
         }
         
         public String getContext() {
             return context;
         }
         
-        public void setContext(String context) {
-            this.context = context;
+        public void setContext(String c) {
+            context = c;
         }
         
         public String getKey() {
             return key;
         }
         
-        public void setKey(String key) {
-            this.key = key;
+        public void setKey(String k) {
+            key = k;
         }
         
         public String getValue() {
             return value;
         }
         
-        public void setValue(String value) {
-            this.value = value;
+        public void setValue(String val) {
+            value = val;
         }
         
         public long getExpiration() {
             return expiration;
         }
         
-        public void setExpiration(long expiration) {
-            this.expiration = expiration;
+        public void setExpiration(long exp) {
+            expiration = exp;
         }
         
     }

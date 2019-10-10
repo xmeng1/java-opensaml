@@ -18,6 +18,7 @@
 package org.opensaml.core.xml.persist;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public abstract class AbstractConditionalLoadXMLObjectLoadSaveManager<T extends 
     private boolean loadConditionally;
     
     /** Storage for last modified time of requested data. */
-    private Map<String, Long> loadLastModified;
+    private Map<String,Instant> loadLastModified;
     
     /** 
      * Constructor. 
@@ -64,13 +65,13 @@ public abstract class AbstractConditionalLoadXMLObjectLoadSaveManager<T extends 
     }
     
     /** {@inheritDoc} */
-    @Nullable public synchronized Long getLoadLastModified(@Nonnull final String key) {
+    @Nullable public synchronized Instant getLoadLastModified(@Nonnull final String key) {
         return loadLastModified.get(key);
     }
 
     /** {@inheritDoc} */
-    @Nullable public synchronized Long clearLoadLastModified(@Nonnull final String key) {
-        final Long prev = loadLastModified.get(key);
+    @Nullable public synchronized Instant clearLoadLastModified(@Nonnull final String key) {
+        final Instant prev = loadLastModified.get(key);
         loadLastModified.remove(key);
         return prev;
     }
@@ -86,8 +87,8 @@ public abstract class AbstractConditionalLoadXMLObjectLoadSaveManager<T extends 
      * @param key the target key
      * @return the previously cached modified time, or null if did not exist
      */
-    protected synchronized Long updateLoadLastModified(@Nonnull final String key) {
-        return updateLoadLastModified(key, System.currentTimeMillis());
+    protected synchronized Instant updateLoadLastModified(@Nonnull final String key) {
+        return updateLoadLastModified(key, Instant.now());
     }
     
     /**
@@ -97,11 +98,12 @@ public abstract class AbstractConditionalLoadXMLObjectLoadSaveManager<T extends 
      * @param modified the new cached modified time
      * @return the previously cached modified time, or null if did not exist
      */
-    protected synchronized Long updateLoadLastModified(@Nonnull final String key, @Nullable final Long modified) {
+    @Nullable protected synchronized Instant updateLoadLastModified(@Nonnull final String key,
+            @Nullable final Instant modified) {
         if (modified == null) {
             return null;
         }
-        final Long prev = loadLastModified.get(key);
+        final Instant prev = loadLastModified.get(key);
         loadLastModified.put(key, modified);
         return prev;
     }

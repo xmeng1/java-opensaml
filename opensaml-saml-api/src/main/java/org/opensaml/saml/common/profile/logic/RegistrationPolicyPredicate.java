@@ -39,7 +39,7 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
  * Predicate to determine whether one of a set of names matches an entity's
  * {@link RegistrationPolicy}.
  */
-public class RegistrationPolicyPredicate  extends AbstractRegistrationInfoPredicate {
+public class RegistrationPolicyPredicate extends AbstractRegistrationInfoPredicate {
 
     /** Policies to match on. */
     @Nonnull @NonnullElements private final Set<String> policySet;

@@ -30,34 +30,34 @@ public class BlacklistPredicateTest {
     public void testBasic() {
         BlacklistPredicate predicate = new BlacklistPredicate(Arrays.asList("A", "B", "C", "D"));
         
-        Assert.assertFalse(predicate.apply("A"));
-        Assert.assertFalse(predicate.apply("B"));
-        Assert.assertFalse(predicate.apply("C"));
-        Assert.assertFalse(predicate.apply("D"));
+        Assert.assertFalse(predicate.test("A"));
+        Assert.assertFalse(predicate.test("B"));
+        Assert.assertFalse(predicate.test("C"));
+        Assert.assertFalse(predicate.test("D"));
         
-        Assert.assertTrue(predicate.apply("X"));
-        Assert.assertTrue(predicate.apply("Y"));
-        Assert.assertTrue(predicate.apply("Z"));
-        Assert.assertTrue(predicate.apply("foo"));
-        Assert.assertTrue(predicate.apply("bar"));
-        Assert.assertTrue(predicate.apply("bax"));
+        Assert.assertTrue(predicate.test("X"));
+        Assert.assertTrue(predicate.test("Y"));
+        Assert.assertTrue(predicate.test("Z"));
+        Assert.assertTrue(predicate.test("foo"));
+        Assert.assertTrue(predicate.test("bar"));
+        Assert.assertTrue(predicate.test("bax"));
     }
     
     @Test
     public void testWithNullsInSet() {
         BlacklistPredicate predicate = new BlacklistPredicate(Arrays.asList("A", null, "B", null, "C", null, "D"));
         
-        Assert.assertFalse(predicate.apply("A"));
-        Assert.assertFalse(predicate.apply("B"));
-        Assert.assertFalse(predicate.apply("C"));
-        Assert.assertFalse(predicate.apply("D"));
+        Assert.assertFalse(predicate.test("A"));
+        Assert.assertFalse(predicate.test("B"));
+        Assert.assertFalse(predicate.test("C"));
+        Assert.assertFalse(predicate.test("D"));
         
-        Assert.assertTrue(predicate.apply("X"));
-        Assert.assertTrue(predicate.apply("Y"));
-        Assert.assertTrue(predicate.apply("Z"));
-        Assert.assertTrue(predicate.apply("foo"));
-        Assert.assertTrue(predicate.apply("bar"));
-        Assert.assertTrue(predicate.apply("bax"));
+        Assert.assertTrue(predicate.test("X"));
+        Assert.assertTrue(predicate.test("Y"));
+        Assert.assertTrue(predicate.test("Z"));
+        Assert.assertTrue(predicate.test("foo"));
+        Assert.assertTrue(predicate.test("bar"));
+        Assert.assertTrue(predicate.test("bax"));
     }
     
     @Test(expectedExceptions=ConstraintViolationException.class)
@@ -68,7 +68,7 @@ public class BlacklistPredicateTest {
     @Test(expectedExceptions=IllegalArgumentException.class)
     public void testNullArg() {
         BlacklistPredicate predicate = new BlacklistPredicate(Arrays.asList("A", "B", "C", "D"));
-        predicate.apply(null);
+        predicate.test(null);
     }
     
 }

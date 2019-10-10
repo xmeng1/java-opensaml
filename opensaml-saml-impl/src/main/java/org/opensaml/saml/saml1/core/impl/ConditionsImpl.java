@@ -17,16 +17,16 @@
 
 package org.opensaml.saml.saml1.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml1.core.AudienceRestrictionCondition;
 import org.opensaml.saml.saml1.core.Condition;
@@ -36,13 +36,13 @@ import org.opensaml.saml.saml1.core.DoNotCacheCondition;
 /**
  * This is a concrete implementation of the {@link org.opensaml.saml.saml1.core.Conditions} interface.
  */
-public class ConditionsImpl extends AbstractSAMLObject implements Conditions {
+public class ConditionsImpl extends AbstractXMLObject implements Conditions {
 
     /** Value saved in the NotBefore attribute. */
-    private DateTime notBefore;
+    private Instant notBefore;
 
     /** Value saved in the NotOnOrAfter attribute. */
-    private DateTime notOnOrAfter;
+    private Instant notOnOrAfter;
 
     /** Set containing all the Conditions. */
     private final IndexedXMLObjectChildrenList<Condition> conditions;
@@ -60,22 +60,22 @@ public class ConditionsImpl extends AbstractSAMLObject implements Conditions {
     }
 
     /** {@inheritDoc} */
-    public DateTime getNotBefore() {
+    public Instant getNotBefore() {
         return notBefore;
     }
 
     /** {@inheritDoc} */
-    public void setNotBefore(final DateTime dt) {
+    public void setNotBefore(final Instant dt) {
         notBefore = prepareForAssignment(notBefore, dt);
     }
 
     /** {@inheritDoc} */
-    public DateTime getNotOnOrAfter() {
+    public Instant getNotOnOrAfter() {
         return notOnOrAfter;
     }
 
     /** {@inheritDoc} */
-    public void setNotOnOrAfter(final DateTime dt) {
+    public void setNotOnOrAfter(final Instant dt) {
         notOnOrAfter = prepareForAssignment(notOnOrAfter, dt);
     }
 

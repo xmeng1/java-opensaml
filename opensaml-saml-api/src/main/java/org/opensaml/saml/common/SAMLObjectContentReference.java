@@ -73,7 +73,8 @@ import com.google.common.base.Strings;
  * </p>
  * 
  */
-public class SAMLObjectContentReference implements ConfigurableContentReference, TransformsConfigurableContentReference {
+public class SAMLObjectContentReference implements ConfigurableContentReference,
+        TransformsConfigurableContentReference {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(SAMLObjectContentReference.class);

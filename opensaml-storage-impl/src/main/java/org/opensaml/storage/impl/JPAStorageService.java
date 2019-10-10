@@ -116,22 +116,21 @@ public class JPAStorageService extends AbstractStorageService implements Storage
         super.doDestroy();
     }
 
-    // Checkstyle: MethodLength OFF
-    // Checkstyle: CyclomaticComplexity OFF
+// Checkstyle: CyclomaticComplexity|MethodLength OFF
     /** {@inheritDoc} */
     @Override public boolean create(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
             @Nonnull @NotEmpty final String value, @Nullable @Positive final Long expiration) throws IOException {
         EntityManager manager = null;
         try {
             int retry = -1;
-            RollbackException lastThrown = null;
+            RollbackException lastThrown;
             do {
                 EntityTransaction transaction = null;
                 try {
                     manager = entityManagerFactory.createEntityManager();
                     transaction = manager.getTransaction();
                     transaction.begin();
-                    JPAStorageRecord entity =
+                    JPAStorageRecord<?> entity =
                             manager.find(JPAStorageRecord.class, new JPAStorageRecord.RecordId(context, key),
                                     LockModeType.PESSIMISTIC_WRITE);
                     if (entity != null) {
@@ -145,7 +144,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                         // It's dead, reset the version for merge.
                         entity.resetVersion();
                     } else {
-                        entity = new JPAStorageRecord();
+                        entity = new JPAStorageRecord<>();
                         entity.setContext(context);
                         entity.setKey(key);
                     }
@@ -158,53 +157,28 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                             expiration,});
                     return true;
                 } catch (final EntityExistsException e) {
-                    if (transaction != null && transaction.isActive()) {
-                        try {
-                            transaction.rollback();
-                        } catch (final Exception ex) {
-                            log.error("Error rolling back transaction", e);
-                        }
-                    }
+                    rollbackTransaction(transaction);
                     log.debug("Duplicate record '{}' in context '{}' with expiration '{}'", key, context, expiration);
                     return false;
                 } catch (final RollbackException e) {
                     lastThrown = e;
                     retry++;
                 } catch (final Exception e) {
-                    if (transaction != null && transaction.isActive()) {
-                        try {
-                            transaction.rollback();
-                        } catch (final Exception ex) {
-                            log.error("Error rolling back transaction", e);
-                        }
-                    }
+                    rollbackTransaction(transaction);
                     log.error("Error creating record '{}' in context '{}' with expiration '{}'", key, context,
                             expiration, e);
                     throw new IOException(e);
                 } finally {
-                    if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
-                        try {
-                            transaction.commit();
-                        } catch (final Exception e) {
-                            log.error("Error committing transaction", e);
-                        }
-                    }
+                    commitTransaction(transaction);
+                    closeEntityManager(manager);
                 }
             } while (retry < transactionRetry);
             throw lastThrown;
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
-
-    // Checkstyle: CyclomaticComplexity ON
-    // Checkstyle: MethodLength ON
+// Checkstyle: CyclomaticComplexity|MethodLength ON
 
     /**
      * Returns all records from the store.
@@ -212,20 +186,14 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      * @return all records or an empty list
      * @throws IOException if errors occur in the read process
      */
-    @Nonnull @NonnullElements public List<StorageRecord> readAll() throws IOException {
+    @Nonnull @NonnullElements public List<?> readAll() throws IOException {
         EntityManager manager = null;
         try {
             manager = entityManagerFactory.createEntityManager();
             return executeNamedQuery(manager, "JPAStorageRecord.findAll", null, StorageRecord.class,
                     LockModeType.PESSIMISTIC_READ);
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
 
@@ -237,7 +205,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      * @return all records in the context or an empty list
      * @throws IOException if errors occur in the read process
      */
-    @Nonnull @NonnullElements public List<StorageRecord> readAll(@Nonnull @NotEmpty final String context)
+    @Nonnull @NonnullElements public List<?> readAll(@Nonnull @NotEmpty final String context)
             throws IOException {
         EntityManager manager = null;
         try {
@@ -247,13 +215,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
             return executeNamedQuery(manager, "JPAStorageRecord.findByContext", params, StorageRecord.class,
                     LockModeType.PESSIMISTIC_READ);
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
 
@@ -271,24 +233,18 @@ public class JPAStorageService extends AbstractStorageService implements Storage
             return executeNamedQuery(manager, "JPAStorageRecord.findAllContexts", null, String.class,
                     LockModeType.OPTIMISTIC);
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
 
     /** {@inheritDoc} */
-    @Override @Nullable public StorageRecord read(@Nonnull @NotEmpty final String context,
+    @Override @Nullable public <T> StorageRecord<T> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key) throws IOException {
-        return readImpl(context, key, null).getSecond();
+        return this.<T>readImpl(context, key, null).getSecond();
     }
 
     /** {@inheritDoc} */
-    @Override @Nonnull public Pair<Long, StorageRecord> read(@Nonnull @NotEmpty final String context,
+    @Override @Nonnull public <T> Pair<Long, StorageRecord<T>> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key, @Positive final long version) throws IOException {
         return readImpl(context, key, version);
     }
@@ -298,6 +254,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      * Reads the record matching the supplied parameters. Returns an empty pair if the record cannot be found or is
      * expired.
      * 
+     * @param <T> type of object
      * @param context to search for
      * @param key to search for
      * @param version to match
@@ -305,7 +262,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
      * @return pair of version and storage record
      * @throws IOException if errors occur in the read process
      */
-    @Nonnull protected Pair<Long, StorageRecord> readImpl(@Nonnull @NotEmpty final String context,
+    @Nonnull protected <T> Pair<Long, StorageRecord<T>> readImpl(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key, @Positive final Long version) throws IOException {
         EntityManager manager = null;
         EntityTransaction transaction = null;
@@ -313,49 +270,30 @@ public class JPAStorageService extends AbstractStorageService implements Storage
             manager = entityManagerFactory.createEntityManager();
             transaction = manager.getTransaction();
             transaction.begin();
-            final JPAStorageRecord entity =
+            final JPAStorageRecord<T> entity =
                     manager.find(JPAStorageRecord.class, new JPAStorageRecord.RecordId(context, key),
                             LockModeType.PESSIMISTIC_READ);
             if (entity == null) {
                 log.debug("Read failed, key '{}' not found in context '{}'", key, context);
                 return new Pair<>();
-            } else {
-                final Long exp = entity.getExpiration();
-                if (exp != null && System.currentTimeMillis() >= exp) {
-                    log.debug("Read failed, key '{}' expired in context '{}'", key, context);
-                    return new Pair();
-                }
+            }
+            final Long exp = entity.getExpiration();
+            if (exp != null && System.currentTimeMillis() >= exp) {
+                log.debug("Read failed, key '{}' expired in context '{}'", key, context);
+                return new Pair<>();
             }
             if (version != null && entity.getVersion() == version) {
                 // Nothing's changed, so just echo back the version.
-                return new Pair(version, null);
+                return new Pair<>(version, null);
             }
-            return new Pair<Long, StorageRecord>(entity.getVersion(), entity);
+            return new Pair<>(entity.getVersion(), entity);
         } catch (final Exception e) {
             log.error("Error reading record '{}' in context '{}'", key, context, e);
-            if (transaction != null && transaction.isActive()) {
-                try {
-                    transaction.rollback();
-                } catch (final Exception ex) {
-                    log.error("Error rolling back transaction", e);
-                }
-            }
+            rollbackTransaction(transaction);
             throw new IOException(e);
         } finally {
-            if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
-                try {
-                    transaction.commit();
-                } catch (final Exception e) {
-                    log.error("Error committing transaction", e);
-                }
-            }
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            commitTransaction(transaction);
+            closeEntityManager(manager);
         }
     }
 
@@ -410,25 +348,25 @@ public class JPAStorageService extends AbstractStorageService implements Storage
         EntityManager manager = null;
         try {
             int retry = -1;
-            RollbackException lastThrown = null;
+            RollbackException lastThrown;
             do {
                 EntityTransaction transaction = null;
                 try {
                     manager = entityManagerFactory.createEntityManager();
                     transaction = manager.getTransaction();
                     transaction.begin();
-                    final JPAStorageRecord entity =
+                    final JPAStorageRecord<?> entity =
                             manager.find(JPAStorageRecord.class, new JPAStorageRecord.RecordId(context, key),
                                     LockModeType.PESSIMISTIC_WRITE);
                     if (entity == null) {
                         log.debug("Update failed, key '{}' not found in context '{}'", key, context);
                         return null;
-                    } else {
-                        final Long exp = entity.getExpiration();
-                        if (exp != null && System.currentTimeMillis() >= exp) {
-                            log.debug("Update failed, key '{}' expired in context '{}'", key, context);
-                            return null;
-                        }
+                    }
+                    
+                    final Long exp = entity.getExpiration();
+                    if (exp != null && System.currentTimeMillis() >= exp) {
+                        log.debug("Update failed, key '{}' expired in context '{}'", key, context);
+                        return null;
                     }
 
                     if (version != null && entity.getVersion() != version) {
@@ -453,33 +391,16 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     retry++;
                 } catch (final Exception e) {
                     log.error("Error updating record '{}' in context '{}'", key, context, e);
-                    if (transaction != null && transaction.isActive()) {
-                        try {
-                            transaction.rollback();
-                        } catch (final Exception ex) {
-                            log.error("Error rolling back transaction", e);
-                        }
-                    }
+                    rollbackTransaction(transaction);
                     throw new IOException(e);
                 } finally {
-                    if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
-                        try {
-                            transaction.commit();
-                        } catch (final Exception e) {
-                            log.error("Error committing transaction", e);
-                        }
-                    }
+                    commitTransaction(transaction);
+                    closeEntityManager(manager);
                 }
             } while (retry < transactionRetry);
             throw lastThrown;
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
 
@@ -519,14 +440,14 @@ public class JPAStorageService extends AbstractStorageService implements Storage
         EntityManager manager = null;
         try {
             int retry = -1;
-            RollbackException lastThrown = null;
+            RollbackException lastThrown;
             do {
                 EntityTransaction transaction = null;
                 try {
                     manager = entityManagerFactory.createEntityManager();
                     transaction = manager.getTransaction();
                     transaction.begin();
-                    final JPAStorageRecord entity =
+                    final JPAStorageRecord<?> entity =
                             manager.find(JPAStorageRecord.class, new JPAStorageRecord.RecordId(context, key),
                                     LockModeType.PESSIMISTIC_WRITE);
                     if (entity == null) {
@@ -547,33 +468,16 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     retry++;
                 } catch (final Exception e) {
                     log.error("Error deleting record '{}' in context '{}'", key, context, e);
-                    if (transaction != null && transaction.isActive()) {
-                        try {
-                            transaction.rollback();
-                        } catch (final Exception ex) {
-                            log.error("Error rolling back transaction", e);
-                        }
-                    }
+                    rollbackTransaction(transaction);
                     throw new IOException(e);
                 } finally {
-                    if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
-                        try {
-                            transaction.commit();
-                        } catch (final Exception e) {
-                            log.error("Error committing transaction", e);
-                        }
-                    }
+                    commitTransaction(transaction);
+                    closeEntityManager(manager);
                 }
             } while (retry < transactionRetry);
             throw lastThrown;
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
 
@@ -586,7 +490,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
         EntityManager manager = null;
         try {
             int retry = -1;
-            RollbackException lastThrown = null;
+            RollbackException lastThrown;
             do {
                 EntityTransaction transaction = null;
                 try {
@@ -607,33 +511,16 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     retry++;
                 } catch (final Exception e) {
                     log.error("Error updating context expiration in context '{}'", context, e);
-                    if (transaction != null && transaction.isActive()) {
-                        try {
-                            transaction.rollback();
-                        } catch (final Exception ex) {
-                            log.error("Error rolling back transaction", e);
-                        }
-                    }
+                    rollbackTransaction(transaction);
                     throw new IOException(e);
                 } finally {
-                    if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
-                        try {
-                            transaction.commit();
-                        } catch (final Exception e) {
-                            log.error("Error committing transaction", e);
-                        }
-                    }
+                    commitTransaction(transaction);
+                    closeEntityManager(manager);
                 }
             } while (retry < transactionRetry);
             throw lastThrown;
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
 
@@ -666,7 +553,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
         EntityManager manager = null;
         try {
             int retry = -1;
-            RollbackException lastThrown = null;
+            RollbackException lastThrown;
             do {
                 EntityTransaction transaction = null;
                 try {
@@ -691,33 +578,16 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     retry++;
                 } catch (final Exception e) {
                     log.error("Error deleting context '{}'", context, e);
-                    if (transaction != null && transaction.isActive()) {
-                        try {
-                            transaction.rollback();
-                        } catch (final Exception ex) {
-                            log.error("Error rolling back transaction", e);
-                        }
-                    }
+                    rollbackTransaction(transaction);
                     throw new IOException(e);
                 } finally {
-                    if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
-                        try {
-                            transaction.commit();
-                        } catch (final Exception e) {
-                            log.error("Error committing transaction", e);
-                        }
-                    }
+                    commitTransaction(transaction);
+                    closeEntityManager(manager);
                 }
             } while (retry < transactionRetry);
             throw lastThrown;
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
 
@@ -735,7 +605,7 @@ public class JPAStorageService extends AbstractStorageService implements Storage
         EntityManager manager = null;
         try {
             int retry = -1;
-            RollbackException lastThrown = null;
+            RollbackException lastThrown;
             do {
                 EntityTransaction transaction = null;
                 try {
@@ -754,33 +624,16 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                     retry++;
                 } catch (final Exception e) {
                     log.error("Error deleting with expiration '{}'", expiration, e);
-                    if (transaction != null && transaction.isActive()) {
-                        try {
-                            transaction.rollback();
-                        } catch (final Exception ex) {
-                            log.error("Error rolling back transaction", e);
-                        }
-                    }
+                    rollbackTransaction(transaction);
                     throw new IOException(e);
                 } finally {
-                    if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
-                        try {
-                            transaction.commit();
-                        } catch (final Exception e) {
-                            log.error("Error committing transaction", e);
-                        }
-                    }
+                    commitTransaction(transaction);
+                    closeEntityManager(manager);
                 }
             } while (retry < transactionRetry);
             throw lastThrown;
         } finally {
-            if (manager != null && manager.isOpen()) {
-                try {
-                    manager.close();
-                } catch (final Exception e) {
-                    log.error("Error closing entity manager", e);
-                }
-            }
+            closeEntityManager(manager);
         }
     }
 
@@ -818,22 +671,10 @@ public class JPAStorageService extends AbstractStorageService implements Storage
             results.addAll(queryResults.getResultList());
         } catch (final Exception e) {
             log.error("Error executing named query", e);
-            if (transaction != null && transaction.isActive()) {
-                try {
-                    transaction.rollback();
-                } catch (final Exception ex) {
-                    log.error("Error rolling back transaction", e);
-                }
-            }
+            rollbackTransaction(transaction);
             throw new IOException(e);
         } finally {
-            if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
-                try {
-                    transaction.commit();
-                } catch (final Exception e) {
-                    log.error("Error committing transaction", e);
-                }
-            }
+            commitTransaction(transaction);
         }
         return results;
     }
@@ -856,5 +697,51 @@ public class JPAStorageService extends AbstractStorageService implements Storage
                 log.debug("Finished cleanup task for {}", now);
             }
         };
+    }
+
+    /**
+     * Commits the supplied transaction if {@link EntityTransaction#isActive()} and not {@link
+     * EntityTransaction#getRollbackOnly()}. Logs any exception that occurs.
+     *
+     * @param transaction to commit
+     */
+    private void commitTransaction(@Nullable final EntityTransaction transaction) {
+        if (transaction != null && transaction.isActive() && !transaction.getRollbackOnly()) {
+            try {
+                transaction.commit();
+            } catch (final Exception e) {
+                log.error("Error committing transaction", e);
+            }
+        }
+    }
+
+    /**
+     * Rolls back the supplied transaction if {@link EntityTransaction#isActive()}. Logs any exception that occurs.
+     *
+     * @param transaction to roll back
+     */
+    private void rollbackTransaction(@Nullable final EntityTransaction transaction) {
+        if (transaction != null && transaction.isActive()) {
+            try {
+                transaction.rollback();
+            } catch (final Exception e) {
+                log.error("Error rolling back transaction", e);
+            }
+        }
+    }
+
+    /**
+     * Closes the supplied entity manager if {@link EntityManager#isOpen()}. Logs any exception that occurs.
+     *
+     * @param manager to close
+     */
+    private void closeEntityManager(@Nullable final EntityManager manager) {
+        if (manager != null && manager.isOpen()) {
+            try {
+                manager.close();
+            } catch (final Exception e) {
+                log.error("Error closing entity manager", e);
+            }
+        }
     }
 }

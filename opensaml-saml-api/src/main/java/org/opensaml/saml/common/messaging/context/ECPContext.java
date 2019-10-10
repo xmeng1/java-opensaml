@@ -26,7 +26,7 @@ import org.opensaml.messaging.context.BaseContext;
  * Context, usually attached to a {@link org.opensaml.messaging.context.MessageContext}
  * that carries state associated with an ECP request that is needed during response generation.
  */
-public class ECPContext extends BaseContext {
+public final class ECPContext extends BaseContext {
 
     /** Whether the request was authenticated. */
     private boolean requestAuthenticated;

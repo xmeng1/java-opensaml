@@ -117,7 +117,7 @@ public class InlineEncryptedKeyResolverTest extends XMLObjectBaseTestCase {
         Assert.assertTrue(resolved.get(3) == allKeys.get(3), "Unexpected EncryptedKey instance found");
     }
     
-    /** One recipient specified to resolver, one matching & and one recipient-less 
+    /** One recipient specified to resolver, one matching and one recipient-less 
      *  inline EncryptedKey in instance. */
     @Test
     public void  testMultiEKOneRecipientWithMatch() {

@@ -58,7 +58,7 @@ public class ActionTestingSupport {
      * @param profileRequestContext the context to check
      */
     public static void assertProceedEvent(@Nonnull final ProfileRequestContext profileRequestContext) {
-        EventContext<String> ctx = profileRequestContext.getSubcontext(EventContext.class);
+        EventContext ctx = profileRequestContext.getSubcontext(EventContext.class);
         Assert.assertTrue(ctx == null || ctx.getEvent().equals(EventIds.PROCEED_EVENT_ID));
     }
     

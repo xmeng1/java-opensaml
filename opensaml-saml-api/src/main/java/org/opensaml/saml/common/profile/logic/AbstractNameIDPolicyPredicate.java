@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,6 +32,7 @@ import net.shibboleth.utilities.java.support.component.AbstractInitializableComp
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.profile.context.ProfileRequestContext;
@@ -40,9 +42,6 @@ import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 
 /**
  * Base class for implementations of {@link Predicate} that handle evaluation of name identifier content in various
@@ -126,7 +125,7 @@ public abstract class AbstractNameIDPolicyPredicate extends AbstractInitializabl
     }
 
     /** {@inheritDoc} */
-    public boolean apply(@Nullable final ProfileRequestContext input) {
+    public boolean test(@Nullable final ProfileRequestContext input) {
 
         final SAMLObject target = objectLookupStrategy.apply(input);
         if (target == null) {
@@ -163,11 +162,10 @@ public abstract class AbstractNameIDPolicyPredicate extends AbstractInitializabl
             log.debug("Applying policy to NameIdentifier with Format {}",
                     format != null ? format : NameIdentifier.UNSPECIFIED);
             return doApply(requesterId, responderId, format, target.getNameQualifier(), null);
-        } else {
-            log.debug("Policy checking disabled for NameIdentifier Format {}",
-                    format != null ? format : NameIdentifier.UNSPECIFIED);
-            return true;
         }
+        log.debug("Policy checking disabled for NameIdentifier Format {}",
+                format != null ? format : NameIdentifier.UNSPECIFIED);
+        return true;
     }
 
     /**
@@ -186,10 +184,9 @@ public abstract class AbstractNameIDPolicyPredicate extends AbstractInitializabl
         if (formats.contains(format != null ? format : NameID.UNSPECIFIED)) {
             log.debug("Applying policy to NameID with Format {}", format != null ? format : NameID.UNSPECIFIED);
             return doApply(requesterId, responderId, format, target.getNameQualifier(), target.getSPNameQualifier());
-        } else {
-            log.debug("Policy checking disabled for NameID Format {}", format != null ? format : NameID.UNSPECIFIED);
-            return true;
         }
+        log.debug("Policy checking disabled for NameID Format {}", format != null ? format : NameID.UNSPECIFIED);
+        return true;
     }
     
     /**
@@ -204,15 +201,7 @@ public abstract class AbstractNameIDPolicyPredicate extends AbstractInitializabl
         final String requesterId = requesterIdLookupStrategy != null ? requesterIdLookupStrategy.apply(input) : null;
         final String responderId = responderIdLookupStrategy != null ? responderIdLookupStrategy.apply(input) : null;
 
-        final String format = target.getFormat();
-        if (formats.contains(format != null ? format : NameID.UNSPECIFIED)) {
-            log.debug("Applying policy to NameIDPolicy with Format {}", format != null ? format : NameID.UNSPECIFIED);
-            return doApply(requesterId, responderId, format, null, target.getSPNameQualifier());
-        } else {
-            log.debug("Policy checking disabled for NameIDPolicy with Format {}",
-                    format != null ? format : NameID.UNSPECIFIED);
-            return true;
-        }
+        return doApply(requesterId, responderId, target.getFormat(), null, target.getSPNameQualifier());
     }
     
     /**

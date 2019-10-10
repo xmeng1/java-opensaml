@@ -84,24 +84,30 @@ public final class SAML2ObjectSupport {
             @Nullable final String assertingParty, @Nullable final String relyingParty) {
         
         if (!areNameIDFormatsEquivalent(name1.getFormat(), name2.getFormat())
-                || !Objects.equals(name1.getValue(), name2.getValue()))
+                || !Objects.equals(name1.getValue(), name2.getValue())) {
             return false;
+        }
         
         String name1qual = name1.getNameQualifier();
         String name2qual = name2.getNameQualifier();
-        if (name1qual == null)
+        if (name1qual == null) {
             name1qual = assertingParty;
-        if (name2qual == null)
+        }
+        if (name2qual == null) {
             name2qual = assertingParty;
-        if (!Objects.equals(name1qual, name2qual))
+        }
+        if (!Objects.equals(name1qual, name2qual)) {
             return false;
+        }
 
         name1qual = name1.getSPNameQualifier();
         name2qual = name2.getSPNameQualifier();
-        if (name1qual == null)
+        if (name1qual == null) {
             name1qual = relyingParty;
-        if (name2qual == null)
+        }
+        if (name2qual == null) {
             name2qual = relyingParty;
+        }
         return Objects.equals(name1qual, name2qual);
     }
 

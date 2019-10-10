@@ -24,9 +24,10 @@ package org.opensaml.saml.saml2.core.impl;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 
 /**
  * A thread-safe Marshaller for {@link org.opensaml.saml.saml2.core.SubjectConfirmationData} objects.
@@ -39,14 +40,13 @@ public class SubjectConfirmationDataMarshaller extends AbstractSAMLObjectMarshal
         final SubjectConfirmationData subjectCD = (SubjectConfirmationData) samlObject;
 
         if (subjectCD.getNotBefore() != null) {
-            final String notBeforeStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(subjectCD.getNotBefore());
-            domElement.setAttributeNS(null, SubjectConfirmationData.NOT_BEFORE_ATTRIB_NAME, notBeforeStr);
+            AttributeSupport.appendDateTimeAttribute(domElement, SubjectConfirmationData.NOT_BEFORE_ATTRIB_QNAME,
+                    subjectCD.getNotBefore());
         }
 
         if (subjectCD.getNotOnOrAfter() != null) {
-            final String notOnOrAfterStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(subjectCD.getNotOnOrAfter());
-            domElement.setAttributeNS(null, SubjectConfirmationData.NOT_ON_OR_AFTER_ATTRIB_NAME, notOnOrAfterStr);
+            AttributeSupport.appendDateTimeAttribute(domElement, SubjectConfirmationData.NOT_ON_OR_AFTER_ATTRIB_QNAME,
+                    subjectCD.getNotOnOrAfter());
         }
 
         if (subjectCD.getRecipient() != null) {
@@ -64,4 +64,5 @@ public class SubjectConfirmationDataMarshaller extends AbstractSAMLObjectMarshal
 
         marshallUnknownAttributes(subjectCD, domElement);
     }
+    
 }

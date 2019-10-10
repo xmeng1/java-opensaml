@@ -186,7 +186,7 @@ public class X509Support {
      * 
      * @return the alt names, of the given type, within the cert
      */
-    @Nullable public static List getAltNames(@Nullable final X509Certificate certificate,
+    @Nullable public static List<?> getAltNames(@Nullable final X509Certificate certificate,
             @Nullable final Integer[] nameTypes) {
         if (certificate == null || nameTypes == null || nameTypes.length == 0) {
             return null;
@@ -206,7 +206,7 @@ public class X509Support {
                 }
             }
             return altNames;
-        } catch (EncodingException e) {
+        } catch (final EncodingException e) {
             final Logger log = getLogger();
             log.warn("Could not extract alt names from certificate", e);
             throw e;
@@ -221,16 +221,16 @@ public class X509Support {
      * 
      * @return list of subject names in the certificate
      */
-    @Nullable public static List getSubjectNames(@Nullable final X509Certificate certificate,
+    @Nullable public static List<?> getSubjectNames(@Nullable final X509Certificate certificate,
             @Nullable final Integer[] altNameTypes) {
-        final List issuerNames = new LinkedList();
+        final List<Object> issuerNames = new LinkedList<>();
         
         if (certificate != null) {
             final List<String> entityCertCNs = X509Support.getCommonNames(certificate.getSubjectX500Principal());
             if (entityCertCNs != null && !entityCertCNs.isEmpty()) {
                 issuerNames.add(entityCertCNs.get(0));
             }
-            final List<String> entityAltNames = X509Support.getAltNames(certificate, altNameTypes);
+            final List<?> entityAltNames = X509Support.getAltNames(certificate, altNameTypes);
             if (entityAltNames != null) {
                 issuerNames.addAll(entityAltNames);
             }

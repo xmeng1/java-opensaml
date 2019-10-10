@@ -17,16 +17,17 @@
 
 package org.opensaml.saml.saml1.core;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -65,6 +66,10 @@ public interface Assertion extends SignableSAMLObject, Evidentiary {
     /** Name for the attribute which defines the issue instant. */
     @Nonnull @NotEmpty static final String ISSUEINSTANT_ATTRIB_NAME = "IssueInstant";
 
+    /** QName for the attribute which defines the issue instant. */
+    @Nonnull static final QName ISSUEINSTANT_ATTRIB_QNAME =
+            new QName(null, "IssueInstant", XMLConstants.DEFAULT_NS_PREFIX);
+    
     /** Name for the attribute which defines the Issue Instant. */
     @Nonnull @NotEmpty static final String ID_ATTRIB_NAME = "AssertionID";
 
@@ -122,14 +127,14 @@ public interface Assertion extends SignableSAMLObject, Evidentiary {
      * 
      * @return the Issue Instant (as a Date)
      */
-    @Nullable DateTime getIssueInstant();
+    @Nullable Instant getIssueInstant();
 
     /**
      * Set the IssueInstance (attribute).
      * 
      * @param issueInstant the issue instant value to set
      */
-    void setIssueInstant(@Nullable final DateTime issueInstant);
+    void setIssueInstant(@Nullable final Instant issueInstant);
 
     /**
      * Return the (singleton) Object, representing the <code> Conditions </code> sub element.

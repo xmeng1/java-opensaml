@@ -22,16 +22,16 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.metadata.Endpoint;
 
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.metadata.Endpoint}.
  */
-public abstract class EndpointImpl extends AbstractSAMLObject implements Endpoint {
+public abstract class EndpointImpl extends AbstractXMLObject implements Endpoint {
 
     /** Binding URI. */
     private String bindingId;

@@ -17,11 +17,11 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
 import org.opensaml.saml.saml2.core.BaseID;
@@ -39,7 +39,7 @@ public class LogoutRequestImpl extends RequestAbstractTypeImpl implements Logout
     private String reason;
 
     /** NotOnOrAfter attribute. */
-    private DateTime notOnOrAfter;
+    private Instant notOnOrAfter;
 
     /** BaseID child element. */
     private BaseID baseID;
@@ -78,12 +78,12 @@ public class LogoutRequestImpl extends RequestAbstractTypeImpl implements Logout
     }
 
     /** {@inheritDoc} */
-    public DateTime getNotOnOrAfter() {
+    public Instant getNotOnOrAfter() {
         return this.notOnOrAfter;
     }
 
     /** {@inheritDoc} */
-    public void setNotOnOrAfter(final DateTime newNotOnOrAfter) {
+    public void setNotOnOrAfter(final Instant newNotOnOrAfter) {
         this.notOnOrAfter = prepareForAssignment(this.notOnOrAfter, newNotOnOrAfter);
     }
 

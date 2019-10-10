@@ -18,6 +18,7 @@
 package org.opensaml.saml.metadata.resolver.impl;
 
 import java.util.Timer;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,8 +26,6 @@ import javax.annotation.Nullable;
 import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
@@ -45,17 +44,17 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 public class FunctionDrivenDynamicHTTPMetadataResolver extends AbstractDynamicHTTPMetadataResolver {
     
     /** Logger. */
-    private final Logger log = LoggerFactory.getLogger(FunctionDrivenDynamicHTTPMetadataResolver.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(FunctionDrivenDynamicHTTPMetadataResolver.class);
     
     /** Function for building the request URL. */
-    private Function<CriteriaSet, String> requestURLBuilder;
+    @Nonnull private Function<CriteriaSet, String> requestURLBuilder;
 
     /**
      * Constructor.
      *
      * @param client the instance of {@link HttpClient} used to fetch remote metadata
      */
-    public FunctionDrivenDynamicHTTPMetadataResolver(final HttpClient client) {
+    public FunctionDrivenDynamicHTTPMetadataResolver(@Nonnull final HttpClient client) {
         this(null, client);
     }
     

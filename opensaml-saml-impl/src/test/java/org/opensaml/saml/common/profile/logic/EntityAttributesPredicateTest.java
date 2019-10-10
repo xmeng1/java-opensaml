@@ -65,7 +65,7 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertFalse(condition.apply(entity));
+        Assert.assertFalse(condition.test(entity));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertFalse(condition.apply(entity));
+        Assert.assertFalse(condition.test(entity));
     }
     
     @Test
@@ -95,7 +95,7 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertTrue(condition.apply(entity));
+        Assert.assertTrue(condition.test(entity));
     }
     
     @Test
@@ -110,9 +110,22 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
         
-        Assert.assertTrue(condition.apply(entity));
+        Assert.assertTrue(condition.test(entity));
     }
     
+    @Test
+    public void testIdP1475()  throws Exception {
+        final Candidate candidate = new Candidate("https://its.umich.edu/identity/activationCondition/isMemberOf");
+        candidate.setValues(Collections.singletonList("true"));
+        final EntityAttributesPredicate condition =
+                new EntityAttributesPredicate(Collections.singletonList(candidate));
+
+        final EntityDescriptor entity =
+                metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-1475.example.org")));
+        Assert.assertNotNull(entity);
+        Assert.assertTrue(condition.test(entity));
+    }
+
     @Test
     public void testGroupAdditional() throws Exception {
 
@@ -125,11 +138,11 @@ public class EntityAttributesPredicateTest extends XMLObjectBaseTestCase {
         final EntityDescriptor entity =
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-top.example.org")));
         Assert.assertNotNull(entity);
-        Assert.assertFalse(condition.apply(entity));
+        Assert.assertFalse(condition.test(entity));
 
         final EntityDescriptor entity2 =
                 metadataProvider.resolveSingle(new CriteriaSet(new EntityIdCriterion("https://idp-sub1.example.org")));
         Assert.assertNotNull(entity2);
-        Assert.assertTrue(condition.apply(entity2));
+        Assert.assertTrue(condition.test(entity2));
     }
 }

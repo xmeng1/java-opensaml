@@ -60,8 +60,7 @@ public class SenderVouchersSubjectConfirmationValidator extends AbstractSubjectC
         
         if (Objects.equals(confirmation.getMethod(), SubjectConfirmation.METHOD_SENDER_VOUCHES)) {
             return ValidationResult.VALID;
-        } else {
-            return ValidationResult.INDETERMINATE;
         }
+        return ValidationResult.INDETERMINATE;
     }
 }

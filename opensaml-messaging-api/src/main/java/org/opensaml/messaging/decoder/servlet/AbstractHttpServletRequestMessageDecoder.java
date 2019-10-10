@@ -28,14 +28,12 @@ import org.opensaml.messaging.decoder.MessageDecodingException;
 
 /**
  * Abstract implementation of {@link HttpServletRequestMessageDecoder}.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public abstract class AbstractHttpServletRequestMessageDecoder<MessageType> extends AbstractMessageDecoder<MessageType>
-        implements HttpServletRequestMessageDecoder<MessageType> {
+public abstract class AbstractHttpServletRequestMessageDecoder extends AbstractMessageDecoder
+        implements HttpServletRequestMessageDecoder {
 
     /** The HTTP servlet request. */
-    private HttpServletRequest request;
+    @Nullable private HttpServletRequest request;
 
     /** {@inheritDoc} */
     @Nullable public HttpServletRequest getHttpServletRequest() {

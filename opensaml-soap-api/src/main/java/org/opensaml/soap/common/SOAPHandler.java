@@ -26,10 +26,8 @@ import org.opensaml.messaging.handler.MessageHandler;
 
 /**
  * Interface for {@link MessageHandler}s that are specific to SOAP message processing.
- * 
- *  @param <MessageType> the type of message being handled
  */
-public interface SOAPHandler<MessageType> extends MessageHandler<MessageType> {
+public interface SOAPHandler extends MessageHandler {
     
     /**
      * Get the set of SOAP header names that the handler

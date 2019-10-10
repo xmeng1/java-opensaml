@@ -18,6 +18,7 @@
 package org.opensaml.saml.saml2.profile.impl;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,9 +43,6 @@ import org.opensaml.saml.saml2.core.ArtifactResolve;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that resolves a SAML 2.0 artifact inside an {@link ArtifactResolve} request located
@@ -93,12 +91,10 @@ public class ResolveArtifact extends AbstractProfileAction {
     
     /** Constructor. */
     public ResolveArtifact() {
-        requestLookupStrategy =
-                Functions.compose(new MessageLookup<>(ArtifactResolve.class), new InboundMessageContextLookup());
+        requestLookupStrategy = new MessageLookup<>(ArtifactResolve.class).compose(new InboundMessageContextLookup());
         responseLookupStrategy =
-                Functions.compose(new MessageLookup<>(ArtifactResponse.class), new OutboundMessageContextLookup());
-        requesterLookupStrategy =
-                Functions.compose(new SAMLMessageContextIssuerFunction(), new InboundMessageContextLookup());
+                new MessageLookup<>(ArtifactResponse.class).compose(new OutboundMessageContextLookup());
+        requesterLookupStrategy = new SAMLMessageContextIssuerFunction().compose(new InboundMessageContextLookup());
     }
     
     /**

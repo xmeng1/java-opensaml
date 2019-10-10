@@ -39,7 +39,7 @@ public interface Marshaller {
      * 
      * @throws MarshallingException thrown if there is a problem marshalling the given object
      */
-    @Nonnull public Element marshall(@Nonnull final XMLObject xmlObject) throws MarshallingException;
+    @Nonnull Element marshall(@Nonnull final XMLObject xmlObject) throws MarshallingException;
 
     /**
      * Marshall this element, and its children, into a W3C DOM element. If the document does not have a Document Element
@@ -52,7 +52,7 @@ public interface Marshaller {
      * 
      * @throws MarshallingException thrown if there is a problem marshalling the given object
      */
-    @Nonnull public Element marshall(@Nonnull final XMLObject xmlObject, @Nonnull final Document document)
+    @Nonnull Element marshall(@Nonnull final XMLObject xmlObject, @Nonnull final Document document)
             throws MarshallingException;
 
     /**
@@ -68,6 +68,6 @@ public interface Marshaller {
      * 
      * @throws MarshallingException thrown if the given XMLObject can not be marshalled.
      */
-    @Nonnull public Element marshall(@Nonnull final XMLObject xmlObject, @Nonnull final Element parentElement)
+    @Nonnull Element marshall(@Nonnull final XMLObject xmlObject, @Nonnull final Element parentElement)
             throws MarshallingException;
 }

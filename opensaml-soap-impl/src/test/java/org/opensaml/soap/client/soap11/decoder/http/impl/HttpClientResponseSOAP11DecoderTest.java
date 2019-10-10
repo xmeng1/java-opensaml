@@ -30,7 +30,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHttpResponse;
-import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.mock.SimpleXMLObject;
@@ -52,11 +51,11 @@ import org.w3c.dom.Element;
 
 public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
     
-    private HttpClientResponseSOAP11Decoder<XMLObject> decoder;
+    private HttpClientResponseSOAP11Decoder decoder;
     
     @BeforeMethod
     public void setUp() {
-        decoder = new HttpClientResponseSOAP11Decoder<>();
+        decoder = new HttpClientResponseSOAP11Decoder();
         decoder.setParserPool(parserPool);
     }
     
@@ -72,7 +71,7 @@ public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
         
         decoder.decode();
         
-        MessageContext<XMLObject> messageContext = decoder.getMessageContext();
+        MessageContext messageContext = decoder.getMessageContext();
         
         Assert.assertNotNull(messageContext);
         Assert.assertNotNull(messageContext.getMessage());
@@ -81,7 +80,7 @@ public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
         SOAP11Context soapContext = messageContext.getSubcontext(SOAP11Context.class, false);
         Assert.assertNotNull(soapContext);
         Assert.assertNotNull(soapContext.getEnvelope());
-        Assert.assertEquals(soapContext.getHTTPResponseStatus(), new Integer(HttpStatus.SC_OK));
+        Assert.assertEquals(soapContext.getHTTPResponseStatus(), Integer.valueOf(HttpStatus.SC_OK));
     }
     
     @Test
@@ -96,7 +95,7 @@ public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
         
         decoder.decode();
         
-        MessageContext<XMLObject> messageContext = decoder.getMessageContext();
+        MessageContext messageContext = decoder.getMessageContext();
         
         Assert.assertNotNull(messageContext);
         Assert.assertNotNull(messageContext.getMessage());
@@ -105,7 +104,7 @@ public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
         SOAP11Context soapContext = messageContext.getSubcontext(SOAP11Context.class, false);
         Assert.assertNotNull(soapContext);
         Assert.assertNotNull(soapContext.getEnvelope());
-        Assert.assertEquals(soapContext.getHTTPResponseStatus(), new Integer(HttpStatus.SC_OK));
+        Assert.assertEquals(soapContext.getHTTPResponseStatus(), Integer.valueOf(HttpStatus.SC_OK));
     }
     
     @Test(expectedExceptions=SOAP11FaultDecodingException.class)
@@ -143,7 +142,7 @@ public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
         return envelope;
     }
     
-    public class TestEnvelopeBodyHandler extends AbstractMessageHandler<XMLObject> {
+    public class TestEnvelopeBodyHandler extends AbstractMessageHandler {
         /** {@inheritDoc} */
         protected void doInvoke(MessageContext msgContext) throws MessageHandlerException {
             Envelope env = (Envelope) msgContext.getSubcontext(SOAP11Context.class).getEnvelope();
@@ -151,7 +150,7 @@ public class HttpClientResponseSOAP11DecoderTest extends XMLObjectBaseTestCase {
         }
     }
     
-    public class TestPayloadBodyHandler extends AbstractMessageHandler<XMLObject> {
+    public class TestPayloadBodyHandler extends AbstractMessageHandler {
         /** {@inheritDoc} */
         protected void doInvoke(MessageContext msgContext) throws MessageHandlerException {
             Envelope env = (Envelope) msgContext.getSubcontext(SOAP11Context.class).getEnvelope();

@@ -410,9 +410,8 @@ public final class AlgorithmSupport {
             if (blacklistedAlgorithmURIs.contains(algorithmURI)) {
                 LOG.warn("Algorithm failed blacklist validation: {}", algorithmURI);
                 return false;
-            } else {
-                LOG.debug("Algorithm passed blacklist validation: {}", algorithmURI);
             }
+            LOG.debug("Algorithm passed blacklist validation: {}", algorithmURI);
         } else {
             LOG.debug("Saw null algorithm blacklist, nothing to evaluate");
         }
@@ -423,9 +422,8 @@ public final class AlgorithmSupport {
                 if (!whitelistedAlgorithmURIs.contains(algorithmURI)) {
                     LOG.warn("Algorithm failed whitelist validation: {}", algorithmURI);
                     return false;
-                } else {
-                    LOG.debug("Algorithm passed whitelist validation: {}", algorithmURI);
                 }
+                LOG.debug("Algorithm passed whitelist validation: {}", algorithmURI);
             } else {
                LOG.debug("Non-null algorithm whitelist was empty, skipping evaluation");
             }

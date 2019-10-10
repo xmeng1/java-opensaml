@@ -21,12 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
-import javax.annotation.Nonnull;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.Diff;
@@ -44,12 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 import net.shibboleth.utilities.java.support.xml.ParserPool;
 import net.shibboleth.utilities.java.support.xml.QNameSupport;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
@@ -79,30 +72,10 @@ public abstract class XMLObjectBaseTestCase extends OpenSAMLInitBaseTestCase {
     /** QName for SimpleXMLObject */
     protected static QName simpleXMLObjectQName = new QName(SimpleXMLObject.NAMESPACE, SimpleXMLObject.LOCAL_NAME);
 
-    /** Baseline for duration calculations (comes from XML Schema standard). */
-    private static Calendar baseline = new GregorianCalendar(1696, 9, 1, 0, 0, 0);
-    
-    /**
-     * Helper method to extract the value of an XML duration attribute in milliseconds.
-     * 
-     * @param element element to pull attribute from
-     * @param name  name of attribute
-     * 
-     * @return the attribute value converted to milliseconds
-     * @throws DatatypeConfigurationException if a {@link DatatypeFactory} can't be constructed
-     */
-    public static long fetchDuration(@Nonnull final Element element, @Nonnull final QName name)
-            throws DatatypeConfigurationException {
-        final DatatypeFactory dtf = DatatypeFactory.newInstance();
-        final Attr attr = AttributeSupport.getAttribute(element, name);
-        Assert.assertNotNull(attr);
-        return dtf.newDuration(attr.getValue()).getTimeInMillis(baseline);
-    }
-    
     @BeforeClass
 	protected void initXMLObjectSupport() throws Exception {
         XMLUnit.setIgnoreWhitespace(true);
-        
+
         try {
             parserPool = XMLObjectProviderRegistrySupport.getParserPool();
             builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
@@ -112,7 +85,6 @@ public abstract class XMLObjectBaseTestCase extends OpenSAMLInitBaseTestCase {
             log.error("Can not initialize XMLObjectBaseTestCase", e);
             throw e;
         }
-        
     }
 
     /**
@@ -203,15 +175,13 @@ public abstract class XMLObjectBaseTestCase extends OpenSAMLInitBaseTestCase {
         } catch (final XMLParserException e) {
             if (propagateErrors) {
                 throw e;
-            } else {
-                Assert.fail("Unable to parse element file " + elementFile);
             }
+            Assert.fail("Unable to parse element file " + elementFile);
         } catch (final UnmarshallingException e) {
             if (propagateErrors) {
                 throw e;
-            } else {
-                Assert.fail("Unmarshalling failed when parsing element file " + elementFile + ": " + e);
             }
+            Assert.fail("Unmarshalling failed when parsing element file " + elementFile + ": " + e);
         }
 
         return null;

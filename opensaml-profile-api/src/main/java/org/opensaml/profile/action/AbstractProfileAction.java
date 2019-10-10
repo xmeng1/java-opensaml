@@ -37,13 +37,9 @@ import org.slf4j.LoggerFactory;
  * Base class for profile actions.
  * 
  * This base class is annotated with {@link Prototype} to indicate that it is stateful.
- * 
- * @param <InboundMessageType> type of in-bound message
- * @param <OutboundMessageType> type of out-bound message
  */
 @Prototype
-public abstract class AbstractProfileAction<InboundMessageType, OutboundMessageType>
-        extends AbstractInitializableComponent implements ProfileAction<InboundMessageType, OutboundMessageType> {
+public abstract class AbstractProfileAction extends AbstractInitializableComponent implements ProfileAction {
 
     /** Cached log prefix. */
     @Nullable private String logPrefix;
@@ -95,13 +91,12 @@ public abstract class AbstractProfileAction<InboundMessageType, OutboundMessageT
     }
 
     /** {@inheritDoc} */
-    @Override public void execute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override public void execute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
         // Clear any existing EventContext that might be hanging around, and if it exists,
         // copy the Event to a PreviousEventContext. Don't clear any existing PreviousEventContext
         // because it may be from an earlier error of interest to other actions.
-        final EventContext<?> previousEvent = profileRequestContext.getSubcontext(EventContext.class);
+        final EventContext previousEvent = profileRequestContext.getSubcontext(EventContext.class);
         if (previousEvent != null) {
             profileRequestContext.getSubcontext(PreviousEventContext.class, true).setEvent(previousEvent.getEvent());
             profileRequestContext.removeSubcontext(EventContext.class);
@@ -152,8 +147,7 @@ public abstract class AbstractProfileAction<InboundMessageType, OutboundMessageT
      * @param profileRequestContext the current IdP profile request context
      * @return true iff execution should proceed
      */
-    protected boolean doPreExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
         final MetricContext metricCtx = profileRequestContext.getSubcontext(MetricContext.class);
         if (metricCtx != null) {
@@ -168,8 +162,7 @@ public abstract class AbstractProfileAction<InboundMessageType, OutboundMessageT
      * 
      * @param profileRequestContext the current IdP profile request context
      */
-    protected void doExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
     }
 
@@ -184,8 +177,7 @@ public abstract class AbstractProfileAction<InboundMessageType, OutboundMessageT
      * 
      * @param profileRequestContext the current IdP profile request context
      */
-    protected void doPostExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    protected void doPostExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
         final MetricContext metricCtx = profileRequestContext.getSubcontext(MetricContext.class);
         if (metricCtx != null) {
@@ -217,8 +209,7 @@ public abstract class AbstractProfileAction<InboundMessageType, OutboundMessageT
      * @param profileRequestContext the current IdP profile request context
      * @param e an exception raised by the {@link #doExecute} method
      */
-    protected void doPostExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext,
+    protected void doPostExecute(@Nonnull final ProfileRequestContext profileRequestContext,
             @Nonnull final Exception e) {
         doPostExecute(profileRequestContext);
     }

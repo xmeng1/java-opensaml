@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSBooleanValue;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.samlec.EncType;
 import org.opensaml.saml.ext.samlec.SessionKey;
 import org.opensaml.soap.soap11.ActorBearing;
@@ -35,7 +35,7 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 /**
  * Concrete implementation of {@link SessionKey}.
  */
-public class SessionKeyImpl extends AbstractSAMLObject implements SessionKey {
+public class SessionKeyImpl extends AbstractXMLObject implements SessionKey {
 
     /** soap11:actor attribute. */
     private String soap11Actor;

@@ -33,7 +33,7 @@ import org.opensaml.xmlsec.signature.Transforms;
 public class TransformsImpl extends AbstractXMLObject implements Transforms {
     
     /** Transform children. */
-    private final XMLObjectChildrenList transforms;
+    private final XMLObjectChildrenList<Transform> transforms;
 
     /**
      * Constructor.
@@ -44,19 +44,19 @@ public class TransformsImpl extends AbstractXMLObject implements Transforms {
      */
     protected TransformsImpl(final String namespaceURI, final String elementLocalName, final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        transforms = new XMLObjectChildrenList<Transform>(this);
+        transforms = new XMLObjectChildrenList<>(this);
     }
 
     /** {@inheritDoc} */
     public List<Transform> getTransforms() {
-        return (List<Transform>) this.transforms;
+        return this.transforms;
     }
 
     /** {@inheritDoc} */
     public List<XMLObject> getOrderedChildren() {
         final ArrayList<XMLObject> children = new ArrayList<>();
         
-        children.addAll((List<Transform>) transforms);
+        children.addAll(transforms);
         
         if (children.size() == 0) {
             return null;

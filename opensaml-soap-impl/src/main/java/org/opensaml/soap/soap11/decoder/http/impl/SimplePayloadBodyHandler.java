@@ -19,6 +19,8 @@ package org.opensaml.soap.soap11.decoder.http.impl;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
@@ -32,13 +34,11 @@ import org.slf4j.LoggerFactory;
  * A body handler for use with {@link HTTPSOAP11Decoder} that populates the 
  * context message with the payload from the SOAP Envelope Body. The first 
  * child element of of the SOAP Envelope's Body is chosen as the message.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public class SimplePayloadBodyHandler<MessageType extends XMLObject> extends AbstractMessageHandler<MessageType> {
+public class SimplePayloadBodyHandler extends AbstractMessageHandler {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(SimplePayloadBodyHandler.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(SimplePayloadBodyHandler.class);
 
     /** {@inheritDoc} */
     protected void doInvoke(final MessageContext messageContext) throws MessageHandlerException {
@@ -47,7 +47,7 @@ public class SimplePayloadBodyHandler<MessageType extends XMLObject> extends Abs
         if (bodyChildren == null || bodyChildren.isEmpty()) {
             throw new MessageHandlerException("SOAP Envelope Body contained no children");
         } else if (bodyChildren.size() > 1) {
-            log.warn("SOAP Envelope Body contained more than one child.  Returning the first as the message");
+            log.warn("SOAP Envelope Body contained more than one child, returning the first as the message");
         }
             
         messageContext.setMessage(env.getBody().getUnknownXMLObjects().get(0));

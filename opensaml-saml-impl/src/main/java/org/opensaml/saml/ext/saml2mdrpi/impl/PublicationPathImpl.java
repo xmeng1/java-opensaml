@@ -20,10 +20,10 @@ package org.opensaml.saml.ext.saml2mdrpi.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdrpi.Publication;
 import org.opensaml.saml.ext.saml2mdrpi.PublicationPath;
 
@@ -31,7 +31,7 @@ import org.opensaml.saml.ext.saml2mdrpi.PublicationPath;
 /**
  * A concrete {@link PublicationPath}.
  */
-public class PublicationPathImpl extends AbstractSAMLObject implements PublicationPath {
+public class PublicationPathImpl extends AbstractXMLObject implements PublicationPath {
 
     /** The policies. */
     private XMLObjectChildrenList<Publication> publications;

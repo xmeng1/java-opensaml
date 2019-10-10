@@ -94,7 +94,7 @@ public class DecryptAttributes extends AbstractDecryptAction {
     @Nullable private Attribute processEncryptedAttribute(@Nonnull final ProfileRequestContext profileRequestContext,
             @Nonnull final EncryptedAttribute encAttr) throws DecryptionException {
         
-        if (!getDecryptionPredicate().apply(
+        if (!getDecryptionPredicate().test(
                 new Pair<ProfileRequestContext,EncryptedElementType>(profileRequestContext, encAttr))) {
             return null;
         }

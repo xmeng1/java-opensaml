@@ -29,9 +29,8 @@ public class SAMLProtocolContextProtocolFunction implements ContextDataLookupFun
     @Nullable public String apply(@Nullable final SAMLProtocolContext input) {
         if (input != null) {
             return input.getProtocol();
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

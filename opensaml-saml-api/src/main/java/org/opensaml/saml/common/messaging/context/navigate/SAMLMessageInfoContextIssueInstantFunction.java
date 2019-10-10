@@ -17,23 +17,23 @@
 
 package org.opensaml.saml.common.messaging.context.navigate;
 
+import java.time.Instant;
+
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.messaging.context.navigate.ContextDataLookupFunction;
 import org.opensaml.saml.common.messaging.context.SAMLMessageInfoContext;
 
 /** {@link ContextDataLookupFunction} that returns {@link SAMLMessageInfoContext#getMessageIssueInstant()}. */
 public class SAMLMessageInfoContextIssueInstantFunction
-        implements ContextDataLookupFunction<SAMLMessageInfoContext,DateTime> {
+        implements ContextDataLookupFunction<SAMLMessageInfoContext,Instant> {
 
     /** {@inheritDoc} */
-    @Nullable public DateTime apply(@Nullable final SAMLMessageInfoContext input) {
+    @Nullable public Instant apply(@Nullable final SAMLMessageInfoContext input) {
         if (input != null) {
             return input.getMessageIssueInstant();
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

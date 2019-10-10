@@ -32,6 +32,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.http.HttpHost;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.protocol.HttpContext;
@@ -47,6 +48,8 @@ import org.opensaml.security.x509.tls.impl.ThreadLocalX509CredentialContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
+import net.shibboleth.utilities.java.support.httpclient.HttpClientSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
 import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
@@ -117,6 +120,10 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
  */
 public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocketFactory {
     
+    /** Instance of {@link ThreadLocalClientTLSCredentialHandler} to use.  */
+    private static final ThreadLocalClientTLSCredentialHandler CLIENT_TLS_HANDLER =
+            new ThreadLocalClientTLSCredentialHandler();
+
     /** Logger. */
     private final Logger log = LoggerFactory.getLogger(SecurityEnhancedTLSSocketFactory.class);
     
@@ -241,39 +248,14 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
      * and {@link CriteriaSet} supplied by the caller via the {@link HttpContext}.
      * 
      * @param socket the socket instance being processed
-     * @param context the HttpClient context being processed
-     * 
-     * @throws IOException if the server TLS credential is untrusted, or if there is a fatal error
-     *           attempting trust evaluation.
-     *           
-     * @deprecated use {@link #performTrustEval(Socket, String, HttpContext)}
-     */
-    @Deprecated
-    protected void performTrustEval(@Nonnull final Socket socket, @Nonnull final HttpContext context) 
-            throws IOException {
-        //TODO when we remove this deprecated method, change called method to @Nonnull for hostname
-        DeprecationSupport.warn(ObjectType.METHOD, getClass().getName() + ".performTrustEval(Socket, HttpContext)",
-                null, null);
-        performTrustEval(socket, null, context);
-    }
-    
-// Checkstyle: ReturnCount OFF
-    /**
-     * Perform trust evaluation by extracting the server TLS {@link X509Credential} from the 
-     * {@link SSLSession} and evaluating it via a
-     * {@link TrustEngine}<code>&lt;</code>{@link org.opensaml.security.credential.Credential}<code>&gt;</code>
-     * and {@link CriteriaSet} supplied by the caller via the {@link HttpContext}.
-     * 
-     * @param socket the socket instance being processed
      * @param hostname the hostname being processed
      * @param context the HttpClient context being processed
      * 
      * @throws IOException if the server TLS credential is untrusted, or if there is a fatal error
      *           attempting trust evaluation.
      */
-    protected void performTrustEval(@Nonnull final Socket socket, @Nullable final String hostname, 
+    protected void performTrustEval(@Nonnull final Socket socket, @Nonnull @NotEmpty final String hostname, 
             @Nonnull final HttpContext context) throws IOException {
-        //TODO Really hostname should be @Nonnull, change when we remove deprecated performTrustEval(...)
         
         if (!(socket instanceof SSLSocket)) {
             log.debug("Socket was not an instance of SSLSocket, skipping trust eval");
@@ -283,20 +265,20 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
         
         log.debug("Attempting to evaluate server TLS credential against supplied TrustEngine and CriteriaSet");
         
-        @SuppressWarnings("unchecked") final
-        TrustEngine<? super X509Credential> trustEngine = (TrustEngine<? super X509Credential>) context.getAttribute(
-                HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE);
+        @SuppressWarnings("unchecked")
+        final TrustEngine<? super X509Credential> trustEngine =
+            (TrustEngine<? super X509Credential>) context.getAttribute(
+                    HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE);
         if (trustEngine == null) {
             if (isTrustEngineRequired()) {
                 log.warn("The required trust engine was not supplied by the caller, failing socket TLS creation");
                 throw new SSLPeerUnverifiedException("The required trust engine was not supplied by the caller");
-            } else  {
-                log.debug("No trust engine supplied by caller, skipping trust eval");
-                return;
             }
-        } else {
-            log.trace("Saw trust engine of type: {}", trustEngine.getClass().getName());
+            log.debug("No trust engine supplied by caller, skipping trust eval");
+            return;
         }
+        
+        log.trace("Saw trust engine of type: {}", trustEngine.getClass().getName());
         
         CriteriaSet criteriaSet = (CriteriaSet) context.getAttribute(
                 HttpClientSecurityConstants.CONTEXT_KEY_CRITERIA_SET);
@@ -304,9 +286,7 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
             log.debug("No criteria set supplied by caller, building new criteria set with signing " 
                     + "and trusted names criteria");
             criteriaSet = new CriteriaSet(new UsageCriterion(UsageType.SIGNING));
-            if (hostname != null) {
-                criteriaSet.add(new TrustedNamesCriterion(Collections.singleton(hostname)));
-            }
+            criteriaSet.add(new TrustedNamesCriterion(Collections.singleton(hostname)));
         } else {
             log.trace("Saw CriteriaSet: {}", criteriaSet);
         }
@@ -321,15 +301,14 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
             } else {
                 context.setAttribute(HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_CREDENTIAL_TRUSTED, 
                         Boolean.FALSE);
-                final Boolean fatal = 
-                        (Boolean)context.getAttribute(HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL);
+                final Boolean fatal = (Boolean)context.getAttribute(
+                        HttpClientSecurityConstants.CONTEXT_KEY_SERVER_TLS_FAILURE_IS_FATAL);
                 if (fatal == null || fatal) {
                     log.debug("Credential evaluated as untrusted, failure indicated as fatal");
                     throw new SSLPeerUnverifiedException(
                             "Trust engine could not establish trust of server TLS credential");
-                } else {
-                    log.debug("Credential evaluated as untrusted, failure indicated as non-fatal");
                 }
+                log.debug("Credential evaluated as untrusted, failure indicated as non-fatal");
             }
         } catch (final SecurityException e) {
             log.error("Trust engine error evaluating credential", e);
@@ -337,7 +316,6 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
         }
         
     }
-// Checkstyle: ReturnCount ON
 
     /**
      * Extract the server TLS {@link X509Credential} from the supplied {@link SSLSocket}.
@@ -394,30 +372,33 @@ public class SecurityEnhancedTLSSocketFactory implements LayeredConnectionSocket
             log.trace("HttpContext was null, skipping thread-local setup");
             return;
         }
-        if (!ThreadLocalX509CredentialContext.haveCurrent()) {
-            final X509Credential credential = 
-                    (X509Credential) context.getAttribute(
-                            HttpClientSecurityConstants.CONTEXT_KEY_CLIENT_TLS_CREDENTIAL);
-            if (credential != null) {
-                log.trace("Loading ThreadLocalX509CredentialContext with client TLS credential: {}", credential);
-                ThreadLocalX509CredentialContext.loadCurrent(credential);
-            } else {
-                log.trace("HttpContext did not contain a client TLS credential, nothing to do");
+
+        final X509Credential credential =
+                (X509Credential) context.getAttribute(HttpClientSecurityConstants.CONTEXT_KEY_CLIENT_TLS_CREDENTIAL);
+        if (credential != null) {
+            log.trace("Loading ThreadLocalX509CredentialContext with client TLS credential: {}", credential);
+            if (ThreadLocalX509CredentialContext.haveCurrent()) {
+                log.trace("ThreadLocalX509CredentialContext was already loaded with client TLS credential, "
+                        + "will be overwritten with credential from HttpContext");
             }
+            ThreadLocalX509CredentialContext.loadCurrent(credential);
         } else {
-            log.trace("ThreadLocalX509CredentialContext was already loaded with client TLS credential, skipping setup");
+            log.trace("HttpContext did not contain a client TLS credential, nothing to do");
         }
+
     }
     
     /**
-     * Clear the {@link ThreadLocalX509CredentialContext} of the client TLS credential obtained from 
-     * the {@link HttpContext}.
+     * Schedule the deferred clearing of the {@link ThreadLocalX509CredentialContext} of the client TLS credential
+     * obtained from the {@link HttpContext}.
      * 
      * @param context the HttpContext instance
      */
     protected void teardown(@Nullable final HttpContext context) {
-        log.trace("Clearing thread-local client TLS X509Credential");
-        ThreadLocalX509CredentialContext.clearCurrent();
+        if (ThreadLocalX509CredentialContext.haveCurrent()) {
+            log.trace("Scheduling deferred clearing of thread-local client TLS X509Credential");
+            HttpClientSupport.addDynamicContextHandlerLast(HttpClientContext.adapt(context), CLIENT_TLS_HANDLER);
+        }
     }
 
 }

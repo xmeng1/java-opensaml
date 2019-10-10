@@ -27,7 +27,7 @@ import org.opensaml.messaging.context.BaseContext;
 /**
  * Subcontext that carries information about a SAML Consent value.
  */
-public class SAMLConsentContext extends BaseContext {
+public final class SAMLConsentContext extends BaseContext {
 
     /** The SAML Consent value in use. */
     @Nullable @NotEmpty private String value;

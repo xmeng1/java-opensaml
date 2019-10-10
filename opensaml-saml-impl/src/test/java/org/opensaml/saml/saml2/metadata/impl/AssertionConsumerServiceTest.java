@@ -52,7 +52,7 @@ public class AssertionConsumerServiceTest extends XMLObjectProviderBaseTestCase 
         expectedBinding = "urn:binding:foo";
         expectedLocation = "example.org";
         expectedResponseLocation = "example.org/response";
-        expectedIndex = new Integer(3);
+        expectedIndex = Integer.valueOf(3);
         expectedIsDefault = new XSBooleanValue(Boolean.TRUE, false);
     }
 

@@ -18,13 +18,12 @@
 package org.opensaml.saml.saml1.binding.encoding.impl;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
@@ -51,7 +50,7 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
                 .getBuilder(Request.DEFAULT_ELEMENT_NAME);
         Request request = requestBuilder.buildObject();
         request.setID("foo");
-        request.setIssueInstant(new DateTime(0));
+        request.setIssueInstant(Instant.ofEpochMilli(0));
         request.setVersion(SAMLVersion.VERSION_11);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
@@ -60,7 +59,7 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
 
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(request);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)

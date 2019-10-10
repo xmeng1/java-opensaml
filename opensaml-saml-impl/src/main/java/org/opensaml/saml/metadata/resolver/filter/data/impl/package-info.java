@@ -16,6 +16,7 @@
  */
 
 /**
- * General classes related to profile behavior.
+ * Data classes for use with {@link org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext}.
  */
-package org.opensaml.profile;
+
+package org.opensaml.saml.metadata.resolver.filter.data.impl;

@@ -20,10 +20,12 @@ package org.opensaml.saml.saml2.metadata.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Duration;
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.Extensions;
@@ -45,10 +47,10 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
     protected String expectedID;
 
     /** Expected cacheDuration value in miliseconds */
-    protected long expectedCacheDuration;
+    protected Duration expectedCacheDuration;
 
     /** Expected validUntil value */
-    protected DateTime expectedValidUntil;
+    protected Instant expectedValidUntil;
 
     /** Expected number of child EntitiesDescriptors */
     protected int expectedEntitiesDescriptorsCount;
@@ -69,8 +71,8 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
     protected void setUp() throws Exception {
         expectedID = "id";
         expectedName = "eDescName";
-        expectedCacheDuration = 90000;
-        expectedValidUntil = new DateTime(2005, 12, 7, 10, 21, 0, 0, ISOChronology.getInstanceUTC());
+        expectedCacheDuration = Duration.ofSeconds(90);
+        expectedValidUntil = Instant.parse("2005-12-07T10:21:00.000Z");
         expectedEntitiesDescriptorsCount = 3;
         expectedEntityDescriptorsCount = 2;
     }
@@ -83,10 +85,10 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
         String name = entitiesDescriptorObj.getName();
         Assert.assertNull(name, "Name attribute has a value of " + name + ", expected no value");
 
-        Long duration = entitiesDescriptorObj.getCacheDuration();
+        Duration duration = entitiesDescriptorObj.getCacheDuration();
         Assert.assertNull(duration, "cacheDuration attribute has a value of " + duration + ", expected no value");
 
-        DateTime validUntil = entitiesDescriptorObj.getValidUntil();
+        Instant validUntil = entitiesDescriptorObj.getValidUntil();
         Assert.assertNull(validUntil, "validUntil attribute has a value of " + validUntil + ", expected no value");
         Assert.assertTrue(entitiesDescriptorObj.isValid());
     }
@@ -103,11 +105,11 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
         String id = entitiesDescriptorObj.getID();
         Assert.assertEquals(id, expectedID, "ID attriubte has a value of " + id + ", expected a value of " + expectedID);
 
-        long duration = entitiesDescriptorObj.getCacheDuration().longValue();
+        Duration duration = entitiesDescriptorObj.getCacheDuration();
         Assert.assertEquals(duration, expectedCacheDuration, "cacheDuration attribute has a value of " + duration + ", expected a value of "
                         + expectedCacheDuration);
 
-        DateTime validUntil = entitiesDescriptorObj.getValidUntil();
+        Instant validUntil = entitiesDescriptorObj.getValidUntil();
         Assert.assertEquals(expectedValidUntil
                 .compareTo(validUntil), 0, "validUntil attribute value did not match expected value");
         Assert.assertFalse(entitiesDescriptorObj.isValid());
@@ -143,7 +145,7 @@ public class EntitiesDescriptorTest extends XMLObjectProviderBaseTestCase {
 
         entitiesDescriptor.setName(expectedName);
         entitiesDescriptor.setID(expectedID);
-        entitiesDescriptor.setCacheDuration(new Long(expectedCacheDuration));
+        entitiesDescriptor.setCacheDuration(expectedCacheDuration);
         entitiesDescriptor.setValidUntil(expectedValidUntil);
 
         assertXMLEquals(expectedOptionalAttributesDOM, entitiesDescriptor);

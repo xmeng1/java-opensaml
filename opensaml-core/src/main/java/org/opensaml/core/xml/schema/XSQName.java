@@ -17,9 +17,11 @@
 
 package org.opensaml.core.xml.schema;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.xml.XMLConstants;
 
 import org.opensaml.core.xml.XMLObject;
@@ -30,22 +32,22 @@ import org.opensaml.core.xml.XMLObject;
 public interface XSQName extends XMLObject {
 
     /** Local name of the XSI type. */
-    public static final String TYPE_LOCAL_NAME = "QName"; 
+    @Nonnull @NotEmpty static final String TYPE_LOCAL_NAME = "QName"; 
         
     /** QName of the XSI type. */
-    public static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
+    @Nonnull static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
     
     /**
      * Gets the QName content of the element.
      * 
      * @return the QName content of the element
      */
-    @Nullable public QName getValue();
+    @Nullable QName getValue();
     
     /**
      * Sets the QName content of the element.
      * 
      * @param newValue the QName content of the element
      */
-    public void setValue(@Nullable final QName newValue);
+    void setValue(@Nullable final QName newValue);
 }

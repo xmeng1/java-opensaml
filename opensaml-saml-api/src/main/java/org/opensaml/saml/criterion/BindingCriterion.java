@@ -45,7 +45,7 @@ public final class BindingCriterion implements Criterion {
     public BindingCriterion(@Nonnull @NonnullElements final List<String> bindingURIs) {
         Constraint.isNotNull(bindingURIs, "Binding list cannot be null");
         
-        bindings = new ArrayList(bindingURIs.size());
+        bindings = new ArrayList<>(bindingURIs.size());
         for (final String binding : bindingURIs) {
             final String trimmed = StringSupport.trimOrNull(binding);
             if (trimmed != null) {

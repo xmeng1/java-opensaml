@@ -19,6 +19,8 @@ package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,12 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.metrics.MetricsSupport;
 import org.opensaml.core.xml.XMLObject;
@@ -62,15 +64,12 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
 import com.codahale.metrics.Timer.Context;
-import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotLive;
@@ -82,8 +81,6 @@ import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.primitive.TimerSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -132,36 +129,36 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     @Nullable private Gauge<PersistentCacheInitializationMetrics> gaugePersistentCacheInit;
     
     /** Timer used to schedule background metadata update tasks. */
-    private Timer taskTimer;
+    @Nullable private Timer taskTimer;
     
     /** Whether we created our own task timer during object construction. */
     private boolean createdOwnTaskTimer;
     
     /** Minimum cache duration. */
-    @Duration @Positive private Long minCacheDuration;
+    @Nonnull private Duration minCacheDuration;
     
     /** Maximum cache duration. */
-    @Duration @Positive private Long maxCacheDuration;
+    @Nonnull private Duration maxCacheDuration;
     
     /** Negative lookup cache duration. */
-    @Duration @Positive private Long negativeLookupCacheDuration;
+    @Nonnull private Duration negativeLookupCacheDuration;
     
     /** Factor used to compute when the next refresh interval will occur. Default value: 0.75 */
     @Positive private Float refreshDelayFactor;
     
-    /** The maximum idle time in milliseconds for which the resolver will keep data for a given entityID, 
+    /** The maximum idle time for which the resolver will keep data for a given entityID, 
      * before it is removed. */
-    @Duration @Positive private Long maxIdleEntityData;
+    @Nonnull private Duration maxIdleEntityData;
     
     /** Flag indicating whether idle entity data should be removed. */
     private boolean removeIdleEntityData;
     
-    /** Impending expiration warning threshold for metadata refresh, in milliseconds. 
-     * Default value: 0ms (disabled). */
-    @Duration @Positive private Long expirationWarningThreshold;
+    /** Impending expiration warning threshold for metadata refresh. 
+     * Default value: 0 (disabled). */
+    @Nonnull private Duration expirationWarningThreshold;
     
-    /** The interval in milliseconds at which the cleanup task should run. */
-    @Duration @Positive private Long cleanupTaskInterval;
+    /** The interval at which the cleanup task should run. */
+    @Nonnull private Duration cleanupTaskInterval;
     
     /** The backing store cleanup sweeper background task. */
     private BackingStoreCleanupSweeper cleanupTask;
@@ -170,13 +167,13 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     private XMLObjectLoadSaveManager<EntityDescriptor> persistentCacheManager;
     
     /** Function for generating the String key used with the cache manager. */
-    private Function<EntityDescriptor, String> persistentCacheKeyGenerator;
+    private Function<EntityDescriptor,String> persistentCacheKeyGenerator;
     
     /** Flag indicating whether should initialize from the persistent cache in the background. */
     private boolean initializeFromPersistentCacheInBackground;
     
-    /** The delay in milliseconds after which to schedule the background initialization from the persistent cache. */
-    @Duration @Positive private Long backgroundInitializationFromCacheDelay;
+    /** The delay after which to schedule the background initialization from the persistent cache. */
+    @Nonnull private Duration backgroundInitializationFromCacheDelay;
     
     /** Predicate which determines whether a given entity should be loaded from the persistent cache
      * at resolver initialization time. */
@@ -208,25 +205,19 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             taskTimer = backgroundTaskTimer;
         }
         
-        // Default to 0ms
-        expirationWarningThreshold = 0L;
+        expirationWarningThreshold = Duration.ZERO;
         
-        // Default to 10 minutes.
-        minCacheDuration = 10*60*1000L;
+        minCacheDuration = Duration.ofMinutes(10);
         
-        // Default to 8 hours.
-        maxCacheDuration = 8*60*60*1000L;
+        maxCacheDuration = Duration.ofHours(8);
         
         refreshDelayFactor = 0.75f;
         
-        // Default to 10 minutes.
-        negativeLookupCacheDuration = 10*60*1000L;
+        negativeLookupCacheDuration = Duration.ofMinutes(10);
         
-        // Default to 30 minutes.
-        cleanupTaskInterval = 30*60*1000L;
+        cleanupTaskInterval = Duration.ofMinutes(30);
         
-        // Default to 8 hours.
-        maxIdleEntityData = 8*60*60*1000L;
+        maxIdleEntityData = Duration.ofHours(8);
         
         // Default to removing idle metadata
         removeIdleEntityData = true;
@@ -234,8 +225,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         // Default to initializing from the the persistent cache in the background
         initializeFromPersistentCacheInBackground = true;
         
-        // Default to 2 seconds.
-        backgroundInitializationFromCacheDelay = 2*1000L;
+        backgroundInitializationFromCacheDelay = Duration.ofSeconds(2);
     }
     
     /**
@@ -263,31 +253,36 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     }
 
     /**
-     * Get the delay in milliseconds after which to schedule the background initialization from the persistent cache.
+     * Get the delay after which to schedule the background initialization from the persistent cache.
      * 
      * <p>Defaults to: 2 seconds.</p>
      * 
-     * @return the delay in milliseconds
+     * @return the delay
      * 
      * @since 3.3.0
      */
-    @Nonnull public Long getBackgroundInitializationFromCacheDelay() {
+    @Nonnull public Duration getBackgroundInitializationFromCacheDelay() {
         return backgroundInitializationFromCacheDelay;
     }
 
     /**
-     * Set the delay in milliseconds after which to schedule the background initialization from the persistent cache.
+     * Set the delay after which to schedule the background initialization from the persistent cache.
      * 
      * <p>Defaults to: 2 seconds.</p>
      * 
-     * @param delay the delay in milliseconds
+     * @param delay the delay
      * 
      * @since 3.3.0
      */
-    public void setBackgroundInitializationFromCacheDelay(@Nonnull final Long delay) {
+    public void setBackgroundInitializationFromCacheDelay(@Nonnull final Duration delay) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
+        
+        Constraint.isNotNull(delay, "Delay cannot be null");
+        Constraint.isFalse(delay.isNegative(), "Delay cannot be negative");
+        
         backgroundInitializationFromCacheDelay = delay;
+        
     }
 
     /**
@@ -366,9 +361,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 10 minutes.</p>
      *  
-     * @return the minimum cache duration, in milliseconds
+     * @return the minimum cache duration
      */
-    @Nonnull public Long getMinCacheDuration() {
+    @Nonnull public Duration getMinCacheDuration() {
         return minCacheDuration;
     }
 
@@ -377,12 +372,16 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 10 minutes.</p>
      *  
-     * @param duration the minimum cache duration, in milliseconds
+     * @param duration the minimum cache duration
      */
-    public void setMinCacheDuration(@Nonnull final Long duration) {
+    public void setMinCacheDuration(@Nonnull final Duration duration) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        minCacheDuration = Constraint.isNotNull(duration, "Minimum cache duration may not be null");
+
+        Constraint.isNotNull(duration, "Duration cannot be null");
+        Constraint.isFalse(duration.isNegative(), "Duration cannot be negative");
+        
+        minCacheDuration = duration;
     }
 
     /**
@@ -390,9 +389,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 8 hours.</p>
      *  
-     * @return the maximum cache duration, in milliseconds
+     * @return the maximum cache duration
      */
-    @Nonnull public Long getMaxCacheDuration() {
+    @Nonnull public Duration getMaxCacheDuration() {
         return maxCacheDuration;
     }
 
@@ -401,12 +400,16 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 8 hours.</p>
      *  
-     * @param duration the maximum cache duration, in milliseconds
+     * @param duration the maximum cache duration
      */
-    public void setMaxCacheDuration(@Nonnull final Long duration) {
+    public void setMaxCacheDuration(@Nonnull final Duration duration) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        maxCacheDuration = Constraint.isNotNull(duration, "Maximum cache duration may not be null");
+
+        Constraint.isNotNull(duration, "Duration cannot be null");
+        Constraint.isFalse(duration.isNegative(), "Duration cannot be negative");
+        
+        maxCacheDuration = duration;
     }
     
     /**
@@ -414,9 +417,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 10 minutes.</p>
      *  
-     * @return the negative lookup cache duration, in milliseconds
+     * @return the negative lookup cache duration
      */
-    @Nonnull public Long getNegativeLookupCacheDuration() {
+    @Nonnull public Duration getNegativeLookupCacheDuration() {
         return negativeLookupCacheDuration;
     }
 
@@ -425,12 +428,16 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      *  
      *  <p>Defaults to: 10 minutes.</p>
      *  
-     * @param duration the negative lookup cache duration, in milliseconds
+     * @param duration the negative lookup cache duration
      */
-    public void setNegativeLookupCacheDuration(@Nonnull final Long duration) {
+    public void setNegativeLookupCacheDuration(@Nonnull final Duration duration) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        negativeLookupCacheDuration = Constraint.isNotNull(duration, "Negative lookup cache duration may not be null");
+
+        Constraint.isNotNull(duration, "Duration cannot be null");
+        Constraint.isFalse(duration.isNegative(), "Duration cannot be negative");
+        
+        negativeLookupCacheDuration = duration;
     }
     
     /**
@@ -440,7 +447,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @return delay factor used to compute the next refresh time
      */
-    public Float getRefreshDelayFactor() {
+    @Nonnull public Float getRefreshDelayFactor() {
         return refreshDelayFactor;
     }
 
@@ -451,7 +458,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @param factor delay factor used to compute the next refresh time
      */
-    public void setRefreshDelayFactor(final Float factor) {
+    public void setRefreshDelayFactor(@Nonnull final Float factor) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
 
@@ -483,29 +490,33 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     }
 
     /**
-     * Get the maximum idle time in milliseconds for which the resolver will keep data for a given entityID, 
+     * Get the maximum idle time for which the resolver will keep data for a given entityID, 
      * before it is removed.
      * 
      * <p>Defaults to: 8 hours.</p>
      * 
-     * @return return the maximum idle time in milliseconds
+     * @return return the maximum idle time
      */
-    @Nonnull public Long getMaxIdleEntityData() {
+    @Nonnull public Duration getMaxIdleEntityData() {
         return maxIdleEntityData;
     }
 
     /**
-     * Set the maximum idle time in milliseconds for which the resolver will keep data for a given entityID, 
+     * Set the maximum idle time for which the resolver will keep data for a given entityID, 
      * before it is removed.
      * 
      * <p>Defaults to: 8 hours.</p>
      * 
-     * @param max the maximum entity data idle time, in milliseconds
+     * @param max the maximum entity data idle time
      */
-    public void setMaxIdleEntityData(@Nonnull final Long max) {
+    public void setMaxIdleEntityData(@Nonnull final Duration max) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        maxIdleEntityData = Constraint.isNotNull(max, "Max idle entity data may not be null");
+
+        Constraint.isNotNull(max, "Max idle time cannot be null");
+        Constraint.isFalse(max.isNegative(), "Max idle time cannot be negative");
+
+        maxIdleEntityData = max;
     }
     
     /**
@@ -513,7 +524,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @return threshold for logging a warning if live metadata will soon expire
      */
-    @Duration @Nonnull public Long getExpirationWarningThreshold() {
+    @Nonnull public Duration getExpirationWarningThreshold() {
         return expirationWarningThreshold;
     }
 
@@ -522,41 +533,45 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @param threshold the threshold for logging a warning if live metadata will soon expire
      */
-    @Duration public void setExpirationWarningThreshold(@Nullable @Duration @Positive final Long threshold) {
+    public void setExpirationWarningThreshold(@Nullable final Duration threshold) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         
         if (threshold == null) {
-            expirationWarningThreshold = 0L;
+            expirationWarningThreshold = Duration.ZERO;
         }
-        if (threshold < 0) {
+        if (threshold.isNegative()) {
             throw new IllegalArgumentException("Expiration warning threshold must be greater than or equal to 0");
         }
         expirationWarningThreshold = threshold;
     }
 
     /**
-     * Get the interval in milliseconds at which the cleanup task should run.
+     * Get the interval at which the cleanup task should run.
      * 
      * <p>Defaults to: 30 minutes.</p>
      * 
-     * @return return the interval, in milliseconds
+     * @return return the interval
      */
-    @Nonnull public Long getCleanupTaskInterval() {
+    @Nonnull public Duration getCleanupTaskInterval() {
         return cleanupTaskInterval;
     }
 
     /**
-     * Set the interval in milliseconds at which the cleanup task should run.
+     * Set the interval at which the cleanup task should run.
      * 
      * <p>Defaults to: 30 minutes.</p>
      * 
-     * @param interval the interval to set, in milliseconds
+     * @param interval the interval to set
      */
-    public void setCleanupTaskInterval(@Nonnull final Long interval) {
+    public void setCleanupTaskInterval(@Nonnull final Duration interval) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        cleanupTaskInterval = Constraint.isNotNull(interval, "Cleanup task interval may not be null");
+        
+        Constraint.isNotNull(interval, "Cleanup task interval may not be null");
+        Constraint.isFalse(interval.isNegative() || interval.isZero(), "Cleanup task interval must be positive");
+        
+        cleanupTaskInterval = interval;
     }
 
     /**
@@ -674,11 +689,10 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                                     + "and negative lookup cache is active, returning empty result", 
                                     getLogPrefix());
                             return Collections.emptyList();
-                        } else {
-                            log.debug("{} Did not find requested metadata in backing store, " 
-                                    + "attempting to resolve dynamically", 
-                                    getLogPrefix());
                         }
+                        log.debug("{} Did not find requested metadata in backing store, " 
+                                + "attempting to resolve dynamically", 
+                                getLogPrefix());
                     } else {
                         if (shouldAttemptRefresh(mgmtData)) {
                             log.debug("{} Metadata was indicated to be refreshed based on refresh trigger time", 
@@ -721,9 +735,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         final Set<String> entityIDs = resolveEntityIDs(criteria);
         if (entityIDs.size() == 1) {
             return entityIDs.iterator().next();
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -743,10 +756,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         if (entityIdCriterion != null) {
             log.debug("{} Found entityID in criteria: {}", getLogPrefix(), entityIdCriterion.getEntityId());
             return Collections.singleton(entityIdCriterion.getEntityId());
-        } else {
-            log.debug("{} EntityID was not supplied in criteria, processing criteria with secondary indexes",
-                    getLogPrefix());
         }
+        log.debug("{} EntityID was not supplied in criteria, processing criteria with secondary indexes",
+                getLogPrefix());
         
         if (!indexesEnabled()) {
             log.trace("Indexes not enabled, skipping secondary index processing");
@@ -777,30 +789,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 log.debug("{} Resolved 1 entityID from secondary indexes: {}", getLogPrefix(), entityID);
                 return Collections.singleton(entityID);
             }
-        } else {
-            log.debug("{} No entityIDs resolved from secondary indexes (Optional 'absent').", getLogPrefix());
-            return null;
         }
-    }
-    
-    /**
-     * Fetch metadata from an origin source based on the input criteria, store it in the backing store 
-     * and then return it.
-     * 
-     * @param criteria the input criteria set
-     * @return the resolved metadata
-     * @throws ResolverException  if there is a fatal error attempting to resolve the metadata
-     * 
-     * @deprecated instead use {@link #resolveFromOriginSource(CriteriaSet, String)}
-     */
-    @Deprecated
-    @Nonnull @NonnullElements 
-    protected Iterable<EntityDescriptor> resolveFromOriginSource(
-            @Nonnull final CriteriaSet criteria) throws ResolverException {
-        
-        DeprecationSupport.warnOnce(ObjectType.METHOD, "resolveFromOriginSource", null, "2-arg same-named method");
-        
-        return resolveFromOriginSource(criteria, resolveEntityID(criteria));
+        log.debug("{} No entityIDs resolved from secondary indexes (Optional 'absent').", getLogPrefix());
+        return null;
     }
     
     /**
@@ -818,10 +809,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         if (entityID != null) {
             log.debug("{} Resolving from origin source based on entityID: {}", getLogPrefix(), entityID);
             return resolveFromOriginSourceWithEntityID(criteria, entityID);
-        } else {
-            log.debug("{} Resolving from origin source based on non-entityID criteria", getLogPrefix());
-            return resolveFromOriginSourceWithoutEntityID(criteria);
         }
+        log.debug("{} Resolving from origin source based on non-entityID criteria", getLogPrefix());
+        return resolveFromOriginSourceWithoutEntityID(criteria);
         
     }
  
@@ -852,9 +842,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 log.debug("{} Metadata was resolved and stored by another thread " 
                         + "while this thread was waiting on the write lock", getLogPrefix());
                 return descriptors;
-            } else {
-                log.debug("{} Resolving metadata dynamically for entity ID: {}", getLogPrefix(), entityID);
             }
+            log.debug("{} Resolving metadata dynamically for entity ID: {}", getLogPrefix(), entityID);
             
             final Context contextFetchFromOriginSource = MetricsSupport.startTimer(timerFetchFromOriginSource);
             XMLObject root = null;
@@ -870,7 +859,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
 
                 if (!descriptors.isEmpty()) {
                     mgmtData.setRefreshTriggerTime(computeRefreshTriggerTime(mgmtData.getExpirationTime(), 
-                            new DateTime(ISOChronology.getInstanceUTC())));
+                            Instant.now()));
                     log.debug("{} Had existing data, recalculated refresh trigger time as: {}", 
                             getLogPrefix(), mgmtData.getRefreshTriggerTime());
                 }
@@ -1078,9 +1067,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             releaseMetadataDOM(root);
             if (fromPersistentCache) {
                 throw new FilterException("Metadata filtering process produced a null XMLObject");
-            } else {
-                return;
             }
+            return;
         }
         
         if (filteredMetadata instanceof EntityDescriptor) {
@@ -1090,9 +1078,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                         getLogPrefix(), entityDescriptor.getEntityID(), expectedEntityID);
                 if (fromPersistentCache) {
                     throw new ResolverException("New metadata's entityID does not match expected entityID");
-                } else {
-                    return; 
                 }
+                return;
             }
             
             preProcessEntityDescriptor(entityDescriptor, getBackingStore());
@@ -1149,9 +1136,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 log.warn("{} Error cloning XMLObject, will use input root object as filter target", getLogPrefix(), e);
                 return input;
             }
-        } else {
-            return input;
         }
+        return input;
     }
     
     /** {@inheritDoc} */
@@ -1168,7 +1154,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         final DynamicEntityBackingStore dynamicBackingStore = (DynamicEntityBackingStore) backingStore;
         final EntityManagementData mgmtData = dynamicBackingStore.getManagementData(entityID);
         
-        final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+        final Instant now = Instant.now();
         log.debug("{} For metadata expiration and refresh computation, 'now' is : {}", getLogPrefix(), now);
         
         mgmtData.setLastUpdateTime(now);
@@ -1190,13 +1176,13 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * @param nextRefresh  the next refresh trigger time for the entity descriptor
      */
     private void logMetadataExpiration(@Nonnull final EntityDescriptor descriptor,
-            @Nonnull final DateTime now, @Nonnull final DateTime nextRefresh) {
+            @Nonnull final Instant now, @Nonnull final Instant nextRefresh) {
         if (!isValid(descriptor)) {
             log.warn("{} Metadata with ID '{}' currently live is expired or otherwise invalid",
                     getLogPrefix(), descriptor.getEntityID());
         } else {
             if (isRequireValidMetadata() && descriptor.getValidUntil() != null) {
-                if (getExpirationWarningThreshold() > 0 
+                if (!getExpirationWarningThreshold().isZero() 
                         && descriptor.getValidUntil().isBefore(now.plus(getExpirationWarningThreshold()))) {
                     log.warn("{} Metadata with ID '{}' currently live will expire "
                             + "within the configured threshhold at '{}'",
@@ -1217,13 +1203,12 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * @param now the current date time instant
      * @return the effective expiration time for the metadata
      */
-    @Nonnull protected DateTime computeExpirationTime(@Nonnull final EntityDescriptor entityDescriptor,
-            @Nonnull final DateTime now) {
+    @Nonnull protected Instant computeExpirationTime(@Nonnull final EntityDescriptor entityDescriptor,
+            @Nonnull final Instant now) {
         
-        final DateTime lowerBound = now.toDateTime(ISOChronology.getInstanceUTC()).plus(getMinCacheDuration());
+        final Instant lowerBound = now.plus(getMinCacheDuration());
         
-        DateTime expiration = SAML2Support.getEarliestExpiration(entityDescriptor, 
-                now.plus(getMaxCacheDuration()), now);
+        Instant expiration = SAML2Support.getEarliestExpiration(entityDescriptor, now.plus(getMaxCacheDuration()), now);
         if (expiration.isBefore(lowerBound)) {
             expiration = lowerBound;
         }
@@ -1239,25 +1224,24 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * 
      * @return the time after which refresh attempt(s) should be made
      */
-    @Nonnull protected DateTime computeRefreshTriggerTime(@Nullable final DateTime expirationTime,
-            @Nonnull final DateTime nowDateTime) {
+    @Nonnull protected Instant computeRefreshTriggerTime(@Nullable final Instant expirationTime,
+            @Nonnull final Instant nowDateTime) {
         
-        final DateTime nowDateTimeUTC = nowDateTime.toDateTime(ISOChronology.getInstanceUTC());
-        final long now = nowDateTimeUTC.getMillis();
+        final long now = nowDateTime.toEpochMilli();
 
         long expireInstant = 0;
         if (expirationTime != null) {
-            expireInstant = expirationTime.toDateTime(ISOChronology.getInstanceUTC()).getMillis();
+            expireInstant = expirationTime.toEpochMilli();
         }
         long refreshDelay = (long) ((expireInstant - now) * getRefreshDelayFactor());
 
         // if the expiration time was null or the calculated refresh delay was less than the floor
         // use the floor
-        if (refreshDelay < getMinCacheDuration()) {
-            refreshDelay = getMinCacheDuration();
+        if (refreshDelay < getMinCacheDuration().toMillis()) {
+            refreshDelay = getMinCacheDuration().toMillis();
         }
 
-        return nowDateTimeUTC.plus(refreshDelay);
+        return nowDateTime.plusMillis(refreshDelay);
     }
     
     /**
@@ -1267,8 +1251,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
      * @return true if should attempt refresh, false otherwise
      */
     protected boolean shouldAttemptRefresh(@Nonnull final EntityManagementData mgmtData) {
-        final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-        return now.isAfter(mgmtData.getRefreshTriggerTime());
+        return Instant.now().isAfter(mgmtData.getRefreshTriggerTime());
         
     }
 
@@ -1315,7 +1298,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                             initializeFromPersistentCache();
                         }
                     };
-                    taskTimer.schedule(initTask, getBackgroundInitializationFromCacheDelay());
+                    taskTimer.schedule(initTask, getBackgroundInitializationFromCacheDelay().toMillis());
                 } else {
                     log.debug("{} Initializing from the persistent cache in the foreground", getLogPrefix());
                     initializeFromPersistentCache();
@@ -1324,7 +1307,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             
             cleanupTask = new BackingStoreCleanupSweeper();
             // Start with a delay of 1 minute, run at the user-specified interval
-            taskTimer.schedule(cleanupTask, 1*60*1000, getCleanupTaskInterval());
+            taskTimer.schedule(cleanupTask, 1*60*1000, getCleanupTaskInterval().toMillis());
 
         } finally {
             initializing = false;
@@ -1382,9 +1365,9 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         if (!isPersistentCachingEnabled()) {
             log.trace("{} Persistent caching is not enabled, skipping init from cache", getLogPrefix());
             return;
-        } else {
-            log.trace("{} Attempting to load and process entities from the persistent cache", getLogPrefix());
         }
+        
+        log.trace("{} Attempting to load and process entities from the persistent cache", getLogPrefix());
         
         final long start = System.nanoTime();
         try {
@@ -1435,7 +1418,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
             @Nonnull final EntityDescriptor descriptor) {
         
         if (isValid(descriptor)) {
-            if (getInitializationFromCachePredicate().apply(descriptor)) {
+            if (getInitializationFromCachePredicate().test(descriptor)) {
                 try {
                     processNewMetadata(descriptor, descriptor.getEntityID(), true);
                     log.trace("{} Successfully processed EntityDescriptor with entityID '{}' from cache", 
@@ -1587,7 +1570,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 @Nullable @NonnullElements @Unmodifiable @NotLive final Set<MetadataIndex> initIndexes) {
             super();
             mgmtDataMap = new ConcurrentHashMap<>();
-            secondaryIndexManager = new LockableMetadataIndexManager(initIndexes, 
+            secondaryIndexManager = new LockableMetadataIndexManager<>(initIndexes, 
                     new LockableMetadataIndexManager.EntityIDExtractionFunction()); 
 
         }
@@ -1620,11 +1603,10 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
                 entityData = mgmtDataMap.get(entityID);
                 if (entityData != null) {
                     return entityData;
-                } else {
-                    entityData = new EntityManagementData(entityID);
-                    mgmtDataMap.put(entityID, entityData);
-                    return entityData;
                 }
+                entityData = new EntityManagementData(entityID);
+                mgmtDataMap.put(entityID, entityData);
+                return entityData;
             }
         }
         
@@ -1652,19 +1634,19 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
         private String entityID;
         
         /** Last update time of the associated metadata. */
-        private DateTime lastUpdateTime;
+        private Instant lastUpdateTime;
         
         /** Expiration time of the associated metadata. */
-        private DateTime expirationTime;
+        private Instant expirationTime;
         
         /** Time at which should start attempting to refresh the metadata. */
-        private DateTime refreshTriggerTime;
+        private Instant refreshTriggerTime;
         
-        /** The last time in milliseconds at which the entity's backing store data was accessed. */
-        private DateTime lastAccessedTime;
+        /** The last time at which the entity's backing store data was accessed. */
+        private Instant lastAccessedTime;
         
         /** The time at which the negative lookup cache flag expires, if set. */
-        private DateTime negativeLookupCacheExpiration;
+        private Instant negativeLookupCacheExpiration;
         
         /** Read-write lock instance which governs access to the entity's backing store data. */
         private ReadWriteLock readWriteLock;
@@ -1675,7 +1657,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          */
         protected EntityManagementData(@Nonnull final String id) {
             entityID = Constraint.isNotNull(id, "Entity ID was null");
-            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
+            final Instant now = Instant.now();
             expirationTime = now.plus(getMaxCacheDuration());
             refreshTriggerTime = now.plus(getMaxCacheDuration());
             lastAccessedTime = now;
@@ -1696,7 +1678,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the last update time, or null if no metadata is yet loaded for the entity
          */
-        @Nullable public DateTime getLastUpdateTime() {
+        @Nullable public Instant getLastUpdateTime() {
             return lastUpdateTime;
         }
 
@@ -1705,7 +1687,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @param dateTime the last update time
          */
-        public void setLastUpdateTime(@Nonnull final DateTime dateTime) {
+        public void setLastUpdateTime(@Nonnull final Instant dateTime) {
             lastUpdateTime = dateTime;
         }
         
@@ -1714,7 +1696,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the expiration time
          */
-        @Nonnull public DateTime getExpirationTime() {
+        @Nonnull public Instant getExpirationTime() {
             return expirationTime;
         }
 
@@ -1723,7 +1705,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @param dateTime the new expiration time
          */
-        public void setExpirationTime(@Nonnull final DateTime dateTime) {
+        public void setExpirationTime(@Nonnull final Instant dateTime) {
             expirationTime = Constraint.isNotNull(dateTime, "Expiration time may not be null");
         }
         
@@ -1732,7 +1714,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the refresh trigger time
          */
-        @Nonnull public DateTime getRefreshTriggerTime() {
+        @Nonnull public Instant getRefreshTriggerTime() {
             return refreshTriggerTime;
         }
 
@@ -1741,16 +1723,16 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @param dateTime the new refresh trigger time
          */
-        public void setRefreshTriggerTime(@Nonnull final DateTime dateTime) {
+        public void setRefreshTriggerTime(@Nonnull final Instant dateTime) {
             refreshTriggerTime = Constraint.isNotNull(dateTime, "Refresh trigger time may not be null");
         }
 
         /**
          * Get the last time at which the entity's backing store data was accessed.
          * 
-         * @return the time in milliseconds since the epoch
+         * @return last access time
          */
-        @Nonnull public DateTime getLastAccessedTime() {
+        @Nonnull public Instant getLastAccessedTime() {
             return lastAccessedTime;
         }
         
@@ -1758,7 +1740,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * Record access of the entity's backing store data.
          */
         public void recordEntityAccess() {
-            lastAccessedTime = new DateTime(ISOChronology.getInstanceUTC());
+            lastAccessedTime = Instant.now();
         }
         
         /**
@@ -1767,8 +1749,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * @return true if active, false otherwise
          */
         public boolean isNegativeLookupCacheActive() {
-            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-            return negativeLookupCacheExpiration != null && now.isBefore(negativeLookupCacheExpiration);
+            return negativeLookupCacheExpiration != null && Instant.now().isBefore(negativeLookupCacheExpiration);
         }
         
         /**
@@ -1776,9 +1757,8 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * 
          * @return the time before which no further lookups for the entity will be performed
          */
-        public DateTime initNegativeLookupCache() {
-            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-            negativeLookupCacheExpiration = now.plus(getNegativeLookupCacheDuration());
+        public Instant initNegativeLookupCache() {
+            negativeLookupCacheExpiration = Instant.now().plus(getNegativeLookupCacheDuration());
             return negativeLookupCacheExpiration;
         }
         
@@ -1807,7 +1787,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
     protected class BackingStoreCleanupSweeper extends TimerTask {
         
         /** Logger. */
-        private final Logger log = LoggerFactory.getLogger(BackingStoreCleanupSweeper.class);
+        @Nonnull private final Logger log = LoggerFactory.getLogger(BackingStoreCleanupSweeper.class);
 
         /** {@inheritDoc} */
         @Override
@@ -1825,11 +1805,11 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
 
         /**
          *  Purge metadata which is either 1) expired or 2) (if {@link #isRemoveIdleEntityData()} is true) 
-         *  which hasn't been accessed within the last {@link #getMaxIdleEntityData()} milliseconds.
+         *  which hasn't been accessed within the last {@link #getMaxIdleEntityData()} duration.
          */
         private void removeExpiredAndIdleMetadata() {
-            final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-            final DateTime earliestValidLastAccessed = now.minus(getMaxIdleEntityData());
+            final Instant now = Instant.now();
+            final Instant earliestValidLastAccessed = now.minus(getMaxIdleEntityData());
             
             final DynamicEntityBackingStore backingStore = getBackingStore();
             final Map<String, List<EntityDescriptor>> indexedDescriptors = backingStore.getIndexedDescriptors();
@@ -1862,7 +1842,7 @@ public abstract class AbstractDynamicMetadataResolver extends AbstractMetadataRe
          * @return true if the entity is expired or exceeds the max idle time, false otherwise
          */
         private boolean isRemoveData(@Nonnull final EntityManagementData mgmtData, 
-                @Nonnull final DateTime now, @Nonnull final DateTime earliestValidLastAccessed) {
+                @Nonnull final Instant now, @Nonnull final Instant earliestValidLastAccessed) {
             if (isRemoveIdleEntityData() && mgmtData.getLastAccessedTime().isBefore(earliestValidLastAccessed)) {
                 log.debug("{} Entity metadata exceeds maximum idle time, removing: {}", 
                         getLogPrefix(), mgmtData.getEntityID());

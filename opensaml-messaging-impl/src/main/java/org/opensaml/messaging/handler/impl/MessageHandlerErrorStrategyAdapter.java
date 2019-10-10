@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
 import org.opensaml.messaging.context.MessageContext;
@@ -58,19 +59,17 @@ import com.google.common.collect.Collections2;
  * Whether the thrown {@link Throwable} is rethrown by this handler is determined by the flags 
  * {@link #setRethrowIfHandled(boolean)} and {@link #setRethrowIfNotHandled(boolean)}.
  * </p>
- * 
- * @param <MessageType> the type of message handled by the handler
  */
-public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMessageHandler<MessageType> {
+public class MessageHandlerErrorStrategyAdapter extends AbstractMessageHandler {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(MessageHandlerErrorStrategyAdapter.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(MessageHandlerErrorStrategyAdapter.class);
     
     /** The wrapped message handler. */
-    private MessageHandler<MessageType> wrappedHandler;
+    @Nonnull private MessageHandler wrappedHandler;
     
     /** The list of typed error handlers. */
-    private List<TypedMessageErrorHandler> errorHandlers;
+    @Nonnull @NonnullElements private List<TypedMessageErrorHandler> errorHandlers;
     
     /** Flag indicating whether the wrapped handler's exception should be rethrown after being handled successfully. */
     private boolean rethrowIfHandled;
@@ -85,8 +84,8 @@ public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMes
      * @param messageHandler the wrapped message handler
      * @param typedErrorHandlers the list of typed error handlers to apply
      */
-    public MessageHandlerErrorStrategyAdapter(@Nonnull final MessageHandler<MessageType> messageHandler, 
-            @Nonnull final List<TypedMessageErrorHandler> typedErrorHandlers) {
+    public MessageHandlerErrorStrategyAdapter(@Nonnull final MessageHandler messageHandler, 
+            @Nonnull @NonnullElements final List<TypedMessageErrorHandler> typedErrorHandlers) {
         wrappedHandler = Constraint.isNotNull(messageHandler, "Wrapped MessageHandler cannot be null");
         errorHandlers = new ArrayList<>(Collections2.filter(
                 Constraint.isNotNull(typedErrorHandlers, "List of TypedMessageErroHandlers cannot be null"), 
@@ -122,7 +121,7 @@ public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMes
 
 
     /** {@inheritDoc} */
-    protected void doInvoke(final MessageContext<MessageType> messageContext) throws MessageHandlerException {
+    protected void doInvoke(final MessageContext messageContext) throws MessageHandlerException {
         try {
             wrappedHandler.invoke(messageContext);
         } catch (final Throwable t) {
@@ -136,23 +135,20 @@ public class MessageHandlerErrorStrategyAdapter<MessageType> extends AbstractMes
                         if (rethrowIfHandled) {
                             log.trace("Based on config, rethrowing the handled error");
                             throw t;
-                        } else {
-                            log.trace("Based on config, swallowing the handled error");
-                            return;
                         }
-                    } else {
-                        log.trace("Handler indicates it did NOT handle the error, continuing with remaining handlers");
-                        continue;
+                        log.trace("Based on config, swallowing the handled error");
+                        return;
                     }
+                    log.trace("Handler indicates it did NOT handle the error, continuing with remaining handlers");
+                    continue;
                 }
             }
             log.trace("No error handler handled the thrown error");
             if (rethrowIfNotHandled) {
                 log.trace("Based on config, rethrowing the unhandled error");
                 throw t;
-            } else {
-                log.trace("Based on config, swallowing the unhandled error");
             }
+            log.trace("Based on config, swallowing the unhandled error");
         }
     }
 

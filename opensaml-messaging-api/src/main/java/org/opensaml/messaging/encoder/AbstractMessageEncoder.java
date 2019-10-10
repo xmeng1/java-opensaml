@@ -22,22 +22,22 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.component.UnmodifiableComponent;
 
+import javax.annotation.Nullable;
+
 import org.opensaml.messaging.context.MessageContext;
 
 /**
  * Abstract message encoder.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public abstract class AbstractMessageEncoder<MessageType> extends AbstractInitializableComponent implements
-        MessageEncoder<MessageType>, UnmodifiableComponent {
+public abstract class AbstractMessageEncoder extends AbstractInitializableComponent
+        implements MessageEncoder, UnmodifiableComponent {
 
     /** The message context. */
-    private MessageContext<MessageType> messageContext;
+    @Nullable private MessageContext messageContext;
 
     /** {@inheritDoc} */
     @Override
-    public synchronized void setMessageContext(final MessageContext<MessageType> context) {
+    public synchronized void setMessageContext(@Nullable final MessageContext context) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
 
@@ -67,7 +67,7 @@ public abstract class AbstractMessageEncoder<MessageType> extends AbstractInitia
      * 
      * @return the message context.
      */
-    protected MessageContext<MessageType> getMessageContext() {
+    @Nullable protected MessageContext getMessageContext() {
         return messageContext;
     }
 

@@ -17,7 +17,7 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
-import javax.annotation.Nullable;
+import java.util.function.Function;
 
 import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -29,9 +29,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
-
-
 public class TemplateRequestURLBuilderTest {
     
     private VelocityEngine engine;
@@ -41,30 +38,6 @@ public class TemplateRequestURLBuilderTest {
     @BeforeClass
     public void setUp() {
         engine = net.shibboleth.utilities.java.support.velocity.VelocityEngine.newVelocityEngine();
-    }
-    
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testEncodedQueryParamLegacy() {
-        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/?entity=${entityID}", true);
-        
-        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/?entity=http%3A%2F%2Fexample.org%2Fidp");
-    }
-    
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testMDQStyleLegacy() {
-        function = new TemplateRequestURLBuilder(engine, "http://metadata.example.org/entities/${entityID}", true);
-        
-        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://metadata.example.org/entities/http%3A%2F%2Fexample.org%2Fidp");
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testWellKnownLocationStyleLegacy() {
-        function = new TemplateRequestURLBuilder(engine, "${entityID}", false);
-        
-        Assert.assertEquals(function.apply(new CriteriaSet(new EntityIdCriterion("http://example.org/idp"))), "http://example.org/idp");
     }
     
     @Test
@@ -97,11 +70,7 @@ public class TemplateRequestURLBuilderTest {
     
     @Test
     public void testTransformer() {
-        Function<String,String> transformer = new Function<String, String>() {
-            @Nullable public String apply(@Nullable String input) {
-                return input.toUpperCase();
-            }
-        };
+        Function<String,String> transformer = String::toUpperCase;
         
         function = new TemplateRequestURLBuilder(engine, "${entityID}", EncodingStyle.none, transformer);
         

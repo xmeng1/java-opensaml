@@ -17,11 +17,12 @@
 
 package org.opensaml.saml.saml2.core;
 
+import java.time.Instant;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 
@@ -31,78 +32,85 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 public interface Conditions extends SAMLObject {
 
     /** Element local name. */
-    public static final String DEFAULT_ELEMENT_LOCAL_NAME = "Conditions";
+    static final String DEFAULT_ELEMENT_LOCAL_NAME = "Conditions";
 
     /** Default element name. */
-    public static final QName DEFAULT_ELEMENT_NAME = new QName(SAMLConstants.SAML20_NS, DEFAULT_ELEMENT_LOCAL_NAME,
+    static final QName DEFAULT_ELEMENT_NAME = new QName(SAMLConstants.SAML20_NS, DEFAULT_ELEMENT_LOCAL_NAME,
             SAMLConstants.SAML20_PREFIX);
 
     /** Local name of the XSI type. */
-    public static final String TYPE_LOCAL_NAME = "ConditionsType";
+    static final String TYPE_LOCAL_NAME = "ConditionsType";
 
     /** QName of the XSI type. */
-    public static final QName TYPE_NAME = new QName(SAMLConstants.SAML20_NS, TYPE_LOCAL_NAME,
+    static final QName TYPE_NAME = new QName(SAMLConstants.SAML20_NS, TYPE_LOCAL_NAME,
             SAMLConstants.SAML20_PREFIX);
 
     /** NotBefore attribute name. */
-    public static final String NOT_BEFORE_ATTRIB_NAME = "NotBefore";
+    static final String NOT_BEFORE_ATTRIB_NAME = "NotBefore";
 
-    /** NotOnOrAfter attribute name. */
-    public static final String NOT_ON_OR_AFTER_ATTRIB_NAME = "NotOnOrAfter";
+    /** QName for the NotBefore attribute. */
+    static final QName NOT_BEFORE_ATTRIB_QNAME = new QName(null, "NotBefore", XMLConstants.DEFAULT_NS_PREFIX);
+
+    /** Name for the NotOnOrAfter attribute. */
+    static final String NOT_ON_OR_AFTER_ATTRIB_NAME = "NotOnOrAfter";
+
+    /** QName for the NotOnOrAfter attribute. */
+    static final QName NOT_ON_OR_AFTER_ATTRIB_QNAME =
+            new QName(null, "NotOnOrAfter", XMLConstants.DEFAULT_NS_PREFIX);
 
     /**
      * Get the date/time before which the assertion is invalid.
      * 
      * @return the date/time before which the assertion is invalid
      */
-    public DateTime getNotBefore();
+    Instant getNotBefore();
 
     /**
      * Sets the date/time before which the assertion is invalid.
      * 
      * @param newNotBefore the date/time before which the assertion is invalid
      */
-    public void setNotBefore(DateTime newNotBefore);
+    void setNotBefore(Instant newNotBefore);
 
     /**
      * Gets the date/time on, or after, which the assertion is invalid.
      * 
      * @return the date/time on, or after, which the assertion is invalid
      */
-    public DateTime getNotOnOrAfter();
+    Instant getNotOnOrAfter();
 
     /**
      * Sets the date/time on, or after, which the assertion is invalid.
      * 
      * @param newNotOnOrAfter the date/time on, or after, which the assertion is invalid
      */
-    public void setNotOnOrAfter(DateTime newNotOnOrAfter);
+    void setNotOnOrAfter(Instant newNotOnOrAfter);
 
     /**
      * Gets all the conditions on the assertion.
      * 
      * @return all the conditions on the assertion
      */
-    public List<Condition> getConditions();
+    List<Condition> getConditions();
 
     /**
      * Gets the audience restriction conditions for the assertion.
      * 
      * @return the audience restriction conditions for the assertion
      */
-    public List<AudienceRestriction> getAudienceRestrictions();
+    List<AudienceRestriction> getAudienceRestrictions();
 
     /**
      * Gets the OneTimeUse condition for the assertion.
      * 
      * @return the OneTimeUse condition for the assertion
      */
-    public OneTimeUse getOneTimeUse();
+    OneTimeUse getOneTimeUse();
 
     /**
      * Gets the ProxyRestriction condition for the assertion.
      * 
      * @return the ProxyRestriction condition for the assertion
      */
-    public ProxyRestriction getProxyRestriction();
+    ProxyRestriction getProxyRestriction();
 }

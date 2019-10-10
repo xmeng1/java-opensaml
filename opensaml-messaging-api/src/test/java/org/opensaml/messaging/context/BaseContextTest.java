@@ -128,23 +128,7 @@ public class BaseContextTest {
         Iterator<BaseContext> iterator = parent.iterator();
         iterator.remove();
     }
-    
-    /**
-     *  Test auto creation of subcontexts.
-     */
-    @SuppressWarnings("deprecation")
-    public void testAutoCreateSubcontext() {
-        TestContext parent = new TestContext();
         
-        //Default is not to autocreate subcontexts
-        TestContext child1 = parent.getSubcontext(TestContext.class);
-        Assert.assertNull(child1);
-        
-        parent.setAutoCreateSubcontexts(true);
-        TestContext child2 = parent.getSubcontext(TestContext.class);
-        Assert.assertNotNull(child2);
-    }
-    
     /**
      *  Test case of attempting to add a duplicate subcontext class to a parent,
      *  when replace is in effect.

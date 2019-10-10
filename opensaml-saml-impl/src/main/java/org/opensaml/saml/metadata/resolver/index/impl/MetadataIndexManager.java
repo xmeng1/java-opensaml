@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +33,6 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
@@ -60,7 +60,7 @@ public class MetadataIndexManager<T> {
     private Map<MetadataIndex, MetadataIndexStore<T>> indexes;
     
     /** Function to extract the data item to be indexed from an EntityDescriptor. */
-    private Function<EntityDescriptor, T> entityDescriptorFunction;
+    private Function<EntityDescriptor,T> entityDescriptorFunction;
     
     /**
      * Constructor.
@@ -80,7 +80,7 @@ public class MetadataIndexManager<T> {
         if (initIndexes != null) {
             for (final MetadataIndex index : initIndexes) {
                 log.trace("Initializing manager for index: {}", index);
-                indexes.put(index, new MetadataIndexStore());
+                indexes.put(index, new MetadataIndexStore<T>());
             }
         }
     }
@@ -152,9 +152,9 @@ public class MetadataIndexManager<T> {
             //      (i.e. no MetadataIndexKeys were generated for any criteria)
             // Returning absent here allows to distinguish these cases from the empty set case above.
             return Optional.absent();
-        } else {
-            return Optional.of(items);
         }
+        
+        return Optional.of(items);
     }
     
     /**

@@ -26,25 +26,22 @@ import org.opensaml.messaging.handler.MessageHandler;
 
 /**
  * Interface representing the basic components of a message processing pipeline.
- * 
- * @param <OutboundMessageType> the outbound message type
- * @param <InboundMessageType> the inbound message type
  */
-public interface MessagePipeline<InboundMessageType, OutboundMessageType> {
+public interface MessagePipeline {
     
     /**
      * Get the message encoder instance.
      * 
      * @return the message encoder
      */
-    @Nonnull public MessageEncoder<OutboundMessageType> getEncoder();
+    @Nonnull public MessageEncoder getEncoder();
     
     /**
      * Get the message decoder instance.
      * 
      * @return the message decoder
      */
-    @Nonnull public MessageDecoder<InboundMessageType> getDecoder();
+    @Nonnull public MessageDecoder getDecoder();
     
     /**
      * Get the (optional) outbound payload message handler instance.  
@@ -55,7 +52,7 @@ public interface MessagePipeline<InboundMessageType, OutboundMessageType> {
      * 
      * @return the outbound message handler, may be null
      */
-    @Nullable public MessageHandler<OutboundMessageType> getOutboundPayloadMessageHandler();
+    @Nullable public MessageHandler getOutboundPayloadMessageHandler();
     
     /**
      * Get the (optional) outbound transport message handler instance.  
@@ -67,13 +64,13 @@ public interface MessagePipeline<InboundMessageType, OutboundMessageType> {
      * 
      * @return the outbound message handler, may be null
      */
-    @Nullable public MessageHandler<OutboundMessageType> getOutboundTransportMessageHandler();
+    @Nullable public MessageHandler getOutboundTransportMessageHandler();
     
     /**
      * Get the (optional) inbound message handler instance.  
      * 
      * @return the inbound message handler, may be null
      */
-    public MessageHandler<InboundMessageType> getInboundMessageHandler();
+    public MessageHandler getInboundMessageHandler();
 
 }

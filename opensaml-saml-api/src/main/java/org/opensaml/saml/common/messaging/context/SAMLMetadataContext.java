@@ -28,7 +28,7 @@ import org.opensaml.saml.saml2.metadata.RoleDescriptor;
  * subcontext of the {@link org.opensaml.messaging.context.MessageContext} that carries the actual SAML message, in such
  * cases the metadata carried herein applies to the issuer of that message.
  */
-public class SAMLMetadataContext extends BaseContext {
+public final class SAMLMetadataContext extends BaseContext {
 
     /** The descriptor of the SAML entity. */
     @Nullable private EntityDescriptor entityDescriptor;

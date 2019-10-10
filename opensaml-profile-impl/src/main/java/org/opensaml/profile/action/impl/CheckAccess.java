@@ -17,6 +17,8 @@
 
 package org.opensaml.profile.action.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -36,8 +38,6 @@ import net.shibboleth.utilities.java.support.security.AccessControlService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * This action validates that a request comes from an authorized client, based on an injected service

@@ -21,12 +21,14 @@ import java.security.Key;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.PredicateSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
@@ -43,8 +45,6 @@ import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 
 /**
@@ -103,9 +103,8 @@ public class BasicSignatureSigningParametersResolver
         final SignatureSigningParameters params = resolveSingle(criteria);
         if (params != null) {
             return Collections.singletonList(params);
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */
@@ -135,9 +134,8 @@ public class BasicSignatureSigningParametersResolver
         if (validate(params)) {
             logResult(params);
             return params;
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -236,9 +234,8 @@ public class BasicSignatureSigningParametersResolver
                     params.setSigningCredential(credential);
                     params.setSignatureAlgorithm(algorithm);
                     return;
-                } else {
-                    log.trace("Credential failed eval against algorithm: {}", algorithm);
                 }
+                log.trace("Credential failed eval against algorithm: {}", algorithm);
             }
         }
         
@@ -300,7 +297,7 @@ public class BasicSignatureSigningParametersResolver
                 .getConfigurations()) {
             
             accumulator.addAll(Collections2.filter(config.getSignatureAlgorithms(), 
-                    Predicates.and(getAlgorithmRuntimeSupportedPredicate(), whitelistBlacklistPredicate)));
+                    PredicateSupport.and(getAlgorithmRuntimeSupportedPredicate(), whitelistBlacklistPredicate)::test));
             
         }
         return accumulator;
@@ -319,8 +316,8 @@ public class BasicSignatureSigningParametersResolver
                 .getConfigurations()) {
             
             for (final String digestMethod : config.getSignatureReferenceDigestMethods()) {
-                if (getAlgorithmRuntimeSupportedPredicate().apply(digestMethod) 
-                        && whitelistBlacklistPredicate.apply(digestMethod)) {
+                if (getAlgorithmRuntimeSupportedPredicate().test(digestMethod) 
+                        && whitelistBlacklistPredicate.test(digestMethod)) {
                     return digestMethod;
                 }
             }

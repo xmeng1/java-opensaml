@@ -19,6 +19,9 @@ package org.opensaml.messaging.encoder.httpclient;
 
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
@@ -29,17 +32,14 @@ import org.w3c.dom.Element;
 
 /**
  * Base class for message encoders which encode XML messages to HttpRequest.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public abstract class BaseHttpClientRequestXMLMessageEncoder<MessageType extends XMLObject> 
-    extends AbstractHttpClientRequestMessageEncoder<MessageType> {
+public abstract class BaseHttpClientRequestXMLMessageEncoder  extends AbstractHttpClientRequestMessageEncoder {
     
     /** Used to log protocol messages. */
-    private Logger protocolMessageLog = LoggerFactory.getLogger("PROTOCOL_MESSAGE");
+    @Nonnull private Logger protocolMessageLog = LoggerFactory.getLogger("PROTOCOL_MESSAGE");
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(BaseHttpClientRequestXMLMessageEncoder.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(BaseHttpClientRequestXMLMessageEncoder.class);
 
     /** {@inheritDoc} */
     public void encode() throws MessageEncodingException {
@@ -59,14 +59,14 @@ public abstract class BaseHttpClientRequestXMLMessageEncoder<MessageType extends
      */
     protected void logEncodedMessage() {
         if (protocolMessageLog.isDebugEnabled() ){
-            final XMLObject message = getMessageToLog();
-            if (message == null) {
-                log.warn("Encoded message was null, nothing to log");
+            final Object message = getMessageToLog();
+            if (message == null || !(message instanceof XMLObject)) {
+                log.warn("Encoded message was null or unsupported, nothing to log");
                 return;
             }
             
             try {
-                final Element dom = XMLObjectSupport.marshall(message);
+                final Element dom = XMLObjectSupport.marshall((XMLObject) message);
                 protocolMessageLog.debug("\n" + SerializeSupport.prettyPrintXML(dom));
             } catch (final MarshallingException e) {
                 log.error("Unable to marshall message for logging purposes", e);
@@ -79,7 +79,7 @@ public abstract class BaseHttpClientRequestXMLMessageEncoder<MessageType extends
      * 
      * @return the XMLObject message considered to be the protocol message for logging purposes
      */
-    protected XMLObject getMessageToLog() {
+    @Nullable protected Object getMessageToLog() {
         return getMessageContext().getMessage();
     }
 
@@ -92,7 +92,7 @@ public abstract class BaseHttpClientRequestXMLMessageEncoder<MessageType extends
      * 
      * @throws MessageEncodingException thrown if the give message can not be marshalled into its DOM representation
      */
-    protected Element marshallMessage(final XMLObject message) throws MessageEncodingException {
+    @Nonnull protected Element marshallMessage(@Nonnull final XMLObject message) throws MessageEncodingException {
         log.debug("Marshalling message");
         
         try {

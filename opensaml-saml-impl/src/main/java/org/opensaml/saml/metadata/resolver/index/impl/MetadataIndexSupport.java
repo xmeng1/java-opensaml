@@ -80,19 +80,18 @@ public final class MetadataIndexSupport {
         final String path = StringSupport.trimOrNull(input);
         if (path == null || "/".equals(path)) {
             return null;
-        } else {
-            final int idx = path.lastIndexOf("/");
-            if (idx > 0) {
-                if (path.endsWith("/")) {
-                    return path.substring(0, idx);
-                } else {
-                    return path.substring(0, idx+1);
-                }
-            } else if (idx == 0) {
-                return "/";
-            } else {
-                return null;
+        }
+        
+        final int idx = path.lastIndexOf("/");
+        if (idx > 0) {
+            if (path.endsWith("/")) {
+                return path.substring(0, idx);
             }
+            return path.substring(0, idx+1);
+        } else if (idx == 0) {
+            return "/";
+        } else {
+            return null;
         }
     }
 

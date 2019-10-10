@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 
+import org.opensaml.core.xml.XMLObject;
 import org.opensaml.messaging.MessageException;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.SAMLObject;
@@ -60,13 +61,12 @@ public final class SAMLBindingSupport {
      * @param messageContext the message context on which to operate
      * @return the relay state or null
      */
-    @Nullable @NotEmpty public static String getRelayState(@Nonnull final MessageContext<SAMLObject> messageContext) {
+    @Nullable @NotEmpty public static String getRelayState(@Nonnull final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class);
         if (bindingContext == null) { 
             return null;
-        } else {
-            return bindingContext.getRelayState();
         }
+        return bindingContext.getRelayState();
     }
     
     /**
@@ -75,7 +75,7 @@ public final class SAMLBindingSupport {
      * @param messageContext the message context on which to operate
      * @param relayState the relay state to set
      */
-    public static void setRelayState(@Nonnull final MessageContext<SAMLObject> messageContext, 
+    public static void setRelayState(@Nonnull final MessageContext messageContext, 
             @Nullable final String relayState) {
         messageContext.getSubcontext(SAMLBindingContext.class, true).setRelayState(relayState);
     }
@@ -110,14 +110,14 @@ public final class SAMLBindingSupport {
      * 
      * @throws BindingException throw if no relying party endpoint is available
      */
-    @Nonnull public static URI getEndpointURL(@Nonnull final MessageContext<SAMLObject> messageContext) 
+    @Nonnull public static URI getEndpointURL(@Nonnull final MessageContext messageContext) 
             throws BindingException {
-        final SAMLPeerEntityContext peerContext = messageContext.getSubcontext(SAMLPeerEntityContext.class, false);
+        final SAMLPeerEntityContext peerContext = messageContext.getSubcontext(SAMLPeerEntityContext.class);
         if (peerContext == null) {
             throw new BindingException("Message context contained no PeerEntityContext");
         }
         
-        final SAMLEndpointContext endpointContext = peerContext.getSubcontext(SAMLEndpointContext.class, false);
+        final SAMLEndpointContext endpointContext = peerContext.getSubcontext(SAMLEndpointContext.class);
         if (endpointContext == null) {
             throw new BindingException("PeerEntityContext contained no SAMLEndpointContext");
         }
@@ -127,7 +127,7 @@ public final class SAMLBindingSupport {
             throw new BindingException("Endpoint for relying party was null.");
         }
 
-        final SAMLObject message = messageContext.getMessage();
+        final Object message = messageContext.getMessage();
         if ((message instanceof org.opensaml.saml.saml2.core.StatusResponseType 
                 || message instanceof org.opensaml.saml.saml1.core.Response) 
                 && !Strings.isNullOrEmpty(endpoint.getResponseLocation())) {
@@ -137,16 +137,16 @@ public final class SAMLBindingSupport {
                 throw new BindingException("The endpoint response location " + endpoint.getResponseLocation()
                         + " is not a valid URL", e);
             }
-        } else {
-            if (Strings.isNullOrEmpty(endpoint.getLocation())) {
-                throw new BindingException("Relying party endpoint location was null or empty.");
-            }
-            try {
-                return new URI(endpoint.getLocation());
-            } catch (final URISyntaxException e) {
-                throw new BindingException("The endpoint location " + endpoint.getLocation()
-                        + " is not a valid URL", e);
-            }
+        }
+        
+        if (Strings.isNullOrEmpty(endpoint.getLocation())) {
+            throw new BindingException("Relying party endpoint location was null or empty.");
+        }
+        try {
+            return new URI(endpoint.getLocation());
+        } catch (final URISyntaxException e) {
+            throw new BindingException("The endpoint location " + endpoint.getLocation()
+                    + " is not a valid URL", e);
         }
     }
     
@@ -193,19 +193,18 @@ public final class SAMLBindingSupport {
      * @param messageContext current message context
      * @return true if the message is considered to be digitally signed, false otherwise
      */
-    public static boolean isMessageSigned(@Nonnull final MessageContext<SAMLObject> messageContext) {
-        final SAMLObject samlMessage = Constraint.isNotNull(messageContext.getMessage(),
+    public static boolean isMessageSigned(@Nonnull final MessageContext messageContext) {
+        final Object samlMessage = Constraint.isNotNull(messageContext.getMessage(),
                 "SAML message was not present in message context");
         if (samlMessage instanceof SignableSAMLObject && ((SignableSAMLObject)samlMessage).isSigned()) {
             return true;
-        } else {
-            final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, false);
-            if (bindingContext != null) {
-                return bindingContext.hasBindingSignature();
-            } else {
-                return false;
-            }
         }
+        
+        final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class);
+        if (bindingContext != null) {
+            return bindingContext.hasBindingSignature();
+        }
+        return false;
     }
 
     /**
@@ -220,13 +219,12 @@ public final class SAMLBindingSupport {
      * @param messageContext current message context
      * @return true if the message is considered to be digitally signed, false otherwise
      */
-    public static boolean isSigningCapableBinding(@Nonnull final MessageContext<SAMLObject> messageContext) {
+    public static boolean isSigningCapableBinding(@Nonnull final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class);
         if (bindingContext != null && bindingContext.getBindingDescriptor() != null) {
             return bindingContext.getBindingDescriptor().isSignatureCapable();
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -237,7 +235,7 @@ public final class SAMLBindingSupport {
      * @return true if the intended message destination endpoint is required, false if not
      */
     public static boolean isIntendedDestinationEndpointURIRequired(
-            @Nonnull final MessageContext<SAMLObject> messageContext) {
+            @Nonnull final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, false);
         if (bindingContext == null) {
             return false;
@@ -255,8 +253,8 @@ public final class SAMLBindingSupport {
      *              could be processed by the decoder
      */
     @Nullable public static String getIntendedDestinationEndpointURI(
-            @Nonnull final MessageContext<SAMLObject> messageContext)  throws MessageException {
-        final SAMLObject samlMessage = Constraint.isNotNull(messageContext.getMessage(), 
+            @Nonnull final MessageContext messageContext)  throws MessageException {
+        final Object samlMessage = Constraint.isNotNull(messageContext.getMessage(), 
                 "SAML message was not present in message context");
         String messageDestination = null;
         //SAML 2 Request
@@ -278,9 +276,13 @@ public final class SAMLBindingSupport {
         } else if (samlMessage instanceof org.opensaml.saml.saml1.core.RequestAbstractType) {
             // don't treat as an error, just return null
             return null;
+        } else if (samlMessage instanceof XMLObject) {
+            LOG.error("Unknown XML message type encountered: {}",
+                    ((XMLObject) samlMessage).getElementQName().toString());
+            throw new MessageException("Invalid XML message type encountered");
         } else {
-            LOG.error("Unknown SAML message type encountered: {}", samlMessage.getElementQName().toString());
-            throw new MessageException("Invalid SAML message type encountered");
+            LOG.error("Unknown message type encountered");
+            throw new MessageException("Invalid message type encountered");
         }
         return messageDestination;
         
@@ -296,7 +298,7 @@ public final class SAMLBindingSupport {
      *                              context and converted to a string representation
      */
     @Nonnull public static String getActualReceiverEndpointURI(
-            @Nonnull final MessageContext<SAMLObject> messageContext,  @Nonnull final HttpServletRequest request)
+            @Nonnull final MessageContext messageContext,  @Nonnull final HttpServletRequest request)
                     throws MessageException {
         Constraint.isNotNull(request, "HttpServletRequest cannot be null");
         

@@ -43,7 +43,7 @@ public final class ActionSupport {
     }
 
     /**
-     * Builds an event with a given ID but no related attributes.
+     * Builds an event with a given ID.
      * 
      * @param profileRequestContext the context to carry the event
      * @param eventId the ID of the event
@@ -58,4 +58,20 @@ public final class ActionSupport {
         
         profileRequestContext.getSubcontext(EventContext.class, true).setEvent(trimmedEventId);
     }
+    
+    /**
+     * Builds an event from the given object.
+     * 
+     * @param profileRequestContext the context to carry the event
+     * @param event the event
+     */
+    public static void buildEvent(@Nonnull final ProfileRequestContext profileRequestContext,
+            @Nonnull final Object event) {
+        
+        Constraint.isNotNull(profileRequestContext, "Profile request context cannot be null");
+        Constraint.isNotNull(event, "Event cannot be null");
+        
+        profileRequestContext.getSubcontext(EventContext.class, true).setEvent(event);
+    }
+
 }

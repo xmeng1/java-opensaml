@@ -156,11 +156,10 @@ public abstract class AbstractXMLObjectUnmarshaller implements Unmarshaller {
                 final String errorMsg = "Unable to locate builder for " + QNameSupport.getNodeQName(domElement);
                 log.error(errorMsg);
                 throw new UnmarshallingException(errorMsg);
-            } else {
-                if (log.isTraceEnabled()) {
-                    log.trace("No builder was registered for {} but the default builder {} was available, using it.",
-                            QNameSupport.getNodeQName(domElement), xmlObjectBuilder.getClass().getName());
-                }
+            }
+            if (log.isTraceEnabled()) {
+                log.trace("No builder was registered for {} but the default builder {} was available, using it.",
+                        QNameSupport.getNodeQName(domElement), xmlObjectBuilder.getClass().getName());
             }
         }
 
@@ -308,11 +307,10 @@ public abstract class AbstractXMLObjectUnmarshaller implements Unmarshaller {
                                 + xmlObject.getElementQName();
                 log.error(errorMsg);
                 throw new UnmarshallingException(errorMsg);
-            } else {
-                if (log.isTraceEnabled()) {
-                    log.trace("No unmarshaller was registered for {}, child of {}. Using default unmarshaller.",
-                            QNameSupport.getNodeQName(childElement), xmlObject.getElementQName());
-                }
+            }
+            if (log.isTraceEnabled()) {
+                log.trace("No unmarshaller was registered for {}, child of {}. Using default unmarshaller.",
+                        QNameSupport.getNodeQName(childElement), xmlObject.getElementQName());
             }
         }
 

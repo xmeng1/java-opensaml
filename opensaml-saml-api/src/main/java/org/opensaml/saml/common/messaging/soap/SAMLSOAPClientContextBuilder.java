@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.common.messaging.soap;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
@@ -43,8 +45,6 @@ import org.opensaml.security.criteria.UsageCriterion;
 import org.opensaml.security.messaging.HttpClientSecurityContext;
 import org.opensaml.soap.client.SOAPClientContext;
 import org.opensaml.soap.client.security.SOAPClientSecurityContext;
-
-import com.google.common.base.Function;
 
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
@@ -82,7 +82,7 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     private RoleDescriptor peerRoleDescriptor;
     
     /** TLS CriteriaSet strategy. */
-    private Function<MessageContext<?>, CriteriaSet> tlsCriteriaSetStrategy;
+    private Function<MessageContext,CriteriaSet> tlsCriteriaSetStrategy;
     
     /** SOAP client message pipeline name. */
     private String pipelineName;
@@ -191,9 +191,8 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
         } else if (getPeerRoleDescriptor() != null) {
             if (getPeerRoleDescriptor().getSchemaType() != null) {
                 return getPeerRoleDescriptor().getSchemaType();
-            } else {
-                return getPeerRoleDescriptor().getElementQName();
             }
+            return getPeerRoleDescriptor().getElementQName();
         } else {
              return null;
         }
@@ -266,12 +265,11 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
      * 
      * @return the TLS CriteriaSet strategy, or null
      */
-    @Nullable public Function<MessageContext<?>, CriteriaSet> getTLSCriteriaSetStrategy() {
+    @Nullable public Function<MessageContext,CriteriaSet> getTLSCriteriaSetStrategy() {
         if (tlsCriteriaSetStrategy != null) {
             return tlsCriteriaSetStrategy;
-        } else {
-            return new DefaultTLSCriteriaSetStrategy();
         }
+        return new DefaultTLSCriteriaSetStrategy();
     }
 
     /**
@@ -281,7 +279,7 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
      * @return this builder instance 
      */
     @Nonnull public SAMLSOAPClientContextBuilder<InboundMessageType, OutboundMessageType> 
-            setTLSCriteriaSetStrategy(@Nullable final Function<MessageContext<?>, CriteriaSet> strategy) {
+            setTLSCriteriaSetStrategy(@Nullable final Function<MessageContext,CriteriaSet> strategy) {
         tlsCriteriaSetStrategy = strategy;
         return this;
     }
@@ -335,21 +333,20 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
      * 
      * @throws MessageException if any required data is not supplied and can not be derived from other supplied data
      */
-    public InOutOperationContext<InboundMessageType, OutboundMessageType> build() throws MessageException {
+    public InOutOperationContext build() throws MessageException {
         if (getOutboundMessage() == null) {
             errorMissingData("Outbound message");
         }
-        final MessageContext<OutboundMessageType> outboundContext = new MessageContext<OutboundMessageType>();
+        final MessageContext outboundContext = new MessageContext();
         outboundContext.setMessage(getOutboundMessage());
         
-        final Function<MessageContext<?>, CriteriaSet> tlsStrategy = getTLSCriteriaSetStrategy();
+        final Function<MessageContext,CriteriaSet> tlsStrategy = getTLSCriteriaSetStrategy();
         if (tlsStrategy != null) {
             outboundContext.getSubcontext(HttpClientSecurityContext.class, true)
                 .setTLSCriteriaSetStrategy(tlsStrategy);
         }
         
-        final InOutOperationContext<InboundMessageType, OutboundMessageType> opContext = 
-                new InOutOperationContext<>(null, outboundContext);
+        final InOutOperationContext opContext = new InOutOperationContext(null, outboundContext);
         
         // This is just so it's easy to change.
         final BaseContext parent = opContext;
@@ -406,10 +403,10 @@ public class SAMLSOAPClientContextBuilder<InboundMessageType extends SAMLObject,
     }
     
     /** Default TLS CriteriaSet strategy function. */
-    public static class DefaultTLSCriteriaSetStrategy implements Function<MessageContext<?>, CriteriaSet> {
+    public static class DefaultTLSCriteriaSetStrategy implements Function<MessageContext,CriteriaSet> {
 
         /** {@inheritDoc} */
-        public CriteriaSet apply(@Nullable final MessageContext<?> messageContext) {
+        @Nullable public CriteriaSet apply(@Nullable final MessageContext messageContext) {
             final CriteriaSet criteria = new CriteriaSet();
             criteria.add(new UsageCriterion(UsageType.SIGNING));
             

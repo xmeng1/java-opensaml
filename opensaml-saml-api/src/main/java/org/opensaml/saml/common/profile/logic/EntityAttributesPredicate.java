@@ -17,6 +17,7 @@
 
 package org.opensaml.saml.common.profile.logic;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +27,6 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.core.xml.schema.XSBase64Binary;
@@ -43,7 +43,6 @@ import org.opensaml.saml.saml2.metadata.Extensions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
@@ -55,7 +54,9 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotLive;
 import net.shibboleth.utilities.java.support.annotation.constraint.Unmodifiable;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * Predicate to determine whether an {@link EntityDescriptor} or its parent groups contain an {@link EntityAttributes}
@@ -137,6 +138,15 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
     public boolean getTrimTags() {
         return trimTags;
     }
+
+    /**
+     * Get whether all candidates must match.
+     * 
+     * @return  true iff all candidates have to match 
+     */
+    public boolean getMatchAll() {
+        return matchAll;
+    }
     
     /**
      * Get the candidate criteria.
@@ -149,8 +159,7 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
 
 // Checkstyle: CyclomaticComplexity OFF
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final EntityDescriptor input) {
+    public boolean test(@Nullable final EntityDescriptor input) {
         if (input == null) {
             return false;
         }
@@ -185,19 +194,22 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
         }
 
         if (entityAttributes == null || entityAttributes.isEmpty()) {
-            log.debug("no EntityAttributes extension found for {}", input.getEntityID());
+            log.trace("No Entity Attributes found for {}", input.getEntityID());
             return false;
         }
+        
+        log.trace("Checking for match against {} Entity Attributes for {}", entityAttributes.size(),
+                input.getEntityID());
         
         // If we find a matching tag, we win. Each tag is treated in OR fashion.
         final EntityAttributesMatcher matcher = new EntityAttributesMatcher(entityAttributes);
         
+        // Then we determine whether the overall set of tag containers is AND or OR.
         if (matchAll) {
-            return Iterables.all(candidateSet, matcher);
-        } else {
-            if (Iterables.tryFind(candidateSet, matcher).isPresent()) {
-                return true;
-            }
+            return Iterables.all(candidateSet, matcher::test);
+        }
+        if (Iterables.tryFind(candidateSet, matcher::test).isPresent()) {
+            return true;
         }
 
         return false;
@@ -321,9 +333,6 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
      */
     private class EntityAttributesMatcher implements Predicate<Candidate> {
         
-        /** Class logger. */
-        @Nonnull private final Logger log = LoggerFactory.getLogger(EntityAttributesPredicate.class);
-        
         /** Population to evaluate for a match. */
         private final Collection<Attribute> attributes;
         
@@ -335,10 +344,10 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
         public EntityAttributesMatcher(@Nonnull @NonnullElements final Collection<Attribute> attrs) {
             attributes = Constraint.isNotNull(attrs, "Extension attributes cannot be null");
         }
-                
+
+// Checkstyle: MethodLength OFF
         /** {@inheritDoc} */
-        @Override
-        public boolean apply(@Nonnull final Candidate input) {
+        public boolean test(@Nonnull final Candidate input) {
             final List<String> tagvals = input.values;
             final List<Pattern> tagexps = input.regexps;
 
@@ -352,19 +361,21 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
                 if (a.getName() != null && a.getName().equals(input.getName())
                         && (input.getNameFormat() == null || input.getNameFormat().equals(a.getNameFormat()))) {
 
+                    final List<String> attributeValues = getPossibleAttributeValuesAsStrings(a);
                     // Check each tag value's simple content for a value match.
                     for (int tagindex = 0; tagindex < tagvals.size(); ++tagindex) {
                         final String tagvalstr = tagvals.get(tagindex);
-
-                        final List<XMLObject> cvals = a.getAttributeValues();
-                        for (final XMLObject cval : cvals) {
-                            final String cvalstr = xmlObjectToString(cval);
+                        for (final String cvalstr: attributeValues) {
                             if (tagvalstr != null && cvalstr != null) {
                                 if (tagvalstr.equals(cvalstr)) {
+                                    log.trace("Matched Entity Attribute ({}:{}) value {}", a.getNameFormat(),
+                                            a.getName(), tagvalstr);
                                     valflags[tagindex] = true;
                                     break;
                                 } else if (trimTags) {
                                     if (tagvalstr.equals(cvalstr.trim())) {
+                                        log.trace("Matched Entity Attribute ({}:{}) value {}", a.getNameFormat(),
+                                                a.getName(), tagvalstr);
                                         valflags[tagindex] = true;
                                         break;
                                     }
@@ -375,12 +386,11 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
 
                     // Check each tag regular expression for a match.
                     for (int tagindex = 0; tagindex < tagexps.size(); ++tagindex) {
-
-                        final List<XMLObject> cvals = a.getAttributeValues();
-                        for (final XMLObject cval : cvals) {
-                            final String cvalstr = xmlObjectToString(cval);
+                        for (final String cvalstr: attributeValues) {
                             if (tagexps.get(tagindex) != null && cvalstr != null) {
                                 if (tagexps.get(tagindex).matcher(cvalstr).matches()) {
+                                    log.trace("Matched Entity Attribute ({}:{}) value {}", a.getNameFormat(),
+                                            a.getName(), cvalstr);
                                     expflags[tagindex] = true;
                                     break;
                                 }
@@ -404,27 +414,46 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
 
             return true;
         }
+// Checkstyle: MethodLength ON
+
+        /** Get all possible strings values for the attribute.  This copes with the fact that
+         * an attribute can return multiple values {@link Attribute#getAttributeValues()} and that some
+         * type of value can have multiple values (for instance a boolean can be 1/0/true/false).
+         *
+         * @param attribute what to inspect
+         * @return all possible values, as string.
+         */
+        @Nonnull List<String> getPossibleAttributeValuesAsStrings(final @Nonnull Attribute attribute) {
+            final List<XMLObject> cvals = attribute.getAttributeValues();
+            final List<String> result = new ArrayList<>(cvals.size()*2);
+            for (final XMLObject cval : cvals) {
+                result.addAll(xmlObjectToStrings(cval));
+            }
+            return result;
+        }
      
         /**
-         * Convert an XMLObject to a String if the type of recognized.
+         * Convert an XMLObject to an array of String which can represent the type, if recognized.
          * 
          * @param object object to convert
          * @return the converted value, or null
          */
-        @Nullable private String xmlObjectToString(@Nonnull final XMLObject object) {
+        @Nullable private List<String> xmlObjectToStrings(@Nonnull final XMLObject object) {
             String toMatch = null;
+            String toMatchAlt = null;
             if (object instanceof XSString) {
                 toMatch = ((XSString) object).getValue();
             } else if (object instanceof XSURI) {
                 toMatch = ((XSURI) object).getValue();
             } else if (object instanceof XSBoolean) {
                 toMatch = ((XSBoolean) object).getValue().getValue() ? "1" : "0";
+                toMatchAlt = ((XSBoolean) object).getValue().getValue() ? "true" : "false";
             } else if (object instanceof XSInteger) {
                 toMatch = ((XSInteger) object).getValue().toString();
             } else if (object instanceof XSDateTime) {
-                final DateTime dt = ((XSDateTime) object).getValue();
+                final Instant dt = ((XSDateTime) object).getValue();
                 if (dt != null) {
-                    toMatch = ((XSDateTime) object).getDateTimeFormatter().print(dt);
+                    toMatch = DOMTypeSupport.instantToString(dt);
                 }
             } else if (object instanceof XSBase64Binary) {
                 toMatch = ((XSBase64Binary) object).getValue();
@@ -434,12 +463,14 @@ public class EntityAttributesPredicate implements Predicate<EntityDescriptor> {
                     toMatch = wc.getTextContent();
                 }
             }
-            if (toMatch != null) {
-                return toMatch;
+            if (toMatchAlt != null) {
+                return List.of(toMatch, toMatchAlt);
+            } else if (toMatch != null) {
+                return Collections.singletonList(toMatch);
             }
             log.warn("Unrecognized XMLObject type ({}), unable to convert to a string for comparison",
                     object.getClass().getName());
-            return null;
+            return Collections.emptyList();
         }
     }
 // Checkstyle: CyclomaticComplexity OFF

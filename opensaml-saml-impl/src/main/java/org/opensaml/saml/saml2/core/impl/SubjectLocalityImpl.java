@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.SubjectLocality;
 
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.SubjectLocality}.
  */
-public class SubjectLocalityImpl extends AbstractSAMLObject implements SubjectLocality {
+public class SubjectLocalityImpl extends AbstractXMLObject implements SubjectLocality {
 
     /** The Address of the assertion. */
     private String address;

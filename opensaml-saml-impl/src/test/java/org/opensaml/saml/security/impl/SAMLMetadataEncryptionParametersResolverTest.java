@@ -292,7 +292,7 @@ public class SAMLMetadataEncryptionParametersResolverTest extends XMLObjectBaseT
         Assert.assertNotNull(params.getDataEncryptionCredential());
         Assert.assertNotNull(params.getDataEncryptionCredential().getSecretKey());
         Assert.assertEquals(params.getDataEncryptionAlgorithm(), defaultAES128DataAlgo);
-        Assert.assertEquals(KeySupport.getKeyLength(params.getDataEncryptionCredential().getSecretKey()), new Integer(128));
+        Assert.assertEquals(KeySupport.getKeyLength(params.getDataEncryptionCredential().getSecretKey()), Integer.valueOf(128));
         Assert.assertNotNull(params.getDataKeyInfoGenerator());
     }
     
@@ -749,11 +749,11 @@ public class SAMLMetadataEncryptionParametersResolverTest extends XMLObjectBaseT
     public class MapBasedKeyTransportAlgorithmPredicate implements KeyTransportAlgorithmPredicate {
         private Map<String,String> algoMap;
         
-        public MapBasedKeyTransportAlgorithmPredicate(Map<String,String> algoMap) {
-            this.algoMap = algoMap;
+        public MapBasedKeyTransportAlgorithmPredicate(Map<String,String> map) {
+            algoMap = map;
         }
         
-        public boolean apply(@Nullable SelectionInput input) {
+        public boolean test(@Nullable SelectionInput input) {
             return this.algoMap.get(input.getDataEncryptionAlgorithm()).equals(input.getKeyTransportAlgorithm());
         }
     }

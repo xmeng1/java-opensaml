@@ -18,6 +18,7 @@
 package org.opensaml.saml.saml2.binding.decoding.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -49,8 +50,7 @@ import com.google.common.base.Strings;
  * 
  * This decoder only supports DEFLATE compression.
  */
-public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessageDecoder<SAMLObject> 
-    implements SAMLMessageDecoder {
+public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessageDecoder implements SAMLMessageDecoder {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(HTTPRedirectDeflateDecoder.class);
@@ -83,7 +83,7 @@ public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessage
 
     /** {@inheritDoc} */
     protected void doDecode() throws MessageDecodingException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final HttpServletRequest request = getHttpServletRequest();
         
         if (!"GET".equalsIgnoreCase(request.getMethod())) {
@@ -99,22 +99,24 @@ public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessage
         log.debug("Decoded RelayState: {}", relayState);
         SAMLBindingSupport.setRelayState(messageContext, relayState);
 
-        final InputStream samlMessageIns;
-        if (!Strings.isNullOrEmpty(request.getParameter("SAMLRequest"))) {
-            samlMessageIns = decodeMessage(request.getParameter("SAMLRequest"));
-        } else if (!Strings.isNullOrEmpty(request.getParameter("SAMLResponse"))) {
-            samlMessageIns = decodeMessage(request.getParameter("SAMLResponse"));
+        final String samlMessageEncoded = !Strings.isNullOrEmpty(request.getParameter("SAMLRequest"))
+                ? request.getParameter("SAMLRequest") : request.getParameter("SAMLResponse");
+
+        if (samlMessageEncoded != null) {
+            try (final InputStream samlMessageIns = decodeMessage(samlMessageEncoded)) {
+                final SAMLObject samlMessage = (SAMLObject) unmarshallMessage(samlMessageIns);
+                messageContext.setMessage(samlMessage);
+                log.debug("Decoded SAML message");
+            } catch (final IOException e) {
+                throw new MessageDecodingException("InputStream exception decoding SAML message", e);
+            }
         } else {
             throw new MessageDecodingException(
                     "No SAMLRequest or SAMLResponse query path parameter, invalid SAML 2 HTTP Redirect message");
         }
 
-        final SAMLObject samlMessage = (SAMLObject) unmarshallMessage(samlMessageIns);
-        messageContext.setMessage(samlMessage);
-        log.debug("Decoded SAML message");
-
         populateBindingContext(messageContext);
-        
+
         setMessageContext(messageContext);
     }
 
@@ -137,9 +139,7 @@ public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessage
         }
         
         try {
-            final ByteArrayInputStream bytesIn = new ByteArrayInputStream(decodedBytes);
-            final InflaterInputStream inflater = new InflaterInputStream(bytesIn, new Inflater(true));
-            return inflater;
+            return new NoWrapAutoEndInflaterInputStream(new ByteArrayInputStream(decodedBytes));
         } catch (final Exception e) {
             log.error("Unable to Base64 decode and inflate SAML message", e);
             throw new MessageDecodingException("Unable to Base64 decode and inflate SAML message", e);
@@ -151,7 +151,7 @@ public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessage
      * 
      * @param messageContext the current message context
      */
-    protected void populateBindingContext(final MessageContext<SAMLObject> messageContext) {
+    protected void populateBindingContext(final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, true);
         bindingContext.setBindingUri(getBindingURI());
         bindingContext.setBindingDescriptor(bindingDescriptor);
@@ -160,4 +160,28 @@ public class HTTPRedirectDeflateDecoder extends BaseHttpServletRequestXMLMessage
         bindingContext.setIntendedDestinationEndpointURIRequired(SAMLBindingSupport.isMessageSigned(messageContext));
     }
     
+    /** A subclass of {@link InflaterInputStream} which defaults in a no-wrap {@link Inflater} instance and
+     * closes it when the stream is closed.
+     */
+    private class NoWrapAutoEndInflaterInputStream extends InflaterInputStream {
+
+        /**
+         * Creates a new input stream with a default no-wrap decompressor and buffer size.
+         *
+         * @param is the input stream
+         */
+        public NoWrapAutoEndInflaterInputStream(final InputStream is) {
+            super(is, new Inflater(true));
+        }
+
+        /** {@inheritDoc} */
+        public void close() throws IOException {
+            if (inf != null) {
+                inf.end();
+            }
+            super.close();
+        }
+
+    }
+
 }

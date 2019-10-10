@@ -18,6 +18,7 @@
 package org.opensaml.core.xml.persist;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,17 +44,17 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditionalLoadXMLObjectLoadSaveManager<T> {
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(MapLoadSaveManager.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(MapLoadSaveManager.class);
     
     /** The backing map. */
-    private Map<String,T> backingMap;
+    @Nonnull private Map<String,T> backingMap;
     
     /** Storage to track last modified time of data. */
-    private Map<String,Long> dataLastModified;
+    @Nonnull private Map<String,Instant> dataLastModified;
     
     /** Constructor. */
     public MapLoadSaveManager() {
-        this(new HashMap<String,T>(), new HashMap<String,Long>(), false);
+        this(new HashMap<>(), new HashMap<>(), false);
     }
 
     /** 
@@ -63,7 +64,7 @@ public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditional
      *      as defined in {@link ConditionalLoadXMLObjectLoadSaveManager}
      * */
     public MapLoadSaveManager(@ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
-        this(new HashMap<String,T>(), new HashMap<String,Long>(), conditionalLoad);
+        this(new HashMap<String,T>(), new HashMap<>(), conditionalLoad);
     }
 
     /**
@@ -78,7 +79,7 @@ public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditional
      * @param map the backing map 
      */
     public MapLoadSaveManager(@ParameterName(name="map") @Nonnull final Map<String, T> map) {
-        this(map, new HashMap<String,Long>(), false);
+        this(map, new HashMap<>(), false);
     }
     
     /**
@@ -91,7 +92,7 @@ public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditional
      */
     protected MapLoadSaveManager(
             @ParameterName(name="map") @Nonnull final Map<String, T> map,
-            @ParameterName(name="dataLastModified") @Nonnull final Map<String,Long> lastModifiedMap,
+            @ParameterName(name="dataLastModified") @Nonnull final Map<String,Instant> lastModifiedMap,
             @ParameterName(name="conditionalLoad") final boolean conditionalLoad) {
         super(conditionalLoad);
         backingMap = Constraint.isNotNull(map, "Backing map was null");
@@ -141,10 +142,9 @@ public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditional
     public void save(final String key, final T xmlObject, final boolean overwrite) throws IOException {
         if (!overwrite && exists(key)) {
             throw new IOException(String.format("Value already exists for key '%s'", key));
-        } else {
-            backingMap.put(key, xmlObject);
-            dataLastModified.put(key, System.currentTimeMillis());
         }
+        backingMap.put(key, xmlObject);
+        dataLastModified.put(key, Instant.now());
     }
 
     /** {@inheritDoc} */
@@ -163,24 +163,25 @@ public class MapLoadSaveManager<T extends XMLObject> extends AbstractConditional
         }
         if (backingMap.containsKey(newKey)) {
             throw new IOException(String.format("Specified new key already exists: %s", newKey));
-        } else {
-            backingMap.put(newKey, value);
-            backingMap.remove(currentKey);
-            
-            dataLastModified.put(newKey, dataLastModified.get(currentKey));
-            dataLastModified.remove(currentKey);
-            
-            updateLoadLastModified(newKey, getLoadLastModified(currentKey));
-            clearLoadLastModified(currentKey);
-            return true;
         }
+        
+        backingMap.put(newKey, value);
+        backingMap.remove(currentKey);
+        
+        dataLastModified.put(newKey, dataLastModified.get(currentKey));
+        dataLastModified.remove(currentKey);
+        
+        updateLoadLastModified(newKey, getLoadLastModified(currentKey));
+        clearLoadLastModified(currentKey);
+        return true;
     }
 
     /** {@inheritDoc} */
     protected boolean isUnmodifiedSinceLastLoad(@Nonnull final String key) throws IOException {
-        final Long lastModified = dataLastModified.get(key);
+        final Instant lastModified = dataLastModified.get(key);
         log.trace("Key '{}' last modified was: {}", key, lastModified);
-        return getLoadLastModified(key) != null && lastModified != null && lastModified <= getLoadLastModified(key);
+        return getLoadLastModified(key) != null && lastModified != null
+                && !lastModified.isAfter(getLoadLastModified(key));
     }
 
 }

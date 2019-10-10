@@ -17,6 +17,8 @@
 
 package org.opensaml.soap.client.http;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -29,8 +31,6 @@ import org.opensaml.soap.common.SOAPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
@@ -38,22 +38,18 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 /**
  * SOAP client that is based on {@link HttpClientMessagePipeline}, produced at runtime from an instance of
  * {@link HttpClientMessagePipelineFactory}.
- * 
- * @param <OutboundMessageType> the outbound message type
- * @param <InboundMessageType> the inbound message type
  */
 @ThreadSafe
-public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageType> 
-        extends AbstractPipelineHttpSOAPClient<OutboundMessageType, InboundMessageType> {
+public class PipelineFactoryHttpSOAPClient extends AbstractPipelineHttpSOAPClient {
     
     /** Logger. */
     private Logger log = LoggerFactory.getLogger(PipelineFactoryHttpSOAPClient.class);
     
     /** Factory for the client message pipeline. */
-    private HttpClientMessagePipelineFactory<InboundMessageType, OutboundMessageType> pipelineFactory;
+    private HttpClientMessagePipelineFactory pipelineFactory;
     
     /** Strategy function used to resolve the pipeline name to execute. */
-    private Function<InOutOperationContext<?, ?>, String> pipelineNameStrategy;
+    private Function<InOutOperationContext,String> pipelineNameStrategy;
     
     /**
      * Set the message pipeline factory.
@@ -61,7 +57,7 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
      * @param factory the message pipeline factory
      */
     public void setPipelineFactory(
-            @Nonnull final HttpClientMessagePipelineFactory<InboundMessageType, OutboundMessageType> factory) {
+            @Nonnull final HttpClientMessagePipelineFactory factory) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         
@@ -73,7 +69,7 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
      * 
      * @param function the strategy function, or null
      */
-    public void setPipelineNameStrategy(@Nullable final Function<InOutOperationContext<?, ?>, String> function) {
+    public void setPipelineNameStrategy(@Nullable final Function<InOutOperationContext,String> function) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         
@@ -121,8 +117,8 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
      * 
      * @throws SOAPException if there is an error obtaining a new pipeline instance
      */
-    @Nonnull protected HttpClientMessagePipeline<InboundMessageType, OutboundMessageType> 
-            resolvePipeline(final InOutOperationContext operationContext) throws SOAPException {
+    @Nonnull protected HttpClientMessagePipeline resolvePipeline(final InOutOperationContext operationContext)
+            throws SOAPException {
         
         String resolvedPipelineName = null;
         try {
@@ -130,9 +126,8 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
             log.debug("Resolved pipeline name: {}", resolvedPipelineName);
             if (resolvedPipelineName != null) {
                 return newPipeline(resolvedPipelineName);
-            } else {
-                return newPipeline();
             }
+            return newPipeline();
         } catch (final SOAPException e) {
             log.warn("Problem resolving pipeline instance with name: {}", resolvedPipelineName, e);
             throw e;
@@ -151,8 +146,7 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
      * </p>
      * 
      */
-    @Nonnull protected HttpClientMessagePipeline<InboundMessageType, OutboundMessageType> newPipeline() 
-            throws SOAPException {
+    @Nonnull protected HttpClientMessagePipeline newPipeline() throws SOAPException {
         // Note: in a Spring environment, the actual factory impl might be a proxy via ServiceLocatorFactoryBean
         return pipelineFactory.newInstance();
     }
@@ -175,8 +169,7 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
      * 
      * @throws SOAPException if there is an error obtaining a new pipeline instance
      */
-    @Nullable protected HttpClientMessagePipeline<InboundMessageType, OutboundMessageType> newPipeline(
-            @Nullable final String name) throws SOAPException {
+    @Nullable protected HttpClientMessagePipeline newPipeline(@Nullable final String name) throws SOAPException {
         // Note: in a Spring environment, the actual factory impl might be a proxy via ServiceLocatorFactoryBean
         return pipelineFactory.newInstance(name);
     }
@@ -190,9 +183,8 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
     @Nullable protected String resolvePipelineName(@Nonnull final InOutOperationContext operationContext) {
         if (pipelineNameStrategy != null) {
             return pipelineNameStrategy.apply(operationContext);
-        } else {
-            return null;
         }
+        return null;
     }
     
     
@@ -200,19 +192,18 @@ public class PipelineFactoryHttpSOAPClient<OutboundMessageType, InboundMessageTy
      * Default strategy for resolving SOAP client message pipeline name from the 
      * {@link SOAPClientContext#getPipelineName()} which is a direct child of the input operation context.
      */
-    public static class DefaultPipelineNameStrategy implements Function<InOutOperationContext<?,?>, String> {
+    public static class DefaultPipelineNameStrategy implements Function<InOutOperationContext,String> {
 
         /** {@inheritDoc} */
-        public String apply(@Nullable final InOutOperationContext<?, ?> opContext) {
+        public String apply(@Nullable final InOutOperationContext opContext) {
             if (opContext == null) {
                 return null;
             }
             final SOAPClientContext context = opContext.getSubcontext(SOAPClientContext.class);
             if (context != null) {
                 return context.getPipelineName();
-            } else {
-                return null;
             }
+            return null;
         }
         
     }

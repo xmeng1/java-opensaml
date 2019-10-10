@@ -37,7 +37,7 @@ import org.testng.annotations.Test;
 /** {@link AddStatusToResponse} unit test. */
 public class AddStatusToResponseTest extends OpenSAMLInitBaseTestCase {
     
-    private ProfileRequestContext<Object,Response> prc;
+    private ProfileRequestContext prc;
     
     private AddStatusToResponse action;
     
@@ -53,7 +53,7 @@ public class AddStatusToResponseTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        final Response response = prc.getOutboundMessageContext().getMessage();
+        final Response response = (Response) prc.getOutboundMessageContext().getMessage();
 
         final Status status = response.getStatus();
         Assert.assertNotNull(status);
@@ -72,7 +72,7 @@ public class AddStatusToResponseTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        final Response response = prc.getOutboundMessageContext().getMessage();
+        final Response response = (Response) prc.getOutboundMessageContext().getMessage();
 
         final Status status = response.getStatus();
         Assert.assertNotNull(status);
@@ -93,7 +93,7 @@ public class AddStatusToResponseTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
         
-        final Response response = prc.getOutboundMessageContext().getMessage();
+        final Response response = (Response) prc.getOutboundMessageContext().getMessage();
 
         final Status status = response.getStatus();
         Assert.assertNotNull(status);

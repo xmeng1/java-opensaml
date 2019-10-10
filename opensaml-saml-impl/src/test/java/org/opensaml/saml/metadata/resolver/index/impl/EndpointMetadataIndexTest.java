@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.xml.namespace.QName;
 
@@ -44,7 +45,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
 
@@ -122,7 +122,7 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
         criteriaSet.add(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
         endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setLocation(location1);
-        criteriaSet.add(new EndpointCriterion<Endpoint>(endpoint));
+        criteriaSet.add(new EndpointCriterion<>(endpoint));
         keys = metadataIndex.generateKeys(criteriaSet);
         Assert.assertNotNull(keys);
         Assert.assertEquals(keys.size(), 1);
@@ -134,7 +134,7 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
         endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setLocation(location1);
         endpoint.setResponseLocation(responseLocation1);
-        criteriaSet.add(new EndpointCriterion<Endpoint>(endpoint));
+        criteriaSet.add(new EndpointCriterion<>(endpoint));
         keys = metadataIndex.generateKeys(criteriaSet);
         Assert.assertNotNull(keys);
         Assert.assertEquals(keys.size(), 2);
@@ -146,7 +146,7 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
         criteriaSet.add(new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME));
         endpoint = buildXMLObject(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
         endpoint.setLocation("https://www.example.com/cas/someEndpoint1/foo/bar/");
-        criteriaSet.add(new EndpointCriterion<Endpoint>(endpoint));
+        criteriaSet.add(new EndpointCriterion<>(endpoint));
         criteriaSet.add(new StartsWithLocationCriterion());
         keys = metadataIndex.generateKeys(criteriaSet);
         Assert.assertNotNull(keys);
@@ -171,6 +171,10 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
                 "https://www.example.com/", false)));
         Assert.assertTrue(keys.contains(new EndpointMetadataIndex.EndpointMetadataIndexKey(SPSSODescriptor.DEFAULT_ELEMENT_NAME, AssertionConsumerService.DEFAULT_ELEMENT_NAME, 
                 "https://www.example.com", false)));
+        //IDP-1467
+        Assert.assertTrue(keys.contains(new EndpointMetadataIndex.EndpointMetadataIndexKey(SPSSODescriptor.DEFAULT_ELEMENT_NAME, AssertionConsumerService.DEFAULT_ELEMENT_NAME, 
+                "https://www.example.com?organization_id=5b7653fb3bf5f0014f000456&redirect_url=&url", false)));
+        
     }
     
     @Test
@@ -246,26 +250,26 @@ public class EndpointMetadataIndexTest extends XMLObjectBaseTestCase {
         role.getAssertionConsumerServices().add(endpoint);
         
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate();
-        Assert.assertFalse(predicate.apply(endpoint));
+        Assert.assertFalse(predicate.test(endpoint));
         
         indexableEndpoints = Collections.emptyMap();
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate(indexableEndpoints);
-        Assert.assertFalse(predicate.apply(endpoint));
+        Assert.assertFalse(predicate.test(endpoint));
         
         indexableEndpoints = new HashMap<>();
         indexableEndpoints.put(SPSSODescriptor.DEFAULT_ELEMENT_NAME, Sets.newHashSet(ArtifactResolutionService.DEFAULT_ELEMENT_NAME));
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate(indexableEndpoints);
-        Assert.assertFalse(predicate.apply(endpoint));
+        Assert.assertFalse(predicate.test(endpoint));
         
         indexableEndpoints = new HashMap<>();
         indexableEndpoints.put(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, Sets.newHashSet(ArtifactResolutionService.DEFAULT_ELEMENT_NAME));
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate(indexableEndpoints);
-        Assert.assertFalse(predicate.apply(endpoint));
+        Assert.assertFalse(predicate.test(endpoint));
         
         indexableEndpoints = new HashMap<>();
         indexableEndpoints.put(SPSSODescriptor.DEFAULT_ELEMENT_NAME, Sets.newHashSet(AssertionConsumerService.DEFAULT_ELEMENT_NAME));
         predicate = new EndpointMetadataIndex.DefaultEndpointSelectionPredicate(indexableEndpoints);
-        Assert.assertTrue(predicate.apply(endpoint));
+        Assert.assertTrue(predicate.test(endpoint));
     }
     
     @Test

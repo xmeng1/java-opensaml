@@ -82,9 +82,9 @@ public class AuthnRequestTest extends RequestTestBase {
         expectedForceAuthn = new XSBooleanValue(Boolean.TRUE, false);
         expectedIsPassive = new XSBooleanValue(Boolean.TRUE, false);
         expectedProtocolBinding = "urn:string:protocol-binding";
-        expectedAssertionConsumerServiceIndex = new Integer(3);
+        expectedAssertionConsumerServiceIndex = Integer.valueOf(3);
         expectedAssertionConsumerServiceURL = "http://sp.example.org/acs";
-        expectedAttributeConsumingServiceIndex = new Integer(2);
+        expectedAttributeConsumingServiceIndex = Integer.valueOf(2);
         expectedProviderName = "Example Org";
     }
 

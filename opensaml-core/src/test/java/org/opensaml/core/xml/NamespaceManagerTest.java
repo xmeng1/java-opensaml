@@ -278,9 +278,8 @@ public class NamespaceManagerTest extends XMLObjectBaseTestCase {
         if (Objects.equals(ns1.getNamespaceURI(), ns2.getNamespaceURI()) 
                 && Objects.equals(ns1.getNamespacePrefix(), ns2.getNamespacePrefix())) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
     
     private Namespace findNamespace(NamespaceManager manager, Namespace ns) {

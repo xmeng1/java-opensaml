@@ -17,7 +17,11 @@
 
 package org.opensaml.saml.saml1.core;
 
-import org.joda.time.DateTime;
+import java.time.Instant;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.SignableSAMLObject;
 
@@ -27,22 +31,26 @@ import org.opensaml.saml.common.SignableSAMLObject;
 public interface ResponseAbstractType extends SignableSAMLObject {
 
     /** Name for the attribute which defines InResponseTo. */
-    public static final String INRESPONSETO_ATTRIB_NAME = "InResponseTo";
+    static final String INRESPONSETO_ATTRIB_NAME = "InResponseTo";
 
-    /** Name for the attribute which defines the Major Version (which must be "1". */
-    public static final String MAJORVERSION_ATTRIB_NAME = "MajorVersion";
+    /** Name for the attribute which defines the MajorVersion (which must be "1". */
+    static final String MAJORVERSION_ATTRIB_NAME = "MajorVersion";
 
-    /** Name for the attribute which defines the Minor Version. */
-    public static final String MINORVERSION_ATTRIB_NAME = "MinorVersion";
+    /** Name for the attribute which defines the MinorVersion. */
+    static final String MINORVERSION_ATTRIB_NAME = "MinorVersion";
 
-    /** Name for the attribute which defines the Issue Instant. */
-    public static final String ISSUEINSTANT_ATTRIB_NAME = "IssueInstant";
+    /** Name for the attribute which defines the IssueInstant. */
+    static final String ISSUEINSTANT_ATTRIB_NAME = "IssueInstant";
 
+    /** QName for the attribute which defines the IssueInstant. */
+    static final QName ISSUEINSTANT_ATTRIB_QNAME =
+            new QName(null, "IssueInstant", XMLConstants.DEFAULT_NS_PREFIX);
+    
     /** Name for the attribute which defines the Recipient. */
-    public static final String RECIPIENT_ATTRIB_NAME = "Recipient";
+    static final String RECIPIENT_ATTRIB_NAME = "Recipient";
 
-    /** Name for the attribute which defines the Issue Instant. */
-    public static final String ID_ATTRIB_NAME = "ResponseID";
+    /** Name for the attribute which defines the ResponseID. */
+    static final String ID_ATTRIB_NAME = "ResponseID";
 
     /**
      * Return the InResponseTo (attribute).
@@ -63,50 +71,50 @@ public interface ResponseAbstractType extends SignableSAMLObject {
      * 
      * @return the ID
      */
-    public String getID();
+    String getID();
 
     /**
      * Set the ID.
      * 
      * @param id what to set
      */
-    public void setID(String id);
+    void setID(String id);
 
     /**
      * Sets the SAML version for this message.
      * 
      * @return SAML version for this message
      */
-    public SAMLVersion getVersion();
+    SAMLVersion getVersion();
 
     /**
      * Sets the SAML version for this message.
      * 
      * @param version the SAML version for this message
      */
-    public void setVersion(SAMLVersion version);
+    void setVersion(SAMLVersion version);
 
     /**
      * Return the Issue Instant (attribute).
      * 
      * @return the IssueInstant
      */
-    public DateTime getIssueInstant();
+    Instant getIssueInstant();
 
     /** Set the Issue Instant (attribute).     * 
      * @param date what to set
      */
-    public void setIssueInstant(DateTime date);
+    void setIssueInstant(Instant date);
 
     /**
      * Return the Recipient (attribute). .
      * 
      * @return the Recipient
      */
-    public String getRecipient();
+    String getRecipient();
 
     /** Set the Recipient (attribute).     * 
      * @param recipient what to set
      */
-    public void setRecipient(String recipient);
+    void setRecipient(String recipient);
 }

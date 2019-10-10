@@ -32,6 +32,7 @@ import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.common.SignableSAMLObject;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.security.SecurityException;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.security.crypto.KeySupport;
@@ -64,10 +65,14 @@ public class SignatureValidationFilterPKIXTest extends XMLObjectBaseTestCase {
     
     private SignatureValidationFilter filter;
     
+    private MetadataFilterContext filterContext;
+
     @BeforeMethod
     public void setUp() {
         filter = new SignatureValidationFilter(buildTrustEngine());
         filter.setDynamicTrustedNamesStrategy(new BasicDynamicTrustedNamesStrategy());
+
+        filterContext = new MetadataFilterContext();
     }
     
     @Test
@@ -75,7 +80,7 @@ public class SignatureValidationFilterPKIXTest extends XMLObjectBaseTestCase {
         Credential signingCredential = buildSigningCredential("entity.key", "entity.crt", "ca.crt");
         XMLObject entityDescriptor = generateSignedMetadata(signingCredential, "EntityDescriptor.xml");
         
-        filter.filter(entityDescriptor);
+        filter.filter(entityDescriptor, filterContext);
     }
     
     @Test(expectedExceptions=FilterException.class)
@@ -86,7 +91,7 @@ public class SignatureValidationFilterPKIXTest extends XMLObjectBaseTestCase {
         // will not match.
         XMLObject entityDescriptor = generateSignedMetadata(signingCredential, "EntityDescriptor-invalid-entityid.xml");
         
-        filter.filter(entityDescriptor);
+        filter.filter(entityDescriptor, filterContext);
     }
 
     private XMLObject generateSignedMetadata(Credential signingCredential, String unsignedMetadata) 

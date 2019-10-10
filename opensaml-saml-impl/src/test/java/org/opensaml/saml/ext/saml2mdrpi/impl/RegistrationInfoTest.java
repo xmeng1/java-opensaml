@@ -17,8 +17,8 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationInfo;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationPolicy;
@@ -30,7 +30,7 @@ public class RegistrationInfoTest extends XMLObjectProviderBaseTestCase {
 
     private static String expectedAuthority = "https://www.aai.dfn.de";
 
-    private static DateTime expectedRegistrationInstant = new DateTime(2010, 8, 11, 14, 59, 1, 2, ISOChronology.getInstanceUTC());
+    private static Instant expectedRegistrationInstant = Instant.parse("2010-08-11T14:59:01.002Z");
 
     private static String[] langs = {"en", "de",};
     private static String[] uris = {"grhttps://www.aai.dfn.de/en/join/","https://www.aai.dfn.de/teilnahme/",};

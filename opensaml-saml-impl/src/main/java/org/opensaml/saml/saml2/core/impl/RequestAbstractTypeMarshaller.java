@@ -24,12 +24,13 @@ package org.opensaml.saml.saml2.core.impl;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml2.core.RequestAbstractType;
 import org.w3c.dom.Element;
 
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
+
 /**
- * A thread safe Marshaller for {@link org.opensaml.saml.saml2.core.RequestAbstractType} objects.
+ * A thread safe Marshaller for {@link RequestAbstractType} objects.
  */
 public abstract class RequestAbstractTypeMarshaller extends AbstractSAMLObjectMarshaller {
 
@@ -52,8 +53,8 @@ public abstract class RequestAbstractTypeMarshaller extends AbstractSAMLObjectMa
         }
 
         if (req.getIssueInstant() != null) {
-            final String iiStr = SAMLConfigurationSupport.getSAMLDateFormatter().print(req.getIssueInstant());
-            domElement.setAttributeNS(null, RequestAbstractType.ISSUE_INSTANT_ATTRIB_NAME, iiStr);
+            AttributeSupport.appendDateTimeAttribute(domElement, RequestAbstractType.ISSUE_INSTANT_ATTRIB_QNAME,
+                    req.getIssueInstant());
         }
 
         if (req.getDestination() != null) {
@@ -64,4 +65,5 @@ public abstract class RequestAbstractTypeMarshaller extends AbstractSAMLObjectMa
             domElement.setAttributeNS(null, RequestAbstractType.CONSENT_ATTRIB_NAME, req.getConsent());
         }
     }
+    
 }

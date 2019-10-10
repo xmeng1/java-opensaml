@@ -75,9 +75,8 @@ public class MetadataIndexStore<T> {
         final Set<T> items = index.get(key);
         if (items == null) {
             return Collections.emptySet();
-        } else {
-            return ImmutableSet.copyOf(items);
         }
+        return ImmutableSet.copyOf(items);
     }
     
     /**

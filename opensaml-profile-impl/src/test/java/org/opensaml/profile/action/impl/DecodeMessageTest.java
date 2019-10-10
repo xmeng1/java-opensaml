@@ -87,7 +87,7 @@ public class DecodeMessageTest {
      * Mock implementation of {@link MessageDecoder } which either returns a  
      * {@link MessageContext} with a mock message or throws a {@link MessageDecodingException}.
      */
-    class MockMessageDecoder extends AbstractMessageDecoder<MockMessage> {
+    class MockMessageDecoder extends AbstractMessageDecoder {
 
         /** Whether a {@link MessageDecodingException} should be thrown by {@link #doDecode()}. */
         private boolean throwException = false;
@@ -117,15 +117,14 @@ public class DecodeMessageTest {
         protected void doDecode() throws MessageDecodingException {
             if (throwException) {
                 throw new MessageDecodingException();
-            } else {
-                final MessageContext<MockMessage> messageContext = new MessageContext<>();
-                if (message != null) {
-                    messageContext.setMessage(message);
-                } else {
-                    messageContext.setMessage(new MockMessage());
-                }
-                setMessageContext(messageContext);
             }
+            final MessageContext messageContext = new MessageContext();
+            if (message != null) {
+                messageContext.setMessage(message);
+            } else {
+                messageContext.setMessage(new MockMessage());
+            }
+            setMessageContext(messageContext);
         }
 
     }

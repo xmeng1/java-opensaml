@@ -20,6 +20,7 @@ package org.opensaml.saml.metadata.resolver.filter.impl;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,6 +36,7 @@ import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.saml2.metadata.AttributeAuthorityDescriptor;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -45,7 +47,6 @@ import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -110,7 +111,8 @@ public class NameIDFormatFilter extends AbstractInitializableComponent implement
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public XMLObject filter(@Nullable final XMLObject metadata) throws FilterException {
+    @Nullable public XMLObject filter(@Nullable final XMLObject metadata, @Nonnull final MetadataFilterContext context)
+            throws FilterException {
         ComponentSupport.ifNotInitializedThrowUninitializedComponentException(this);
         
         if (metadata == null) {
@@ -133,7 +135,7 @@ public class NameIDFormatFilter extends AbstractInitializableComponent implement
      */
     protected void filterEntityDescriptor(@Nonnull final EntityDescriptor descriptor) {
         for (final Map.Entry<Predicate<EntityDescriptor>,Collection<String>> entry : applyMap.asMap().entrySet()) {
-            if (!entry.getValue().isEmpty() && entry.getKey().apply(descriptor)) {
+            if (!entry.getValue().isEmpty() && entry.getKey().test(descriptor)) {
                 for (final RoleDescriptor role : descriptor.getRoleDescriptors()) {
                     filterRoleDescriptor(role, entry.getValue());
                 }

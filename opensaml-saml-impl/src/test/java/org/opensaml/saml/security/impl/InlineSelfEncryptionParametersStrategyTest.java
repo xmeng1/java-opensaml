@@ -21,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
@@ -46,7 +47,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 /**
@@ -126,7 +126,7 @@ public class InlineSelfEncryptionParametersStrategyTest extends OpenSAMLInitBase
     public void testConfigLookup() {
         resolverCreds.add(cred1);
         
-        Function<ProfileRequestContext, List<EncryptionConfiguration>> configStrategy = new Function<ProfileRequestContext, List<EncryptionConfiguration>>() {
+        Function<ProfileRequestContext, List<EncryptionConfiguration>> configStrategy = new Function<>() {
             public List<EncryptionConfiguration> apply(@Nullable ProfileRequestContext input) {
                 BasicEncryptionConfiguration selfConfig = new BasicEncryptionConfiguration();
                 RSAOAEPParameters rsaParams = new RSAOAEPParameters();

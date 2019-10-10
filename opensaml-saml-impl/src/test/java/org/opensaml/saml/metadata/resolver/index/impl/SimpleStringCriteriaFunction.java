@@ -20,6 +20,7 @@ package org.opensaml.saml.metadata.resolver.index.impl;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
@@ -27,8 +28,6 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 import org.opensaml.saml.metadata.resolver.index.MetadataIndexKey;
 import org.opensaml.saml.metadata.resolver.index.SimpleStringMetadataIndexKey;
-
-import com.google.common.base.Function;
 
 public class SimpleStringCriteriaFunction implements Function<CriteriaSet, Set<MetadataIndexKey>> {
     

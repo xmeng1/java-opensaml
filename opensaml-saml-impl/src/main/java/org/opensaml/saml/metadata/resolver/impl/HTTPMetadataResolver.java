@@ -23,31 +23,23 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Timer;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.net.ssl.SSLPeerUnverifiedException;
 
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.util.EntityUtils;
-import org.opensaml.security.httpclient.HttpClientSecurityConstants;
 import org.opensaml.security.httpclient.HttpClientSecurityParameters;
 import org.opensaml.security.httpclient.HttpClientSecuritySupport;
-import org.opensaml.security.trust.TrustEngine;
-import org.opensaml.security.x509.X509Credential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +60,7 @@ import org.slf4j.LoggerFactory;
 public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(HTTPMetadataResolver.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(HTTPMetadataResolver.class);
 
     /** HTTP Client used to pull the metadata. */
     private HttpClient httpClient;
@@ -82,16 +74,6 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
     /** The Last-Modified information provided when the currently cached metadata was fetched. */
     private String cachedMetadataLastModified;
 
-    /** HttpClient credentials provider. 
-     * @deprecated use {@link #httpClientSecurityParameters}.
-     * */
-    @Nullable private BasicCredentialsProvider credentialsProvider;
-    
-    /** Optional trust engine used in evaluating server TLS credentials. 
-     * @deprecated use {@link #httpClientSecurityParameters}.
-     * */
-    @Nullable private TrustEngine<? super X509Credential> tlsTrustEngine;
-    
     /** Optional HttpClient security parameters.*/
     @Nullable private HttpClientSecurityParameters httpClientSecurityParameters;
 
@@ -140,78 +122,7 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
     public String getMetadataURI() {
         return metadataURI.toASCIIString();
     }
-    
-    /**
-     * Sets the optional trust engine used in evaluating server TLS credentials.
-     * 
-     * <p>
-     * See TLS socket factory requirements documented for 
-     * {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}.
-     * </p>
-     * 
-     * @param engine the trust engine instance to use
-     * 
-     * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
-     */
-    public void setTLSTrustEngine(@Nullable final TrustEngine<? super X509Credential> engine) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setTLSTrustEngine", 
-                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
-        tlsTrustEngine = engine;
-    }
-
-    /**
-     * Sets the username and password used to access the metadata URL. To disable BASIC authentication pass null for the
-     * credentials instance.
-     * 
-     * An {@link AuthScope} will be generated based off the metadata URI's hostname and port.
-     * 
-     * @param credentials the username and password credentials
-     * 
-     * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
-     */
-    public void setBasicCredentials(@Nullable final UsernamePasswordCredentials credentials) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentials", 
-                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
-        setBasicCredentialsWithScope(credentials, null);
-    }
-
-    /**
-     * Sets the username and password used to access the metadata URL. To disable BASIC authentication pass null for the
-     * credentials instance.
-     * 
-     * <p>
-     * If the <code>authScope</code> is null, an {@link AuthScope} will be generated based off the metadata URI's
-     * hostname and port.
-     * </p>
-     * 
-     * @param credentials the username and password credentials
-     * @param scope the HTTP client auth scope with which to scope the credentials, may be null
-     * 
-     * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
-     */
-    public void setBasicCredentialsWithScope(@Nullable final UsernamePasswordCredentials credentials,
-            @Nullable final AuthScope scope) {
-        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
-        ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
         
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentialsWithScope", 
-                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
-
-        if (credentials != null) {
-            AuthScope authScope = scope;
-            if (authScope == null) {
-                authScope = new AuthScope(metadataURI.getHost(), metadataURI.getPort());
-            }
-            final BasicCredentialsProvider provider = new BasicCredentialsProvider();
-            provider.setCredentials(authScope, credentials);
-            credentialsProvider = provider;
-        } else {
-            log.debug("Either username or password were null, disabling basic auth");
-            credentialsProvider = null;
-        }
-
-    }
-    
     /**
      * Get the instance of {@link HttpClientSecurityParameters} which provides various parameters to influence
      * the security behavior of the HttpClient instance.
@@ -260,8 +171,6 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
     @Override
     protected void doDestroy() {
         httpClient = null;
-        tlsTrustEngine = null;
-        credentialsProvider = null;
         httpClientSecurityParameters = null;
         metadataURI = null;
         cachedMetadataETag = null;
@@ -332,21 +241,6 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
     }
 
     /**
-     * Check that trust engine evaluation of the server TLS credential was actually performed.
-     * 
-     * @param context the current HTTP context instance in use
-     * @throws SSLPeerUnverifiedException thrown if the TLS credential was not actually evaluated by the trust engine
-     * 
-     * @deprecated use {@link HttpClientSecuritySupport#checkTLSCredentialEvaluated(HttpClientContext, String)}
-     */
-    @Deprecated
-    protected void checkTLSCredentialTrusted(final HttpClientContext context) throws SSLPeerUnverifiedException {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName()+ ".checkTLSCredentialTrusted", 
-                null, "HttpClientSecuritySupport.checkTLSCredentialEvaluated(..)");
-        HttpClientSecuritySupport.checkTLSCredentialEvaluated(context, metadataURI.getScheme());
-    }
-
-    /**
      * Builds the {@link HttpGet} instance used to fetch the metadata. The returned method advertises support for GZIP
      * and deflate compression, enables conditional GETs if the cached metadata came with either an ETag or
      * Last-Modified information, and sets up basic authentication if such is configured.
@@ -365,19 +259,6 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
 
         return getMethod;
     }
-
-    /**
-     * Build the {@link HttpClientContext} instance which will be used to invoke the {@link HttpClient} request.
-     * 
-     * @return a new instance of {@link HttpClientContext}
-     * 
-     * @deprecated use {@link #buildHttpClientContext(HttpUriRequest)}
-     */
-    protected HttpClientContext buildHttpClientContext() {
-        //TODO when we remove this deprecated method, change called method to @Nonnull for request
-        DeprecationSupport.warn(ObjectType.METHOD, getClass().getName() + ".buildHttpClientContext()", null, null);
-        return buildHttpClientContext(null);
-    }
     
     /**
      * Build the {@link HttpClientContext} instance which will be used to invoke the {@link HttpClient} request.
@@ -386,23 +267,12 @@ public class HTTPMetadataResolver extends AbstractReloadingMetadataResolver {
      * 
      * @return a new instance of {@link HttpClientContext}
      */
-    protected HttpClientContext buildHttpClientContext(@Nullable final HttpUriRequest request) {
+    protected HttpClientContext buildHttpClientContext(@Nonnull final HttpUriRequest request) {
         // TODO Really request should be @Nonnull, change when we remove deprecated buildHttpClientContext()
         final HttpClientContext context = HttpClientContext.create();
         
         HttpClientSecuritySupport.marshalSecurityParameters(context, httpClientSecurityParameters, true);
-        
-        // If these legacy values are present, let them override the above params instance values unconditionally
-        if (credentialsProvider != null) {
-            context.setCredentialsProvider(credentialsProvider);
-        }
-        if (tlsTrustEngine != null) {
-            context.setAttribute(HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE, tlsTrustEngine);
-        }
-        
-        if (request != null) {
-            HttpClientSecuritySupport.addDefaultTLSTrustEngineCriteria(context, request);
-        }
+        HttpClientSecuritySupport.addDefaultTLSTrustEngineCriteria(context, request);
         
         return context;
     }

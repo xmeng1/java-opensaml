@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.SessionIndex;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.SessionIndex}.
  */
-public class SessionIndexImpl extends AbstractSAMLObject implements SessionIndex {
+public class SessionIndexImpl extends AbstractXMLObject implements SessionIndex {
 
     /** The session index value. */
     private String sessionIndex;

@@ -20,10 +20,11 @@ package org.opensaml.saml.saml2.core.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLVersion;
@@ -43,7 +44,7 @@ public abstract class RequestTestBase extends XMLObjectProviderBaseTestCase {
     protected SAMLVersion expectedSAMLVersion;
 
     /** Expected IssueInstant attribute */
-    protected DateTime expectedIssueInstant;
+    protected Instant expectedIssueInstant;
 
     /** Expected Destination attribute */
     protected String expectedDestination;
@@ -66,7 +67,7 @@ public abstract class RequestTestBase extends XMLObjectProviderBaseTestCase {
     protected void setUp() throws Exception {
         expectedID = "abc123";
         expectedSAMLVersion = SAMLVersion.VERSION_20;
-        expectedIssueInstant = new DateTime(2006, 2, 21, 16, 40, 0, 0, ISOChronology.getInstanceUTC());
+        expectedIssueInstant = Instant.parse("2006-02-21T16:40:00.000Z");
         expectedDestination = "http://idp.example.org/endpoint";
         expectedConsent = "urn:string:consent";
 

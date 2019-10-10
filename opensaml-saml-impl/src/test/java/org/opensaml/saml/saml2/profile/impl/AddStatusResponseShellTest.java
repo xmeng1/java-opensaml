@@ -36,8 +36,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
-
 /** {@link AddStatusResponseShell} unit test. */
 public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
 
@@ -50,11 +48,7 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         issuer = null;
 
         action = new AddStatusResponseShell();
-        action.setIssuerLookupStrategy(new Function<ProfileRequestContext,String>() {
-            public String apply(ProfileRequestContext input) {
-                return issuer;
-            }
-        });
+        action.setIssuerLookupStrategy(prc -> issuer);
     }
 
     @Test public void testAddResponse() throws ComponentInitializationException {
@@ -66,8 +60,8 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<Response> outMsgCtx = prc.getOutboundMessageContext();
-        final Response response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final Response response = (Response) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getID());
@@ -93,8 +87,8 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<Response> outMsgCtx = prc.getOutboundMessageContext();
-        final Response response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final Response response = (Response) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         
@@ -122,8 +116,8 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<ArtifactResponse> outMsgCtx = prc.getOutboundMessageContext();
-        final ArtifactResponse response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final ArtifactResponse response = (ArtifactResponse) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getID());
@@ -147,8 +141,8 @@ public class AddStatusResponseShellTest extends OpenSAMLInitBaseTestCase {
         action.execute(prc);
         ActionTestingSupport.assertProceedEvent(prc);
 
-        final MessageContext<LogoutResponse> outMsgCtx = prc.getOutboundMessageContext();
-        final LogoutResponse response = outMsgCtx.getMessage();
+        final MessageContext outMsgCtx = prc.getOutboundMessageContext();
+        final LogoutResponse response = (LogoutResponse) outMsgCtx.getMessage();
 
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getID());

@@ -17,9 +17,11 @@
 
 package org.opensaml.core.xml.schema;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.xml.XMLConstants;
 
 import org.opensaml.core.xml.AttributeExtensibleXMLObject;
@@ -31,22 +33,22 @@ import org.opensaml.core.xml.ElementExtensibleXMLObject;
 public interface XSAny extends ElementExtensibleXMLObject, AttributeExtensibleXMLObject {
 
     /** Local name of the XSI type. */
-    public static final String TYPE_LOCAL_NAME = "anyType"; 
+    @Nonnull @NotEmpty static final String TYPE_LOCAL_NAME = "anyType"; 
         
     /** QName of the XSI type. */
-    public static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
+    @Nonnull static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
     
     /**
      * Gets the text content for the DOM Element.
      * 
      * @return the text content for the DOM Element, or null
      */
-    @Nullable public String getTextContent();
+    @Nullable String getTextContent();
 
     /**
      * Sets the text content for the DOM Element.
      * 
      * @param newContent the text content for the DOM Element
      */
-    public void setTextContent(@Nullable final String newContent);
+    void setTextContent(@Nullable final String newContent);
 }

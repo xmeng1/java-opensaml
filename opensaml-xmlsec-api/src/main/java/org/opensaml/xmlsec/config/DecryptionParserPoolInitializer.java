@@ -22,8 +22,6 @@ import java.util.HashMap;
 import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.Initializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.xml.BasicParserPool;
@@ -41,9 +39,6 @@ import net.shibboleth.utilities.java.support.xml.BasicParserPool;
  * 
  */
 public class DecryptionParserPoolInitializer implements Initializer {
-    
-    /** Logger. */
-    private Logger log = LoggerFactory.getLogger(DecryptionParserPoolInitializer.class);
 
     /** {@inheritDoc} */
     public void init() throws InitializationException {

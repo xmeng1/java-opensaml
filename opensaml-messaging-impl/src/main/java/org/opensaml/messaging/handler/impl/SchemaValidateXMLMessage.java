@@ -20,6 +20,7 @@ package org.opensaml.messaging.handler.impl;
 import java.io.IOException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
@@ -37,17 +38,18 @@ import org.xml.sax.SAXException;
 /**
  * A handler that schema validates an XML-based message.
  * 
- * @param <MessageType> type of message on which to operate
- * 
  * @pre <pre>MessageContext.getMessage().getDOM() != null</pre>
  */
-public class SchemaValidateXMLMessage<MessageType extends XMLObject> extends AbstractMessageHandler<MessageType> {
+public class SchemaValidateXMLMessage extends AbstractMessageHandler {
 
     /** Class logger. */
-    private Logger log = LoggerFactory.getLogger(SchemaValidateXMLMessage.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(SchemaValidateXMLMessage.class);
 
     /** Schema used to validate incoming messages. */
-    private final Schema validationSchema;
+    @Nonnull private final Schema validationSchema;
+    
+    /** The message to validate. */
+    @Nullable private XMLObject message;
 
     /**
      * Constructor.
@@ -55,7 +57,6 @@ public class SchemaValidateXMLMessage<MessageType extends XMLObject> extends Abs
      * @param schema schema used to validate incoming messages
      */
     public SchemaValidateXMLMessage(@Nonnull final Schema schema) {
-        super();
         validationSchema = Constraint.isNotNull(schema, "Schema cannot be null");
     }
 
@@ -69,7 +70,7 @@ public class SchemaValidateXMLMessage<MessageType extends XMLObject> extends Abs
     }
 
     /** {@inheritDoc} */
-    protected boolean doPreInvoke(@Nonnull final MessageContext<MessageType> messageContext)
+    protected boolean doPreInvoke(@Nonnull final MessageContext messageContext)
             throws MessageHandlerException {
         
         if (!super.doPreInvoke(messageContext)) {
@@ -77,12 +78,16 @@ public class SchemaValidateXMLMessage<MessageType extends XMLObject> extends Abs
         }
         
         if (messageContext.getMessage() == null) {
-            
             log.debug("{} Message context did not contain a message, unable to proceed", getLogPrefix());
             throw new MessageHandlerException("Message context did not contain a message, unable to proceed.");
+        } else if (!(messageContext.getMessage() instanceof XMLObject)) {
+            log.debug("{} Message context did not contain an XMLObject, unable to proceed", getLogPrefix());
+            throw new MessageHandlerException("Message context did not contain an XMLObject, unable to proceed.");
         }
+        
+        message = (XMLObject) messageContext.getMessage();
 
-        if (messageContext.getMessage().getDOM() == null) {
+        if (message.getDOM() == null) {
             log.debug("{} Message doesn't contain a DOM, unable to proceed", getLogPrefix());
             throw new MessageHandlerException("Message doesn't contain a DOM, unable to proceed.");
         }
@@ -91,23 +96,23 @@ public class SchemaValidateXMLMessage<MessageType extends XMLObject> extends Abs
     }
     
     /** {@inheritDoc} */
-    protected void doInvoke(@Nonnull final MessageContext<MessageType> messageContext)
+    protected void doInvoke(@Nonnull final MessageContext messageContext)
             throws MessageHandlerException {
 
         log.debug("{} Attempting to schema validate incoming message", getLogPrefix());
 
         try {
             final Validator schemaValidator = validationSchema.newValidator();
-            schemaValidator.validate(new DOMSource(messageContext.getMessage().getDOM()));
+            schemaValidator.validate(new DOMSource(message.getDOM()));
         } catch (final SAXException e) {
-            log.debug("{} Message {} is not schema-valid", getLogPrefix(), messageContext.getMessage()
-                    .getElementQName(), e);
+            log.debug("{} Message {} is not schema-valid", getLogPrefix(), message.getElementQName(), e);
             throw new MessageHandlerException("Message is not schema-valid.", e);
         } catch (final IOException e) {
             log.debug("{} Unable to read message", getLogPrefix(), e);
             throw new MessageHandlerException("Unable to read message.", e);
         }
 
-        log.debug("{} Message {} is valid", getLogPrefix(), messageContext.getMessage().getElementQName());
+        log.debug("{} Message {} is valid", getLogPrefix(), message.getElementQName());
     }
+    
 }

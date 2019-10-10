@@ -21,11 +21,12 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
@@ -47,10 +48,10 @@ public class AffiliationDescriptorImpl extends AbstractSignableSAMLObject implem
     private String id;
 
     /** validUntil attribute. */
-    private DateTime validUntil;
+    private Instant validUntil;
 
     /** cacheDurection attribute. */
-    private Long cacheDuration;
+    private Duration cacheDuration;
 
     /** Extensions child. */
     private Extensions extensions;
@@ -80,13 +81,11 @@ public class AffiliationDescriptorImpl extends AbstractSignableSAMLObject implem
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getOwnerID() {
         return ownerID;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void setOwnerID(final String newOwnerID) {
         if (newOwnerID != null && newOwnerID.length() > 1024) {
             throw new IllegalArgumentException("Owner ID can not exceed 1024 characters in length");
@@ -95,80 +94,67 @@ public class AffiliationDescriptorImpl extends AbstractSignableSAMLObject implem
     }
     
     /** {@inheritDoc} */
-    @Override
     public String getID() {
         return id;
     }
     
     /** {@inheritDoc} */
-    @Override
     public void setID(final String newID) {
-        final String oldID = this.id;
-        this.id = prepareForAssignment(this.id, newID);
-        registerOwnID(oldID, this.id);
+        final String oldID = id;
+        this.id = prepareForAssignment(id, newID);
+        registerOwnID(oldID, id);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isValid() {
         if (null == validUntil) {
             return true;
         }
 
-        final DateTime now = new DateTime();
-        return now.isBefore(validUntil);
+        return Instant.now().isBefore(validUntil);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public DateTime getValidUntil() {
+    public Instant getValidUntil() {
         return validUntil;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setValidUntil(final DateTime theValidUntil) {
-        this.validUntil = prepareForAssignment(this.validUntil, theValidUntil);
+    public void setValidUntil(final Instant theValidUntil) {
+        validUntil = prepareForAssignment(validUntil, theValidUntil);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Long getCacheDuration() {
+    public Duration getCacheDuration() {
         return cacheDuration;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setCacheDuration(final Long duration) {
+    public void setCacheDuration(final Duration duration) {
         cacheDuration = prepareForAssignment(cacheDuration, duration);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Extensions getExtensions() {
         return extensions;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void setExtensions(final Extensions theExtensions) {
-        this.extensions = prepareForAssignment(this.extensions, theExtensions);
+        extensions = prepareForAssignment(extensions, theExtensions);
     }
 
     /** {@inheritDoc} */
-    @Override
     public List<AffiliateMember> getMembers() {
         return members;
     }
 
     /** {@inheritDoc} */
-    @Override
     public List<KeyDescriptor> getKeyDescriptors() {
         return keyDescriptors;
     }
     
     /** {@inheritDoc} */
-    @Override
     public AttributeMap getUnknownAttributes() {
         return unknownAttributes;
     }

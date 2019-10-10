@@ -19,6 +19,8 @@ package org.opensaml.saml.saml2.profile.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,9 +45,6 @@ import org.opensaml.xmlsec.encryption.support.KeyEncryptionParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
@@ -86,9 +85,10 @@ public abstract class AbstractEncryptAction extends AbstractConditionalProfileAc
     
     /** Constructor. */
     public AbstractEncryptAction() {
-        encryptionCtxLookupStrategy = Functions.compose(new ChildContextLookup<>(EncryptionContext.class),
-                new OutboundMessageContextLookup());
-        keyPlacementLookupStrategy = FunctionSupport.<ProfileRequestContext,KeyPlacement>constant(KeyPlacement.INLINE);
+        encryptionCtxLookupStrategy =
+                new ChildContextLookup<>(EncryptionContext.class).compose(
+                        new OutboundMessageContextLookup());
+        keyPlacementLookupStrategy = FunctionSupport.constant(KeyPlacement.INLINE);
         encryptToSelf = Predicates.alwaysFalse();
     }
     
@@ -190,7 +190,7 @@ public abstract class AbstractEncryptAction extends AbstractConditionalProfileAc
         final List<KeyEncryptionParameters> keyParams = new ArrayList<>();
         keyParams.add(new KeyEncryptionParameters(params, recipient));
         
-        if (encryptToSelf.apply(profileRequestContext)) {
+        if (encryptToSelf.test(profileRequestContext)) {
             log.debug("{} Encryption to self was indicated", getLogPrefix());
             String selfRecipient = null;
             if (selfRecipientLookupStrategy != null) {
@@ -199,7 +199,7 @@ public abstract class AbstractEncryptAction extends AbstractConditionalProfileAc
             }
             if (encryptToSelfParametersStrategy != null) {
                 final List<EncryptionParameters> selfParams = encryptToSelfParametersStrategy.apply(
-                        new Pair<ProfileRequestContext, EncryptionParameters>(profileRequestContext, params));
+                        new Pair<>(profileRequestContext, params));
                 if (selfParams != null && !selfParams.isEmpty()) {
                     log.debug("{} Saw {} self-encryption parameters", getLogPrefix(), selfParams.size());
                     for (final EncryptionParameters selfParam : selfParams) {

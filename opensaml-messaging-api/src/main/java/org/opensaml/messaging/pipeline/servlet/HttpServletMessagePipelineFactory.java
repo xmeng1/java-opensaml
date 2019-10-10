@@ -23,18 +23,15 @@ import javax.annotation.Nullable;
 
 /**
  * Factory for instances of {@link HttpServletMessagePipeline}.
- * 
- * @param <OutboundMessageType> the outbound message type
- * @param <InboundMessageType> the inbound message type
  */
-public interface HttpServletMessagePipelineFactory<InboundMessageType, OutboundMessageType> {
+public interface HttpServletMessagePipelineFactory {
     
     /**
      * Return a new instance of {@link HttpServletMessagePipelineFactory}.
      * 
      * @return a new pipeline instance
      */
-    @Nonnull HttpServletMessagePipeline<InboundMessageType, OutboundMessageType> newInstance();
+    @Nonnull HttpServletMessagePipeline newInstance();
 
     /**
      * Return a new instance of {@link HttpServletMessagePipelineFactory}.
@@ -43,7 +40,7 @@ public interface HttpServletMessagePipelineFactory<InboundMessageType, OutboundM
      * 
      * @return a new pipeline instance
      */
-    @Nonnull HttpServletMessagePipeline<InboundMessageType, OutboundMessageType> newInstance(
+    @Nonnull HttpServletMessagePipeline newInstance(
             @Nullable final String pipelineName);
 
 }

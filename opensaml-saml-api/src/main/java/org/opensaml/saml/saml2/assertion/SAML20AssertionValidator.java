@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.saml2.assertion;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,12 +27,12 @@ import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.collection.LazyMap;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
@@ -70,15 +72,15 @@ import org.w3c.dom.Element;
  * <li>
  * {@link SAML2AssertionValidationParameters#SIGNATURE_VALIDATION_CRITERIA_SET}:
  * Optional.
- * If not supplied, a minimal criteria set will be constructed which contains an {@link EntityIDCriteria} 
- * containing the Assertion Issuer entityID, and a {@link UsageCriteria} of {@link UsageType#SIGNING}.
+ * If not supplied, a minimal criteria set will be constructed which contains an {@link EntityIdCriterion} 
+ * containing the Assertion Issuer entityID, and a {@link UsageCriterion} of {@link UsageType#SIGNING}.
  * If it is supplied, but either of those criteria are absent from the criteria set, they will be added 
  * with the above values.
  * </li>
  * <li>
  * {@link SAML2AssertionValidationParameters#CLOCK_SKEW}:
  * Optional.
- * If not present the default clock skew of {@link SAML20AssertionValidator#DEFAULT_CLOCK_SKEW} milliseconds 
+ * If not present the default clock skew of {@link SAML20AssertionValidator#DEFAULT_CLOCK_SKEW} 
  * will be used.
  * </li>
  * </ul>
@@ -98,11 +100,11 @@ import org.w3c.dom.Element;
  * */
 public class SAML20AssertionValidator {
 
-    /** Default clock skew; {@value} milliseconds. */
-    public static final long DEFAULT_CLOCK_SKEW = 5 * 60 * 1000;
+    /** Default clock skew of 5 minutes. */
+    @Nonnull public static final Duration DEFAULT_CLOCK_SKEW = Duration.ofMinutes(5);
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(SAML20AssertionValidator.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(SAML20AssertionValidator.class);
 
     /** Registered {@link Condition} validators. */
     private LazyMap<QName, ConditionValidator> conditionValidators;
@@ -168,20 +170,31 @@ public class SAML20AssertionValidator {
 
     /**
      * Gets the clock skew from the {@link ValidationContext#getStaticParameters()} parameters. If the parameter is not
-     * set or is not a positive {@link Long} then the {@link #DEFAULT_CLOCK_SKEW} is used.
+     * set or is not a non-zero {@link Duration} then the {@link #DEFAULT_CLOCK_SKEW} is used.
      * 
      * @param context current validation context
      * 
      * @return the clock skew
      */
-    public static long getClockSkew(@Nonnull final ValidationContext context) {
-        long clockSkew = DEFAULT_CLOCK_SKEW;
+    public static Duration getClockSkew(@Nonnull final ValidationContext context) {
+        Duration clockSkew = DEFAULT_CLOCK_SKEW;
 
         if (context.getStaticParameters().containsKey(SAML2AssertionValidationParameters.CLOCK_SKEW)) {
             try {
-                clockSkew = (Long) context.getStaticParameters().get(SAML2AssertionValidationParameters.CLOCK_SKEW);
-                if (clockSkew < 1) {
+                final Object raw = context.getStaticParameters().get(SAML2AssertionValidationParameters.CLOCK_SKEW);
+                if (raw instanceof Duration) {
+                    clockSkew = (Duration) raw;
+                } else if (raw instanceof Long) {
+                    clockSkew = Duration.ofMillis((Long) raw);
+                    // This is a V4 deprecation, remove in V5.
+                    DeprecationSupport.warn(ObjectType.CONFIGURATION, SAML2AssertionValidationParameters.CLOCK_SKEW,
+                            null, Duration.class.getName());
+                }
+                
+                if (clockSkew.isZero()) {
                     clockSkew = DEFAULT_CLOCK_SKEW;
+                } else if (clockSkew.isNegative()) {
+                    clockSkew = clockSkew.abs();
                 }
             } catch (final ClassCastException e) {
                 clockSkew = DEFAULT_CLOCK_SKEW;
@@ -293,11 +306,10 @@ public class SAML20AssertionValidator {
             if (signatureRequired) {
                 context.setValidationFailureMessage("Assertion was required to be signed, but was not");
                 return ValidationResult.INVALID;
-            } else {
-                log.debug("Assertion was not required to be signed, and was not signed.  " 
-                        + "Skipping further signature evaluation");
-                return ValidationResult.VALID;
             }
+            log.debug("Assertion was not required to be signed, and was not signed.  " 
+                    + "Skipping further signature evaluation");
+            return ValidationResult.VALID;
         }
         
         if (trustEngine == null) {
@@ -347,13 +359,12 @@ public class SAML20AssertionValidator {
                 log.debug("Validation of signature of Assertion '{}' from Issuer '{}' was successful",
                         token.getID(), tokenIssuer);
                 return ValidationResult.VALID;
-            } else {
-                final String msg = String.format(
-                        "Signature of Assertion '%s' from Issuer '%s' was not valid", token.getID(), tokenIssuer);
-                log.warn(msg);
-                context.setValidationFailureMessage(msg);
-                return ValidationResult.INVALID;
             }
+            final String msg = String.format(
+                    "Signature of Assertion '%s' from Issuer '%s' was not valid", token.getID(), tokenIssuer);
+            log.warn(msg);
+            context.setValidationFailureMessage(msg);
+            return ValidationResult.INVALID;
         } catch (final SecurityException e) {
             final String msg = String.format(
                     "A problem was encountered evaluating the signature over Assertion with ID '%s': %s",
@@ -473,10 +484,10 @@ public class SAML20AssertionValidator {
             return ValidationResult.VALID;
         }
         
-        final DateTime now = new DateTime(ISOChronology.getInstanceUTC());
-        final long clockSkew = getClockSkew(context);
+        final Instant now = Instant.now();
+        final Duration clockSkew = getClockSkew(context);
 
-        final DateTime notBefore = conditions.getNotBefore();
+        final Instant notBefore = conditions.getNotBefore();
         log.debug("Evaluating Conditions NotBefore '{}' against 'skewed now' time '{}'",
                 notBefore, now.plus(clockSkew));
         if (notBefore != null && notBefore.isAfter(now.plus(clockSkew))) {
@@ -485,7 +496,7 @@ public class SAML20AssertionValidator {
             return ValidationResult.INVALID;
         }
 
-        final DateTime notOnOrAfter = conditions.getNotOnOrAfter();
+        final Instant notOnOrAfter = conditions.getNotOnOrAfter();
         log.debug("Evaluating Conditions NotOnOrAfter '{}' against 'skewed now' time '{}'",
                 notOnOrAfter, now.minus(clockSkew));
         if (notOnOrAfter != null && notOnOrAfter.isBefore(now.minus(clockSkew))) {

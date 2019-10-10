@@ -24,9 +24,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
-
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 public class URLEvaluatingMessageChannelSecurityTest {
     
@@ -42,7 +41,7 @@ public class URLEvaluatingMessageChannelSecurityTest {
     
     @Test
     public void testHTTPSNoPort() throws ComponentInitializationException, MessageHandlerException {
-        handler.setURLLookup(new MockURLLookup("https://www.example.edu"));
+        handler.setURLLookup(FunctionSupport.constant("https://www.example.edu"));
         handler.initialize();
         
         handler.invoke(messageContext);
@@ -55,7 +54,7 @@ public class URLEvaluatingMessageChannelSecurityTest {
 
     @Test
     public void testHTTPSWithDefaultPort() throws ComponentInitializationException, MessageHandlerException {
-        handler.setURLLookup(new MockURLLookup("https://www.example.edu:443"));
+        handler.setURLLookup(FunctionSupport.constant("https://www.example.edu:443"));
         handler.initialize();
         
         handler.invoke(messageContext);
@@ -68,7 +67,7 @@ public class URLEvaluatingMessageChannelSecurityTest {
     
     @Test
     public void testHTTPSWithDefaultPortAsSecure() throws ComponentInitializationException, MessageHandlerException {
-        handler.setURLLookup(new MockURLLookup("https://www.example.edu:443"));
+        handler.setURLLookup(FunctionSupport.constant("https://www.example.edu:443"));
         handler.setDefaultPortInsecure(false);
         handler.initialize();
         
@@ -82,7 +81,7 @@ public class URLEvaluatingMessageChannelSecurityTest {
     
     @Test
     public void testHTTPSNoPortAsSecure() throws ComponentInitializationException, MessageHandlerException {
-        handler.setURLLookup(new MockURLLookup("https://www.example.edu"));
+        handler.setURLLookup(FunctionSupport.constant("https://www.example.edu"));
         handler.setDefaultPortInsecure(false);
         handler.initialize();
         
@@ -96,7 +95,7 @@ public class URLEvaluatingMessageChannelSecurityTest {
     
     @Test
     public void testHTTPSWithNonDefaultPort() throws ComponentInitializationException, MessageHandlerException {
-        handler.setURLLookup(new MockURLLookup("https://www.example.edu:8443"));
+        handler.setURLLookup(FunctionSupport.constant("https://www.example.edu:8443"));
         handler.initialize();
         
         handler.invoke(messageContext);
@@ -109,7 +108,7 @@ public class URLEvaluatingMessageChannelSecurityTest {
     
     @Test
     public void testHTTPNoPort() throws ComponentInitializationException, MessageHandlerException {
-        handler.setURLLookup(new MockURLLookup("http://www.example.edu"));
+        handler.setURLLookup(FunctionSupport.constant("http://www.example.edu"));
         handler.initialize();
         
         handler.invoke(messageContext);
@@ -122,7 +121,7 @@ public class URLEvaluatingMessageChannelSecurityTest {
     
     @Test
     public void testHTTPWithPort() throws ComponentInitializationException, MessageHandlerException {
-        handler.setURLLookup(new MockURLLookup("http://www.example.edu:80"));
+        handler.setURLLookup(FunctionSupport.constant("http://www.example.edu:80"));
         handler.initialize();
         
         handler.invoke(messageContext);
@@ -135,7 +134,7 @@ public class URLEvaluatingMessageChannelSecurityTest {
     
     @Test
     public void testBadURL() throws ComponentInitializationException, MessageHandlerException {
-        handler.setURLLookup(new MockURLLookup("foobar"));
+        handler.setURLLookup(FunctionSupport.constant("foobar"));
         handler.initialize();
         
         handler.invoke(messageContext);
@@ -148,19 +147,5 @@ public class URLEvaluatingMessageChannelSecurityTest {
     public void testMissingURLLookup() throws ComponentInitializationException {
         handler.initialize();
     }
-    
-    private static class MockURLLookup implements Function<MessageContext, String> {
-        
-        private String url;
 
-        public MockURLLookup(String value) {
-            url = value;
-        }
-
-        /** {@inheritDoc} */
-        public String apply(MessageContext input) {
-            return url;
-        }
-        
-    }
 }

@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Action;
 
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.Action}.
  */
-public class ActionImpl extends AbstractSAMLObject implements Action {
+public class ActionImpl extends AbstractXMLObject implements Action {
 
     /** URI of the Namespace of this Action. */
     private String namespace;

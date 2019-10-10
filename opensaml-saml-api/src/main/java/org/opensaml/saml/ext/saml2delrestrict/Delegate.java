@@ -17,9 +17,11 @@
 
 package org.opensaml.saml.ext.saml2delrestrict;
 
+import java.time.Instant;
+
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.BaseID;
@@ -47,10 +49,13 @@ public interface Delegate extends SAMLObject {
     
     /** DelegationInstant attribute name. */
     public static final String DELEGATION_INSTANT_ATTRIB_NAME = "DelegationInstant";
+
+    /** DelegationInstant attribute QName. */
+    public static final QName DELEGATION_INSTANT_ATTRIB_QNAME =
+            new QName(null, DELEGATION_INSTANT_ATTRIB_NAME, XMLConstants.DEFAULT_NS_PREFIX);
     
     /** ConfirmationMethod attribute name. */
-    public static final String CONFIRMATION_METHOD_ATTRIB_NAME = "ConfirmationMethod";
-    
+    public static final String CONFIRMATION_METHOD_ATTRIB_NAME = "ConfirmationMethod";    
 
     /**
      * Gets the BaseID child element of the delegate.
@@ -99,14 +104,14 @@ public interface Delegate extends SAMLObject {
      * 
      * @return the delegation instant
      */
-    public DateTime getDelegationInstant();
+    public Instant getDelegationInstant();
     
     /**
      * Set the delegation instant attribute value.
      * 
      * @param newInstant the new delegation instant
      */
-    public void setDelegationInstant(DateTime newInstant);
+    public void setDelegationInstant(Instant newInstant);
     
     /**
      * Get the confirmation method attribute value.

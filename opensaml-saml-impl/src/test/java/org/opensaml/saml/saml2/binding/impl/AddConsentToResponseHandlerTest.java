@@ -35,7 +35,7 @@ public class AddConsentToResponseHandlerTest extends OpenSAMLInitBaseTestCase {
     /** Test that the handler errors on a missing context. */
     @Test(expectedExceptions=MessageHandlerException.class)
     public void testMissingContext() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<StatusResponseType> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildResponse());
 
         final AddConsentToResponseHandler handler = new AddConsentToResponseHandler();
@@ -46,7 +46,7 @@ public class AddConsentToResponseHandlerTest extends OpenSAMLInitBaseTestCase {
 
     /** Test that the handler works. */
     @Test public void testSuccess() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<StatusResponseType> messageCtx = new MessageContext<>();
+        final MessageContext messageCtx = new MessageContext();
         messageCtx.setMessage(SAML2ActionTestingSupport.buildResponse());
         messageCtx.getSubcontext(SAMLConsentContext.class, true).setConsent(StatusResponseType.EXPLICIT_CONSENT);
         
@@ -54,7 +54,7 @@ public class AddConsentToResponseHandlerTest extends OpenSAMLInitBaseTestCase {
         handler.initialize();
         
         handler.invoke(messageCtx);
-        Assert.assertEquals(messageCtx.getMessage().getConsent(), StatusResponseType.EXPLICIT_CONSENT);
+        Assert.assertEquals(((StatusResponseType) messageCtx.getMessage()).getConsent(), StatusResponseType.EXPLICIT_CONSENT);
     }
     
 }

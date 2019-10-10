@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.shibboleth</groupId>
         <artifactId>parent</artifactId>
-        <version>7.11.0</version>
+        <version>11.0.0-SNAPSHOT</version>
     </parent>
 
     <name>OpenSAML</name>
@@ -19,7 +19,7 @@
 
     <groupId>org.opensaml</groupId>
     <artifactId>opensaml-parent</artifactId>
-    <version>3.4.1-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -49,8 +49,8 @@
     </modules>
 
     <properties>
-        <java-support.version>7.4.2-SNAPSHOT</java-support.version>
-        <spring-extensions.version>5.4.1-SNAPSHOT</spring-extensions.version>
+        <java-support.version>8.0.0-SNAPSHOT</java-support.version>
+        <spring-extensions.version>6.0.0-SNAPSHOT</spring-extensions.version>
         <checkstyle.configLocation>${project.basedir}/../opensaml-parent/resources/checkstyle/checkstyle.xml</checkstyle.configLocation>
         <opensaml-parent.site.url>${shibboleth.site.url}java-opensaml/${project.version}/</opensaml-parent.site.url>
         <opensaml-module.site.url>${opensaml-parent.site.url}${project.artifactId}</opensaml-module.site.url>
@@ -81,10 +81,6 @@
             <artifactId>java-support</artifactId>
             <version>${java-support.version}</version>
         </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
 
         <!-- Provided Dependencies -->
 
@@ -112,33 +108,34 @@
     <dependencyManagement>
         <dependencies>
             <!-- Compile Dependencies -->
-          <dependency>
-              <groupId>org.hibernate</groupId>
-              <artifactId>hibernate-entitymanager</artifactId>
-              <version>4.3.5.Final</version>
-          </dependency>
-          <dependency>
-              <groupId>org.hibernate.javax.persistence</groupId>
-              <artifactId>hibernate-jpa-2.1-api</artifactId>
-              <version>1.0.0.Final</version>
-          </dependency>
-          <dependency>
-              <groupId>net.spy</groupId>
-              <artifactId>spymemcached</artifactId>
-              <version>2.12.3</version>
-          </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>5.4.2.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.javax.persistence</groupId>
+                <artifactId>hibernate-jpa-2.1-api</artifactId>
+                <version>1.0.2.Final</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.spy</groupId>
+                <artifactId>spymemcached</artifactId>
+                <version>2.12.3</version>
+            </dependency>
 
             <!-- Provided Dependencies -->
 
             <!-- Runtime Dependencies -->
 
             <!-- Test Dependencies -->
-          <dependency>
-              <groupId>net.shibboleth.ext</groupId>
-              <artifactId>spring-extensions</artifactId>
-              <version>${spring-extensions.version}</version>
-              <scope>test</scope>
-          </dependency>
+            <dependency>
+                <groupId>net.shibboleth.ext</groupId>
+                <artifactId>spring-extensions</artifactId>
+                <version>${spring-extensions.version}</version>
+                <scope>test</scope>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

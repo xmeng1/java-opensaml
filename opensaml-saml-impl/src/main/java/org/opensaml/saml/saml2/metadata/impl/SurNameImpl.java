@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.metadata.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.metadata.SurName;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.metadata.SurName}.
  */
-public class SurNameImpl extends AbstractSAMLObject implements SurName {
+public class SurNameImpl extends AbstractXMLObject implements SurName {
 
     /** Service name. */
     private String name;

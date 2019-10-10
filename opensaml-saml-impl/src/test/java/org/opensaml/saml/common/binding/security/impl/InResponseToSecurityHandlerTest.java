@@ -43,7 +43,7 @@ public class InResponseToSecurityHandlerTest extends XMLObjectBaseTestCase {
     public void setup() throws ComponentInitializationException {
         handler = new InResponseToSecurityHandler();
         handler.initialize();
-        opContext = new InOutOperationContext<>(new MessageContext(), new MessageContext());
+        opContext = new InOutOperationContext(new MessageContext(), new MessageContext());
     }
     
     @Test

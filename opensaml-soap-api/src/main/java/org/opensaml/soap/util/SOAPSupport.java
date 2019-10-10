@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,8 +28,6 @@ import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.collection.LazyList;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.xml.XMLConstants;
 
@@ -40,12 +37,9 @@ import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.schema.XSBooleanValue;
 import org.opensaml.core.xml.util.AttributeMap;
-import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.soap.messaging.SOAPMessagingSupport;
 import org.opensaml.soap.soap11.ActorBearing;
 import org.opensaml.soap.soap11.Detail;
 import org.opensaml.soap.soap11.EncodingStyleBearing;
-import org.opensaml.soap.soap11.Envelope;
 import org.opensaml.soap.soap11.Fault;
 import org.opensaml.soap.soap11.FaultActor;
 import org.opensaml.soap.soap11.FaultCode;
@@ -398,122 +392,6 @@ public final class SOAPSupport {
         }
 
         return role;
-    }
-
-    /**
-     * Add a header block to the SOAP envelope contained within the specified message context's
-     * SOAP subcontext.
-     * 
-     * @param messageContext the message context being processed
-     * @param headerBlock the header block to add
-     * 
-     * @deprecated use {@link SOAPMessagingSupport#addHeaderBlock(MessageContext, XMLObject)}
-     */
-    @Deprecated
-    public static void addHeaderBlock(@Nonnull final MessageContext messageContext,
-            @Nonnull final XMLObject headerBlock) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD,
-                "org.opensaml.soap.util.SOAPSupport.addHeaderBlock", null,
-                "org.opensaml.soap.messaging.SOAPMessagingSupport.addHeaderBlock");
-        SOAPMessagingSupport.addHeaderBlock(messageContext, headerBlock);
-    }
-
-    /**
-     * Add a header to the SOAP 1.1 Envelope.
-     * 
-     * @param envelope the SOAP 1.1 envelope to process
-     * @param headerBlock the header to add
-     * 
-     * @deprecated use {@link SOAPMessagingSupport#addSOAP11HeaderBlock(Envelope, XMLObject)}
-     */
-    @Deprecated
-    public static void addSOAP11HeaderBlock(@Nonnull final Envelope envelope, @Nonnull final XMLObject headerBlock) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD,
-                "org.opensaml.soap.util.SOAPSupport.addSOAP11HeaderBlock", null,
-                "org.opensaml.soap.messaging.SOAPMessagingSupport.addSOAP11HeaderBlock");
-        SOAPMessagingSupport.addSOAP11HeaderBlock(envelope, headerBlock);
-    }
-
-    /**
-     * Get a header block from the SOAP envelope contained within the specified message context's
-     * SOAP subcontext.
-     * 
-     * @param messageContext the message context being processed
-     * @param headerName the name of the header block to return 
-     * @param targetNodes the explicitly specified SOAP node actors (1.1) or roles (1.2) for which the header is desired
-     * @param isFinalDestination true specifies that headers targeted for message final destination should be returned,
-     *          false means they should not be returned
-     * @return the list of matching header blocks
-     * 
-     * @deprecated use {@link SOAPMessagingSupport#getInboundHeaderBlock(MessageContext, QName)}
-     */
-    @Deprecated
-    @Nonnull public static List<XMLObject> getInboundHeaderBlock(
-            @Nonnull final MessageContext messageContext, @Nonnull final QName headerName,
-            @Nullable final Set<String> targetNodes, final boolean isFinalDestination) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD,
-                "org.opensaml.soap.util.SOAPSupport.getInboundHeaderBlock", null,
-                "org.opensaml.soap.messaging.SOAPMessagingSupport.getInboundHeaderBlock");
-        return SOAPMessagingSupport.getHeaderBlock(messageContext, headerName, targetNodes, isFinalDestination);
-    }
-
-    /**
-     * Get a header block from the SOAP 1.1 envelope.
-     * 
-     * @param envelope the SOAP 1.1 envelope to process 
-     * @param headerName the name of the header block to return 
-     * @param targetNodes the explicitly specified SOAP node actors for which the header is desired
-     * @param isFinalDestination true specifies that headers targeted for message final destination should be returned,
-     *          false specifies they should not be returned
-     * @return the list of matching header blocks
-     * 
-     * @deprecated use {@link SOAPMessagingSupport#getSOAP11HeaderBlock(Envelope, QName, Set, boolean)}
-     */
-    @Deprecated
-    @Nonnull public static List<XMLObject> getSOAP11HeaderBlock(@Nonnull final Envelope envelope,
-            @Nonnull final QName headerName, @Nullable final Set<String> targetNodes,
-            final boolean isFinalDestination) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD,
-                "org.opensaml.soap.util.SOAPSupport.getSOAP11HeaderBlock", null,
-                "org.opensaml.soap.messaging.SOAPMessagingSupport.getSOAP11HeaderBlock");
-        return SOAPMessagingSupport.getSOAP11HeaderBlock(envelope, headerName, targetNodes, isFinalDestination);
-    }
-    
-    /**
-     * Evaluate whether the specified header block is targeted to a SOAP 1.1 node given the specified 
-     * parameters.
-     * 
-     * @param header the header to evaluate
-     * @param nodeActors the explicitly specified node actors for which the header is desired
-     * @param isFinalDestination true specifies that headers targeted for message final destination should be returned,
-     *          false specifies they should not be returned
-     * @return the list of matching header blocks
-     * 
-     * @deprecated use {@link SOAPMessagingSupport#isSOAP11HeaderTargetedToNode(XMLObject, Set, boolean)}
-     */
-    @Deprecated
-    public static boolean isSOAP11HeaderTargetedToNode(@Nonnull final XMLObject header,
-            @Nullable final Set<String> nodeActors, final boolean isFinalDestination) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD,
-                "org.opensaml.soap.util.SOAPSupport.isSOAP11HeaderTargetedToNode", null,
-                "org.opensaml.soap.messaging.SOAPMessagingSupport.isSOAP11HeaderTargetedToNode");
-        return SOAPMessagingSupport.isSOAP11HeaderTargetedToNode(header, nodeActors, isFinalDestination);
-    }
-
-    /**
-     * Determine whether the message represented by the message context 
-     * contains a SOAP Envelope.
-     * 
-     * @param messageContext the current message context
-     * @return true iff the message context contains a SOAP Envelope
-     * 
-     * @deprecated use {@link SOAPMessagingSupport#isSOAPMessage(MessageContext)}
-     */
-    @Deprecated
-    public static boolean isSOAPMessage(@Nonnull final MessageContext<? extends XMLObject> messageContext) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, "org.opensaml.soap.util.SOAPSupport.isSOAPMessage", null,
-                "org.opensaml.soap.messaging.SOAPMessagingSupport.isSOAPMessage");
-        return SOAPMessagingSupport.isSOAPMessage(messageContext);
     }
 
 // Checkstyle: CyclomaticComplexity OFF

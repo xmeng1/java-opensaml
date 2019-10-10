@@ -96,7 +96,7 @@ public class DiscoHintsTest extends XMLObjectProviderBaseTestCase {
 
         hints.getGeolocationHints().add((GeolocationHint) buildXMLObject(GeolocationHint.DEFAULT_ELEMENT_NAME));
         
-        hints.getXMLObjects().add((SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
+        hints.getXMLObjects().add(buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
         
         hints.getDomainHints().add((DomainHint) buildXMLObject(DomainHint.DEFAULT_ELEMENT_NAME));
 

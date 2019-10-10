@@ -17,16 +17,17 @@
 
 package org.opensaml.saml.saml1.profile.impl;
 
+import java.time.Instant;
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
-import net.shibboleth.utilities.java.support.security.SecureRandomIdentifierGenerationStrategy;
+import net.shibboleth.utilities.java.support.security.impl.SecureRandomIdentifierGenerationStrategy;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.messaging.context.MessageContext;
@@ -41,8 +42,6 @@ import org.opensaml.saml.saml1.core.Status;
 import org.opensaml.saml.saml1.core.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * Action that creates an empty {@link Response}, and sets it as the
@@ -74,11 +73,7 @@ public class AddResponseShell extends AbstractProfileAction {
     /** Constructor. */
     public AddResponseShell() {
         // Default strategy is a 16-byte secure random source.
-        idGeneratorLookupStrategy = new Function<ProfileRequestContext,IdentifierGenerationStrategy>() {
-            public IdentifierGenerationStrategy apply(final ProfileRequestContext input) {
-                return new SecureRandomIdentifierGenerationStrategy();
-            }
-        };
+        idGeneratorLookupStrategy = prc -> new SecureRandomIdentifierGenerationStrategy();
     }
     
     /**
@@ -109,7 +104,11 @@ public class AddResponseShell extends AbstractProfileAction {
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
-        final MessageContext<Response> outboundMessageCtx = profileRequestContext.getOutboundMessageContext();
+        if (!super.doPreExecute(profileRequestContext)) {
+            return false;
+        }
+        
+        final MessageContext outboundMessageCtx = profileRequestContext.getOutboundMessageContext();
         if (outboundMessageCtx == null) {
             log.debug("{} No outbound message context", getLogPrefix());
             ActionSupport.buildEvent(profileRequestContext, EventIds.INVALID_MSG_CTX);
@@ -129,7 +128,7 @@ public class AddResponseShell extends AbstractProfileAction {
         
         outboundMessageCtx.setMessage(null);
         
-        return super.doPreExecute(profileRequestContext);
+        return true;
     }
 
     /** {@inheritDoc} */
@@ -153,7 +152,7 @@ public class AddResponseShell extends AbstractProfileAction {
         final Response response = responseBuilder.buildObject();
 
         response.setID(idGenerator.generateIdentifier());
-        response.setIssueInstant(new DateTime(ISOChronology.getInstanceUTC()));
+        response.setIssueInstant(Instant.now());
         response.setStatus(status);
         response.setVersion(SAMLVersion.VERSION_11);
 

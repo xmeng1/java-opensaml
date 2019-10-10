@@ -18,6 +18,9 @@
 package org.opensaml.saml.common.profile.impl;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
+
+import java.time.Duration;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -35,8 +38,6 @@ import org.opensaml.saml.saml2.profile.SAML2ActionTestingSupport;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Function;
 
 /** {@link AddNotOnOrAfterConditionToAssertions} unit test. */
 public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseTestCase {
@@ -91,7 +92,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         Assert.assertNotNull(assertion.getConditions());
         Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
         Assert.assertEquals(
-                assertion.getConditions().getNotOnOrAfter().minus(response.getIssueInstant().getMillis()).getMillis(),
+                assertion.getConditions().getNotOnOrAfter().minusMillis(response.getIssueInstant().toEpochMilli()).toEpochMilli(),
                 5 * 60 * 1000);
     }
 
@@ -101,8 +102,9 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
      */
     @Test
     public void testSingleAssertionWithExistingConditions() throws ComponentInitializationException {
-        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
-                XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(Conditions.DEFAULT_ELEMENT_NAME);
+        SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
+                        Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
 
         final Assertion assertion = SAML1ActionTestingSupport.buildAssertion();
@@ -112,7 +114,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         response.getAssertions().add(assertion);
 
         final AddNotOnOrAfterConditionToAssertions action = new AddNotOnOrAfterConditionToAssertions();
-        action.setDefaultAssertionLifetime(10 * 60 * 1000);
+        action.setDefaultAssertionLifetime(Duration.ofMinutes(10));
         action.initialize();
 
         action.execute(prc);
@@ -122,7 +124,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         Assert.assertSame(assertion.getConditions(), conditions);
         Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
         Assert.assertEquals(
-                assertion.getConditions().getNotOnOrAfter().minus(response.getIssueInstant().getMillis()).getMillis(),
+                assertion.getConditions().getNotOnOrAfter().minusMillis(response.getIssueInstant().toEpochMilli()).toEpochMilli(),
                 10 * 60 * 1000);
     }
 
@@ -135,13 +137,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         response.getAssertions().add(SAML1ActionTestingSupport.buildAssertion());
 
         final AddNotOnOrAfterConditionToAssertions action = new AddNotOnOrAfterConditionToAssertions();
-        action.setAssertionLifetimeStrategy(
-                new Function<ProfileRequestContext,Long>() {
-                    public Long apply(ProfileRequestContext input) {
-                        return 3L * 60 * 1000;
-                    }
-                }
-                );
+        action.setAssertionLifetimeStrategy(FunctionSupport.constant(Duration.ofMinutes(3)));
         action.initialize();
 
         action.execute(prc);
@@ -154,7 +150,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
             Assert.assertNotNull(assertion.getConditions());
             Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
             Assert.assertEquals(
-                    assertion.getConditions().getNotOnOrAfter().minus(response.getIssueInstant().getMillis()).getMillis(),
+                    assertion.getConditions().getNotOnOrAfter().minusMillis(response.getIssueInstant().toEpochMilli()).toEpochMilli(),
                     3 * 60 * 1000);
         }
     }
@@ -179,7 +175,7 @@ public class AddNotOnOrAfterConditionToAssertionsTest  extends OpenSAMLInitBaseT
         Assert.assertNotNull(assertion.getConditions());
         Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
         Assert.assertEquals(
-                assertion.getConditions().getNotOnOrAfter().minus(response.getIssueInstant().getMillis()).getMillis(),
+                assertion.getConditions().getNotOnOrAfter().minusMillis(response.getIssueInstant().toEpochMilli()).toEpochMilli(),
                 5 * 60 * 1000);
     }
     

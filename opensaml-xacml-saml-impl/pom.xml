@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opensaml</groupId>
         <artifactId>opensaml-parent</artifactId>
-        <version>3.4.1-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../opensaml-parent</relativePath>
     </parent>
 
@@ -23,14 +23,35 @@
     <dependencies>
         <!-- Compile Dependencies -->
         <dependency>
+            <!-- TODO this should be removed -->
             <groupId>${project.groupId}</groupId>
-            <artifactId>opensaml-xacml-saml-api</artifactId>
+            <artifactId>opensaml-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <!-- TODO this should be removed -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-saml-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <!-- TODO this should be removed -->
             <groupId>${project.groupId}</groupId>
             <artifactId>opensaml-saml-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-xacml-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>opensaml-xacml-saml-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 

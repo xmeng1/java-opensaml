@@ -26,7 +26,7 @@ import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.Extensions;
 
-import com.google.common.base.Predicate;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 
 /**
  * Base class for predicate that acts on {@link RegistrationInfo} content.
@@ -93,7 +93,7 @@ public abstract class AbstractRegistrationInfoPredicate implements Predicate<Ent
     }
     
     /** {@inheritDoc} */
-    public boolean apply(@Nullable final EntityDescriptor input) {
+    public boolean test(@Nullable final EntityDescriptor input) {
         
         final RegistrationInfo info = getRegistrationInfo(input);
         if (info != null) {

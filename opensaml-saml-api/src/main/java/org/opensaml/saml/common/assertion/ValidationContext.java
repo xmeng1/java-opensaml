@@ -52,7 +52,7 @@ public class ValidationContext {
      */
     public ValidationContext(final Map<String, Object> newStaticParameters) {
         if (newStaticParameters == null) {
-            staticParameters = Collections.unmodifiableMap(Collections.EMPTY_MAP);
+            staticParameters = Collections.unmodifiableMap(Collections.emptyMap());
         } else {
             staticParameters = Collections.unmodifiableMap(newStaticParameters);
         }

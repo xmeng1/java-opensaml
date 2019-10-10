@@ -19,14 +19,14 @@ package org.opensaml.saml.saml1.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.AssertionIDReference;
 
 /**
  * Concrete Implementation of {@link org.opensaml.saml.saml1.core.AssertionIDReference} Object.
  */
-public class AssertionIDReferenceImpl extends AbstractSAMLObject implements AssertionIDReference {
+public class AssertionIDReferenceImpl extends AbstractXMLObject implements AssertionIDReference {
 
     /** String to contain the ncName. */
     private String ncName;

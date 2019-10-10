@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * context instance is an immediate child of the message context, as returned by {@link #getParent()}.
  * </p>
  */
-public class SAMLPeerEntityContext extends AbstractAuthenticatableSAMLEntityContext {
+public final class SAMLPeerEntityContext extends AbstractAuthenticatableSAMLEntityContext {
     
     /** Logger. */
     @Nonnull private Logger log = LoggerFactory.getLogger(SAMLPeerEntityContext.class);
@@ -164,11 +164,10 @@ public class SAMLPeerEntityContext extends AbstractAuthenticatableSAMLEntityCont
     @Nullable protected String processSaml2Issuer(@Nonnull final Issuer issuer) {
         if (issuer.getFormat() == null || issuer.getFormat().equals(NameIDType.ENTITY)) {
             return issuer.getValue();
-        } else { 
-            log.warn("Couldn't dynamically resolve SAML 2 peer entity ID due to unsupported NameID format: {}", 
-                    issuer.getFormat());
-            return null;
         }
+        log.warn("Couldn't dynamically resolve SAML 2 peer entity ID due to unsupported NameID format: {}", 
+                issuer.getFormat());
+        return null;
     }
 
     /**

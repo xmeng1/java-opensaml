@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -56,6 +57,7 @@ import org.opensaml.saml.metadata.criteria.entity.impl.EntityDescriptorCriterion
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.saml2.common.SAML2Support;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -63,7 +65,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
@@ -290,10 +291,9 @@ public abstract class AbstractMetadataResolver extends AbstractIdentifiableIniti
                 log.error("{} Metadata provider failed to properly initialize, fail-fast=true, halting", 
                         getLogPrefix());
                 throw e;
-            } else {
-                log.error("{} Metadata provider failed to properly initialize, fail-fast=false, "
-                        + "continuing on in a degraded state", getLogPrefix(), e);
             }
+            log.error("{} Metadata provider failed to properly initialize, fail-fast=false, "
+                    + "continuing on in a degraded state", getLogPrefix(), e);
         }
     }
 
@@ -374,10 +374,23 @@ public abstract class AbstractMetadataResolver extends AbstractIdentifiableIniti
     @Nullable protected XMLObject filterMetadata(@Nullable final XMLObject metadata) throws FilterException {
         if (getMetadataFilter() != null) {
             log.debug("{} Applying metadata filter", getLogPrefix());
-            return getMetadataFilter().filter(metadata);
-        } else {
-            return metadata;
+            return getMetadataFilter().filter(metadata, newFilterContext());
         }
+        return metadata;
+    }
+
+    /**
+     * Get a new instance of {@link MetadataFilterContext} to be used when filtering metadata.
+     *
+     * <p>
+     * This default implementation will just return an empty context.  Subclasses would override
+     * to add contextual info specific to the implementation.
+     * </p>
+     *
+     * @return the new filter context instance
+     */
+    @Nonnull protected MetadataFilterContext newFilterContext() {
+        return new MetadataFilterContext();
     }
 
     /**
@@ -462,9 +475,8 @@ public abstract class AbstractMetadataResolver extends AbstractIdentifiableIniti
         final List<EntityDescriptor> descriptors = getBackingStore().getIndexedDescriptors().get(entityID);
         if (descriptors != null) {
             return new ArrayList<>(descriptors);
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     /**

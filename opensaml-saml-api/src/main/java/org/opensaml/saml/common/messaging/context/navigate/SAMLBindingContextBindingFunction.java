@@ -48,9 +48,8 @@ public class SAMLBindingContextBindingFunction implements ContextDataLookupFunct
                 }
             }
             return input.getBindingUri();
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

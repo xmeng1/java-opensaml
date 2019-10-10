@@ -18,6 +18,8 @@
 package org.opensaml.saml.common.profile;
 
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,8 +36,6 @@ import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLException;
 import org.opensaml.saml.common.SAMLObject;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
@@ -257,9 +257,8 @@ public abstract class AbstractNameIdentifierGenerator<NameIdType extends SAMLObj
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final ProfileRequestContext input) {
-        return activationCondition.apply(input);
+    public boolean test(@Nullable final ProfileRequestContext input) {
+        return activationCondition.test(input);
     }
 
     /** {@inheritDoc} */
@@ -270,7 +269,7 @@ public abstract class AbstractNameIdentifierGenerator<NameIdType extends SAMLObj
 
         if (!Objects.equals(format, theFormat)) {
             throw new SAMLException("The format to generate does not match the value configured");
-        } else if (!apply(profileRequestContext)) {
+        } else if (!test(profileRequestContext)) {
             return null;
         }
         return doGenerate(profileRequestContext);
@@ -315,12 +314,10 @@ public abstract class AbstractNameIdentifierGenerator<NameIdType extends SAMLObj
                         || !Objects.equals(idpNameQualifier,
                                 defaultIdPNameQualifierLookupStrategy.apply(profileRequestContext))) {
                     return idpNameQualifier;
-                } else {
-                    return null;
                 }
-            } else {
-                return idpNameQualifier;
+                return null;
             }
+            return idpNameQualifier;
         } else if (!omitQualifiers && defaultIdPNameQualifierLookupStrategy != null) {
             return defaultIdPNameQualifierLookupStrategy.apply(profileRequestContext);
         } else {
@@ -342,12 +339,10 @@ public abstract class AbstractNameIdentifierGenerator<NameIdType extends SAMLObj
                         || !Objects.equals(spNameQualifier,
                                 defaultSPNameQualifierLookupStrategy.apply(profileRequestContext))) {
                     return spNameQualifier;
-                } else {
-                    return null;
                 }
-            } else {
-                return spNameQualifier;
+                return null;
             }
+            return spNameQualifier;
         } else if (!omitQualifiers && defaultSPNameQualifierLookupStrategy != null) {
             return defaultSPNameQualifierLookupStrategy.apply(profileRequestContext);
         } else {

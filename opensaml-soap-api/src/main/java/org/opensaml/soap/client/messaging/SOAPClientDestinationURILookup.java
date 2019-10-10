@@ -17,23 +17,23 @@
 
 package org.opensaml.soap.client.messaging;
 
+import java.util.function.Function;
+
 import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.InOutOperationContext;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.soap.client.SOAPClientContext;
 
-import com.google.common.base.Function;
-
 /**
  * Function which resolves and returns the intended SOAP client message destination URI
  * via the {@link SOAPClientContext#getDestinationURI()} of the message context's
- * parent {@link {@link InOutOperationContext}.
+ * parent {@link InOutOperationContext}.
  */
 public class SOAPClientDestinationURILookup implements Function<MessageContext, String> {
 
     /** {@inheritDoc} */
-    public String apply(@Nullable final MessageContext messageContext) {
+    @Nullable public String apply(@Nullable final MessageContext messageContext) {
         if (messageContext == null) {
             return null;
         }
@@ -46,9 +46,8 @@ public class SOAPClientDestinationURILookup implements Function<MessageContext, 
         
         if (opContext.getSubcontext(SOAPClientContext.class) == null) {
             return null;
-        } else {
-            return opContext.getSubcontext(SOAPClientContext.class).getDestinationURI();
         }
+        return opContext.getSubcontext(SOAPClientContext.class).getDestinationURI();
     }
 
 }

@@ -17,9 +17,9 @@
 
 package org.opensaml.saml.metadata.resolver;
 
-import javax.annotation.Nullable;
+import java.time.Instant;
 
-import org.joda.time.DateTime;
+import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
@@ -45,7 +45,7 @@ public interface RefreshableMetadataResolver extends MetadataResolver {
      * 
      * @return time the last refresh cycle occurred
      */
-    @Nullable DateTime getLastRefresh();
+    @Nullable Instant getLastRefresh();
 
     /**
      * Get the time that the currently available metadata was last updated. Note, this may be different than the time
@@ -54,9 +54,20 @@ public interface RefreshableMetadataResolver extends MetadataResolver {
      * 
      * @return time when the currently metadata was last updated, null if metadata has never successfully been read in
      */
-    @Nullable DateTime getLastUpdate();
+    @Nullable Instant getLastUpdate();
     
-    //TODO For 4.0: promote getLastSuccessfulRefresh() and wasLastRefreshSuccess() 
-    //     from ExtendedRefreshableMetadataResolver
+    /**
+     * Gets the time the last successful refresh cycle occurred.
+     * 
+     * @return time the last successful refresh cycle occurred
+     */
+    @Nullable public Instant getLastSuccessfulRefresh();
+
+    /**
+     * Gets whether the last refresh cycle was successful.
+     * 
+     * @return true if last refresh cycle was successful, false if not
+     */
+    @Nullable public Boolean wasLastRefreshSuccess();
     
 }

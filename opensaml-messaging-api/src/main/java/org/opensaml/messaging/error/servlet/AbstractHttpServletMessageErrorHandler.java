@@ -24,11 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Abstract implementation of {@link HttpServletMessageErrorHandler}.
- * 
- * @param <MessageType> the type of messge being handled
  */
-public abstract class AbstractHttpServletMessageErrorHandler<MessageType> 
-        implements HttpServletMessageErrorHandler<MessageType> {
+public abstract class AbstractHttpServletMessageErrorHandler implements HttpServletMessageErrorHandler {
     
     /** The HTTP servlet request. */
     private HttpServletRequest request;

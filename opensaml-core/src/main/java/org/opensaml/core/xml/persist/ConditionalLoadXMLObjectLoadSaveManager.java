@@ -17,6 +17,8 @@
 
 package org.opensaml.core.xml.persist;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -38,7 +40,7 @@ public interface ConditionalLoadXMLObjectLoadSaveManager<T extends XMLObject> ex
      * 
      * @return true if data modify time check is enabled, false if not
      */
-    public boolean isLoadConditionally();
+    boolean isLoadConditionally();
     
     /**
      * Retrieve the cached modified time for the last load of the specified key.
@@ -50,21 +52,21 @@ public interface ConditionalLoadXMLObjectLoadSaveManager<T extends XMLObject> ex
      * </p> 
      * 
      * @param key the target key
-     * @return the current cached modified time in milliseconds since the epoch, may be null
+     * @return the current cached modified time, may be null
      */
-    @Nullable public Long getLoadLastModified(@Nonnull final String key);
+    @Nullable Instant getLoadLastModified(@Nonnull final String key);
     
     /**
      * Clear the cached modified time for the last load of the specified key.
      * 
      * @param key the target key
-     * @return the previously cached modified time in milliseconds since the epoch, or null if did not exist
+     * @return the previously cached modified time, or null if did not exist
      */
-    @Nullable public Long clearLoadLastModified(@Nonnull final String key);
+    @Nullable Instant clearLoadLastModified(@Nonnull final String key);
 
     /**
      * Clear the cached modified times for the last load for all keys.
      */
-    public void clearAllLoadLastModified();
+    void clearAllLoadLastModified();
 
 }

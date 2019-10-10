@@ -17,14 +17,13 @@
 
 package org.opensaml.saml.saml2.binding.decoding.impl;
 
+import java.time.Instant;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.MessageException;
 import org.opensaml.messaging.context.InOutOperationContext;
@@ -74,13 +73,12 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.Resolver;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
-import net.shibboleth.utilities.java.support.security.SecureRandomIdentifierGenerationStrategy;
+import net.shibboleth.utilities.java.support.security.impl.SecureRandomIdentifierGenerationStrategy;
 
 /** 
  * SAML 2 Artifact Binding decoder, support both HTTP GET and POST.
  */
-public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder<SAMLObject> 
-        implements SAMLMessageDecoder {
+public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder implements SAMLMessageDecoder {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(HTTPArtifactDecoder.class);
@@ -380,7 +378,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
     
     /** {@inheritDoc} */
     protected void doDecode() throws MessageDecodingException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final HttpServletRequest request = getHttpServletRequest();
 
         final String relayState = StringSupport.trim(request.getParameter("RelayState"));
@@ -449,7 +447,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final String selfEntityID = resolveSelfEntityID(peerRoleDescriptor);
         
             // TODO can assume/enforce response as ArtifactResponse here?
-            final InOutOperationContext<SAMLObject, ArtifactResolve> opContext = new SAMLSOAPClientContextBuilder()
+            final InOutOperationContext opContext = new SAMLSOAPClientContextBuilder<>()
                     .setOutboundMessage(buildArtifactResolveRequestMessage(
                             artifact, ars.getLocation(), peerRoleDescriptor, selfEntityID))
                     .setProtocol(SAMLConstants.SAML20P_NS)
@@ -461,13 +459,12 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
         
             log.trace("Executing ArtifactResolve over SOAP 1.1 binding to endpoint: {}", ars.getLocation());
             soapClient.send(ars.getLocation(), opContext);
-            final SAMLObject response = opContext.getInboundMessageContext().getMessage();
+            final Object response = opContext.getInboundMessageContext().getMessage();
             if (response instanceof ArtifactResponse) {
                 return validateAndExtractResponseMessage((ArtifactResponse) response);
-            } else {
-                throw new MessageDecodingException("SOAP message payload was not an instance of ArtifactResponse: " 
-                        + response.getClass().getName());
             }
+            throw new MessageDecodingException("SOAP message payload was not an instance of ArtifactResponse: " 
+                    + response.getClass().getName());
         } catch (final MessageException | SOAPException | SecurityException e) {
             throw new MessageDecodingException("Error dereferencing artifact", e);
         }
@@ -522,7 +519,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
         
         request.setID(idStrategy.generateIdentifier(true));
         request.setDestination(endpoint);
-        request.setIssueInstant(new DateTime(ISOChronology.getInstanceUTC()));
+        request.setIssueInstant(Instant.now());
         request.setIssuer(buildIssuer(selfEntityID));
         
         return request;
@@ -544,9 +541,8 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final String selfEntityID = getSelfEntityIDResolver().resolveSingle(criteria);
             if (selfEntityID == null) {
                 throw new MessageDecodingException("Unable to resolve self entityID from peer RoleDescriptor");
-            } else {
-                return selfEntityID;
             }
+            return selfEntityID;
         } catch (final ResolverException e) {
             throw new MessageDecodingException("Fatal error resolving self entityID from peer RoleDescriptor", e);
         }
@@ -600,9 +596,8 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
             final ArtifactResolutionService ars = artifactEndpointResolver.resolveSingle(criteriaSet);
             if (ars != null) {
                 return ars;
-            } else {
-                throw new MessageDecodingException("Unable to resolve ArtifactResolutionService endpoint");
             }
+            throw new MessageDecodingException("Unable to resolve ArtifactResolutionService endpoint");
         } catch (final ResolverException e) {
             throw new MessageDecodingException("Unable to resolve ArtifactResolutionService endpoint");
         }
@@ -657,7 +652,7 @@ public class HTTPArtifactDecoder extends BaseHttpServletRequestXMLMessageDecoder
      * 
      * @param messageContext the current message context
      */
-    protected void populateBindingContext(final MessageContext<SAMLObject> messageContext) {
+    protected void populateBindingContext(final MessageContext messageContext) {
         final SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, true);
         bindingContext.setBindingUri(getBindingURI());
         bindingContext.setBindingDescriptor(bindingDescriptor);

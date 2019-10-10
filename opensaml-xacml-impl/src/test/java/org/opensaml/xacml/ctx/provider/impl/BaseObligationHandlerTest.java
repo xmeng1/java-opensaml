@@ -49,7 +49,7 @@ public class BaseObligationHandlerTest {
         Assert.assertTrue(tc.equals(tc));
         Assert.assertTrue(tc.equals(new TestClass(TEST_ID)));
         Assert.assertEquals(tc.hashCode(), new TestClass(TEST_ID).hashCode());
-        Assert.assertFalse(tc.equals(new Integer(3)));
+        Assert.assertFalse(tc.equals(Integer.valueOf(3)));
         
     }
 

@@ -71,8 +71,7 @@ public class DelegationRestrictionConditionValidator implements ConditionValidat
                 || Objects.equals(condition.getSchemaType(), DelegationRestrictionType.TYPE_NAME)) {
             // Delegation restriction information is a 'condition of use' type condition so we always return valid.
             return ValidationResult.VALID;
-        } else {
-            return ValidationResult.INDETERMINATE;
         }
+        return ValidationResult.INDETERMINATE;
     }
 }

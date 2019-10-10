@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.xacml.XACMLObject;
 import org.opensaml.xacml.policy.PolicySetType;
 import org.opensaml.xacml.policy.PolicyType;
@@ -31,7 +31,7 @@ import org.opensaml.xacml.profile.saml.ReferencedPoliciesType;
 import org.opensaml.xacml.profile.saml.XACMLPolicyStatementType;
 
 /** Concrete implementation of {@link XACMLPolicyStatementType}. */
-public class XACMLPolicyStatementTypeImpl extends AbstractSAMLObject implements XACMLPolicyStatementType {
+public class XACMLPolicyStatementTypeImpl extends AbstractXMLObject implements XACMLPolicyStatementType {
 
     /** Choice group in element. */
     private IndexedXMLObjectChildrenList<XACMLObject> choiceGroup;

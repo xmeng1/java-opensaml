@@ -27,9 +27,11 @@ import javax.annotation.Nullable;
 /**
  * Storage record implementation for use with {@link MemcachedStorageService}.
  *
+ * @param <T> type of object
+ *
  * @author Marvin S. Addison
  */
-public class MemcachedStorageRecord extends StorageRecord {
+public class MemcachedStorageRecord<T> extends StorageRecord<T> {
 
     /**
      * Creates a new instance with specific record version.

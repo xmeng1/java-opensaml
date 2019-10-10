@@ -17,9 +17,8 @@
 
 package org.opensaml.saml.common.profile.impl;
 
-import java.util.Collection;
-
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -40,7 +39,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 
 /** {@link AddAudienceRestrictionToAssertions} unit test. */
@@ -53,11 +51,7 @@ public class AddAudienceRestrictionToAssertionsTest extends OpenSAMLInitBaseTest
     
     @BeforeMethod public void setUp() throws ComponentInitializationException {
         action = new AddAudienceRestrictionToAssertions();
-        action.setAudienceRestrictionsLookupStrategy(new Function<ProfileRequestContext,Collection<String>>() {
-            public Collection<String> apply(ProfileRequestContext input) {
-                return ImmutableList.of(AUDIENCE1, AUDIENCE2);
-            }
-        });
+        action.setAudienceRestrictionsLookupStrategy(FunctionSupport.constant(ImmutableList.of(AUDIENCE1, AUDIENCE2)));
         action.initialize();
     }
     
@@ -109,8 +103,8 @@ public class AddAudienceRestrictionToAssertionsTest extends OpenSAMLInitBaseTest
      * response.
      */
     @Test public void testSingleAssertionWithExistingCondition() throws Exception {
-        final SAMLObjectBuilder<Conditions> conditionsBuilder =
-                (SAMLObjectBuilder<Conditions>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
                         Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
 
@@ -135,13 +129,13 @@ public class AddAudienceRestrictionToAssertionsTest extends OpenSAMLInitBaseTest
 
     /** Test that an addition condition is not added if an assertion already contains one. */
     @Test public void testSingleAssertionWithExistingAudienceCondition() throws Exception {
-        final SAMLObjectBuilder<AudienceRestrictionCondition> conditionBuilder =
-                (SAMLObjectBuilder<AudienceRestrictionCondition>) XMLObjectProviderRegistrySupport.getBuilderFactory()
-                        .getBuilder(AudienceRestrictionCondition.DEFAULT_ELEMENT_NAME);
+        final SAMLObjectBuilder<AudienceRestrictionCondition> conditionBuilder = (SAMLObjectBuilder<AudienceRestrictionCondition>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<AudienceRestrictionCondition>getBuilderOrThrow(
+                        AudienceRestrictionCondition.DEFAULT_ELEMENT_NAME);
         final AudienceRestrictionCondition condition = conditionBuilder.buildObject();
 
-        final SAMLObjectBuilder<Conditions> conditionsBuilder =
-                (SAMLObjectBuilder<Conditions>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
                         Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
         conditions.getAudienceRestrictionConditions().add(condition);

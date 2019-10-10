@@ -28,8 +28,6 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElemen
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.collection.ClassIndexedSet;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 
 import org.opensaml.messaging.MessageRuntimeException;
 import org.slf4j.Logger;
@@ -70,9 +68,6 @@ public abstract class BaseContext implements Iterable<BaseContext> {
     /** The subcontexts being managed. */
     @Nonnull @NonnullElements private ClassIndexedSet<BaseContext> subcontexts;
     
-    /** Flag indicating whether subcontexts should, by default, be created if they do not exist. */
-    private boolean autoCreateSubcontexts;
-    
     /** Constructor. Generates a random context id. */
     public BaseContext() {
         subcontexts = new ClassIndexedSet<>();
@@ -104,7 +99,7 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      * @return the held instance of the class, or null
      */
     @Nullable public <T extends BaseContext> T getSubcontext(@Nonnull final Class<T> clazz) {
-        return getSubcontext(clazz, autoCreateSubcontexts);
+        return getSubcontext(clazz, false);
     }
     
     /**
@@ -145,7 +140,7 @@ public abstract class BaseContext implements Iterable<BaseContext> {
      */ 
     @Nullable public BaseContext getSubcontext(@Nonnull @NotEmpty final String className)
             throws ClassNotFoundException {
-        return getSubcontext(className, autoCreateSubcontexts);
+        return getSubcontext(className, false);
     }
     
     /**
@@ -288,34 +283,6 @@ public abstract class BaseContext implements Iterable<BaseContext> {
             subcontext.setParent(null);
         }
         subcontexts.clear();
-    }
-    
-    /**
-     * Get whether the context auto-creates subcontexts by default.
-     * 
-     * @return true if the context auto-creates subcontexts, false otherwise
-     * 
-     * @deprecated
-     */
-    @Deprecated
-    public boolean isAutoCreateSubcontexts() {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".isAutoCreateSubcontexts", 
-                null, "no replacement");
-        return autoCreateSubcontexts;
-    }
-    
-    /**
-     * Set whether the context auto-creates subcontexts by default.
-     * 
-     * @param autoCreate whether the context should auto-create subcontexts
-     * 
-     * @deprecated
-     */
-    @Deprecated
-    public void setAutoCreateSubcontexts(final boolean autoCreate) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setAutoCreateSubcontexts", 
-                null, "no replacement");
-        autoCreateSubcontexts = autoCreate;
     }
     
     /** {@inheritDoc} */

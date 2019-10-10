@@ -58,9 +58,8 @@ public class BasicDecryptionParametersResolver extends AbstractSecurityParameter
         final DecryptionParameters params = resolveSingle(criteria);
         if (params != null) {
             return Collections.singletonList(params);
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */

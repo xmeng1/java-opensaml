@@ -19,8 +19,10 @@ package org.opensaml.saml.saml2.binding.encoding.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +56,7 @@ import org.opensaml.xmlsec.crypto.XMLSigningUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -82,14 +85,17 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
 
     /** {@inheritDoc} */
     protected void doEncode() throws MessageEncodingException {
-        final MessageContext<SAMLObject> messageContext = getMessageContext();
-        final SAMLObject outboundMessage = messageContext.getMessage();
+        final MessageContext messageContext = getMessageContext();
+        final Object outboundMessage = messageContext.getMessage();
+        if (outboundMessage == null || !(outboundMessage instanceof SAMLObject)) {
+            throw new MessageEncodingException("No outbound SAML message contained in message context");
+        }
 
         final String endpointURL = getEndpointURL(messageContext).toString();
 
-        removeSignature(outboundMessage);
+        removeSignature((SAMLObject) outboundMessage);
 
-        final String encodedMessage = deflateAndBase64Encode(outboundMessage);
+        final String encodedMessage = deflateAndBase64Encode((SAMLObject) outboundMessage);
 
         final String redirectURL = buildRedirectURL(messageContext, endpointURL, encodedMessage);
 
@@ -133,13 +139,15 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         try {
             final String messageStr = SerializeSupport.nodeToString(marshallMessage(message));
 
-            final ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-            final Deflater deflater = new Deflater(Deflater.DEFLATED, true);
-            final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(bytesOut, deflater);
-            deflaterStream.write(messageStr.getBytes("UTF-8"));
-            deflaterStream.finish();
+            try (final ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+                    final DeflaterOutputStream deflaterStream =
+                            new NoWrapAutoEndDeflaterOutputStream(bytesOut, Deflater.DEFLATED)) {
 
-            return Base64Support.encode(bytesOut.toByteArray(), Base64Support.UNCHUNKED);
+                deflaterStream.write(messageStr.getBytes("UTF-8"));
+                deflaterStream.finish();
+
+                return Base64Support.encode(bytesOut.toByteArray(), Base64Support.UNCHUNKED);
+            }
         } catch (final IOException e) {
             throw new MessageEncodingException("Unable to DEFLATE and Base64 encode SAML message", e);
         }
@@ -156,8 +164,7 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
      * 
      * @throws MessageEncodingException thrown if the SAML message is neither a RequestAbstractType or Response
      */
-    protected String buildRedirectURL(final MessageContext<SAMLObject> messageContext, final String endpoint,
-            final String message)
+    protected String buildRedirectURL(final MessageContext messageContext, final String endpoint, final String message)
             throws MessageEncodingException {
         log.debug("Building URL to redirect client to");
         
@@ -171,7 +178,14 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         final List<Pair<String, String>> queryParams = urlBuilder.getQueryParams();
         removeDisallowedQueryParams(queryParams);
         
-        final SAMLObject outboundMessage = messageContext.getMessage();
+        // This is a copy of any existing allowed params that were preserved.  Note that they will not be signed.
+        final List<Pair<String, String>> originalParams = new ArrayList<>(queryParams);
+
+        // We clear here so that existing params will not be signed, but can still use the URLBuilder#buildQueryString()
+        // to build the string that will potentially be signed later. Add originalParms back in later.
+        queryParams.clear();
+
+        final SAMLObject outboundMessage = (SAMLObject) messageContext.getMessage();
 
         if (outboundMessage instanceof RequestAbstractType) {
             queryParams.add(new Pair<>("SAMLRequest", message));
@@ -197,8 +211,17 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
 
             queryParams.add(new Pair<>("Signature", generateSignature(
                     signingParameters.getSigningCredential(), sigAlgURI, sigMaterial)));
+
+            // Add original params to the beginning of the list preserving their original order.
+            if (!originalParams.isEmpty()) {
+                for (final Pair<String, String> param : Lists.reverse(originalParams)) {
+                    queryParams.add(0, param);
+                }
+            }
+
         } else {
             log.debug("No signing credential was supplied, skipping HTTP-Redirect DEFLATE signing");
+            queryParams.addAll(originalParams);
         }
         
         return urlBuilder.buildURL();
@@ -272,5 +295,31 @@ public class HTTPRedirectDeflateEncoder extends BaseSAML2MessageEncoder {
         }
 
         return b64Signature;
+    }
+
+    /** A subclass of {@link DeflaterOutputStream} which defaults in a no-wrap {@link Deflater} instance and
+     * closes it when the stream is closed.
+     */
+    private class NoWrapAutoEndDeflaterOutputStream extends DeflaterOutputStream {
+
+        /**
+         * Creates a new output stream with a default no-wrap compressor and buffer size,
+         * and the specified compression level.
+         *
+         * @param os the output stream
+         * @param level the compression level (0-9)
+         */
+        public NoWrapAutoEndDeflaterOutputStream(final OutputStream os, final int level) {
+            super(os, new Deflater(level, true));
+        }
+
+        /** {@inheritDoc} */
+        public void close() throws IOException {
+            if (def != null) {
+                def.end();
+            }
+            super.close();
+        }
+
     }
 }

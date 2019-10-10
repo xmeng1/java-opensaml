@@ -19,6 +19,7 @@ package org.opensaml.xmlsec.impl;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,7 +27,6 @@ import javax.annotation.Nullable;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 
@@ -50,7 +50,7 @@ public class BlacklistPredicate implements Predicate<String> {
     }
 
     /** {@inheritDoc} */
-    public boolean apply(@Nullable final String input) {
+    public boolean test(@Nullable final String input) {
         if (input == null) {
             throw new IllegalArgumentException("Algorithm URI to evaluate may not be null");
         }

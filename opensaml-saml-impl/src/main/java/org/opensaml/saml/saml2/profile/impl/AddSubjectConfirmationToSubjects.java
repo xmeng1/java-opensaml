@@ -18,11 +18,12 @@
 package org.opensaml.saml.saml2.profile.impl;
 
 import java.net.URI;
+import java.time.Instant;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.profile.action.AbstractProfileAction;
 import org.opensaml.profile.action.ActionSupport;
 import org.opensaml.profile.action.EventIds;
@@ -48,9 +49,6 @@ import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that builds {@link SubjectConfirmation} and adds it to the {@link Subject} of all the assertions
@@ -117,11 +115,10 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
                 XMLObjectProviderRegistrySupport.getBuilderFactory().<SubjectConfirmationData>getBuilderOrThrow(
                         SubjectConfirmationData.DEFAULT_ELEMENT_NAME);
         overwriteExisting = true;
-        responseLookupStrategy =
-                Functions.compose(new MessageLookup<>(Response.class), new OutboundMessageContextLookup());
+        responseLookupStrategy = new MessageLookup<>(Response.class).compose(new OutboundMessageContextLookup());
         
         // Default pulls from servlet request.
-        addressLookupStrategy = new Function<ProfileRequestContext,String>() {
+        addressLookupStrategy = new Function<>() {
             public String apply(final ProfileRequestContext input) {
                 final String address = getHttpServletRequest() != null ? getHttpServletRequest().getRemoteAddr() : null;
                 log.debug("{} Setting confirmation data Address to {}", getLogPrefix(),
@@ -131,7 +128,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
         };
         
         // Default pulls from inbound message context and a SAMLMessageInfoContext child.
-        inResponseToLookupStrategy = new Function<ProfileRequestContext,String>() {
+        inResponseToLookupStrategy = new Function<>() {
             public String apply(final ProfileRequestContext input) {
                 if (response != null && response.getInResponseTo() != null) {
                     log.debug("{} Setting confirmation data InResponseTo to {}", getLogPrefix(),
@@ -144,7 +141,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
         };
         
         // Default pulls from SAML endpoint on outbound message context.
-        recipientLookupStrategy = new Function<ProfileRequestContext,String>() {
+        recipientLookupStrategy = new Function<>() {
             public String apply(final ProfileRequestContext input) {
                 if (input.getOutboundMessageContext() != null) {
                     try {
@@ -164,7 +161,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
         };
         
         // Default is 5 minutes.
-        lifetimeLookupStrategy = new Function<ProfileRequestContext,Long>() {
+        lifetimeLookupStrategy = new Function<>() {
             public Long apply(final ProfileRequestContext input) {
                 log.debug("{} Setting confirmation data NotOnOrAfter to 5 minutes from now", getLogPrefix());
                 return 5 * 60 * 1000L;
@@ -314,7 +311,7 @@ public class AddSubjectConfirmationToSubjects extends AbstractProfileAction {
                 ? lifetimeLookupStrategy.apply(profileRequestContext) : null;
         if (lifetime != null) {
             confirmationData = confirmationData != null ? confirmationData : confirmationDataBuilder.buildObject();
-            confirmationData.setNotOnOrAfter(new DateTime().plus(lifetime));
+            confirmationData.setNotOnOrAfter(Instant.now().plusMillis(lifetime));
         }
         
         if (confirmationData != null) {

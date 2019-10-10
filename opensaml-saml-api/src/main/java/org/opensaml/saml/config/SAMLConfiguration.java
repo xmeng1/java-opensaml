@@ -21,17 +21,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.opensaml.saml.saml1.binding.artifact.SAML1ArtifactBuilderFactory;
 import org.opensaml.saml.saml2.binding.artifact.SAML2ArtifactBuilderFactory;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
@@ -54,12 +51,6 @@ public class SAMLConfiguration {
     /** Lowercase string function. */
     private static Function<String, String> lowercaseFunction = new LowercaseFunction();
 
-    /** Date format in SAML object, default is yyyy-MM-dd'T'HH:mm:ss.SSS'Z'. */
-    private static String defaultDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-
-    /** Formatter used to write dates. */
-    private DateTimeFormatter dateFormatter;
-
     /** SAML 1 Artifact factory. */
     private SAML1ArtifactBuilderFactory saml1ArtifactBuilderFactory;
 
@@ -77,32 +68,6 @@ public class SAMLConfiguration {
      */
     public SAMLConfiguration() {
         setAllowedBindingURLSchemes(Lists.newArrayList("http", "https"));
-    }
-
-    /**
-     * Gets the date format used to string'ify SAML's {@link org.joda.time.DateTime} objects.
-     * 
-     * @return date format used to string'ify date objects
-     */
-    public DateTimeFormatter getSAMLDateFormatter() {
-        if (dateFormatter == null) {
-            final DateTimeFormatter formatter = DateTimeFormat.forPattern(defaultDateFormat);
-            dateFormatter = formatter.withChronology(ISOChronology.getInstanceUTC());
-        }
-        
-        return dateFormatter;
-    }
-
-    /**
-     * Sets the date format used to string'ify SAML's date/time objects.
-     * 
-     * See the {@link java.text.SimpleDateFormat} documentation for format syntax.
-     * 
-     * @param format date format used to string'ify date objects
-     */
-    public void setSAMLDateFormat(final String format) {
-        final DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
-        dateFormatter = formatter.withChronology(ISOChronology.getInstanceUTC());
     }
 
     /**
@@ -178,7 +143,7 @@ public class SAMLConfiguration {
             allowedBindingURLSchemes = Collections.emptyList();
         } else {
             final Collection<String> normalized = Collections2.transform(
-                    StringSupport.normalizeStringCollection(schemes), lowercaseFunction);
+                    StringSupport.normalizeStringCollection(schemes), lowercaseFunction::apply);
             allowedBindingURLSchemes = new ArrayList<>(normalized);
         }
     }
@@ -192,9 +157,8 @@ public class SAMLConfiguration {
         public String apply(final String input) {
             if (input == null) {
                 return null;
-            } else {
-                return input.toLowerCase();
             }
+            return input.toLowerCase();
         }
         
     }

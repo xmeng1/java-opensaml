@@ -19,11 +19,13 @@ package org.opensaml.soap.wssecurity.impl;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.custommonkey.xmlunit.Diff;
 import net.shibboleth.utilities.java.support.xml.XMLAssertTestNG;
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.Marshaller;
 import org.opensaml.soap.WSBaseTestCase;
@@ -110,7 +112,7 @@ public class WSSecurityObjectsTestCase extends WSBaseTestCase {
     @Test
     public void testIteration() throws Exception {
         Iteration iteration= buildXMLObject(Iteration.ELEMENT_NAME);
-        iteration.setValue(new Integer(1000));
+        iteration.setValue(Integer.valueOf(1000));
         marshallAndUnmarshall(iteration);
     }
     
@@ -172,12 +174,12 @@ public class WSSecurityObjectsTestCase extends WSBaseTestCase {
     public void testTimestamp() throws Exception {
         Timestamp timestamp= buildXMLObject(Timestamp.ELEMENT_NAME);
         Created created= buildXMLObject(Created.ELEMENT_NAME);
-        DateTime now= new DateTime();
+        Instant now= Instant.now();
         created.setDateTime(now);
         timestamp.setCreated(created);
 
         Expires expires= buildXMLObject(Expires.ELEMENT_NAME);
-        expires.setDateTime(now.plusMinutes(10));
+        expires.setDateTime(now.plus(10, ChronoUnit.MINUTES));
         timestamp.setExpires(expires);
 
         timestamp.setWSUId("Timestamp-" + System.currentTimeMillis());
@@ -204,7 +206,7 @@ public class WSSecurityObjectsTestCase extends WSBaseTestCase {
 
         UsernameToken usernameToken= createUsernameToken("test", "test");
         usernameToken.setWSUId(refId);
-        DateTime refDateTime= new DateTime(refDateTimeStr);
+        Instant refDateTime= Instant.parse(refDateTimeStr);
         Created usernameCreated = (Created) usernameToken.getUnknownXMLObjects(Created.ELEMENT_NAME).get(0);
         usernameCreated.setDateTime(refDateTime);
 
@@ -241,7 +243,7 @@ public class WSSecurityObjectsTestCase extends WSBaseTestCase {
         Assert.assertEquals(utPassword.getValue(), "test");
         Created utCreated = (Created) ut.getUnknownXMLObjects(Created.ELEMENT_NAME).get(0);
         Assert.assertNotNull(utCreated);
-        DateTime created= utCreated.getDateTime();
+        Instant created= utCreated.getDateTime();
         System.out.println(created);
 
     }
@@ -254,8 +256,7 @@ public class WSSecurityObjectsTestCase extends WSBaseTestCase {
         Password password= buildXMLObject(Password.ELEMENT_NAME);
         password.setValue(pass);
         Created created= buildXMLObject(Created.ELEMENT_NAME);
-        DateTime now= new DateTime();
-        created.setDateTime(now);
+        created.setDateTime(Instant.now());
 
         String id= "UsernameToken-" + System.currentTimeMillis();
         usernameToken.setWSUId(id);

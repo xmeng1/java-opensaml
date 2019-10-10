@@ -17,12 +17,13 @@
 
 package org.opensaml.saml.saml2.profile;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.profile.action.ActionTestingSupport;
 import org.opensaml.saml.common.SAMLObjectBuilder;
@@ -70,7 +71,7 @@ public class SAML2ActionTestingSupport {
 
         final Response response = responseBuilder.buildObject();
         response.setID(ActionTestingSupport.OUTBOUND_MSG_ID);
-        response.setIssueInstant(new DateTime(0));
+        response.setIssueInstant(Instant.ofEpochMilli(0));
         response.setVersion(SAMLVersion.VERSION_20);
 
         return response;
@@ -89,7 +90,7 @@ public class SAML2ActionTestingSupport {
 
         final ArtifactResponse response = responseBuilder.buildObject();
         response.setID(ActionTestingSupport.OUTBOUND_MSG_ID);
-        response.setIssueInstant(new DateTime(0));
+        response.setIssueInstant(Instant.ofEpochMilli(0));
         response.setVersion(SAMLVersion.VERSION_20);
 
         return response;
@@ -117,7 +118,7 @@ public class SAML2ActionTestingSupport {
 
         final LogoutRequest req = reqBuilder.buildObject();
         req.setID(REQUEST_ID);
-        req.setIssueInstant(new DateTime(0));
+        req.setIssueInstant(Instant.ofEpochMilli(0));
         req.setIssuer(issuer);
         req.setVersion(SAMLVersion.VERSION_20);
 
@@ -141,7 +142,7 @@ public class SAML2ActionTestingSupport {
 
         final LogoutResponse response = responseBuilder.buildObject();
         response.setID(ActionTestingSupport.OUTBOUND_MSG_ID);
-        response.setIssueInstant(new DateTime(0));
+        response.setIssueInstant(Instant.ofEpochMilli(0));
         response.setVersion(SAMLVersion.VERSION_20);
 
         return response;
@@ -160,7 +161,7 @@ public class SAML2ActionTestingSupport {
 
         final Assertion assertion = assertionBuilder.buildObject();
         assertion.setID(ASSERTION_ID);
-        assertion.setIssueInstant(new DateTime(0));
+        assertion.setIssueInstant(Instant.ofEpochMilli(0));
         assertion.setVersion(SAMLVersion.VERSION_20);
 
         return assertion;
@@ -177,7 +178,7 @@ public class SAML2ActionTestingSupport {
                         AuthnStatement.DEFAULT_ELEMENT_NAME);
 
         final AuthnStatement statement = statementBuilder.buildObject();
-        statement.setAuthnInstant(new DateTime(0));
+        statement.setAuthnInstant(Instant.ofEpochMilli(0));
 
         return statement;
     }
@@ -272,7 +273,7 @@ public class SAML2ActionTestingSupport {
 
         final AttributeQuery query = queryBuilder.buildObject();
         query.setID(REQUEST_ID);
-        query.setIssueInstant(new DateTime(0));
+        query.setIssueInstant(Instant.ofEpochMilli(0));
         query.setIssuer(issuer);
         query.setVersion(SAMLVersion.VERSION_20);
 
@@ -302,7 +303,7 @@ public class SAML2ActionTestingSupport {
 
         final AuthnRequest request = requestBuilder.buildObject();
         request.setID(REQUEST_ID);
-        request.setIssueInstant(new DateTime(0));
+        request.setIssueInstant(Instant.ofEpochMilli(0));
         request.setIssuer(issuer);
         request.setVersion(SAMLVersion.VERSION_20);
 
@@ -322,7 +323,7 @@ public class SAML2ActionTestingSupport {
                         ArtifactResolve.DEFAULT_ELEMENT_NAME);
         final ArtifactResolve request = requestBuilder.buildObject();
         request.setID(REQUEST_ID);
-        request.setIssueInstant(new DateTime(0));
+        request.setIssueInstant(Instant.ofEpochMilli(0));
         request.setVersion(SAMLVersion.VERSION_11);
         
         if (artifact != null) {

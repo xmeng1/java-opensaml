@@ -23,9 +23,9 @@ package org.opensaml.saml.saml2.ecp.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSBooleanValue;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.ecp.RequestAuthenticated;
 import org.opensaml.soap.soap11.ActorBearing;
 import org.opensaml.soap.soap11.MustUnderstandBearing;
@@ -34,7 +34,7 @@ import org.opensaml.soap.soap11.MustUnderstandBearing;
 /**
  * Concrete implementation of {@link RequestAuthenticated}.
  */
-public class RequestAuthenticatedImpl extends AbstractSAMLObject implements RequestAuthenticated {
+public class RequestAuthenticatedImpl extends AbstractXMLObject implements RequestAuthenticated {
 
     /** soap11:actor attribute. */
     private String soap11Actor;

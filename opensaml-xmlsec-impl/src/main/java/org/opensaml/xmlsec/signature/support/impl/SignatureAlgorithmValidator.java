@@ -152,9 +152,8 @@ public class SignatureAlgorithmValidator {
                 AttributeSupport.getAttributeValue(signatureMethod, null, ATTR_NAME_ALGORTHM));
         if (signatureMethodAlgorithm != null) {
             return signatureMethodAlgorithm;
-        } else {
-            throw new SignatureException("SignatureMethod Algorithm was null");
         }
+        throw new SignatureException("SignatureMethod Algorithm was null");
     }
 
     

@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.metadata.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.metadata.EmailAddress;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.metadata.EmailAddress}.
  */
-public class EmailAddressImpl extends AbstractSAMLObject implements EmailAddress {
+public class EmailAddressImpl extends AbstractXMLObject implements EmailAddress {
 
     /** The email address. */
     private String address;

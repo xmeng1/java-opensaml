@@ -135,18 +135,18 @@ public class XMLSigningUtilTest extends OpenSAMLInitBaseTestCase {
         
     }
     
-    private byte[] getControlSignature(byte[] data, SecretKey secretKey, String algorithm) 
+    private byte[] getControlSignature(byte[] data1, SecretKey secretKey, String algorithm) 
             throws NoSuchAlgorithmException, InvalidKeyException {
         Mac mac = Mac.getInstance(algorithm);
         mac.init(secretKeyAES128);
-        return mac.doFinal(data);
+        return mac.doFinal(data1);
     }
 
-    private byte[] getControlSignature(byte[] data, PrivateKey privateKey, String algorithm) 
+    private byte[] getControlSignature(byte[] data1, PrivateKey privateKey, String algorithm) 
             throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature sig = Signature.getInstance(algorithm);
         sig.initSign(privateKey);
-        sig.update(data);
+        sig.update(data1);
         return sig.sign();
     }
 }

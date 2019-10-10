@@ -19,7 +19,6 @@ package org.opensaml.soap.soap11.decoder.http.impl;
 
 import java.io.IOException;
 
-import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.messaging.context.MessageContext;
@@ -75,9 +74,9 @@ public class HTTPSOAP11DecoderTest extends XMLObjectBaseTestCase {
         decoder.initialize();
         
         decoder.decode();
-        MessageContext<XMLObject> msgContext = decoder.getMessageContext();
+        MessageContext msgContext = decoder.getMessageContext();
         
-        XMLObject msg = msgContext.getMessage();
+        Object msg = msgContext.getMessage();
         Assert.assertNotNull(msg);
         
         Assert.assertTrue(msg instanceof Envelope);
@@ -99,9 +98,9 @@ public class HTTPSOAP11DecoderTest extends XMLObjectBaseTestCase {
         decoder.initialize();
         
         decoder.decode();
-        MessageContext<XMLObject> msgContext = decoder.getMessageContext();
+        MessageContext msgContext = decoder.getMessageContext();
         
-        XMLObject msg = msgContext.getMessage();
+        Object msg = msgContext.getMessage();
         Assert.assertNotNull(msg);
         
         Assert.assertTrue(msg instanceof XSAny);
@@ -162,7 +161,7 @@ public class HTTPSOAP11DecoderTest extends XMLObjectBaseTestCase {
         return Resources.toByteArray(getClass().getResource(resourceName));
     }
 
-    public class TestEnvelopeBodyHandler extends AbstractMessageHandler<Envelope> {
+    public class TestEnvelopeBodyHandler extends AbstractMessageHandler {
         /** {@inheritDoc} */
         protected void doInvoke(MessageContext msgContext) throws MessageHandlerException {
             Envelope env = (Envelope) msgContext.getSubcontext(SOAP11Context.class).getEnvelope();
@@ -170,7 +169,7 @@ public class HTTPSOAP11DecoderTest extends XMLObjectBaseTestCase {
         }
     }
     
-    public class TestPayloadBodyHandler extends AbstractMessageHandler<Envelope> {
+    public class TestPayloadBodyHandler extends AbstractMessageHandler {
         /** {@inheritDoc} */
         protected void doInvoke(MessageContext msgContext) throws MessageHandlerException {
             Envelope env = (Envelope) msgContext.getSubcontext(SOAP11Context.class).getEnvelope();

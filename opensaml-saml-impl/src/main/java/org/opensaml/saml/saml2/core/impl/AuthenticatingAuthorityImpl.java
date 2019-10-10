@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.AuthenticatingAuthority;
 
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.AuthenticatingAuthority}.
  */
-public class AuthenticatingAuthorityImpl extends AbstractSAMLObject implements AuthenticatingAuthority {
+public class AuthenticatingAuthorityImpl extends AbstractXMLObject implements AuthenticatingAuthority {
 
     /** URI of the Authenticating Authority. */
     private String uri;

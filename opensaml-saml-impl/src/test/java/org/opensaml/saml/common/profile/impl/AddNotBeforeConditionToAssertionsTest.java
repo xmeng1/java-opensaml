@@ -95,7 +95,8 @@ public class AddNotBeforeConditionToAssertionsTest  extends OpenSAMLInitBaseTest
     @Test
     public void testSingleAssertionWithExistingConditions() {
         SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
-                XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(Conditions.DEFAULT_ELEMENT_NAME);
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
+                        Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
 
         final Assertion assertion = SAML1ActionTestingSupport.buildAssertion();

@@ -51,11 +51,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Basic SOAP 1.1 encoder for HTTP transport via an HttpClient's {@link HttpRequest}.
- *
- * @param <MessageType> the message type of the message context on which to operate
  */
-public class HttpClientRequestSOAP11Encoder<MessageType extends XMLObject> 
-        extends BaseHttpClientRequestXMLMessageEncoder<MessageType> {
+public class HttpClientRequestSOAP11Encoder extends BaseHttpClientRequestXMLMessageEncoder {
     
     /** Class logger. */
     private final Logger log = LoggerFactory.getLogger(HttpClientRequestSOAP11Encoder.class);
@@ -99,16 +96,16 @@ public class HttpClientRequestSOAP11Encoder<MessageType extends XMLObject>
 
     /** {@inheritDoc} */
     public void prepareContext() throws MessageEncodingException {
-        final MessageContext<MessageType> messageContext = getMessageContext();
-        final MessageType message = messageContext.getMessage();
-        if (message == null) {
-            throw new MessageEncodingException("No outbound message contained in message context");
+        final MessageContext messageContext = getMessageContext();
+        final Object message = messageContext.getMessage();
+        if (message == null || !(message instanceof XMLObject)) {
+            throw new MessageEncodingException("No outbound XML message contained in message context");
         }
         
         if (message instanceof Envelope) {
             storeSOAPEnvelope((Envelope) message);
         } else {
-            buildAndStoreSOAPMessage(message);
+            buildAndStoreSOAPMessage((XMLObject) message);
         }
         
     }

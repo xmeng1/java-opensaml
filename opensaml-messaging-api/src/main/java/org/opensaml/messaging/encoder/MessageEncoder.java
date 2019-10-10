@@ -30,10 +30,8 @@ import org.opensaml.messaging.context.MessageContext;
  * <p>
  * The sink data or structure on which the encoder operates is supplied in an implementation-specific manner.
  * </p>
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public interface MessageEncoder<MessageType> extends InitializableComponent, DestructableComponent {
+public interface MessageEncoder extends InitializableComponent, DestructableComponent {
 
     /**
      * This method should prepare the message context by creating and populating any binding-specific data structures
@@ -71,5 +69,5 @@ public interface MessageEncoder<MessageType> extends InitializableComponent, Des
      * 
      * @param messageContext the message context
      */
-    void setMessageContext(MessageContext<MessageType> messageContext);
+    void setMessageContext(MessageContext messageContext);
 }

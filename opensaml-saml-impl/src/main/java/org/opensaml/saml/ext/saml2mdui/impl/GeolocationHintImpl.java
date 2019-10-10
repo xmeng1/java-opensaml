@@ -19,14 +19,14 @@ package org.opensaml.saml.ext.saml2mdui.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdui.GeolocationHint;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.ext.saml2mdui.GeolocationHint}.
  */
-public class GeolocationHintImpl extends AbstractSAMLObject implements GeolocationHint {
+public class GeolocationHintImpl extends AbstractXMLObject implements GeolocationHint {
 
     /**
      * local storage.

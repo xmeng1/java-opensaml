@@ -21,12 +21,12 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
 import java.security.KeyPair;
+import java.time.Instant;
 
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
-import net.shibboleth.utilities.java.support.security.RandomIdentifierGenerationStrategy;
+import net.shibboleth.utilities.java.support.security.impl.RandomIdentifierGenerationStrategy;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.io.Marshaller;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -105,7 +105,7 @@ public class SignedAssertionTest extends XMLObjectBaseTestCase {
     @Test
     public void testAssertionSignature() 
         throws MarshallingException, SignatureException, UnmarshallingException, SecurityException{
-        DateTime now = new DateTime();
+        Instant now = Instant.now();
         
         Assertion assertion = assertionBuilder.buildObject();
         assertion.setVersion(SAMLVersion.VERSION_20);

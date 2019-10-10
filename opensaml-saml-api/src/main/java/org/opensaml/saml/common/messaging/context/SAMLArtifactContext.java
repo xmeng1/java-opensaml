@@ -27,7 +27,7 @@ import org.opensaml.messaging.context.BaseContext;
 /**
  * Context that carries information about SAML artifact usage.
  */
-public class SAMLArtifactContext extends BaseContext {
+public final class SAMLArtifactContext extends BaseContext {
 
     /** The artifact type. */
     @Nullable private byte[] artifactType;

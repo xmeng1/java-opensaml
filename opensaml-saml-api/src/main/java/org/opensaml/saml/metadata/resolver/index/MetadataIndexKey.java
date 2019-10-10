@@ -21,8 +21,8 @@ package org.opensaml.saml.metadata.resolver.index;
  * Marker interface for a component which represents a key for an index defined by a {@link MetadataIndex}.
  * 
  * <p>
- * Implementations MUST override and implement {@link #hashCode()} and {@link #equals(Object)} based on the semantics
- * represented by the index key data.
+ * Implementations MUST override and implement {@link Object#hashCode()} and {@link Object#equals(Object)}
+ * based on the semantics represented by the index key data.
  * </p>
  */
 public interface MetadataIndexKey {

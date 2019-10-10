@@ -17,9 +17,11 @@
 
 package org.opensaml.saml.saml2.core;
 
+import java.time.Instant;
+
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.AttributeExtensibleXMLObject;
 import org.opensaml.core.xml.ElementExtensibleXMLObject;
 import org.opensaml.saml.common.SAMLObject;
@@ -31,101 +33,108 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 public interface SubjectConfirmationData extends SAMLObject, ElementExtensibleXMLObject, AttributeExtensibleXMLObject {
 
     /** Element local name. */
-    public static final String DEFAULT_ELEMENT_LOCAL_NAME = "SubjectConfirmationData";
+    static final String DEFAULT_ELEMENT_LOCAL_NAME = "SubjectConfirmationData";
 
     /** Default element name. */
-    public static final QName DEFAULT_ELEMENT_NAME = new QName(SAMLConstants.SAML20_NS, DEFAULT_ELEMENT_LOCAL_NAME,
+    static final QName DEFAULT_ELEMENT_NAME = new QName(SAMLConstants.SAML20_NS, DEFAULT_ELEMENT_LOCAL_NAME,
             SAMLConstants.SAML20_PREFIX);
 
     /** Local name of the XSI type. */
-    public static final String TYPE_LOCAL_NAME = "SubjectConfirmationDataType";
+    static final String TYPE_LOCAL_NAME = "SubjectConfirmationDataType";
 
     /** QName of the XSI type. */
-    public static final QName TYPE_NAME = new QName(SAMLConstants.SAML20_NS, TYPE_LOCAL_NAME,
+    static final QName TYPE_NAME = new QName(SAMLConstants.SAML20_NS, TYPE_LOCAL_NAME,
             SAMLConstants.SAML20_PREFIX);
 
     /** NotBefore attribute name. */
-    public static final String NOT_BEFORE_ATTRIB_NAME = "NotBefore";
+    static final String NOT_BEFORE_ATTRIB_NAME = "NotBefore";
 
-    /** NotOnOrAfter attribute name. */
-    public static final String NOT_ON_OR_AFTER_ATTRIB_NAME = "NotOnOrAfter";
+    /** QName for the NotBefore attribute. */
+    static final QName NOT_BEFORE_ATTRIB_QNAME = new QName(null, "NotBefore", XMLConstants.DEFAULT_NS_PREFIX);
+
+    /** Name for the NotOnOrAfter attribute. */
+    static final String NOT_ON_OR_AFTER_ATTRIB_NAME = "NotOnOrAfter";
+
+    /** QName for the NotOnOrAfter attribute. */
+    static final QName NOT_ON_OR_AFTER_ATTRIB_QNAME =
+            new QName(null, "NotOnOrAfter", XMLConstants.DEFAULT_NS_PREFIX);
 
     /** Recipient attribute name. */
-    public static final String RECIPIENT_ATTRIB_NAME = "Recipient";
+    static final String RECIPIENT_ATTRIB_NAME = "Recipient";
 
     /** InResponseTo attribute name. */
-    public static final String IN_RESPONSE_TO_ATTRIB_NAME = "InResponseTo";
+    static final String IN_RESPONSE_TO_ATTRIB_NAME = "InResponseTo";
 
     /** Address attribute name. */
-    public static final String ADDRESS_ATTRIB_NAME = "Address";
+    static final String ADDRESS_ATTRIB_NAME = "Address";
 
     /**
      * Gets the time before which this subject is not valid.
      * 
      * @return the time before which this subject is not valid
      */
-    public DateTime getNotBefore();
+    Instant getNotBefore();
 
     /**
      * Sets the time before which this subject is not valid.
      * 
      * @param newNotBefore the time before which this subject is not valid
      */
-    public void setNotBefore(DateTime newNotBefore);
+    void setNotBefore(Instant newNotBefore);
 
     /**
      * Gets the time at, or after, which this subject is not valid.
      * 
      * @return the time at, or after, which this subject is not valid
      */
-    public DateTime getNotOnOrAfter();
+    Instant getNotOnOrAfter();
 
     /**
      * Sets the time at, or after, which this subject is not valid.
      * 
      * @param newNotOnOrAfter the time at, or after, which this subject is not valid
      */
-    public void setNotOnOrAfter(DateTime newNotOnOrAfter);
+    void setNotOnOrAfter(Instant newNotOnOrAfter);
 
     /**
      * Gets the recipient of this subject.
      * 
      * @return the recipient of this subject
      */
-    public String getRecipient();
+    String getRecipient();
 
     /**
      * Sets the recipient of this subject.
      * 
      * @param newRecipient the recipient of this subject
      */
-    public void setRecipient(String newRecipient);
+    void setRecipient(String newRecipient);
 
     /**
      * Gets the message ID this is in response to.
      * 
      * @return the message ID this is in response to
      */
-    public String getInResponseTo();
+    String getInResponseTo();
 
     /**
      * Sets the message ID this is in response to.
      * 
      * @param newInResponseTo the message ID this is in response to
      */
-    public void setInResponseTo(String newInResponseTo);
+    void setInResponseTo(String newInResponseTo);
 
     /**
      * Gets the IP address to which this information may be pressented.
      * 
      * @return the IP address to which this information may be pressented
      */
-    public String getAddress();
+    String getAddress();
 
     /**
      * Sets the IP address to which this information may be pressented.
      * 
      * @param newAddress the IP address to which this information may be pressented
      */
-    public void setAddress(String newAddress);
+    void setAddress(String newAddress);
 }

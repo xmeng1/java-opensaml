@@ -17,8 +17,8 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+import java.time.Instant;
+
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.ext.saml2mdrpi.Publication;
 import org.testng.Assert;
@@ -27,7 +27,7 @@ public class PublicationTest extends XMLObjectProviderBaseTestCase {
 
     private static String expectedPublisher = "publisher";
     private static String expectedPublicationId = "Ident";
-    private static DateTime expectedCreationInstant = new DateTime(2010, 8, 11, 14, 59, 1, 2, ISOChronology.getInstanceUTC());
+    private static Instant expectedCreationInstant = Instant.parse("2010-08-11T14:59:01.002Z");
 
     /**
      * Constructor.

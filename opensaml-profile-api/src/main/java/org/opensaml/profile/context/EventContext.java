@@ -30,20 +30,18 @@ import org.opensaml.messaging.context.BaseContext;
  * a sibling or parent component can create or modify an EventContext. The context contains a
  * generic type that represents an event of meaning to a surrounding processing model, such as
  * a workflow.</p>
- *
- * @param <EventType> the event type of the context 
  */
-public class EventContext<EventType> extends BaseContext {
+public class EventContext extends BaseContext {
 
     /** The event represented. */
-    private EventType event;
+    private Object event;
 
     /**
      * Get the event represented by the context.
      * 
      * @return the event
      */
-    @Nullable public EventType getEvent() {
+    @Nullable public Object getEvent() {
         return event;
     }
 
@@ -54,7 +52,7 @@ public class EventContext<EventType> extends BaseContext {
      * 
      * @return this context
      */
-    @Nonnull public EventContext setEvent(@Nullable final EventType newEvent) {
+    @Nonnull public EventContext setEvent(@Nullable final Object newEvent) {
         event = newEvent;
         
         return this;

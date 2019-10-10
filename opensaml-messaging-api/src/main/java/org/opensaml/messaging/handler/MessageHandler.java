@@ -27,10 +27,8 @@ import org.opensaml.messaging.context.MessageContext;
 /**
  *
  *A message handler represents some reusable logic that may be invoked on a message context.
- *
- * @param <MessageType> the type of message being handled
  */
-public interface MessageHandler<MessageType> extends InitializableComponent {
+public interface MessageHandler extends InitializableComponent {
     
     /**
      * Invoke the handler on the specified message context.
@@ -38,6 +36,6 @@ public interface MessageHandler<MessageType> extends InitializableComponent {
      * @param messageContext the message context on which to invoke the handler
      * @throws MessageHandlerException if the there is an error invoking the handler on the message context
      */
-    void invoke(@Nonnull final MessageContext<MessageType> messageContext) throws MessageHandlerException;
+    void invoke(@Nonnull final MessageContext messageContext) throws MessageHandlerException;
     
 }

@@ -36,7 +36,7 @@ import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
-/** Unit test for {@link PopulateSignatureValidationParameters}. */
+/** Unit test for {@link PopulateSignatureValidationParametersHandler}. */
 public class PopulateSignatureValidationParametersHandlerTest extends OpenSAMLInitBaseTestCase {
 
     private MessageContext messageContext;
@@ -44,7 +44,7 @@ public class PopulateSignatureValidationParametersHandlerTest extends OpenSAMLIn
     private PopulateSignatureValidationParametersHandler handler;
     
     @BeforeMethod public void setUp() {
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         handler = new PopulateSignatureValidationParametersHandler();
     }
     

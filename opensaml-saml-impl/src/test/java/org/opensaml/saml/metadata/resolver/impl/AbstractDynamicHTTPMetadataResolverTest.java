@@ -61,11 +61,10 @@ public class AbstractDynamicHTTPMetadataResolverTest extends XMLObjectBaseTestCa
         
         entityDescriptor = buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
         entityDescriptor.setEntityID("https://foo1.example.org/idp/shibboleth");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        XMLObjectSupport.marshallToOutputStream(entityDescriptor, baos);
-        baos.flush();
-        baos.close();
-        entityDescriptorBytes = baos.toByteArray();
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            XMLObjectSupport.marshallToOutputStream(entityDescriptor, baos);
+            entityDescriptorBytes = baos.toByteArray();
+        }
         
         resolver = new MockDynamicHTTPMetadataResolver(httpClient);
         resolver.setId("myDynamicResolver");

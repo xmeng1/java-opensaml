@@ -63,9 +63,8 @@ public abstract class BaseTrustEngineSecurityHandler<TokenType> extends Abstract
         final TrustEngine<? super TokenType> engine = resolveTrustEngine(messageContext);
         if (engine == null) {
             throw new MessageHandlerException("TrustEngine could not be resolved from MessageContext");
-        } else {
-            trustEngine = engine;
         }
+        trustEngine = engine;
         
         return true;
     }

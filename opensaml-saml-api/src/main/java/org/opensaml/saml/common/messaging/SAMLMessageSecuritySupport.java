@@ -26,7 +26,6 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.security.SecurityException;
 import org.opensaml.xmlsec.SignatureSigningParameters;
@@ -55,11 +54,11 @@ public final class SAMLMessageSecuritySupport {
      * @throws SignatureException  if there is a problem with the signature operation
      * 
      */
-    public static void signMessage(@Nonnull final MessageContext<SAMLObject> messageContext) 
+    public static void signMessage(@Nonnull final MessageContext messageContext) 
             throws SecurityException, MarshallingException, SignatureException {
         Constraint.isNotNull(messageContext, "Message context cannot be null");
         
-        final SAMLObject outboundSAML = messageContext.getMessage();
+        final Object outboundSAML = messageContext.getMessage();
         final SignatureSigningParameters parameters = getContextSigningParameters(messageContext);
 
         if (outboundSAML instanceof SignableXMLObject && parameters != null) {
@@ -75,7 +74,7 @@ public final class SAMLMessageSecuritySupport {
      * @return the signing parameters to use, may be null
      */
     @Nullable public static SignatureSigningParameters getContextSigningParameters(
-            @Nonnull final MessageContext<SAMLObject> messageContext) {
+            @Nonnull final MessageContext messageContext) {
         Constraint.isNotNull(messageContext, "Message context cannot be null");
 
         final SecurityParametersContext context = messageContext.getSubcontext(SecurityParametersContext.class);
@@ -96,9 +95,8 @@ public final class SAMLMessageSecuritySupport {
         final String normalized = StringSupport.trimOrNull(scheme);
         if (normalized == null) {
             return false;
-        } else {
-            return SAMLConfigurationSupport.getAllowedBindingURLSchemes().contains(normalized.toLowerCase());
         }
+        return SAMLConfigurationSupport.getAllowedBindingURLSchemes().contains(normalized.toLowerCase());
     }
 
 }

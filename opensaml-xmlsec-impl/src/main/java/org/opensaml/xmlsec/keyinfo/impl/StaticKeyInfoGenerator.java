@@ -71,9 +71,8 @@ public class StaticKeyInfoGenerator implements KeyInfoGenerator {
     @Nonnull public KeyInfo generate(@Nullable final Credential credential) throws SecurityException {
         if (keyInfo.getParent() == null) {
             return keyInfo;
-        } else {
-            return clone(keyInfo);
         }
+        return clone(keyInfo);
     }
     
     /**

@@ -19,6 +19,8 @@ package org.opensaml.saml.saml2.profile.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,7 +37,7 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
-import net.shibboleth.utilities.java.support.security.SecureRandomIdentifierGenerationStrategy;
+import net.shibboleth.utilities.java.support.security.impl.SecureRandomIdentifierGenerationStrategy;
 
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.messaging.context.navigate.MessageLookup;
@@ -58,9 +60,6 @@ import org.opensaml.saml.saml2.profile.SAML2NameIDGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 
 /**
@@ -151,12 +150,11 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
         
         overwriteExisting = true;
         
-        requestLookupStrategy =
-                Functions.compose(new MessageLookup<>(AuthnRequest.class), new InboundMessageContextLookup());
+        requestLookupStrategy = new MessageLookup<>(AuthnRequest.class).compose(new InboundMessageContextLookup());
         assertionsLookupStrategy = new AssertionStrategy();
 
         // Default strategy is a 16-byte secure random source.
-        idGeneratorLookupStrategy = new Function<ProfileRequestContext,IdentifierGenerationStrategy>() {
+        idGeneratorLookupStrategy = new Function<>() {
             public IdentifierGenerationStrategy apply(final ProfileRequestContext input) {
                 return new SecureRandomIdentifierGenerationStrategy();
             }
@@ -302,7 +300,7 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
             return false;
         }
         
-        if (!nameIDPolicyPredicate.apply(profileRequestContext)) {
+        if (!nameIDPolicyPredicate.test(profileRequestContext)) {
             log.debug("{} NameIDPolicy was unacceptable", getLogPrefix());
             ActionSupport.buildEvent(profileRequestContext, SAMLEventIds.INVALID_NAMEID_POLICY);
             return false;
@@ -319,9 +317,8 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
             if (formats == null || formats.isEmpty()) {
                 log.debug("{} No candidate NameID formats, nothing to do", getLogPrefix());
                 return false;
-            } else {
-                log.debug("{} Candidate NameID formats: {}", getLogPrefix(), formats);
             }
+            log.debug("{} Candidate NameID formats: {}", getLogPrefix(), formats);
         }
         
         return true;
@@ -485,8 +482,7 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
         
         /** Constructor. */
         public NameIDPolicyLookupFunction() {
-            requestLookupStrategy =
-                    Functions.compose(new MessageLookup<>(AuthnRequest.class), new InboundMessageContextLookup());
+            requestLookupStrategy = new MessageLookup<>(AuthnRequest.class).compose(new InboundMessageContextLookup());
         }
 
         /**
@@ -499,7 +495,6 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
         }
         
         /** {@inheritDoc} */
-        @Override
         @Nullable public SAMLObject apply(@Nullable final ProfileRequestContext profileRequestContext) {
             
             final AuthnRequest request = requestLookupStrategy.apply(profileRequestContext);
@@ -524,8 +519,9 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
         
         /** Constructor. */
         public RequesterIdFromIssuerFunction() {
-            requestLookupStrategy = Functions.compose(new MessageLookup<>(RequestAbstractType.class),
-                    new InboundMessageContextLookup());
+            requestLookupStrategy =
+                    new MessageLookup<>(RequestAbstractType.class).compose(
+                            new InboundMessageContextLookup());
         }
 
         /**
@@ -539,7 +535,6 @@ public class AddNameIDToSubjects extends AbstractProfileAction {
         }
         
         /** {@inheritDoc} */
-        @Override
         @Nullable public String apply(@Nullable final ProfileRequestContext profileRequestContext) {
             
             final RequestAbstractType request = requestLookupStrategy.apply(profileRequestContext);

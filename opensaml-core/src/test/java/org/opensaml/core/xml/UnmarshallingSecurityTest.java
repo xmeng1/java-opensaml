@@ -77,7 +77,7 @@ public class UnmarshallingSecurityTest extends XMLObjectBaseTestCase {
         Document document = parserPoolInsecure.parse(UnmarshallingSecurityTest.class.getResourceAsStream(documentLocation));
 
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(document.getDocumentElement());
-        SimpleXMLObject sxObject = (SimpleXMLObject) unmarshaller.unmarshall(document.getDocumentElement());
+        unmarshaller.unmarshall(document.getDocumentElement());
     }
 
     /**
@@ -109,7 +109,7 @@ public class UnmarshallingSecurityTest extends XMLObjectBaseTestCase {
         Document document = parserPoolInsecure.parse(UnmarshallingSecurityTest.class.getResourceAsStream(documentLocation));
 
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(document.getDocumentElement());
-        SimpleXMLObject sxObject = (SimpleXMLObject) unmarshaller.unmarshall(document.getDocumentElement());
+        unmarshaller.unmarshall(document.getDocumentElement());
     }
 
     /**
@@ -141,7 +141,7 @@ public class UnmarshallingSecurityTest extends XMLObjectBaseTestCase {
         Document document = parserPoolInsecure.parse(UnmarshallingSecurityTest.class.getResourceAsStream(documentLocation));
 
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(document.getDocumentElement());
-        SimpleXMLObject sxObject = (SimpleXMLObject) unmarshaller.unmarshall(document.getDocumentElement());
+        unmarshaller.unmarshall(document.getDocumentElement());
     }
     
 }

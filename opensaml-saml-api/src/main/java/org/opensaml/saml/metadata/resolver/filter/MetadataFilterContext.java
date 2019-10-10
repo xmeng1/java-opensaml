@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.opensaml.storage;
+package org.opensaml.saml.metadata.resolver.filter;
 
-import javax.annotation.concurrent.ThreadSafe;
+import net.shibboleth.utilities.java.support.collection.ClassIndexedSet;
 
 /**
- * Specialization of {@link StorageService} that maintains its data on a per-request basis.
- * 
- * <p>Implementations of this interface will typically be injected with objects or proxies
- * that supply access to the underlying request/response environment, such as servlets.</p>
- * 
- * <p>Implementations of this interface are not required to guarantee coherency across requests
- * operating on the same initial data but must guarantee updates leave data in a consistent
- * state.</p> 
+ * Class used to provide contextual information at runtime to {@link MetadataFilter} implementations.
  */
-@ThreadSafe
-@Deprecated
-public interface RequestScopedStorageService extends StorageService {
+public class MetadataFilterContext extends ClassIndexedSet<MetadataFilterContext.Data> {
+    
+    /** Marker interface for data classes to be used with {@link MetadataFilterContext}. */
+    public interface Data {}
 
 }

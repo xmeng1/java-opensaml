@@ -17,14 +17,14 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationInfo;
 import org.opensaml.saml.ext.saml2mdrpi.RegistrationPolicy;
 import org.w3c.dom.Attr;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * An unmarshaller for {@link RegistrationInfo}.
@@ -51,7 +51,7 @@ public class RegistrationInfoUnmarshaller extends AbstractSAMLObjectUnmarshaller
             if (RegistrationInfo.REGISTRATION_AUTHORITY_ATTRIB_NAME.equals(attribute.getName())) {
                 info.setRegistrationAuthority(attribute.getValue());
             } else if (RegistrationInfo.REGISTRATION_INSTANT_ATTRIB_NAME.equals(attribute.getName())) {
-                info.setRegistrationInstant(new DateTime(attribute.getValue(), ISOChronology.getInstanceUTC()));
+                info.setRegistrationInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else {
                 super.processAttribute(samlObject, attribute);
             }

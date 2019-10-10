@@ -34,13 +34,13 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 
 import net.shibboleth.utilities.java.support.annotation.ParameterName;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotLive;
 import net.shibboleth.utilities.java.support.annotation.constraint.Unmodifiable;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
@@ -105,8 +105,7 @@ public class EntityGroupNamePredicate implements Predicate<EntityDescriptor> {
     
 // Checkstyle: CyclomaticComplexity OFF
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final EntityDescriptor input) {
+    public boolean test(@Nullable final EntityDescriptor input) {
         
         if (input == null) {
             log.debug("Input was null, condition is false");

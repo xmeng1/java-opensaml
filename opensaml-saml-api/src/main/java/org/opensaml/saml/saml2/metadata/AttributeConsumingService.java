@@ -112,5 +112,5 @@ public interface AttributeConsumingService extends SAMLObject {
      * 
      * @return attributes this service requests
      */
-    public List<RequestedAttribute> getRequestAttributes();
+    public List<RequestedAttribute> getRequestedAttributes();
 }

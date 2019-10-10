@@ -84,8 +84,8 @@ public class DataReferenceTest extends XMLObjectProviderBaseTestCase {
         DataReference ref = (DataReference) buildXMLObject(DataReference.DEFAULT_ELEMENT_NAME);
         
         ref.setURI(expectedURI);
-        ref.getUnknownXMLObjects().add((SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
-        ref.getUnknownXMLObjects().add((SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
+        ref.getUnknownXMLObjects().add(buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
+        ref.getUnknownXMLObjects().add(buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
         
         assertXMLEquals(expectedChildElementsDOM, ref);
     }

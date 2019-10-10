@@ -184,9 +184,8 @@ public abstract class AbstractChainingCredentialResolver<ResolverType extends Cr
             tempCred = getNextCredential();
             if (tempCred != null) {
                 return tempCred;
-            } else {
-                throw new NoSuchElementException("No more Credential elements are available");
             }
+            throw new NoSuchElementException("No more Credential elements are available");
         }
 
         /** {@inheritDoc} */

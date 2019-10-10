@@ -26,10 +26,8 @@ import org.opensaml.messaging.error.MessageErrorHandler;
 
 /**
  * A specialization of message error handler for HTTP servlet container environments.
- * 
- * @param <MessageType> the type of message being handled
  */
-public interface HttpServletMessageErrorHandler<MessageType> extends MessageErrorHandler<MessageType> {
+public interface HttpServletMessageErrorHandler extends MessageErrorHandler {
     
     /**
      * Get the HTTP servlet request.

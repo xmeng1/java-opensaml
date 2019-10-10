@@ -331,7 +331,7 @@ public class CertPathPKIXTrustEvaluator implements PKIXTrustEvaluator {
         log.trace("Creating cert store to use during path validation");
 
         log.trace("Adding entity certificate chain to cert store");
-        final List<Object> storeMaterial = new ArrayList<Object>(untrustedCredential.getEntityCertificateChain());
+        final List<Object> storeMaterial = new ArrayList<>(untrustedCredential.getEntityCertificateChain());
         if (log.isTraceEnabled()) {
             for (final X509Certificate cert : untrustedCredential.getEntityCertificateChain()) {
                 log.trace(String.format("Added X509Certificate from entity cert chain to cert store "

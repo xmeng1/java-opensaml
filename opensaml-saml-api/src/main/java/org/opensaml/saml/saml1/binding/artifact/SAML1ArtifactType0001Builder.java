@@ -25,7 +25,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLArtifactContext;
 import org.opensaml.saml.saml1.core.Assertion;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public class SAML1ArtifactType0001Builder implements SAML1ArtifactBuilder<SAML1A
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public SAML1ArtifactType0001 buildArtifact(@Nonnull final MessageContext<SAMLObject> requestContext,
+    @Nullable public SAML1ArtifactType0001 buildArtifact(@Nonnull final MessageContext requestContext,
             @Nonnull final Assertion assertion) {
         final String sourceId = getSourceEntityId(requestContext);
         if (sourceId == null) {
@@ -80,8 +79,7 @@ public class SAML1ArtifactType0001Builder implements SAML1ArtifactBuilder<SAML1A
      * @param requestContext the current message context
      * @return the SAML artifact context, or null
      */
-    @Nullable protected SAMLArtifactContext getArtifactContext(
-            @Nonnull final MessageContext<SAMLObject> requestContext) {
+    @Nullable protected SAMLArtifactContext getArtifactContext(@Nonnull final MessageContext requestContext) {
         return requestContext.getSubcontext(SAMLArtifactContext.class);
     }
 
@@ -92,14 +90,13 @@ public class SAML1ArtifactType0001Builder implements SAML1ArtifactBuilder<SAML1A
      * 
      * @return the local entityId
      */
-    @Nullable protected String getSourceEntityId(@Nonnull final MessageContext<SAMLObject> requestContext) {
+    @Nullable protected String getSourceEntityId(@Nonnull final MessageContext requestContext) {
         final SAMLArtifactContext artifactContext = getArtifactContext(requestContext);
         if (artifactContext != null) {
             if (artifactContext.getSourceEntityId() != null) {
                 return artifactContext.getSourceEntityId(); 
-            } else {
-                log.warn("SAMLArtifactContext did not contain a source entityID");
             }
+            log.warn("SAMLArtifactContext did not contain a source entityID");
         } else {
             log.warn("Message context did not contain a SAMLArtifactContext");
         }

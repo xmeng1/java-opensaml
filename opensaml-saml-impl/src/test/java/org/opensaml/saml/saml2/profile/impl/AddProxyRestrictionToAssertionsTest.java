@@ -17,9 +17,8 @@
 
 package org.opensaml.saml.saml2.profile.impl;
 
-import java.util.Collection;
-
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -37,7 +36,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 
 /** {@link AddProxyRestrictionToAssertions} unit test. */
@@ -50,16 +48,8 @@ public class AddProxyRestrictionToAssertionsTest extends OpenSAMLInitBaseTestCas
     
     @BeforeMethod public void setUp() throws ComponentInitializationException {
         action = new AddProxyRestrictionToAssertions();
-        action.setProxyAudiencesLookupStrategy(new Function<ProfileRequestContext,Collection<String>>() {
-            public Collection<String> apply(ProfileRequestContext input) {
-                return ImmutableList.of(AUDIENCE1, AUDIENCE2);
-            }
-        });
-        action.setProxyCountLookupStrategy(new Function<ProfileRequestContext,Long>() {
-            public Long apply(ProfileRequestContext input) {
-                return 1L;
-            }
-        });
+        action.setProxyAudiencesLookupStrategy(FunctionSupport.constant(ImmutableList.of(AUDIENCE1, AUDIENCE2)));
+        action.setProxyCountLookupStrategy(FunctionSupport.constant(1L));
         action.initialize();
     }
     
@@ -112,8 +102,8 @@ public class AddProxyRestrictionToAssertionsTest extends OpenSAMLInitBaseTestCas
      * response.
      */
     @Test public void testSingleAssertionWithExistingCondition() throws Exception {
-        final SAMLObjectBuilder<Conditions> conditionsBuilder =
-                (SAMLObjectBuilder<Conditions>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(
+        final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
                         Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
 

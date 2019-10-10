@@ -17,30 +17,27 @@
 
 package org.opensaml.profile.context.navigate;
 
+import java.util.function.Function;
+
 import javax.annotation.Nullable;
 
 import org.opensaml.profile.context.EventContext;
 import org.opensaml.profile.context.PreviousEventContext;
 import org.opensaml.profile.context.ProfileRequestContext;
 
-import com.google.common.base.Function;
-
 /** Access either current or previous event from context tree. */
 public class CurrentOrPreviousEventLookup implements Function<ProfileRequestContext,EventContext> {
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public EventContext apply(@Nullable final ProfileRequestContext input) {
         if (input != null) {
             final EventContext eventCtx = input.getSubcontext(EventContext.class);
             if (eventCtx != null && eventCtx.getEvent() != null) {
                 return eventCtx;
-            } else {
-                return input.getSubcontext(PreviousEventContext.class);
             }
-        } else {
-            return null;
+            return input.getSubcontext(PreviousEventContext.class);
         }
+        return null;
     }
     
 }

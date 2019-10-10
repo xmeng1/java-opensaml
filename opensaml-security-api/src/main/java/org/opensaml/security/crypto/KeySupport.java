@@ -245,9 +245,8 @@ public final class KeySupport {
 
         if (password != null && password.length > 0) {
             return KeyPairUtil.decodePrivateKey(key, password);
-        } else {
-            return KeyPairUtil.decodePrivateKey(key);
-        } 
+        }
+        return KeyPairUtil.decodePrivateKey(key); 
     }
     
     /**

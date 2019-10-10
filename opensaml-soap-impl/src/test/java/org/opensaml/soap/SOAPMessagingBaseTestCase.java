@@ -30,11 +30,11 @@ import org.testng.annotations.BeforeMethod;
  */
 public class SOAPMessagingBaseTestCase extends XMLObjectBaseTestCase {
     
-    private MessageContext<XMLObject> messageContext;
+    private MessageContext messageContext;
     
     private Envelope envelope;
     
-    protected MessageContext<XMLObject> getMessageContext() {
+    protected MessageContext getMessageContext() {
         return messageContext;
     }
     
@@ -44,12 +44,12 @@ public class SOAPMessagingBaseTestCase extends XMLObjectBaseTestCase {
     
     @BeforeMethod
     protected void setUpMessageContextAndEnvelope() {
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.setMessage(buildXMLObject(simpleXMLObjectQName));
         
         envelope = buildXMLObject(Envelope.DEFAULT_ELEMENT_NAME);
         envelope.setBody((Body) buildXMLObject(Body.DEFAULT_ELEMENT_NAME));
-        envelope.getBody().getUnknownXMLObjects().add(messageContext.getMessage());
+        envelope.getBody().getUnknownXMLObjects().add((XMLObject) messageContext.getMessage());
         messageContext.getSubcontext(SOAP11Context.class, true).setEnvelope(envelope);
     }
 

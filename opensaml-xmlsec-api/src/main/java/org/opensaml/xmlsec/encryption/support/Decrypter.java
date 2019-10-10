@@ -28,7 +28,6 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.XMLConstants;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
@@ -459,19 +458,18 @@ public class Decrypter {
             if (node.getNodeType() != Node.ELEMENT_NODE) {
                 log.error("Decryption returned a top-level node that was not of type Element: " + node.getNodeType());
                 throw new DecryptionException("Top-level node was not of type Element");
-            } else {
-                element = (Element) node;
-                if (rootInNewDocument) {
-                    Document newDoc = null;
-                    try {
-                        newDoc = parserPool.newDocument();
-                    } catch (final XMLParserException e) {
-                        log.error("There was an error creating a new DOM Document", e);
-                        throw new DecryptionException("Error creating new DOM Document", e);
-                    }
-                    newDoc.adoptNode(element);
-                    newDoc.appendChild(element);
+            }
+            element = (Element) node;
+            if (rootInNewDocument) {
+                Document newDoc = null;
+                try {
+                    newDoc = parserPool.newDocument();
+                } catch (final XMLParserException e) {
+                    log.error("There was an error creating a new DOM Document", e);
+                    throw new DecryptionException("Error creating new DOM Document", e);
                 }
+                newDoc.adoptNode(element);
+                newDoc.appendChild(element);
             }
 
             try {
@@ -483,10 +481,9 @@ public class Decrypter {
                         final String errorMsg = "No unmarshaller available for " + QNameSupport.getNodeQName(element);
                         log.error(errorMsg);
                         throw new UnmarshallingException(errorMsg);
-                    } else {
-                        log.debug("No unmarshaller was registered for {}. Using default unmarshaller.",
-                                QNameSupport.getNodeQName(element));
                     }
+                    log.debug("No unmarshaller was registered for {}. Using default unmarshaller.",
+                            QNameSupport.getNodeQName(element));
                 }
                 xmlObject = unmarshaller.unmarshall(element);
             } catch (final UnmarshallingException e) {
@@ -522,9 +519,8 @@ public class Decrypter {
             docFrag = decryptUsingResolvedKey(encryptedData);
             if (docFrag != null) {
                 return docFrag;
-            } else {
-                log.debug("Failed to decrypt EncryptedData using standard KeyInfo resolver");
             }
+            log.debug("Failed to decrypt EncryptedData using standard KeyInfo resolver");
         }
 
         final String algorithm = encryptedData.getEncryptionMethod().getAlgorithm();
@@ -537,9 +533,8 @@ public class Decrypter {
             docFrag = decryptUsingResolvedEncryptedKey(encryptedData, algorithm);
             if (docFrag != null) {
                 return docFrag;
-            } else {
-                log.debug("Failed to decrypt EncryptedData using EncryptedKeyResolver");
             }
+            log.debug("Failed to decrypt EncryptedData using EncryptedKeyResolver");
         }
 
         log.error("Failed to decrypt EncryptedData using either EncryptedData KeyInfoCredentialResolver "
@@ -927,7 +922,7 @@ public class Decrypter {
      * @return a new key length credential criteria instance, or null if the value could not be determined
      */
     @Nullable private KeyLengthCriterion buildKeyLengthCriteria(@Nullable final String encAlgorithmURI) {
-        if (!Strings.isNullOrEmpty(encAlgorithmURI)) {
+        if (Strings.isNullOrEmpty(encAlgorithmURI)) {
             return null;
         }
 
@@ -981,6 +976,7 @@ public class Decrypter {
      * 
      * @deprecated
      */
+    @Deprecated
     protected ParserPool buildParserPool() {
         // Note: we don't really build this here anymore, so the method name is semantically misleading.
         // We should remove this method in next major release and just move this call to the ctor.

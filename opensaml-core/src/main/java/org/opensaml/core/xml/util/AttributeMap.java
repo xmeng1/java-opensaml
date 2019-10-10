@@ -496,9 +496,8 @@ public class AttributeMap implements Map<QName, String> {
             final QName name = QNameSupport.constructQName(nsURI, localPart, candidatePrefix);
             log.trace("Resolved QName '{}'", name);
             return name;
-        } else {
-            log.trace("Namespace URI for candidate prefix '{}' could not be resolved", candidatePrefix);
         }
+        log.trace("Namespace URI for candidate prefix '{}' could not be resolved", candidatePrefix);
         
         log.trace("Value was either not a QName, or namespace URI could not be resolved");
         

@@ -55,15 +55,14 @@ public class RequestedAuthnContextUnmarshaller extends AbstractSAMLObjectUnmarsh
 
         if (attribute.getLocalName().equals(RequestedAuthnContext.COMPARISON_ATTRIB_NAME)
                 && attribute.getNamespaceURI() == null) {
-            if ("exact".equals(attribute.getValue())) {
-                rac.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
-            } else if ("minimum".equals(attribute.getValue())) {
-                rac.setComparison(AuthnContextComparisonTypeEnumeration.MINIMUM);
-            } else if ("maximum".equals(attribute.getValue())) {
-                rac.setComparison(AuthnContextComparisonTypeEnumeration.MAXIMUM);
-            } else if ("better".equals(attribute.getValue())) {
-                rac.setComparison(AuthnContextComparisonTypeEnumeration.BETTER);
-            } else {
+            try {
+                if (attribute.getValue() != null) {
+                    rac.setComparison(
+                            AuthnContextComparisonTypeEnumeration.valueOf(attribute.getValue().toUpperCase()));
+                } else {
+                    throw new UnmarshallingException("Saw an empty value for Comparison attribute");
+                }
+            } catch (final IllegalArgumentException e) {
                 throw new UnmarshallingException("Saw an invalid value for Comparison attribute: "
                         + attribute.getValue());
             }
@@ -71,4 +70,5 @@ public class RequestedAuthnContextUnmarshaller extends AbstractSAMLObjectUnmarsh
             super.processAttribute(samlObject, attribute);
         }
     }
+    
 }

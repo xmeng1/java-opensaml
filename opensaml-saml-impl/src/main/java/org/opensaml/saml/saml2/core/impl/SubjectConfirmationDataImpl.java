@@ -21,28 +21,28 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.SubjectConfirmationData}.
  */
-public class SubjectConfirmationDataImpl extends AbstractSAMLObject implements SubjectConfirmationData {
+public class SubjectConfirmationDataImpl extends AbstractXMLObject implements SubjectConfirmationData {
 
     /** NotBefore of the Confirmation Data. */
-    private DateTime notBefore;
+    private Instant notBefore;
 
     /** NotOnOrAfter of the Confirmation Data. */
-    private DateTime notOnOrAfter;
+    private Instant notOnOrAfter;
 
     /** Recipient of the Confirmation Data. */
     private String recipient;
@@ -74,22 +74,22 @@ public class SubjectConfirmationDataImpl extends AbstractSAMLObject implements S
     }
 
     /** {@inheritDoc} */
-    public DateTime getNotBefore() {
+    public Instant getNotBefore() {
         return notBefore;
     }
 
     /** {@inheritDoc} */
-    public void setNotBefore(final DateTime newNotBefore) {
+    public void setNotBefore(final Instant newNotBefore) {
         this.notBefore = prepareForAssignment(this.notBefore, newNotBefore);
     }
 
     /** {@inheritDoc} */
-    public DateTime getNotOnOrAfter() {
+    public Instant getNotOnOrAfter() {
         return notOnOrAfter;
     }
 
     /** {@inheritDoc} */
-    public void setNotOnOrAfter(final DateTime newNotOnOrAfter) {
+    public void setNotOnOrAfter(final Instant newNotOnOrAfter) {
         this.notOnOrAfter = prepareForAssignment(this.notOnOrAfter, newNotOnOrAfter);
     }
 

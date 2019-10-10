@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.metadata.resolver.impl;
 
+import java.time.Instant;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,11 +27,10 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.metadata.IterableMetadataSource;
-import org.opensaml.saml.metadata.resolver.ExtendedBatchMetadataResolver;
+import org.opensaml.saml.metadata.resolver.BatchMetadataResolver;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.index.MetadataIndex;
 import org.opensaml.saml.metadata.resolver.index.impl.MetadataIndexManager;
@@ -58,7 +59,7 @@ import net.shibboleth.utilities.java.support.resolver.ResolverException;
  * in time from a single metadata source document.
  */
 public abstract class AbstractBatchMetadataResolver extends AbstractMetadataResolver 
-        implements ExtendedBatchMetadataResolver, IterableMetadataSource {
+        implements BatchMetadataResolver, IterableMetadataSource {
     
     /** Class logger. */
     private final Logger log = LoggerFactory.getLogger(AbstractBatchMetadataResolver.class);
@@ -154,13 +155,12 @@ public abstract class AbstractBatchMetadataResolver extends AbstractMetadataReso
     }
 
     /** {@inheritDoc} */
-    @Nullable public DateTime getRootValidUntil() {
+    @Nullable public Instant getRootValidUntil() {
         final XMLObject cached = getBackingStore().getCachedOriginalMetadata();
         if (cached != null && cached instanceof TimeBoundSAMLObject) {
             return ((TimeBoundSAMLObject)cached).getValidUntil();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -168,9 +168,8 @@ public abstract class AbstractBatchMetadataResolver extends AbstractMetadataReso
         final XMLObject cached = getBackingStore().getCachedOriginalMetadata();
         if (cached == null) {
             return null;
-        } else {
-            return isValid(cached);
         }
+        return isValid(cached);
     }
 
     /** {@inheritDoc} */
@@ -352,7 +351,7 @@ public abstract class AbstractBatchMetadataResolver extends AbstractMetadataReso
         protected BatchEntityBackingStore(
                 @Nullable @NonnullElements @Unmodifiable @NotLive final Set<MetadataIndex> initIndexes) {
             super();
-            secondaryIndexManager = new MetadataIndexManager(initIndexes, 
+            secondaryIndexManager = new MetadataIndexManager<>(initIndexes, 
                     new MetadataIndexManager.IdentityExtractionFunction());
         }
 

@@ -26,6 +26,6 @@ package org.opensaml.saml.common.messaging.context;
  * This context will often contain subcontexts, whose data is construed to be scoped to that presenter entity.
  * </p>
  */
-public class SAMLPresenterEntityContext extends AbstractAuthenticatableSAMLEntityContext {
+public final class SAMLPresenterEntityContext extends AbstractAuthenticatableSAMLEntityContext {
 
 }

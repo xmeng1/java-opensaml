@@ -23,10 +23,11 @@ package org.opensaml.saml.saml2.core.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.opensaml.saml.saml2.core.NameID;
@@ -41,7 +42,7 @@ public class LogoutRequestTest extends RequestTestBase {
     private String expectedReason;
     
     /** Expected NotOnOrAfter attribute value */
-    private DateTime expectedNotOnOrAfter;
+    private Instant expectedNotOnOrAfter;
     
     /** Expected number of SessionIndex child elements */
     private int expectedNumSessionIndexes;
@@ -61,7 +62,7 @@ public class LogoutRequestTest extends RequestTestBase {
     protected void setUp() throws Exception {
         super.setUp();
         expectedReason = "urn:string:reason";
-        expectedNotOnOrAfter = new DateTime(2006, 2, 21, 20, 45, 0, 0, ISOChronology.getInstanceUTC());
+        expectedNotOnOrAfter = Instant.parse("2006-02-21T20:45:00.000Z");
         expectedNumSessionIndexes = 2;
     }
 

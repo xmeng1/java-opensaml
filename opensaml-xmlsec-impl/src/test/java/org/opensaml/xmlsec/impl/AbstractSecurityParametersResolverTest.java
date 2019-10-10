@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,8 +47,6 @@ import org.opensaml.xmlsec.keyinfo.impl.BasicKeyInfoGeneratorFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Predicate;
 
 /**
  * Test various aspects of the {@link AbstractSecurityParametersResolver} so don't have to test
@@ -217,17 +216,17 @@ public class AbstractSecurityParametersResolverTest extends XMLObjectBaseTestCas
         
         // Note: Have effective whitelist based on set1
         
-        Assert.assertTrue(predicate.apply("A"));
-        Assert.assertTrue(predicate.apply("B"));
-        Assert.assertTrue(predicate.apply("C"));
-        Assert.assertTrue(predicate.apply("D"));
+        Assert.assertTrue(predicate.test("A"));
+        Assert.assertTrue(predicate.test("B"));
+        Assert.assertTrue(predicate.test("C"));
+        Assert.assertTrue(predicate.test("D"));
         
-        Assert.assertFalse(predicate.apply("X"));
-        Assert.assertFalse(predicate.apply("Y"));
-        Assert.assertFalse(predicate.apply("Z"));
-        Assert.assertFalse(predicate.apply("foo"));
-        Assert.assertFalse(predicate.apply("bar"));
-        Assert.assertFalse(predicate.apply("bax"));
+        Assert.assertFalse(predicate.test("X"));
+        Assert.assertFalse(predicate.test("Y"));
+        Assert.assertFalse(predicate.test("Z"));
+        Assert.assertFalse(predicate.test("foo"));
+        Assert.assertFalse(predicate.test("bar"));
+        Assert.assertFalse(predicate.test("bax"));
         
         config1.setWhitelistBlacklistPrecedence(Precedence.BLACKLIST);
         
@@ -235,17 +234,17 @@ public class AbstractSecurityParametersResolverTest extends XMLObjectBaseTestCas
         
         // Note: Have effective blacklist based on set2
         
-        Assert.assertTrue(predicate.apply("A"));
-        Assert.assertTrue(predicate.apply("B"));
-        Assert.assertTrue(predicate.apply("C"));
-        Assert.assertTrue(predicate.apply("D"));
-        Assert.assertTrue(predicate.apply("foo"));
-        Assert.assertTrue(predicate.apply("bar"));
-        Assert.assertTrue(predicate.apply("bax"));
+        Assert.assertTrue(predicate.test("A"));
+        Assert.assertTrue(predicate.test("B"));
+        Assert.assertTrue(predicate.test("C"));
+        Assert.assertTrue(predicate.test("D"));
+        Assert.assertTrue(predicate.test("foo"));
+        Assert.assertTrue(predicate.test("bar"));
+        Assert.assertTrue(predicate.test("bax"));
         
-        Assert.assertFalse(predicate.apply("X"));
-        Assert.assertFalse(predicate.apply("Y"));
-        Assert.assertFalse(predicate.apply("Z"));
+        Assert.assertFalse(predicate.test("X"));
+        Assert.assertFalse(predicate.test("Y"));
+        Assert.assertFalse(predicate.test("Z"));
     }
     
     @Test
@@ -403,9 +402,8 @@ public class AbstractSecurityParametersResolverTest extends XMLObjectBaseTestCas
             WhitelistBlacklistParameters params = resolveSingle(criteria);
             if (params != null) {
                 return Collections.singletonList(params);
-            } else {
-                return Collections.emptyList();
             }
+            return Collections.emptyList();
         }
 
         /** {@inheritDoc} */

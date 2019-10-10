@@ -66,8 +66,9 @@ public class DelegationRestrictionTypeTest extends XMLObjectProviderBaseTestCase
     /** {@inheritDoc} */
     @Test
     public void testSingleElementMarshall() {
-        SAMLObjectBuilder<DelegationRestrictionType> builder =
-            (SAMLObjectBuilder<DelegationRestrictionType>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(DelegationRestrictionType.TYPE_NAME);
+        SAMLObjectBuilder<DelegationRestrictionType> builder = (SAMLObjectBuilder<DelegationRestrictionType>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<DelegationRestrictionType>getBuilderOrThrow(
+                        DelegationRestrictionType.TYPE_NAME);
         
         DelegationRestrictionType drt = builder.buildObject();
 
@@ -78,8 +79,9 @@ public class DelegationRestrictionTypeTest extends XMLObjectProviderBaseTestCase
     /** {@inheritDoc} */
     @Test
     public void testChildElementsMarshall() {
-        SAMLObjectBuilder<DelegationRestrictionType> builder =
-            (SAMLObjectBuilder<DelegationRestrictionType>) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(DelegationRestrictionType.TYPE_NAME);
+        SAMLObjectBuilder<DelegationRestrictionType> builder = (SAMLObjectBuilder<DelegationRestrictionType>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<DelegationRestrictionType>getBuilderOrThrow(
+                        DelegationRestrictionType.TYPE_NAME);
         
         DelegationRestrictionType drt = builder.buildObject();
         

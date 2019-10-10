@@ -17,8 +17,6 @@
 
 package org.opensaml.saml.saml1.core.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectUnmarshaller;
@@ -32,6 +30,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.google.common.base.Strings;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * A thread-safe Unmarshaller for {@link org.opensaml.saml.saml1.core.Assertion} objects.
@@ -80,7 +80,7 @@ public class AssertionUnmarshaller extends AbstractSAMLObjectUnmarshaller {
                 assertion.setIssuer(attribute.getValue());
             } else if (Assertion.ISSUEINSTANT_ATTRIB_NAME.equals(attribute.getLocalName())
                     && !Strings.isNullOrEmpty(attribute.getValue())) {
-                assertion.setIssueInstant(new DateTime(attribute.getValue(), ISOChronology.getInstanceUTC()));
+                assertion.setIssueInstant(DOMTypeSupport.stringToInstant(attribute.getValue()));
             } else if (Assertion.MAJORVERSION_ATTRIB_NAME.equals(attribute.getLocalName())) {
                 final int major;
                 try {

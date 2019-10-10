@@ -447,9 +447,8 @@ public class X509KeyInfoGeneratorFactory extends BasicKeyInfoGeneratorFactory {
             final List<XMLObject> keyInfoChildren = keyInfo.getOrderedChildren();
             if (keyInfoChildren != null && keyInfoChildren.size() > 0) {
                 return keyInfo;
-            } else {
-                return null;
             }
+            return null;
         }
         
         /** Process the value of {@link X509Credential#getEntityCertificate()}.
@@ -668,7 +667,7 @@ public class X509KeyInfoGeneratorFactory extends BasicKeyInfoGeneratorFactory {
             if (options.emitSubjectAltNamesAsKeyNames && options.subjectAltNames.size() > 0) {
                 final Integer[] nameTypes = new Integer[ options.subjectAltNames.size() ];
                 options.subjectAltNames.toArray(nameTypes);
-                final List altnames = X509Support.getAltNames(cert, nameTypes);
+                final List<?> altnames = X509Support.getAltNames(cert, nameTypes);
                 if (altnames != null) {
                     for (final Object altNameValue : altnames) {
                         // Each returned value should either be a String or a DER-encoded byte array.

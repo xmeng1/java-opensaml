@@ -23,10 +23,11 @@ package org.opensaml.saml.saml1.core.impl;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.saml1.core.Assertion;
@@ -47,7 +48,7 @@ public class ResponseTest extends XMLObjectProviderBaseTestCase {
     private final String expectedID;
 
     /** Representation of IssueInstant in test file. */
-    private final DateTime expectedIssueInstant;
+    private final Instant expectedIssueInstant;
 
     /** Representation of InResponseTo in test file. */
     private final String expectedInResponseTo;
@@ -66,10 +67,7 @@ public class ResponseTest extends XMLObjectProviderBaseTestCase {
         singleElementFile = "/org/opensaml/saml/saml1/impl/singleResponse.xml";
         singleElementOptionalAttributesFile = "/org/opensaml/saml/saml1/impl/singleResponseAttributes.xml";
         childElementsFile = "/org/opensaml/saml/saml1/impl/ResponseWithChildren.xml";
-        //
-        // IssueInstant="1970-01-01T00:00:00.100Z"
-        //
-        expectedIssueInstant = new DateTime(1970, 1, 1, 0, 0, 0, 100, ISOChronology.getInstanceUTC());
+        expectedIssueInstant = Instant.parse("1970-01-01T00:00:00.100Z");
 
         expectedInResponseTo="inresponseto";
         expectedMinorVersion=1;

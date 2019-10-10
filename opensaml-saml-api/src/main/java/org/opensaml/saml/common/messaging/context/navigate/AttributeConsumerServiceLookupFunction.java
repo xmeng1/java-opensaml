@@ -24,7 +24,7 @@ import org.opensaml.saml.common.messaging.context.AttributeConsumingServiceConte
 import org.opensaml.saml.saml2.metadata.AttributeConsumingService;
 
 /**
- * {@link com.google.common.base.Function} to return the {@link AttributeConsumingService}
+ * {@link ContextDataLookupFunction} to return the {@link AttributeConsumingService}
  * from the {@link AttributeConsumingServiceContext}.
  */
 public class AttributeConsumerServiceLookupFunction implements

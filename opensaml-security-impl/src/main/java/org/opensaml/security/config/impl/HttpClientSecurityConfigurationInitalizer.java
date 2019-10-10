@@ -31,7 +31,8 @@ public class HttpClientSecurityConfigurationInitalizer implements Initializer {
     /** {@inheritDoc} */
     public void init() throws InitializationException {
         // This is empty, just need to register it to satisfy resolver in case no others are supplied.
-        ConfigurationService.register(HttpClientSecurityConfiguration.class, new BasicHttpClientSecurityConfiguration());
+        ConfigurationService.register(HttpClientSecurityConfiguration.class,
+                new BasicHttpClientSecurityConfiguration());
     }
 
 }

@@ -96,11 +96,13 @@ public class AddOneTimeUseConditionToAssertionsTest  extends OpenSAMLInitBaseTes
     @Test
     public void testSingleAssertionWithExistingCondition() {
         final SAMLObjectBuilder<OneTimeUse> conditionBuilder = (SAMLObjectBuilder<OneTimeUse>)
-                XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(OneTimeUse.DEFAULT_ELEMENT_NAME);
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<OneTimeUse>getBuilderOrThrow(
+                        OneTimeUse.DEFAULT_ELEMENT_NAME);
         final OneTimeUse condition = conditionBuilder.buildObject();
 
         final SAMLObjectBuilder<Conditions> conditionsBuilder = (SAMLObjectBuilder<Conditions>)
-                XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(Conditions.DEFAULT_ELEMENT_NAME);
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<Conditions>getBuilderOrThrow(
+                        Conditions.DEFAULT_ELEMENT_NAME);
         final Conditions conditions = conditionsBuilder.buildObject();
         conditions.getConditions().add(condition);
 

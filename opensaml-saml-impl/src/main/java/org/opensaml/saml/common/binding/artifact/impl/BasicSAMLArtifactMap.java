@@ -18,6 +18,8 @@
 package org.opensaml.saml.common.binding.artifact.impl;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
@@ -27,17 +29,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.annotation.constraint.NonNegative;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
-import net.shibboleth.utilities.java.support.annotation.constraint.Positive;
 import net.shibboleth.utilities.java.support.component.AbstractInitializableComponent;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.TimerSupport;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.artifact.ExpiringSAMLArtifactMapEntry;
 import org.opensaml.saml.common.binding.artifact.SAMLArtifactMap;
@@ -54,14 +53,14 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
     /** Artifact mapping storage. */
     @NonnullAfterInit private Map<String,ExpiringSAMLArtifactMapEntry> artifactStore;
 
-    /** Lifetime of an artifact in milliseconds. */
-    @Duration @Positive private long artifactLifetime;
+    /** Lifetime of an artifact. */
+    @Nonnull private Duration artifactLifetime;
 
     /** Factory for SAMLArtifactMapEntry instances. */
     @Nonnull private SAMLArtifactMapEntryFactory entryFactory;
 
-    /** Number of seconds between cleanup checks. Default value: (300) */
-    @Duration @NonNegative private long cleanupInterval;
+    /** Time between cleanup checks. Default value: (5 mins) */
+    @Nonnull private Duration cleanupInterval;
 
     /** Timer used to schedule cleanup tasks. */
     @NonnullAfterInit private Timer cleanupTaskTimer;
@@ -71,8 +70,8 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
 
     /** Constructor. */
     public BasicSAMLArtifactMap() {
-        artifactLifetime = 60000L;
-        cleanupInterval = 300;
+        artifactLifetime = Duration.ofMinutes(1);
+        cleanupInterval = Duration.ofMinutes(5);
         entryFactory = new ExpiringSAMLArtifactMapEntryFactory();
     }
 
@@ -81,10 +80,10 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
         super.doInitialize();
         artifactStore = new ConcurrentHashMap<>();
 
-        if (cleanupInterval > 0) {
+        if (!cleanupInterval.isZero()) {
             cleanupTask = new Cleanup();
             cleanupTaskTimer = new Timer(TimerSupport.getTimerName(this), true);
-            cleanupTaskTimer.schedule(cleanupTask, cleanupInterval * 1000, cleanupInterval * 1000);
+            cleanupTaskTimer.schedule(cleanupTask, cleanupInterval.toMillis(), cleanupInterval.toMillis());
         }
     }
 
@@ -101,11 +100,11 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
     }
 
     /**
-     * Get the artifact entry lifetime in milliseconds.
+     * Get the artifact entry lifetime.
      * 
-     * @return the artifact entry lifetime in milliseconds
+     * @return the artifact entry lifetime
      */
-    @Positive public long getArtifactLifetime() {
+    @Nonnull public Duration getArtifactLifetime() {
         return artifactLifetime;
     }
 
@@ -119,21 +118,29 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
     }
 
     /**
-     * Set the artifact entry lifetime in milliseconds.
+     * Set the artifact entry lifetime.
      * 
-     * @param lifetime artifact entry lifetime in milliseconds
+     * @param lifetime artifact entry lifetime
      */
-    @Duration public void setArtifactLifetime(@Duration @Positive final long lifetime) {
-        artifactLifetime = Constraint.isGreaterThan(0, lifetime, "Artifact lifetime must be greater than zero");
+    public void setArtifactLifetime(@Nonnull final Duration lifetime) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        Constraint.isNotNull(lifetime, "Lifetime cannot be null");
+        Constraint.isFalse(lifetime.isNegative() || lifetime.isZero(), "Lifetime must be positive");
+        
+        artifactLifetime = lifetime;
     }
 
     /**
-     * Set the cleanup interval in milliseconds, or 0 for none.
+     * Set the cleanup interval, or 0 for none.
      * 
-     * @param interval  cleanup interval in milliseconds
+     * @param interval  cleanup interval
      */
-    @Duration public void setCleanupInterval(@Duration @NonNegative final long interval) {
-        cleanupInterval = Constraint.isGreaterThanOrEqual(0, interval, "Cleanup interval must be non-negative");
+    public void setCleanupInterval(@Nonnull final Duration interval) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        Constraint.isNotNull(interval, "Interval cannot be null");
+        Constraint.isFalse(interval.isNegative(), "Interval cannot be negative");
+
+        cleanupInterval = interval;
     }
     
     /**
@@ -142,16 +149,18 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
      * @param factory map entry factory
      */
     public void setEntryFactory(@Nonnull final SAMLArtifactMapEntryFactory factory) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
         entryFactory = Constraint.isNotNull(factory, "SAMLArtifactMapEntryFactory cannot be null");
     }
 
     /** {@inheritDoc} */
-    @Override public boolean contains(@Nonnull @NotEmpty final String artifact) throws IOException {
+    public boolean contains(@Nonnull @NotEmpty final String artifact) throws IOException {
         return artifactStore.containsKey(artifact);
     }
 
     /** {@inheritDoc} */
-    @Override @Nullable public SAMLArtifactMapEntry get(@Nonnull @NotEmpty final String artifact) throws IOException {
+    @Nullable public SAMLArtifactMapEntry get(@Nonnull @NotEmpty final String artifact) throws IOException {
         log.debug("Attempting to retrieve entry for artifact: {}", artifact);
         final ExpiringSAMLArtifactMapEntry entry = artifactStore.get(artifact);
 
@@ -171,23 +180,23 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
     }
 
     /** {@inheritDoc} */
-    @Override public void put(@Nonnull @NotEmpty final String artifact, @Nonnull @NotEmpty final String relyingPartyId,
+    public void put(@Nonnull @NotEmpty final String artifact, @Nonnull @NotEmpty final String relyingPartyId,
             @Nonnull @NotEmpty final String issuerId, @Nonnull final SAMLObject samlMessage) throws IOException {
 
         final ExpiringSAMLArtifactMapEntry artifactEntry =
                 (ExpiringSAMLArtifactMapEntry) entryFactory.newEntry(artifact, issuerId, relyingPartyId, samlMessage);
-        artifactEntry.setExpiration(System.currentTimeMillis() + getArtifactLifetime());
+        artifactEntry.setExpiration(Instant.now().plus(getArtifactLifetime()));
 
         if (log.isDebugEnabled()) {
             log.debug("Storing new artifact entry '{}' for relying party '{}', expiring at '{}'", new Object[] {
-                    artifact, relyingPartyId, new DateTime(artifactEntry.getExpiration()),});
+                    artifact, relyingPartyId, artifactEntry.getExpiration(),});
         }
 
         artifactStore.put(artifact, artifactEntry);
     }
 
     /** {@inheritDoc} */
-    @Override public void remove(@Nonnull @NotEmpty final String artifact) throws IOException {
+    public void remove(@Nonnull @NotEmpty final String artifact) throws IOException {
         log.debug("Removing artifact entry: {}", artifact);
 
         artifactStore.remove(artifact);
@@ -202,7 +211,7 @@ public class BasicSAMLArtifactMap extends AbstractInitializableComponent impleme
         @Override public void run() {
             log.info("Running cleanup task");
 
-            final Long now = System.currentTimeMillis();
+            final Instant now = Instant.now();
 
             final Iterator<Map.Entry<String, ExpiringSAMLArtifactMapEntry>> i = artifactStore.entrySet().iterator();
             while (i.hasNext()) {

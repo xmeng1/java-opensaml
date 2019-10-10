@@ -499,7 +499,7 @@ public class BasicEncryptionParametersResolverTest extends XMLObjectBaseTestCase
         Assert.assertNull(resolver.resolveKeyTransportAlgorithmPredicate(criteriaSet));
         
         final KeyTransportAlgorithmPredicate predicate = new KeyTransportAlgorithmPredicate() {
-            public boolean apply(@Nullable SelectionInput input) {
+            public boolean test(@Nullable SelectionInput input) {
                 return true;
             }
         };
@@ -524,12 +524,12 @@ public class BasicEncryptionParametersResolverTest extends XMLObjectBaseTestCase
     public class MapBasedKeyTransportAlgorithmPredicate implements KeyTransportAlgorithmPredicate {
         private Map<String,String> algoMap;
         
-        public MapBasedKeyTransportAlgorithmPredicate(Map<String,String> algoMap) {
-            this.algoMap = algoMap;
+        public MapBasedKeyTransportAlgorithmPredicate(Map<String,String> map) {
+            algoMap = map;
         }
         
-        public boolean apply(@Nullable SelectionInput input) {
-            return this.algoMap.get(input.getDataEncryptionAlgorithm()).equals(input.getKeyTransportAlgorithm());
+        public boolean test(@Nullable SelectionInput input) {
+            return algoMap.get(input.getDataEncryptionAlgorithm()).equals(input.getKeyTransportAlgorithm());
         }
     }
 

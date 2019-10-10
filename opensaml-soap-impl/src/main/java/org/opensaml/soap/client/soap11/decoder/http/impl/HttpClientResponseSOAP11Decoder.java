@@ -53,24 +53,21 @@ import org.slf4j.LoggerFactory;
  *  An application-specific payload-oriented message exchange would handle a specific type
  * of payload structure.  
  * </p>
- *
- * @param <MessageType> the message type of the message context on which to operate
  */
-public class HttpClientResponseSOAP11Decoder<MessageType extends XMLObject>
-        extends BaseHttpClientResponseXMLMessageDecoder<MessageType> {
+public class HttpClientResponseSOAP11Decoder extends BaseHttpClientResponseXMLMessageDecoder {
     
     /** Logger. */
     private final Logger log = LoggerFactory.getLogger(HttpClientResponseSOAP11Decoder.class);
     
     /** Message handler to use in processing the message body. */
-    private MessageHandler<MessageType> bodyHandler;
+    private MessageHandler bodyHandler;
     
     /**
      * Get the configured body handler MessageHandler.
      * 
      * @return Returns the bodyHandler.
      */
-    public MessageHandler<MessageType> getBodyHandler() {
+    public MessageHandler getBodyHandler() {
         return bodyHandler;
     }
 
@@ -79,13 +76,13 @@ public class HttpClientResponseSOAP11Decoder<MessageType extends XMLObject>
      * 
      * @param newBodyHandler The bodyHandler to set.
      */
-    public void setBodyHandler(final MessageHandler<MessageType> newBodyHandler) {
+    public void setBodyHandler(final MessageHandler newBodyHandler) {
         bodyHandler = newBodyHandler;
     }
 
     /** {@inheritDoc} */
     protected void doDecode() throws MessageDecodingException {
-        final MessageContext<MessageType> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final HttpResponse response = getHttpResponse();
         
         log.debug("Unmarshalling SOAP message");

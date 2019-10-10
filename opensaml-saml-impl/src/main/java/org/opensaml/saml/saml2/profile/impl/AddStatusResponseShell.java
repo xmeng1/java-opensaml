@@ -17,6 +17,9 @@
 
 package org.opensaml.saml.saml2.profile.impl;
 
+import java.time.Instant;
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
@@ -26,10 +29,8 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
-import net.shibboleth.utilities.java.support.security.SecureRandomIdentifierGenerationStrategy;
+import net.shibboleth.utilities.java.support.security.impl.SecureRandomIdentifierGenerationStrategy;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.messaging.context.MessageContext;
@@ -46,8 +47,6 @@ import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.StatusResponseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * Action that creates an empty object derived from {@link StatusResponseType},
@@ -89,11 +88,7 @@ public class AddStatusResponseShell extends AbstractProfileAction {
     /** Constructor. */
     public AddStatusResponseShell() {
         // Default strategy is a 16-byte secure random source.
-        idGeneratorLookupStrategy = new Function<ProfileRequestContext,IdentifierGenerationStrategy>() {
-            public IdentifierGenerationStrategy apply(final ProfileRequestContext input) {
-                return new SecureRandomIdentifierGenerationStrategy();
-            }
-        };
+        idGeneratorLookupStrategy = prc -> new SecureRandomIdentifierGenerationStrategy();
     }
     
     /**
@@ -153,6 +148,10 @@ public class AddStatusResponseShell extends AbstractProfileAction {
     /** {@inheritDoc} */
     @Override
     protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
+        
+        if (!super.doPreExecute(profileRequestContext)) {
+            return false;
+        }
 
         final MessageContext outboundMessageCtx = profileRequestContext.getOutboundMessageContext();
         if (outboundMessageCtx == null) {
@@ -178,7 +177,7 @@ public class AddStatusResponseShell extends AbstractProfileAction {
 
         outboundMessageCtx.setMessage(null);
         
-        return super.doPreExecute(profileRequestContext);
+        return true;
     }
 
     /** {@inheritDoc} */
@@ -190,7 +189,7 @@ public class AddStatusResponseShell extends AbstractProfileAction {
                 (SAMLObjectBuilder<StatusCode>) bf.<StatusCode>getBuilderOrThrow(StatusCode.TYPE_NAME);
         final SAMLObjectBuilder<Status> statusBuilder =
                 (SAMLObjectBuilder<Status>) bf.<Status>getBuilderOrThrow(Status.TYPE_NAME);
-        final SAMLObjectBuilder responseBuilder = (SAMLObjectBuilder) bf.getBuilderOrThrow(messageType);
+        final SAMLObjectBuilder<?> responseBuilder = (SAMLObjectBuilder<?>) bf.getBuilderOrThrow(messageType);
 
         final StatusCode statusCode = statusCodeBuilder.buildObject();
         statusCode.setValue(StatusCode.SUCCESS);
@@ -209,7 +208,7 @@ public class AddStatusResponseShell extends AbstractProfileAction {
         final StatusResponseType response = (StatusResponseType) object;
         
         response.setID(idGenerator.generateIdentifier());
-        response.setIssueInstant(new DateTime(ISOChronology.getInstanceUTC()));
+        response.setIssueInstant(Instant.now());
         response.setStatus(status);
         response.setVersion(SAMLVersion.VERSION_20);
 

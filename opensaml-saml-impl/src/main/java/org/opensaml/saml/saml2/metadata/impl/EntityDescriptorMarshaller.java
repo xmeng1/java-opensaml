@@ -17,25 +17,19 @@
 
 package org.opensaml.saml.saml2.metadata.impl;
 
-import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
-
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
-import org.opensaml.saml.config.SAMLConfigurationSupport;
 import org.opensaml.saml.saml2.common.CacheableSAMLObject;
 import org.opensaml.saml.saml2.common.TimeBoundSAMLObject;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
+
 /**
- * A thread safe Marshaller for {@link org.opensaml.saml.saml2.metadata.EntityDescriptor} objects.
+ * A thread safe Marshaller for {@link EntityDescriptor} objects.
  */
 public class EntityDescriptorMarshaller extends AbstractSAMLObjectMarshaller {
-
-    /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(EntityDescriptorMarshaller.class);
 
     /** {@inheritDoc} */
     protected void marshallAttributes(final XMLObject samlElement, final Element domElement) {
@@ -54,17 +48,14 @@ public class EntityDescriptorMarshaller extends AbstractSAMLObjectMarshaller {
 
         // Set the validUntil attribute
         if (entityDescriptor.getValidUntil() != null) {
-            log.debug("Writting validUntil attribute to EntityDescriptor DOM element");
-            final String validUntilStr =
-                    SAMLConfigurationSupport.getSAMLDateFormatter().print(entityDescriptor.getValidUntil());
-            domElement.setAttributeNS(null, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_NAME, validUntilStr);
+            AttributeSupport.appendDateTimeAttribute(domElement, TimeBoundSAMLObject.VALID_UNTIL_ATTRIB_QNAME,
+                    entityDescriptor.getValidUntil());
         }
 
         // Set the cacheDuration attribute
         if (entityDescriptor.getCacheDuration() != null) {
-            log.debug("Writting cacheDuration attribute to EntityDescriptor DOM element");
-            final String cacheDuration = DOMTypeSupport.longToDuration(entityDescriptor.getCacheDuration());
-            domElement.setAttributeNS(null, CacheableSAMLObject.CACHE_DURATION_ATTRIB_NAME, cacheDuration);
+            AttributeSupport.appendDurationAttribute(domElement, CacheableSAMLObject.CACHE_DURATION_ATTRIB_QNAME,
+                    entityDescriptor.getCacheDuration());
         }
 
         marshallUnknownAttributes(entityDescriptor, domElement);

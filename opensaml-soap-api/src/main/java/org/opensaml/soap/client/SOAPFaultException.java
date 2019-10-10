@@ -29,11 +29,11 @@ public class SOAPFaultException extends SOAPException {
     private static final long serialVersionUID = 4770411452264097320L;
 
     /** The fault that caused this exception. */
-    private Fault soapFault;
+    @Nullable private Fault soapFault;
 
     /** Constructor. */
     public SOAPFaultException() {
-        super();
+
     }
 
     /**
@@ -81,4 +81,5 @@ public class SOAPFaultException extends SOAPException {
     public void setFault(@Nullable final Fault fault) {
         soapFault = fault;
     }
+    
 }

@@ -17,18 +17,18 @@
 
 package org.opensaml.messaging.pipeline;
 
+import java.util.function.Function;
+
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.messaging.context.InOutOperationContext;
 
-import com.google.common.base.Function;
-
 /**
  * Static strategy function for resolving a pipeline name.
  */
-public class StaticPipelineNameStrategy implements Function<InOutOperationContext<?,?>, String> {
+public class StaticPipelineNameStrategy implements Function<InOutOperationContext, String> {
     
     /** The static pipeline name. */
     private String pipelineName;
@@ -43,7 +43,7 @@ public class StaticPipelineNameStrategy implements Function<InOutOperationContex
     }
     
     /** {@inheritDoc} */
-    @Nullable public String apply(@Nullable final InOutOperationContext<?, ?> input) {
+    @Nullable public String apply(@Nullable final InOutOperationContext input) {
         return pipelineName;
     }
 

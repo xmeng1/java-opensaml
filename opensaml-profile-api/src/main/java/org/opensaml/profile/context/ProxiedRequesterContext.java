@@ -35,7 +35,7 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElemen
  * 
  * @since 3.4.0
  */
-public class ProxiedRequesterContext extends BaseContext {
+public final class ProxiedRequesterContext extends BaseContext {
 
     /** The resource. */
     @Nonnull @NonnullElements private Collection<String> requesters;

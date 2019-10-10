@@ -23,10 +23,8 @@ import org.custommonkey.xmlunit.Diff;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Marshaller;
-import org.opensaml.core.xml.io.MarshallerFactory;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.Unmarshaller;
-import org.opensaml.core.xml.io.UnmarshallerFactory;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.saml2.metadata.Organization;
 import org.opensaml.saml.saml2.metadata.OrganizationDisplayName;
@@ -81,11 +79,9 @@ public class RoundTripTest extends XMLObjectBaseTestCase {
         newOrgURL.setXMLLang("en");
         organization.getURLs().add(newOrgURL);
         
-        MarshallerFactory marshallerFactory = XMLObjectProviderRegistrySupport.getMarshallerFactory();
-        orgMarshaller = marshallerFactory.getMarshaller(organization);
-        
-        UnmarshallerFactory unmarshallerFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();
-        orgUnmarshaller = unmarshallerFactory.getUnmarshaller(organization.getElementQName());
+        orgMarshaller = XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(organization);
+        orgUnmarshaller = XMLObjectProviderRegistrySupport.getUnmarshallerFactory().getUnmarshaller(
+                organization.getElementQName());
     }
 
     /**

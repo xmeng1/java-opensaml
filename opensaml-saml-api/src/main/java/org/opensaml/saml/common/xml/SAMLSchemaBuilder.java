@@ -209,10 +209,8 @@ public class SAMLSchemaBuilder {
                 }
             }
             cachedSchema = schemaBuilder.buildSchema();
-            return cachedSchema;
-        } else {
-            return cachedSchema;
         }
+        return cachedSchema;
     }
 
     /**

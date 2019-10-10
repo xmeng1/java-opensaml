@@ -28,7 +28,7 @@ import net.shibboleth.utilities.java.support.codec.Base64Support;
 public class SAML1ArtifactBuilderFactory {
 
     /** Registered artifact builders. */
-    private Map<String, SAML1ArtifactBuilder> artifactBuilders;
+    private Map<String, SAML1ArtifactBuilder<?>> artifactBuilders;
 
     /** Constructor. */
     public SAML1ArtifactBuilderFactory() {
@@ -42,7 +42,7 @@ public class SAML1ArtifactBuilderFactory {
      * 
      * @return currently registered artifact builders
      */
-    public Map<String, SAML1ArtifactBuilder> getArtifactBuilders() {
+    public Map<String, SAML1ArtifactBuilder<?>> getArtifactBuilders() {
         return artifactBuilders;
     }
 
@@ -53,7 +53,7 @@ public class SAML1ArtifactBuilderFactory {
      * 
      * @return artifact builder for the given type
      */
-    public SAML1ArtifactBuilder getArtifactBuilder(final byte[] type) {
+    public SAML1ArtifactBuilder<?> getArtifactBuilder(final byte[] type) {
         return artifactBuilders.get(new String(type));
     }
     
@@ -64,7 +64,7 @@ public class SAML1ArtifactBuilderFactory {
      * 
      * @return constructed artifact
      */
-    public AbstractSAML1Artifact buildArtifact(final String base64Artifact){
+    public SAML1Artifact buildArtifact(final String base64Artifact){
         return buildArtifact(Base64Support.decode(base64Artifact));
     }
 
@@ -75,7 +75,7 @@ public class SAML1ArtifactBuilderFactory {
      * 
      * @return constructed artifact
      */
-    public AbstractSAML1Artifact buildArtifact(final byte[] artifact) {
+    public SAML1Artifact buildArtifact(final byte[] artifact) {
         if(artifact == null){
             return null;
         }

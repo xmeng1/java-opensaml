@@ -18,14 +18,13 @@
 package org.opensaml.storage;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.annotation.constraint.NonNegative;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.annotation.constraint.Positive;
 import net.shibboleth.utilities.java.support.component.AbstractIdentifiableInitializableComponent;
@@ -46,10 +45,8 @@ import org.opensaml.storage.annotation.AnnotationSupport;
 public abstract class AbstractStorageService extends AbstractIdentifiableInitializableComponent implements
         StorageService, StorageCapabilities {
 
-    /**
-     * Number of seconds between cleanup checks. Default value: (0)
-     */
-    @Duration @NonNegative private long cleanupInterval;
+    /** Time between cleanup checks. Default value: (0) */
+    @Nonnull private Duration cleanupInterval;
 
     /** Timer used to schedule cleanup tasks. */
     private Timer cleanupTaskTimer;
@@ -68,30 +65,37 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
 
     /** Configurable value size limit. */
     @Positive private int valueSize;
+    
+    /** Constructor. */
+    public AbstractStorageService() {
+        cleanupInterval = Duration.ZERO;
+    }
 
     /**
-     * Gets the number of milliseconds between one cleanup and another. A value of 0 indicates that no cleanup will be
+     * Gets the time between one cleanup and another. A value of 0 indicates that no cleanup will be
      * performed.
      * 
-     * @return number of milliseconds between one cleanup and another
+     * @return time between one cleanup and another
      */
-    @NonNegative @Duration public long getCleanupInterval() {
+    @Nonnull public Duration getCleanupInterval() {
         return cleanupInterval;
     }
 
     /**
-     * Sets the number of milliseconds between one cleanup and another. A value of 0 indicates that no cleanup will be
+     * Sets the time between one cleanup and another. A value of 0 indicates that no cleanup will be
      * performed.
      * 
      * This setting cannot be changed after the service has been initialized.
      * 
-     * @param interval number of milliseconds between one cleanup and another
+     * @param interval time between one cleanup and another
      */
-    @Duration public void setCleanupInterval(@Duration @NonNegative final long interval) {
+    public void setCleanupInterval(@Nonnull final Duration interval) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        
+        Constraint.isNotNull(interval, "Interval cannot be null");
+        Constraint.isFalse(interval.isNegative(), "Interval cannot be negative");
 
-        cleanupInterval =
-                Constraint.isGreaterThanOrEqual(0, interval, "Cleanup interval must be greater than or equal to zero");
+        cleanupInterval = interval;
     }
 
     /**
@@ -166,7 +170,7 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
     @Override protected void doInitialize() throws ComponentInitializationException {
         super.doInitialize();
 
-        if (cleanupInterval > 0) {
+        if (!cleanupInterval.isZero()) {
             cleanupTask = getCleanupTask();
             if (cleanupTask == null) {
                 throw new ComponentInitializationException("Cleanup task cannot be null if cleanupInterval is set.");
@@ -175,7 +179,7 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
             } else {
                 internalTaskTimer = cleanupTaskTimer;
             }
-            internalTaskTimer.schedule(cleanupTask, cleanupInterval, cleanupInterval);
+            internalTaskTimer.schedule(cleanupTask, cleanupInterval.toMillis(), cleanupInterval.toMillis());
         }
     }
 
@@ -213,8 +217,9 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
     }
 
     /** {@inheritDoc} */
-    @Override public boolean create(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
-            @Nonnull final Object value, @Nonnull final StorageSerializer serializer,
+    @Override
+    public <T> boolean create(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
+            @Nonnull final T value, @Nonnull final StorageSerializer<T> serializer,
             @Nullable @Positive final Long expiration) throws IOException {
         return create(context, key, serializer.serialize(value), expiration);
     }
@@ -227,7 +232,7 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
 
     /** {@inheritDoc} */
     @Override @Nullable public Object read(@Nonnull final Object value) throws IOException {
-        final StorageRecord record = read(AnnotationSupport.getContext(value), AnnotationSupport.getKey(value));
+        final StorageRecord<?> record = read(AnnotationSupport.getContext(value), AnnotationSupport.getKey(value));
         if (record != null) {
             AnnotationSupport.setValue(value, record.getValue());
             AnnotationSupport.setExpiration(value, record.getExpiration());
@@ -237,18 +242,20 @@ public abstract class AbstractStorageService extends AbstractIdentifiableInitial
     }
 
     /** {@inheritDoc} */
-    @Override public boolean update(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
-            @Nonnull final Object value, @Nonnull final StorageSerializer serializer,
+    @Override
+    public <T> boolean update(@Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key,
+            @Nonnull final T value, @Nonnull final StorageSerializer<T> serializer,
             @Nullable @Positive final Long expiration) throws IOException {
         return update(context, key, serializer.serialize(value), expiration);
     }
 
     /** {@inheritDoc} */
     // Checkstyle: ParameterNumber OFF
-    @Override @Nullable public Long updateWithVersion(@Positive final long version,
-            @Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key, @Nonnull final Object value,
-            @Nonnull final StorageSerializer serializer, @Nullable @Positive final Long expiration) throws IOException,
-            VersionMismatchException {
+    @Override
+    @Nullable public <T> Long updateWithVersion(@Positive final long version,
+            @Nonnull @NotEmpty final String context, @Nonnull @NotEmpty final String key, @Nonnull final T value,
+            @Nonnull final StorageSerializer<T> serializer, @Nullable @Positive final Long expiration)
+                    throws IOException, VersionMismatchException {
         return updateWithVersion(version, context, key, serializer.serialize(value), expiration);
     }
 

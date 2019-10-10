@@ -19,14 +19,14 @@ package org.opensaml.saml.ext.saml2mdui.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdui.IPHint;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.ext.saml2mdui.IPHint}.
  */
-public class IPHintImpl extends AbstractSAMLObject implements IPHint {
+public class IPHintImpl extends AbstractXMLObject implements IPHint {
 
     /**
      * local storage.

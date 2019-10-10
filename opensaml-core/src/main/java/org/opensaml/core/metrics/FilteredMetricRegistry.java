@@ -88,36 +88,32 @@ public class FilteredMetricRegistry extends MetricRegistry {
     @Override public Counter counter(final String name) {
         if (metricFilter != null && metricFilter.matches(name, null)) {
             return super.counter(name);
-        } else {
-            return disabledCounter;
         }
+        return disabledCounter;
     }
 
     /** {@inheritDoc} */
     @Override public Histogram histogram(final String name) {
         if (metricFilter != null && metricFilter.matches(name, null)) {
             return super.histogram(name);
-        } else {
-            return disabledHistogram;
         }
+        return disabledHistogram;
     }
 
     /** {@inheritDoc} */
     @Override public Meter meter(final String name) {
         if (metricFilter != null && metricFilter.matches(name, null)) {
             return super.meter(name);
-        } else {
-            return disabledMeter;
         }
+        return disabledMeter;
     }
 
     /** {@inheritDoc} */
     @Override public Timer timer(final String name) {
         if (metricFilter != null && metricFilter.matches(name, null)) {
             return super.timer(name);
-        } else {
-            return disabledTimer;
         }
+        return disabledTimer;
     }
 
     /**

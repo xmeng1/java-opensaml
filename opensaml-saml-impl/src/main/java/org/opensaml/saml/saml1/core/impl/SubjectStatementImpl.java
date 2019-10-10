@@ -21,15 +21,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml1.core.Subject;
 import org.opensaml.saml.saml1.core.SubjectStatement;
 
 /**
  * Abstract type to implement SubjectStatementType.
  */
-public abstract class SubjectStatementImpl extends AbstractSAMLObject implements SubjectStatement {
+public abstract class SubjectStatementImpl extends AbstractXMLObject implements SubjectStatement {
 
     /** Contains the Subject subelement. */
     private Subject subject;

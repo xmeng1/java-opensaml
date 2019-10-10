@@ -21,10 +21,8 @@ import org.opensaml.messaging.context.MessageContext;
 
 /**
  * Component that handles message processing-related errors.
- * 
- * @param <MessageType> the type of message being handled
  */
-public interface MessageErrorHandler<MessageType> {
+public interface MessageErrorHandler {
     
     /**
      * Handle a particular thrown error.
@@ -33,6 +31,6 @@ public interface MessageErrorHandler<MessageType> {
      * @param messageContext the message context being processed, if available
      * @return true if error was successfully handled, false otherwise
      */
-    boolean handleError(Throwable t, MessageContext<MessageType> messageContext);
+    boolean handleError(Throwable t, MessageContext messageContext);
 
 }

@@ -17,9 +17,13 @@
 
 package org.opensaml.messaging.context.navigate;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.opensaml.messaging.context.BaseContext;
+
+import net.shibboleth.utilities.java.support.annotation.ParameterName;
+import net.shibboleth.utilities.java.support.logic.Constraint;
 
 /**
  * A {@link ContextDataLookupFunction} that gets the parent of a given context.
@@ -29,14 +33,30 @@ import org.opensaml.messaging.context.BaseContext;
  */
 public class ParentContextLookup<StartContext extends BaseContext, ParentContext extends BaseContext>
         implements ContextDataLookupFunction<StartContext, ParentContext> {
+    
+    /** Parent type. */
+    @Nonnull private final Class<ParentContext> parentType;
+    
+    /**
+     * Constructor.
+     * 
+     * @param type parent context type to look up
+     */
+    public ParentContextLookup(@Nonnull @ParameterName(name="type") final Class<ParentContext> type) {
+        parentType = Constraint.isNotNull(type, "Parent context type cannot be null");
+    }
 
     /** {@inheritDoc} */
-    @Override
     @Nullable public ParentContext apply(@Nullable final StartContext input) {
-        if (input == null) {
-            return null;
+
+        if (input != null) {
+            final BaseContext parent = input.getParent();
+            if (parentType.isInstance(parent)) {
+                return parentType.cast(parent);
+            }
         }
 
-        return (ParentContext) input.getParent();
+        return null;
     }
+    
 }

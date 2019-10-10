@@ -328,9 +328,8 @@ public class BasicX509CredentialNameEvaluator implements X509CredentialNameEvalu
         if (!Strings.isNullOrEmpty(commonName) && trustedNames.contains(commonName)) {
             log.debug("Matched subject DN common name to trusted names: {}", commonName);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -386,7 +385,7 @@ public class BasicX509CredentialNameEvaluator implements X509CredentialNameEvalu
         log.debug("Processing subject alt names");
         final Integer[] nameTypes = new Integer[getSubjectAltNameTypes().size()];
         getSubjectAltNameTypes().toArray(nameTypes);
-        final List altNames = X509Support.getAltNames(certificate, nameTypes);
+        final List<?> altNames = X509Support.getAltNames(certificate, nameTypes);
 
         if (altNames != null) {
             log.debug("Extracted subject alt names from certificate: {}", altNames);

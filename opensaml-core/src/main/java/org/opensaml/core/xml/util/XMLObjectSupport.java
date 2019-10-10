@@ -28,8 +28,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 import net.shibboleth.utilities.java.support.xml.ParserPool;
@@ -106,50 +104,7 @@ public final class XMLObjectSupport {
             throws MarshallingException, UnmarshallingException {
         return cloneXMLObject(originalXMLObject, CloneOutputOption.DropDOM);
     }
-    
-    /**
-     * Clone an XMLObject by brute force:
-     * 
-     * <p>
-     * 1) Marshall the original object if necessary
-     * 2) Clone the resulting DOM Element
-     * 3) Unmarshall a new XMLObject tree around it.
-     * </p>
-     * 
-     * <p>
-     * This method variant is equivalent to 
-     * <code>cloneXMLObject(originalXMLObject, CloneOutputOption.RootDOMInNewDocument)</code>
-     * or
-     * <code>cloneXMLObject(originalXMLObject, CloneOutputOption.UnrootedDOM)</code>,
-     * depending on the value of <code>rootInNewDocument</code>
-     * </p>
-     * 
-     * @param originalXMLObject the object to be cloned
-     * @param rootInNewDocument if true the cloned object's cached DOM will be rooted
-     *          in a new Document; if false, the original object's underlying DOM is cloned,
-     *          but the cloned copy remains unrooted and owned by the original Document
-     * @return a clone of the original object
-     * 
-     * @throws MarshallingException if original object can not be marshalled
-     * @throws UnmarshallingException if cloned object tree can not be unmarshalled
-     * 
-     * @param <T> the type of object being cloned
-     * 
-     * @deprecated use instead {@link #cloneXMLObject(XMLObject, CloneOutputOption)}.
-     */
-    @Deprecated
-    @Nullable public static <T extends XMLObject> T cloneXMLObject(@Nullable final T originalXMLObject,
-            final boolean rootInNewDocument) throws MarshallingException, UnmarshallingException {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, "org.opensaml.core.xml.util.XMLObjectSupport" +
-            ".cloneXMLObject(XMLObject, boolean)", null, "cloneXMLObject(XMLObject, CloneOutputOption)");
         
-        if (rootInNewDocument) {
-            return cloneXMLObject(originalXMLObject, CloneOutputOption.RootDOMInNewDocument);
-        } else {
-            return cloneXMLObject(originalXMLObject, CloneOutputOption.UnrootedDOM);
-        }
-    }
-    
     /**
      * Clone an XMLObject by brute force:
      * 

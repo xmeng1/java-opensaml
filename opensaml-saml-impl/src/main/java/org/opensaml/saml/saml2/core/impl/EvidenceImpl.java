@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.AssertionIDRef;
 import org.opensaml.saml.saml2.core.AssertionURIRef;
@@ -38,7 +38,7 @@ import org.opensaml.saml.saml2.core.Evidentiary;
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.Evidence}.
  */
-public class EvidenceImpl extends AbstractSAMLObject implements Evidence {
+public class EvidenceImpl extends AbstractXMLObject implements Evidence {
 
     /** Assertion of the Evidence. */
     private final IndexedXMLObjectChildrenList<Evidentiary> evidence;

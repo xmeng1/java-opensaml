@@ -23,14 +23,14 @@ package org.opensaml.saml.ext.saml2aslo.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2aslo.Asynchronous;
 
 /**
  * Concrete implementation of {@link Asynchronous}.
  */
-public class AsynchronousImpl extends AbstractSAMLObject implements Asynchronous {
+public class AsynchronousImpl extends AbstractXMLObject implements Asynchronous {
 
     /**
      * Constructor.
@@ -48,4 +48,5 @@ public class AsynchronousImpl extends AbstractSAMLObject implements Asynchronous
         // no children
         return null;
     }
+
 }

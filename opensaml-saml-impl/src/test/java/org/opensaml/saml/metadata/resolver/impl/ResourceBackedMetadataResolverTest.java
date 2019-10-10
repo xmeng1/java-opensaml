@@ -19,6 +19,7 @@ package org.opensaml.saml.metadata.resolver.impl;
 
 import java.io.File;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Timer;
 
 import net.shibboleth.ext.spring.resource.ResourceHelper;
@@ -53,7 +54,7 @@ public class ResourceBackedMetadataResolverTest extends XMLObjectBaseTestCase {
 
         metadataProvider = new ResourceBackedMetadataResolver(new Timer(true), mdResource);
         metadataProvider.setParserPool(parserPool);
-        metadataProvider.setMaxRefreshDelay(500000);
+        metadataProvider.setMaxRefreshDelay(Duration.ofSeconds(500));
         metadataProvider.setId("test");
         metadataProvider.initialize();
         

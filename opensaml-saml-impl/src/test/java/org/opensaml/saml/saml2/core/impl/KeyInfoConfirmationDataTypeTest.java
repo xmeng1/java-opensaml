@@ -20,10 +20,11 @@ package org.opensaml.saml.saml2.core.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.common.SAMLObjectBuilder;
@@ -38,10 +39,10 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 public class KeyInfoConfirmationDataTypeTest extends XMLObjectProviderBaseTestCase {
 
     /** Expected NotBefore value. */
-    private DateTime expectedNotBefore;
+    private Instant expectedNotBefore;
 
     /** Expected NotOnOrAfter value. */
-    private DateTime expectedNotOnOrAfter;
+    private Instant expectedNotOnOrAfter;
 
     /** Expected Recipient value. */
     private String expectedRecipient;
@@ -67,8 +68,8 @@ public class KeyInfoConfirmationDataTypeTest extends XMLObjectProviderBaseTestCa
 
     @BeforeMethod
     protected void setUp() throws Exception {
-        expectedNotBefore = new DateTime(1984, 8, 26, 10, 01, 30, 43, ISOChronology.getInstanceUTC());
-        expectedNotOnOrAfter = new DateTime(1984, 8, 26, 10, 11, 30, 43, ISOChronology.getInstanceUTC());
+        expectedNotBefore = Instant.parse("1984-08-26T10:01:30.043Z");
+        expectedNotOnOrAfter = Instant.parse("1984-08-26T10:11:30.043Z");
         expectedRecipient = "recipient";
         expectedInResponseTo = "inresponse";
         expectedAddress = "address";
@@ -91,10 +92,10 @@ public class KeyInfoConfirmationDataTypeTest extends XMLObjectProviderBaseTestCa
     public void testSingleElementOptionalAttributesUnmarshall() {
         KeyInfoConfirmationDataType kicd = (KeyInfoConfirmationDataType) unmarshallElement(singleElementOptionalAttributesFile);
 
-        DateTime notBefore = kicd.getNotBefore();
+        Instant notBefore = kicd.getNotBefore();
         Assert.assertEquals(notBefore, expectedNotBefore, "NotBefore was " + notBefore + ", expected " + expectedNotBefore);
 
-        DateTime notOnOrAfter = kicd.getNotOnOrAfter();
+        Instant notOnOrAfter = kicd.getNotOnOrAfter();
         Assert.assertEquals(notOnOrAfter, expectedNotOnOrAfter,
                 "NotOnOrAfter was " + notOnOrAfter + ", expected " + expectedNotOnOrAfter);
 
@@ -155,13 +156,14 @@ public class KeyInfoConfirmationDataTypeTest extends XMLObjectProviderBaseTestCa
     }
     
     public KeyInfoConfirmationDataType buildXMLObject() {
-        SAMLObjectBuilder builder = 
-            (SAMLObjectBuilder) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(KeyInfoConfirmationDataType.TYPE_NAME);
+        SAMLObjectBuilder<KeyInfoConfirmationDataType> builder = (SAMLObjectBuilder<KeyInfoConfirmationDataType>)
+                XMLObjectProviderRegistrySupport.getBuilderFactory().<KeyInfoConfirmationDataType>getBuilderOrThrow(
+                        KeyInfoConfirmationDataType.TYPE_NAME);
         
         if(builder == null){
             Assert.fail("Unable to retrieve builder for object QName " + KeyInfoConfirmationDataType.TYPE_NAME);
         }
-        return (KeyInfoConfirmationDataType) builder.buildObject();
+        return builder.buildObject();
     }
 
 }

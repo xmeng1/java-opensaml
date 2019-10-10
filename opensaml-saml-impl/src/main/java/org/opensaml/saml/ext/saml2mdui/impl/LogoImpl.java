@@ -19,9 +19,9 @@ package org.opensaml.saml.ext.saml2mdui.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.LangBearing;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.ext.saml2mdui.Logo;
 
 import com.google.common.base.Strings;
@@ -30,7 +30,7 @@ import com.google.common.base.Strings;
  * Concrete implementation of {@link org.opensaml.saml.ext.saml2mdui.Logo}.
  * @author rod widdowson
  */
-public class LogoImpl extends AbstractSAMLObject implements Logo {
+public class LogoImpl extends AbstractXMLObject implements Logo {
     
     /** Logo URL. */
     private String url;
@@ -104,9 +104,14 @@ public class LogoImpl extends AbstractSAMLObject implements Logo {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(final Object obj) {
+        return super.equals(obj);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         int hash = url.hashCode();
         hash = hash * 31 + lang.hashCode();

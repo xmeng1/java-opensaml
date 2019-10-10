@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.saml1.core.Assertion;
 
 /**
@@ -33,7 +32,7 @@ import org.opensaml.saml.saml1.core.Assertion;
  * 
  * @param <ArtifactType> type of artifact built by this builder
  */
-public interface SAML1ArtifactBuilder<ArtifactType extends AbstractSAML1Artifact> {
+public interface SAML1ArtifactBuilder<ArtifactType extends SAML1Artifact> {
 
     /**
      * Builds an artifact, for the given assertion, destined for the outbound message recipient.
@@ -43,7 +42,7 @@ public interface SAML1ArtifactBuilder<ArtifactType extends AbstractSAML1Artifact
      * 
      * @return constructed artifact
      */
-    @Nullable ArtifactType buildArtifact(@Nonnull final MessageContext<SAMLObject> requestContext,
+    @Nullable ArtifactType buildArtifact(@Nonnull final MessageContext requestContext,
             @Nonnull final Assertion assertion);
 
     /**

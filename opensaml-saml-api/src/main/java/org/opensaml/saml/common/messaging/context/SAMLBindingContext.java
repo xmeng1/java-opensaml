@@ -28,7 +28,7 @@ import org.opensaml.saml.common.binding.BindingDescriptor;
 /**
  * Context for holding information related to the SAML binding in use.
  */
-public class SAMLBindingContext extends BaseContext {
+public final class SAMLBindingContext extends BaseContext {
     
     /** The relay state associated with the message. */
     @Nullable @NotEmpty private String relayState;

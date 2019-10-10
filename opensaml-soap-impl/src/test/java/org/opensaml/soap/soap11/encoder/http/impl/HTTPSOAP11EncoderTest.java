@@ -77,12 +77,12 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         
         payload.getUnknownXMLObjects().add(price);
         
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(payload);
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         
-        HTTPSOAP11Encoder<XMLObject> encoder = new HTTPSOAP11Encoder<>();
+        HTTPSOAP11Encoder encoder = new HTTPSOAP11Encoder();
         encoder.setMessageContext(messageContext);
         encoder.setHttpServletResponse(response);
         
@@ -129,12 +129,12 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         
         body.getUnknownXMLObjects().add(payload);
         
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(envelope);
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         
-        HTTPSOAP11Encoder<XMLObject> encoder = new HTTPSOAP11Encoder<>();
+        HTTPSOAP11Encoder encoder = new HTTPSOAP11Encoder();
         encoder.setMessageContext(messageContext);
         encoder.setHttpServletResponse(response);
         
@@ -187,13 +187,13 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         
         payload.getUnknownXMLObjects().add(price);
         
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(payload);
         messageContext.getSubcontext(SOAP11Context.class, true).setEnvelope(envelope);
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         
-        HTTPSOAP11Encoder<XMLObject> encoder = new HTTPSOAP11Encoder<>();
+        HTTPSOAP11Encoder encoder = new HTTPSOAP11Encoder();
         encoder.setMessageContext(messageContext);
         encoder.setHttpServletResponse(response);
         
@@ -248,12 +248,12 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         
         body.getUnknownXMLObjects().add(payload);
         
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(envelope);
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         
-        HTTPSOAP11Encoder<XMLObject> encoder = new HTTPSOAP11Encoder<>();
+        HTTPSOAP11Encoder encoder = new HTTPSOAP11Encoder();
         encoder.setMessageContext(messageContext);
         encoder.setHttpServletResponse(response);
         
@@ -281,12 +281,12 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         faultString.setValue("Something bad happened");
         fault.setMessage(faultString);
        
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(fault);
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         
-        HTTPSOAP11Encoder<XMLObject> encoder = new HTTPSOAP11Encoder<>();
+        HTTPSOAP11Encoder encoder = new HTTPSOAP11Encoder();
         encoder.setMessageContext(messageContext);
         encoder.setHttpServletResponse(response);
         
@@ -331,13 +331,13 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
         
         payload.getUnknownXMLObjects().add(price);
        
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(payload);
         SOAPMessagingSupport.registerSOAP11Fault(messageContext, fault);
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         
-        HTTPSOAP11Encoder<XMLObject> encoder = new HTTPSOAP11Encoder<>();
+        HTTPSOAP11Encoder encoder = new HTTPSOAP11Encoder();
         encoder.setMessageContext(messageContext);
         encoder.setHttpServletResponse(response);
         
@@ -366,14 +366,14 @@ public class HTTPSOAP11EncoderTest extends XMLObjectBaseTestCase {
     public void testContextReturnStatus() throws ComponentInitializationException, MessageEncodingException, XMLParserException, UnmarshallingException {
         XMLObject payload = buildXMLObject(simpleXMLObjectQName);
         
-        MessageContext<XMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(payload);
         
         messageContext.getSubcontext(SOAP11Context.class, true).setHTTPResponseStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         
-        HTTPSOAP11Encoder<XMLObject> encoder = new HTTPSOAP11Encoder<>();
+        HTTPSOAP11Encoder encoder = new HTTPSOAP11Encoder();
         encoder.setMessageContext(messageContext);
         encoder.setHttpServletResponse(response);
         

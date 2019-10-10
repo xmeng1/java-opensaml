@@ -29,7 +29,7 @@ import org.opensaml.xmlsec.EncryptionParameters;
  * <p>The presence or absence of a particular parameter set is generally an indicator as to
  * the requirement to encrypt that type of object.</p>
  */
-public class EncryptionContext extends BaseContext {
+public final class EncryptionContext extends BaseContext {
 
     /** Parameters for assertion encrytion. */
     @Nullable private EncryptionParameters assertionEncParams;

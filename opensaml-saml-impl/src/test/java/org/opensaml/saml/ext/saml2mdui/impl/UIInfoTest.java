@@ -122,7 +122,7 @@ public class UIInfoTest extends XMLObjectProviderBaseTestCase {
 
         uiinfo.getPrivacyStatementURLs().add((PrivacyStatementURL) buildXMLObject(PrivacyStatementURL.DEFAULT_ELEMENT_NAME));
         
-        uiinfo.getXMLObjects().add((SimpleXMLObject) buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
+        uiinfo.getXMLObjects().add(buildXMLObject(SimpleXMLObject.ELEMENT_NAME));
         
         uiinfo.getDisplayNames().add((DisplayName) buildXMLObject(DisplayName.DEFAULT_ELEMENT_NAME));
 

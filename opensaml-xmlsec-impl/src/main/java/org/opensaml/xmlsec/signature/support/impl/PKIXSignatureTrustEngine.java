@@ -188,9 +188,8 @@ public class PKIXSignatureTrustEngine extends
                 if (evaluateTrust(candidateCredential, validationPair)) {
                     log.debug("Successfully established trust of supplied candidate credential");
                     return true;
-                } else {
-                    log.debug("Failed to establish trust of supplied candidate credential");
                 }
+                log.debug("Failed to establish trust of supplied candidate credential");
             } else {
                 log.debug("Cryptographic verification of raw signature failed with candidate credential");
             }

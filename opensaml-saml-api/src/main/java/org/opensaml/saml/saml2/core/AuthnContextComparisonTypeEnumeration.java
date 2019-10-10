@@ -17,41 +17,43 @@
 
 package org.opensaml.saml.saml2.core;
 
+import javax.annotation.Nonnull;
+
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
+
 /**
- * A type safe enumeration of {@link org.opensaml.saml.saml2.core.RequestedAuthnContext} comparison types.
+ * Enumeration of {@link org.opensaml.saml.saml2.core.RequestedAuthnContext} comparison types.
  */
-public final class AuthnContextComparisonTypeEnumeration {
+public enum AuthnContextComparisonTypeEnumeration {
 
     /** "exact" comparison type. */
-    public static final AuthnContextComparisonTypeEnumeration EXACT = 
-        new AuthnContextComparisonTypeEnumeration("exact");
+    EXACT("exact"),
 
     /** "minimum" comparison type. */
-    public static final AuthnContextComparisonTypeEnumeration MINIMUM = 
-        new AuthnContextComparisonTypeEnumeration("minimum");
+    MINIMUM("minimum"),
 
     /** "maximum" comparison type. */
-    public static final AuthnContextComparisonTypeEnumeration MAXIMUM = 
-        new AuthnContextComparisonTypeEnumeration("maximum");
+    MAXIMUM("maximum"),
 
     /** "better" comparison type. */
-    public static final AuthnContextComparisonTypeEnumeration BETTER = 
-        new AuthnContextComparisonTypeEnumeration("better");
+    BETTER("better");
 
     /** The comparison type string. */
-    private String comparisonType;
+    @Nonnull @NotEmpty private String comparisonType;
 
     /**
      * Constructor.
      * 
      * @param newComparisonType the comparison type string
      */
-    protected AuthnContextComparisonTypeEnumeration(final String newComparisonType) {
-        this.comparisonType= newComparisonType;
+    private AuthnContextComparisonTypeEnumeration(@Nonnull @NotEmpty final String newComparisonType) {
+        comparisonType = newComparisonType;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return comparisonType;
     }
+
 }

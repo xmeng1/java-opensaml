@@ -52,9 +52,8 @@ public class RoleMetadataIndex implements MetadataIndex {
             final HashSet<MetadataIndexKey> result = new HashSet<>();
             result.add(new RoleMetadataIndexKey(roleCrit.getRole()));
             return result;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /** {@inheritDoc} */

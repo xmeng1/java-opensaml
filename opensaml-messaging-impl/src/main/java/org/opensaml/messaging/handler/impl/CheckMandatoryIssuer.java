@@ -17,6 +17,8 @@
 
 package org.opensaml.messaging.handler.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
@@ -27,8 +29,6 @@ import net.shibboleth.utilities.java.support.logic.Constraint;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
-
-import com.google.common.base.Function;
 
 /**
  * Message handler that checks that a message context has an issuer.

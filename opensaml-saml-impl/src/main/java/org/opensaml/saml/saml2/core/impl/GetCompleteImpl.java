@@ -23,14 +23,14 @@ package org.opensaml.saml.saml2.core.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.GetComplete;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.GetComplete}.
  */
-public class GetCompleteImpl extends AbstractSAMLObject implements GetComplete {
+public class GetCompleteImpl extends AbstractXMLObject implements GetComplete {
 
     /** URI element content. */
     private String getComplete;

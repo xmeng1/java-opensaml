@@ -33,12 +33,8 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
  * An action that logs the results of Local Storage-based {@link ClientStorageService} save operations.
  * 
  * @event {@link org.opensaml.profile.action.EventIds#PROCEED_EVENT_ID}
- * 
- * @param <InboundMessageType>
- * @param <OutboundMessageType>
  */
-public class LogLocalStorageSaveResults<InboundMessageType, OutboundMessageType>
-        extends AbstractProfileAction<InboundMessageType, OutboundMessageType> {
+public class LogLocalStorageSaveResults extends AbstractProfileAction {
 
     /** Name of local storage form field signaling success/failure of a read operation. */
     @Nonnull @NotEmpty public static final String SUCCESS_FORM_FIELD = "shib_idp_ls_success";
@@ -53,8 +49,7 @@ public class LogLocalStorageSaveResults<InboundMessageType, OutboundMessageType>
     @Nullable private ClientStorageSaveContext clientStorageSaveCtx;
     
     /** {@inheritDoc} */
-    @Override protected boolean doPreExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override protected boolean doPreExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         if (!super.doPreExecute(profileRequestContext)) {
             return false;
@@ -74,8 +69,7 @@ public class LogLocalStorageSaveResults<InboundMessageType, OutboundMessageType>
     }
 
     /** {@inheritDoc} */
-    @Override protected void doExecute(
-            @Nonnull final ProfileRequestContext<InboundMessageType, OutboundMessageType> profileRequestContext) {
+    @Override protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         
         final HttpServletRequest request = getHttpServletRequest();
 

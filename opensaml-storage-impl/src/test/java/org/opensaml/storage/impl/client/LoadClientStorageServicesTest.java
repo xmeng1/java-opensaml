@@ -40,7 +40,6 @@ import org.testng.annotations.Test;
 import com.google.common.net.UrlEscapers;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.logic.ConstraintViolationException;
 import net.shibboleth.utilities.java.support.net.HttpServletRequestResponseContext;
 import net.shibboleth.utilities.java.support.net.ThreadLocalHttpServletRequestProxy;
 
@@ -90,7 +89,7 @@ public class LoadClientStorageServicesTest extends AbstractBaseClientStorageServ
         ActionTestingSupport.assertProceedEvent(prc);
     }
  
-    @Test public void testEmpty() throws ComponentInitializationException {
+    @Test public void testEmpty() throws ComponentInitializationException, IOException {
         final ClientStorageService ss = getStorageService();
 
         final Lock lock = ss.getLock().readLock();
@@ -98,7 +97,7 @@ public class LoadClientStorageServicesTest extends AbstractBaseClientStorageServ
             lock.lock();
             ss.getContextMap();
             Assert.fail("getContextMap should have failed for unloaded storage service");
-        } catch(final ConstraintViolationException e) {
+        } catch(final IOException e) {
             
         } finally {
             lock.unlock();
@@ -122,7 +121,7 @@ public class LoadClientStorageServicesTest extends AbstractBaseClientStorageServ
         }
     }
 
-    @Test public void testInvalid() throws ComponentInitializationException {
+    @Test public void testInvalid() throws ComponentInitializationException, IOException {
         final ClientStorageService ss = getStorageService();
         action.setStorageServices(Collections.singletonList(ss));
         action.initialize();
@@ -202,7 +201,7 @@ public class LoadClientStorageServicesTest extends AbstractBaseClientStorageServ
     private void checkStorageContent(final StorageService ss) throws IOException {
         Assert.assertNull(loadCtx.getParent());
 
-        StorageRecord record = ss.read("context1", "key1");
+        StorageRecord<?> record = ss.read("context1", "key1");
         Assert.assertNotNull(record);
         Assert.assertEquals(record.getValue(), "value1");
         Assert.assertNull(record.getExpiration());

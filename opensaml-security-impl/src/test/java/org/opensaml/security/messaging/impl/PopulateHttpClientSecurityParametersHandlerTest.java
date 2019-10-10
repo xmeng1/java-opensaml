@@ -57,7 +57,7 @@ public class PopulateHttpClientSecurityParametersHandlerTest extends OpenSAMLIni
     private PopulateHttpClientSecurityParametersHandler handler;
     
     @BeforeMethod public void setUp() {
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         handler = new PopulateHttpClientSecurityParametersHandler();
     }
     

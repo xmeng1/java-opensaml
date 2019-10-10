@@ -51,20 +51,20 @@ public class EvaluableKeyLengthCredentialCriterionTest {
     @Test
     public void testSatisfy() {
         EvaluableKeyLengthCredentialCriterion evalCrit = new EvaluableKeyLengthCredentialCriterion(criteria);
-        Assert.assertTrue(evalCrit.apply(credential), "Credential should have matched the evaluable criteria");
+        Assert.assertTrue(evalCrit.test(credential), "Credential should have matched the evaluable criteria");
     }
 
     @Test
     public void testNotSatisfy() {
         criteria.setKeyLength(keyLength * 2);
         EvaluableKeyLengthCredentialCriterion evalCrit = new EvaluableKeyLengthCredentialCriterion(criteria);
-        Assert.assertFalse(evalCrit.apply(credential), "Credential should NOT have matched the evaluable criteria");
+        Assert.assertFalse(evalCrit.test(credential), "Credential should NOT have matched the evaluable criteria");
     }
     
     @Test
     public void testRegistry() throws Exception {
         EvaluableCredentialCriterion evalCrit = EvaluableCredentialCriteriaRegistry.getEvaluator(criteria);
         Assert.assertNotNull(evalCrit, "Evaluable criteria was unavailable from the registry");
-        Assert.assertTrue(evalCrit.apply(credential), "Credential should have matched the evaluable criteria");
+        Assert.assertTrue(evalCrit.test(credential), "Credential should have matched the evaluable criteria");
     }
 }

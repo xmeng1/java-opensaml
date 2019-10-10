@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.saml2.assertion.impl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -24,7 +26,10 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.namespace.QName;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
+import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.saml.common.assertion.AssertionValidationException;
@@ -64,37 +69,34 @@ import org.slf4j.LoggerFactory;
 public class OneTimeUseConditionValidator implements ConditionValidator {
     
     /** Cache context name. */
-    public static final String CACHE_CONTEXT = OneTimeUseConditionValidator.class.getName();
-    
-    /** Default cache expiration time: 8 hours. */
-    public static final Long DEFAULT_CACHE_EXPIRES = 1000*60*60*8L;
+    @Nonnull @NotEmpty public static final String CACHE_CONTEXT = OneTimeUseConditionValidator.class.getName();
     
     /** Logger. */
-    private Logger log = LoggerFactory.getLogger(OneTimeUseConditionValidator.class);
+    @Nonnull private Logger log = LoggerFactory.getLogger(OneTimeUseConditionValidator.class);
     
     /** Replay cache used to track which assertions have been used. */
-    private ReplayCache replayCache;
+    @Nonnull private final ReplayCache replayCache;
     
-    /** Time (in milliseconds since beginning of epoch) for disposal of value from cache. */
-    private Long replayCacheExpires;
+    /** Time for disposal of value from cache. */
+    @Nonnull private Duration replayCacheExpires;
 
     /**
      * Constructor.
      * 
      * @param replay reply cache used to track which assertions have been used
-     * @param expires time (in milliseconds since beginning of epoch) for disposal of tracked
-     *         assertion from the replay cache.  May be null, then defaults to 
-     *         {@link #DEFAULT_CACHE_EXPIRES}.
+     * @param expires time for disposal of tracked assertion from the replay cache.
+     *      May be null, then defaults to 8 hours
      */
-    public OneTimeUseConditionValidator(@Nonnull final ReplayCache replay, @Nullable final Long expires) {
+    public OneTimeUseConditionValidator(@Nonnull final ReplayCache replay, @Nullable final Duration expires) {
         replayCache = Constraint.isNotNull(replay, "Replay cache was null");
         replayCacheExpires = expires;
+        
         if (replayCacheExpires == null) {
-            replayCacheExpires = DEFAULT_CACHE_EXPIRES;
-        } else if (replayCacheExpires < 0) {
+            replayCacheExpires = Duration.ofHours(8);
+        } else if (replayCacheExpires.isNegative()) {
             log.warn("Supplied value for replay cache expires '{}' was negative, using default expiration", 
                     replayCacheExpires);
-            replayCacheExpires = DEFAULT_CACHE_EXPIRES;
+            replayCacheExpires = Duration.ofHours(8);
         }
     }
 
@@ -125,11 +127,11 @@ public class OneTimeUseConditionValidator implements ConditionValidator {
     }
     
     /**
-     * Get the configured validator cache expiration interval, in milliseconds.
+     * Get the configured validator cache expiration interval.
      * 
-     * @return the configured cache expiration interval in milliseconds
+     * @return the configured cache expiration interval
      */
-    @Nonnull protected Long getReplayCacheExpires() {
+    @Nonnull protected Duration getReplayCacheExpires() {
         return replayCacheExpires;
     }
     
@@ -137,7 +139,7 @@ public class OneTimeUseConditionValidator implements ConditionValidator {
      * Get the one-time use expiration time for the assertion being evaluated.
      * 
      * <p>
-     * Defaults to <code>System.currentTimeMillis() + getReplayCacheExpires()</code>.
+     * Defaults to <code>Instant.now().plus(getReplayCacheExpires())</code>.
      * </p>
      * 
      * <p>
@@ -149,27 +151,36 @@ public class OneTimeUseConditionValidator implements ConditionValidator {
      * 
      * @return the effective one-time use expiration for the assertion being evaluated
      */
-    protected long getExpires(final Assertion assertion, final ValidationContext context) {
-        Long expires = null;
-        try {
-            expires = (Long) context.getStaticParameters().get(
-                    SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES);
-        } catch (final ClassCastException e) {
-            log.warn("Value of param was not a Long: {}", SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES);
+    @Nonnull protected Instant getExpires(final Assertion assertion, final ValidationContext context) {
+        Duration expires = null;
+        final Object raw = context.getStaticParameters().get(
+                SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES);
+        if (raw instanceof Duration) {
+            expires = (Duration) raw;
+        } else if (raw instanceof Long) {
+            expires = Duration.ofMillis((Long) raw);
+            // V4 deprecation, remove in V5
+            DeprecationSupport.warn(ObjectType.CONFIGURATION,
+                    SAML2AssertionValidationParameters.COND_ONE_TIME_USE_EXPIRES, null, Duration.class.getName());
         }
+        
         log.debug("Saw one-time use cache expires context param: {}", expires);
         
-        if (expires == null) {
-            expires = getReplayCacheExpires();
-        } else if (expires < 0) {
+        Duration suppliedExpiration = null;
+        
+        if (expires == null || expires.isZero()) {
+            suppliedExpiration = getReplayCacheExpires();
+        } else if (expires.isNegative()) {
             log.warn("Supplied context param for replay cache expires '{}' was negative, using configured expiration", 
                     expires);
-            expires = getReplayCacheExpires();
+            suppliedExpiration = getReplayCacheExpires();
+        } else {
+            suppliedExpiration = expires;
         }
              
-        log.debug("Effective one-time use cache expires of: {}", expires);
+        log.debug("Effective one-time use cache expires of: {}", suppliedExpiration);
         
-        final long computedExpiration = System.currentTimeMillis() + expires;
+        final Instant computedExpiration = Instant.now().plus(suppliedExpiration);
         log.debug("Computed one-time use cache effective expiration time of: {}", computedExpiration);
         return computedExpiration;
     }

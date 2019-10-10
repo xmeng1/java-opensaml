@@ -17,15 +17,16 @@
 
 package org.opensaml.saml.common.profile.impl;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.annotation.constraint.NonNegative;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
-import org.joda.time.DateTime;
 import org.opensaml.messaging.context.navigate.MessageLookup;
 import org.opensaml.profile.action.AbstractConditionalProfileAction;
 import org.opensaml.profile.action.ActionSupport;
@@ -37,9 +38,6 @@ import org.opensaml.saml.saml1.profile.SAML1ActionSupport;
 import org.opensaml.saml.saml2.profile.SAML2ActionSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 /**
  * Action that adds the <code>NotBefore</code> attribute to every assertion in a SAML 1/2
@@ -57,20 +55,19 @@ public class AddNotOnOrAfterConditionToAssertions extends AbstractConditionalPro
     @Nonnull private Function<ProfileRequestContext,SAMLObject> responseLookupStrategy;
     
     /** Strategy to obtain assertion lifetime policy. */
-    @Nullable private Function<ProfileRequestContext,Long> assertionLifetimeStrategy;
+    @Nullable private Function<ProfileRequestContext,Duration> assertionLifetimeStrategy;
     
     /** Default lifetime to use to establish timestamp. */
-    @Duration @NonNegative private long defaultAssertionLifetime;
+    @Nonnull private Duration defaultAssertionLifetime;
     
     /** Response to modify. */
     @Nullable private SAMLObject response;
 
     /** Constructor. */
     public AddNotOnOrAfterConditionToAssertions() {
-        responseLookupStrategy =
-                Functions.compose(new MessageLookup<>(SAMLObject.class), new OutboundMessageContextLookup());
+        responseLookupStrategy = new MessageLookup<>(SAMLObject.class).compose(new OutboundMessageContextLookup());
         
-        defaultAssertionLifetime = 5 * 60 * 1000;
+        defaultAssertionLifetime = Duration.ofMinutes(5);
     }
 
     /**
@@ -89,22 +86,23 @@ public class AddNotOnOrAfterConditionToAssertions extends AbstractConditionalPro
      * 
      * @param strategy strategy function
      */
-    public void setAssertionLifetimeStrategy(@Nullable final Function<ProfileRequestContext,Long> strategy) {
+    public void setAssertionLifetimeStrategy(@Nullable final Function<ProfileRequestContext,Duration> strategy) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
         
         assertionLifetimeStrategy = strategy;
     }
     
     /**
-     * Set the default assertion lifetime in milliseconds.
+     * Set the default assertion lifetime.
      * 
-     * @param lifetime  default lifetime in milliseconds
+     * @param lifetime  default lifetime
      */
-    @Duration public void setDefaultAssertionLifetime(@Duration @NonNegative final long lifetime) {
+    public void setDefaultAssertionLifetime(@Nonnull final Duration lifetime) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        Constraint.isNotNull(lifetime, "Lifetime cannot be null");
+        Constraint.isFalse(lifetime.isNegative(), "Lifetime cannot be negative");
         
-        defaultAssertionLifetime = Constraint.isGreaterThanOrEqual(0, lifetime,
-                "Default assertion lifetime must be greater than or equal to 0");
+        defaultAssertionLifetime = lifetime;
     }
     
     /** {@inheritDoc} */
@@ -143,7 +141,7 @@ public class AddNotOnOrAfterConditionToAssertions extends AbstractConditionalPro
     @Override
     protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
-        final Long lifetime = assertionLifetimeStrategy != null ?
+        final Duration lifetime = assertionLifetimeStrategy != null ?
                 assertionLifetimeStrategy.apply(profileRequestContext) : null;
         if (lifetime == null) {
             log.debug("{} No assertion lifetime supplied, using default", getLogPrefix());
@@ -153,8 +151,8 @@ public class AddNotOnOrAfterConditionToAssertions extends AbstractConditionalPro
             for (final org.opensaml.saml.saml1.core.Assertion assertion :
                     ((org.opensaml.saml.saml1.core.Response) response).getAssertions()) {
 
-                final DateTime expiration = new DateTime(assertion.getIssueInstant()).plus(
-                        lifetime != null ? lifetime : defaultAssertionLifetime);
+                final Instant expiration =
+                        assertion.getIssueInstant().plus(lifetime != null ? lifetime : defaultAssertionLifetime);
                 log.debug("{} Added NotOnOrAfter condition, indicating an expiration of {}, to Assertion {}",
                         new Object[] {getLogPrefix(), expiration, assertion.getID()});
                 SAML1ActionSupport.addConditionsToAssertion(this, assertion).setNotOnOrAfter(expiration);
@@ -163,8 +161,8 @@ public class AddNotOnOrAfterConditionToAssertions extends AbstractConditionalPro
             for (final org.opensaml.saml.saml2.core.Assertion assertion :
                     ((org.opensaml.saml.saml2.core.Response) response).getAssertions()) {
 
-                final DateTime expiration = new DateTime(assertion.getIssueInstant()).plus(
-                        lifetime != null ? lifetime : defaultAssertionLifetime);
+                final Instant expiration =
+                        assertion.getIssueInstant().plus(lifetime != null ? lifetime : defaultAssertionLifetime);
                 log.debug("{} Added NotOnOrAfter condition, indicating an expiration of {}, to Assertion {}",
                         new Object[] {getLogPrefix(), expiration, assertion.getID()});
                 SAML2ActionSupport.addConditionsToAssertion(this, assertion).setNotOnOrAfter(expiration);

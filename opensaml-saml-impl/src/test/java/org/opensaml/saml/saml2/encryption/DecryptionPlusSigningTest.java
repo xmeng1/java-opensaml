@@ -25,11 +25,11 @@ import java.io.ByteArrayOutputStream;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.time.Instant;
 
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
 
-import org.joda.time.DateTime;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
@@ -126,7 +126,7 @@ public class DecryptionPlusSigningTest extends XMLObjectBaseTestCase {
         // Build Response container
         Response response = (Response) buildXMLObject(Response.DEFAULT_ELEMENT_NAME);
         response.setID("def456");
-        response.setIssueInstant(new DateTime());
+        response.setIssueInstant(Instant.now());
         
         Issuer issuer = (Issuer) buildXMLObject(Issuer.DEFAULT_ELEMENT_NAME);
         issuer.setValue("urn:string:issuer");

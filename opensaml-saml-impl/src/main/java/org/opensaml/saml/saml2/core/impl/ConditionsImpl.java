@@ -21,16 +21,16 @@
 
 package org.opensaml.saml.saml2.core.impl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.AudienceRestriction;
 import org.opensaml.saml.saml2.core.Condition;
@@ -41,16 +41,16 @@ import org.opensaml.saml.saml2.core.ProxyRestriction;
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.Conditions}.
  */
-public class ConditionsImpl extends AbstractSAMLObject implements Conditions {
+public class ConditionsImpl extends AbstractXMLObject implements Conditions {
 
     /** A Condition. */
     private final IndexedXMLObjectChildrenList<Condition> conditions;
 
     /** Not Before conditions. */
-    private DateTime notBefore;
+    private Instant notBefore;
 
     /** Not On Or After conditions. */
-    private DateTime notOnOrAfter;
+    private Instant notOnOrAfter;
 
     /**
      * Constructor.
@@ -101,22 +101,22 @@ public class ConditionsImpl extends AbstractSAMLObject implements Conditions {
     }
 
     /** {@inheritDoc} */
-    public DateTime getNotBefore() {
+    public Instant getNotBefore() {
         return notBefore;
     }
 
     /** {@inheritDoc} */
-    public void setNotBefore(final DateTime newNotBefore) {
+    public void setNotBefore(final Instant newNotBefore) {
         this.notBefore = prepareForAssignment(this.notBefore, newNotBefore);
     }
 
     /** {@inheritDoc} */
-    public DateTime getNotOnOrAfter() {
+    public Instant getNotOnOrAfter() {
         return notOnOrAfter;
     }
 
     /** {@inheritDoc} */
-    public void setNotOnOrAfter(final DateTime newNotOnOrAfter) {
+    public void setNotOnOrAfter(final Instant newNotOnOrAfter) {
         this.notOnOrAfter = prepareForAssignment(this.notOnOrAfter, newNotOnOrAfter);
     }
 

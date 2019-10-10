@@ -30,7 +30,7 @@ import org.opensaml.xmlsec.EncryptionParameters;
  * A context implementation for storing parameter instances for XML signature signing and validation, and XML
  * encryption and decryption.
  */
-public class SecurityParametersContext extends BaseContext {
+public final class SecurityParametersContext extends BaseContext {
     
     /** Signature signing parameters. */
     @Nullable private SignatureSigningParameters signatureSigningParameters;

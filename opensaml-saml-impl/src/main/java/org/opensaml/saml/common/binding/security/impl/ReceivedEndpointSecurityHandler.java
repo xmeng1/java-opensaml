@@ -25,16 +25,15 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-import net.shibboleth.utilities.java.support.net.BasicURLComparator;
 import net.shibboleth.utilities.java.support.net.URIComparator;
 import net.shibboleth.utilities.java.support.net.URIException;
+import net.shibboleth.utilities.java.support.net.impl.BasicURLComparator;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.messaging.MessageException;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +150,7 @@ public class ReceivedEndpointSecurityHandler extends AbstractMessageHandler {
      *              with message requirements, or if there is a problem decoding and processing
      *              the message Destination or receiver endpoint information
      */
-    protected void checkEndpointURI(@Nonnull final MessageContext<SAMLObject> messageContext, 
+    protected void checkEndpointURI(@Nonnull final MessageContext messageContext, 
             @Nonnull final URIComparator comparator) throws MessageHandlerException {
         Constraint.isNotNull(comparator, "URIComparator may not be null");
         log.debug("{} Checking SAML message intended destination endpoint against receiver endpoint", getLogPrefix());
@@ -172,11 +171,10 @@ public class ReceivedEndpointSecurityHandler extends AbstractMessageHandler {
                         getLogPrefix());
                 throw new MessageHandlerException(
                         "SAML message intended destination (required by binding) was not present");
-            } else {
-                log.debug("{} SAML message intended destination endpoint was empty, not required by binding, skipping",
-                        getLogPrefix());
-                return;
             }
+            log.debug("{} SAML message intended destination endpoint was empty, not required by binding, skipping",
+                    getLogPrefix());
+            return;
         }
         
         final String receiverEndpoint;
@@ -200,9 +198,8 @@ public class ReceivedEndpointSecurityHandler extends AbstractMessageHandler {
             log.error("{} SAML message intended destination endpoint '{}' did not match the recipient endpoint '{}'",
                     getLogPrefix(), messageDestination, receiverEndpoint);
             throw new MessageHandlerException("SAML message failed received endpoint check");
-        } else {
-            log.debug("{} SAML message intended destination endpoint matched recipient endpoint", getLogPrefix());
         }
+        log.debug("{} SAML message intended destination endpoint matched recipient endpoint", getLogPrefix());
     }
 
 }

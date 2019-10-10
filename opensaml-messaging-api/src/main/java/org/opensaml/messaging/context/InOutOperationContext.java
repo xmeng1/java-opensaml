@@ -23,17 +23,14 @@ import javax.annotation.Nullable;
 * An operation context which represents concretely a message exchange pattern involving an 
 * inbound message and an outbound message. This is the typical request-response
 * pattern seen in messaging environments, and might be either server-side or client-side.
-* 
-* @param <InboundMessageType> the inbound message type
-* @param <OutboundMessageType> the outbound message type
 */
-public class InOutOperationContext<InboundMessageType, OutboundMessageType> extends BaseContext {
+public class InOutOperationContext extends BaseContext {
 
     /** The inbound message context. */
-    @Nullable private MessageContext<InboundMessageType> inboundContext;
+    @Nullable private MessageContext inboundContext;
 
     /** The outbound message context. */
-    @Nullable private MessageContext<OutboundMessageType> outboundContext;
+    @Nullable private MessageContext outboundContext;
 
     /** Constructor. Sets ID to a generated UUID and creation time to now. */
     protected InOutOperationContext() {
@@ -45,8 +42,7 @@ public class InOutOperationContext<InboundMessageType, OutboundMessageType> exte
      * @param inbound the inbound message context
      * @param outbound the outbound message context
      */
-    public InOutOperationContext(@Nullable final MessageContext<InboundMessageType> inbound,
-            @Nullable final MessageContext<OutboundMessageType> outbound) {
+    public InOutOperationContext(@Nullable final MessageContext inbound, @Nullable final MessageContext outbound) {
 
         setInboundMessageContext(inbound);
         setOutboundMessageContext(outbound);
@@ -58,7 +54,7 @@ public class InOutOperationContext<InboundMessageType, OutboundMessageType> exte
      * 
      * @return the inbound message context
      */
-    @Nullable public MessageContext<InboundMessageType> getInboundMessageContext() {
+    @Nullable public MessageContext getInboundMessageContext() {
         return inboundContext;
     }
     
@@ -67,7 +63,7 @@ public class InOutOperationContext<InboundMessageType, OutboundMessageType> exte
      * 
      * @param context inbound message context, may be null
      */
-    public void setInboundMessageContext(@Nullable final MessageContext<InboundMessageType> context) {
+    public void setInboundMessageContext(@Nullable final MessageContext context) {
         // Unlink the old context from this parent
         if (inboundContext != null) {
             inboundContext.setParent(null);
@@ -86,7 +82,7 @@ public class InOutOperationContext<InboundMessageType, OutboundMessageType> exte
      * 
      * @return the outbound message context
      */
-    @Nullable public MessageContext<OutboundMessageType> getOutboundMessageContext() {
+    @Nullable public MessageContext getOutboundMessageContext() {
         return outboundContext;
     }
     
@@ -95,7 +91,7 @@ public class InOutOperationContext<InboundMessageType, OutboundMessageType> exte
      * 
      * @param context outbound message context, may be null
      */
-    public void setOutboundMessageContext(@Nullable final MessageContext<OutboundMessageType> context) {
+    public void setOutboundMessageContext(@Nullable final MessageContext context) {
         // Unlink the old context from this parent
         if (outboundContext != null) {
             outboundContext.setParent(null);

@@ -39,10 +39,8 @@ import org.opensaml.soap.wsaddressing.messaging.WSAddressingContext;
  * The actual SOAP 1.1. fault is assumed to be emitted later, perhaps directly by a specialized
  * fault-aware {@link org.opensaml.messaging.encoder.MessageEncoder}.
  * </p>
- * 
- * @param <MessageType> the type of message supported
  */
-public class SOAP11FaultContextDecoratingErrorHandler<MessageType> implements TypedMessageErrorHandler<MessageType> {
+public class SOAP11FaultContextDecoratingErrorHandler implements TypedMessageErrorHandler {
     
     /** The handled type of Throwable. */
     @Nonnull private Class<? extends Throwable> handledThrowable;
@@ -97,7 +95,7 @@ public class SOAP11FaultContextDecoratingErrorHandler<MessageType> implements Ty
     }
     
     /** {@inheritDoc} */
-    public boolean handleError(@Nonnull final Throwable t, @Nonnull final MessageContext<MessageType> messageContext) {
+    public boolean handleError(@Nonnull final Throwable t, @Nonnull final MessageContext messageContext) {
         //TODO can support details?
         //TODO add Function<MessageContext,Fault> support?
         final Fault fault = SOAPSupport.buildSOAP11Fault(faultCode, faultString, faultActor, null, null);

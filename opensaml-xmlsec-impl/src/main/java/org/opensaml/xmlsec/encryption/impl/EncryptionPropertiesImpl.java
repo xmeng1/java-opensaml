@@ -36,7 +36,7 @@ public class EncryptionPropertiesImpl extends AbstractXMLObject implements Encry
     private String id;
     
     /** EncryptionProperty child elements. */
-    private final XMLObjectChildrenList encryptionProperties;
+    private final XMLObjectChildrenList<EncryptionProperty> encryptionProperties;
 
     /**
      * Constructor.
@@ -48,7 +48,7 @@ public class EncryptionPropertiesImpl extends AbstractXMLObject implements Encry
     protected EncryptionPropertiesImpl(final String namespaceURI, final String elementLocalName,
             final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        encryptionProperties = new XMLObjectChildrenList<EncryptionProperty>(this);
+        encryptionProperties = new XMLObjectChildrenList<>(this);
     }
 
     /** {@inheritDoc} */
@@ -65,14 +65,14 @@ public class EncryptionPropertiesImpl extends AbstractXMLObject implements Encry
 
     /** {@inheritDoc} */
     public List<EncryptionProperty> getEncryptionProperties() {
-        return (List<EncryptionProperty>) encryptionProperties;
+        return encryptionProperties;
     }
 
     /** {@inheritDoc} */
     public List<XMLObject> getOrderedChildren() {
         final ArrayList<XMLObject> children = new ArrayList<>();
         
-        children.addAll((List<XMLObject>) encryptionProperties);
+        children.addAll(encryptionProperties);
         
         if (children.size() == 0) {
             return null;

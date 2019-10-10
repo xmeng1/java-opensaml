@@ -29,33 +29,24 @@ import java.util.Timer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.net.ssl.SSLPeerUnverifiedException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSource;
-import org.opensaml.security.httpclient.HttpClientSecurityConstants;
 import org.opensaml.security.httpclient.HttpClientSecurityParameters;
 import org.opensaml.security.httpclient.HttpClientSecuritySupport;
-import org.opensaml.security.trust.TrustEngine;
-import org.opensaml.security.x509.X509Credential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.io.ByteStreams;
@@ -69,8 +60,6 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.net.MediaTypeSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport;
-import net.shibboleth.utilities.java.support.primitive.DeprecationSupport.ObjectType;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
@@ -107,17 +96,7 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
     
     /** HttpClient ResponseHandler instance to use. */
     @Nonnull private ResponseHandler<XMLObject> responseHandler;
-    
-    /** HttpClient credentials provider. 
-     * @deprecated use {@link #httpClientSecurityParameters}.
-     * */
-    @Nullable private CredentialsProvider credentialsProvider;
-    
-    /** Optional trust engine used in evaluating server TLS credentials.
-     * @deprecated use {@link #httpClientSecurityParameters}.
-     *  */
-    @Nullable private TrustEngine<? super X509Credential> tlsTrustEngine;
-    
+        
     /** Optional HttpClient security parameters.*/
     @Nullable private HttpClientSecurityParameters httpClientSecurityParameters;
     
@@ -144,100 +123,6 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
         
         // The default handler
         responseHandler = new BasicMetadataResponseHandler();
-    }
-    
-    /**
-     * Sets the optional trust engine used in evaluating server TLS credentials.
-     * 
-     * <p>
-     * See TLS socket factory requirements documented for 
-     * {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}.
-     * </p>
-     * 
-     * @param engine the trust engine instance to use
-     * 
-     * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
-     */
-    public void setTLSTrustEngine(@Nullable final TrustEngine<? super X509Credential> engine) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setTLSTrustEngine", 
-                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
-        tlsTrustEngine = engine;
-    }
-    
-    /**
-     * Set an instance of {@link CredentialsProvider} used for authentication by the HttpClient instance.
-     * 
-     * @param provider the credentials provider
-     * 
-     * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
-     */
-    public void setCredentialsProvider(@Nullable final CredentialsProvider provider) {
-        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
-        ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setCredentialsProvider", 
-                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
-
-        credentialsProvider = provider;
-    }
-    
-    /**
-     * A convenience method to set a (single) username and password used to access metadata. 
-     * To disable BASIC authentication pass null for the credentials instance.
-     * 
-     * <p>
-     * An {@link AuthScope} will be generated which specifies any host, port, scheme and realm.
-     * </p>
-     * 
-     * <p>To specify multiple usernames and passwords for multiple host, port, scheme, and realm combinations, instead 
-     * provide an instance of {@link CredentialsProvider} via {@link #setCredentialsProvider(CredentialsProvider)}.</p>
-     * 
-     * @param credentials the username and password credentials
-     * 
-     * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
-     */
-    public void setBasicCredentials(@Nullable final UsernamePasswordCredentials credentials) {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentials", 
-                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
-        setBasicCredentialsWithScope(credentials, null);
-    }
-
-    /**
-     * A convenience method to set a (single) username and password used to access metadata.
-     * To disable BASIC authentication pass null for the credentials instance.
-     * 
-     * <p>
-     * If the <code>authScope</code> is null, an {@link AuthScope} will be generated which specifies
-     * any host, port, scheme and realm.
-     * </p>
-     * 
-     * <p>To specify multiple usernames and passwords for multiple host, port, scheme, and realm combinations, instead 
-     * provide an instance of {@link CredentialsProvider} via {@link #setCredentialsProvider(CredentialsProvider)}.</p>
-     * 
-     * @param credentials the username and password credentials
-     * @param scope the HTTP client auth scope with which to scope the credentials, may be null
-     * 
-     * @deprecated use {@link #setHttpClientSecurityParameters(HttpClientSecurityParameters)}
-     */
-    public void setBasicCredentialsWithScope(@Nullable final UsernamePasswordCredentials credentials,
-            @Nullable final AuthScope scope) {
-        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
-        ComponentSupport.ifDestroyedThrowDestroyedComponentException(this);
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".setBasicCredentialsWithScope", 
-                null, "setHttpClientSecurityParameters(HttpClientSecurityParameters)");
-
-        if (credentials != null) {
-            AuthScope authScope = scope;
-            if (authScope == null) {
-                authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT);
-            }
-            final BasicCredentialsProvider provider = new BasicCredentialsProvider();
-            provider.setCredentials(authScope, credentials);
-            credentialsProvider = provider;
-        } else {
-            log.debug("{} Either username or password were null, disabling basic auth", getLogPrefix());
-            credentialsProvider = null;
-        }
-
     }
     
     /**
@@ -324,13 +209,7 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
         } else {
             supportedContentTypes = new ArrayList<>(Collections2.transform(
                     StringSupport.normalizeStringCollection(types),
-                    new Function<String,String>() {
-                        @Override
-                        @Nullable public String apply(@Nullable final String input) {
-                            return input == null ? null : input.toLowerCase();
-                        }
-                    }
-                    ));
+                    s -> s == null ? null : s.toLowerCase()));
         }
     }
     
@@ -360,8 +239,6 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
     @Override
     protected void doDestroy() {
         httpClient = null;
-        credentialsProvider = null;
-        tlsTrustEngine = null;
         httpClientSecurityParameters = null;
         
         supportedContentTypes = null;
@@ -393,24 +270,7 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
             MDC.remove(MDC_ATTRIB_CURRENT_REQUEST_URI);
         }
     }
-    
-    /**
-     * Check that trust engine evaluation of the server TLS credential was actually performed.
-     * 
-     * @param context the current HTTP context instance in use
-     * @param request the HTTP URI request
-     * @throws SSLPeerUnverifiedException thrown if the TLS credential was not actually evaluated by the trust engine
-     * 
-     * @deprecated use {@link HttpClientSecuritySupport#checkTLSCredentialEvaluated(HttpClientContext, String)}
-     */
-    @Deprecated
-    protected void checkTLSCredentialTrusted(final HttpClientContext context, final HttpUriRequest request) 
-            throws SSLPeerUnverifiedException {
-        DeprecationSupport.warnOnce(ObjectType.METHOD, getClass().getName() + ".checkTLSCredentialTrusted", 
-                null, "HttpClientSecuritySupport.checkTLSCredentialEvaluated(HttpClientContext, String)");
-        HttpClientSecuritySupport.checkTLSCredentialEvaluated(context, request.getURI().getScheme());
-    }
-    
+        
     /**
      * Build an appropriate instance of {@link HttpUriRequest} based on the input criteria set.
      * 
@@ -444,20 +304,7 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
      * @return the request URL, or null if it can not be built based on the supplied criteria
      */
     @Nullable protected abstract String buildRequestURL(@Nonnull final CriteriaSet criteria);
-    
-    /**
-     * Build the {@link HttpClientContext} instance which will be used to invoke the {@link HttpClient} request.
-     * 
-     * @return a new instance of {@link HttpClientContext}
-     * 
-     * @deprecated use {@link #buildHttpClientContext(HttpUriRequest)}
-     */
-    protected HttpClientContext buildHttpClientContext() {
-        //TODO when we remove this deprecated method, change called method to @Nonnull for request
-        DeprecationSupport.warn(ObjectType.METHOD, getClass().getName() + ".buildHttpClientContext()", null, null);
-        return buildHttpClientContext(null);
-    }
-    
+        
     /**
      * Build the {@link HttpClientContext} instance which will be used to invoke the {@link HttpClient} request.
      * 
@@ -465,23 +312,11 @@ public abstract class AbstractDynamicHTTPMetadataResolver extends AbstractDynami
      * 
      * @return a new instance of {@link HttpClientContext}
      */
-    protected HttpClientContext buildHttpClientContext(@Nullable final HttpUriRequest request) {
-        // TODO Really request should be @Nonnull, change when we remove deprecated buildHttpClientContext()
+    protected HttpClientContext buildHttpClientContext(@Nonnull final HttpUriRequest request) {
         final HttpClientContext context = HttpClientContext.create();
         
         HttpClientSecuritySupport.marshalSecurityParameters(context, httpClientSecurityParameters, true);
-        
-        // If these legacy values are present, let them override the above params instance values unconditionally
-        if (credentialsProvider != null) {
-            context.setCredentialsProvider(credentialsProvider);
-        }
-        if (tlsTrustEngine != null) {
-            context.setAttribute(HttpClientSecurityConstants.CONTEXT_KEY_TRUST_ENGINE, tlsTrustEngine);
-        }
-        
-        if (request != null) {
-            HttpClientSecuritySupport.addDefaultTLSTrustEngineCriteria(context, request);
-        }
+        HttpClientSecuritySupport.addDefaultTLSTrustEngineCriteria(context, request);
         
         return context;
     }

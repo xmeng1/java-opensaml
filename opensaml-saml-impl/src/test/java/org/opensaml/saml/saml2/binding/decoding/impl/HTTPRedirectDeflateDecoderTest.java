@@ -91,7 +91,7 @@ public class HTTPRedirectDeflateDecoderTest extends XMLObjectBaseTestCase {
         httpRequest.setParameter("SAMLRequest", encodeMessage(samlRequest));
 
         decoder.decode();
-        MessageContext<SAMLObject> messageContext = decoder.getMessageContext();
+        MessageContext messageContext = decoder.getMessageContext();
 
         Assert.assertTrue(messageContext.getMessage() instanceof RequestAbstractType);
         Assert.assertEquals(SAMLBindingSupport.getRelayState(messageContext), expectedRelayValue);
@@ -108,7 +108,7 @@ public class HTTPRedirectDeflateDecoderTest extends XMLObjectBaseTestCase {
         httpRequest.setParameter("SAMLEncoding", "urn:oasis:names:tc:SAML:2.0:bindings:URL-Encoding:DEFLATE");
 
         decoder.decode();
-        MessageContext<SAMLObject> messageContext = decoder.getMessageContext();
+        MessageContext messageContext = decoder.getMessageContext();
 
         Assert.assertTrue(messageContext.getMessage() instanceof RequestAbstractType);
         Assert.assertEquals(SAMLBindingSupport.getRelayState(messageContext), expectedRelayValue);

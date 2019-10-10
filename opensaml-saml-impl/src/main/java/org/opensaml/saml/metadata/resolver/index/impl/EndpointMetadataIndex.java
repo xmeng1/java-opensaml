@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 import net.shibboleth.utilities.java.support.annotation.ParameterName;
@@ -109,7 +109,7 @@ public class EndpointMetadataIndex implements MetadataIndex {
                     endpointType = endpoint.getElementQName();
                 }
                 
-                if (endpointSelectionPredicate.apply(endpoint)) {
+                if (endpointSelectionPredicate.test(endpoint)) {
                     final String location = StringSupport.trimOrNull(endpoint.getLocation());
                     if (location != null) {
                         log.trace("Indexing Endpoint: role '{}', endpoint type '{}', location '{}'", 
@@ -138,9 +138,8 @@ public class EndpointMetadataIndex implements MetadataIndex {
             final HashSet<MetadataIndexKey> result = new HashSet<>();
             result.addAll(processCriteria(criteriaSet, roleCrit.getRole(), endpointCrit.getEndpoint()));
             return result;
-        } else {
-            return null;
         }
+        return null;
     }
     
     /**
@@ -215,9 +214,9 @@ public class EndpointMetadataIndex implements MetadataIndex {
                 log.warn("Could not parse URL '{}', will not generate path segment variants", location, e);
             }
             return result;
-        } else {
-            return Collections.singleton(location);
         }
+        
+        return Collections.singleton(location);
     }
 
 
@@ -249,7 +248,7 @@ public class EndpointMetadataIndex implements MetadataIndex {
         }
 
         /** {@inheritDoc} */
-        public boolean apply(@Nullable final Endpoint endpoint) {
+        public boolean test(@Nullable final Endpoint endpoint) {
             if (endpoint == null) {
                 return false;
             }

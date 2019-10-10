@@ -19,6 +19,7 @@ package org.opensaml.saml.saml1.profile.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,8 +46,6 @@ import org.opensaml.saml.saml1.core.SubjectStatement;
 import org.opensaml.saml.saml1.profile.SAML1NameIdentifierGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 /**
  * Action that builds a {@link NameIdentifier} and adds it to the {@link Subject} of all the statements
@@ -180,9 +179,8 @@ public class AddNameIdentifierToSubjects extends AbstractProfileAction {
         if (formats == null || formats.isEmpty()) {
             log.debug("{} No candidate NameIdentifier formats, nothing to do", getLogPrefix());
             return false;
-        } else {
-            log.debug("{} Candidate NameIdentifier formats: {}", getLogPrefix(), formats);
         }
+        log.debug("{} Candidate NameIdentifier formats: {}", getLogPrefix(), formats);
         
         return true;
     }

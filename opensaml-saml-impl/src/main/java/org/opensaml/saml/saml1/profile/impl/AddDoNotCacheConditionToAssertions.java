@@ -18,6 +18,7 @@
 package org.opensaml.saml.saml1.profile.impl;
 
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,9 +42,6 @@ import org.opensaml.saml.saml1.profile.SAML1ActionSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-
 /**
  * Action to add a {@link DoNotCacheCondition} to every {@link Assertion} in a {@link Response} message.
  * If the containing {@link Conditions} is not present, it will be created.
@@ -64,8 +62,7 @@ public class AddDoNotCacheConditionToAssertions extends AbstractConditionalProfi
 
     /** Constructor. */
     public AddDoNotCacheConditionToAssertions() {
-        responseLookupStrategy =
-                Functions.compose(new MessageLookup<>(Response.class), new OutboundMessageContextLookup());
+        responseLookupStrategy = new MessageLookup<>(Response.class).compose(new OutboundMessageContextLookup());
     }
     
     /**

@@ -18,6 +18,7 @@
 package org.opensaml.storage.impl;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import javax.annotation.Nonnull;
 
@@ -153,7 +154,7 @@ public class LDAPStorageServiceTest {
     @Test
     public void create() throws IOException {
         storageService.create(context, "mail", "principal@shibboleth.net", null);
-        StorageRecord rec = storageService.read(context, "mail");
+        StorageRecord<?> rec = storageService.read(context, "mail");
         Assert.assertNotNull(rec);
         Assert.assertEquals(rec.getValue(), "principal@shibboleth.net");
 
@@ -183,7 +184,7 @@ public class LDAPStorageServiceTest {
 
     @Test public void invalidConfig() {
         LDAPStorageService ss = new LDAPStorageService(getPooledConnectionFactory());
-        ss.setCleanupInterval(1000);
+        ss.setCleanupInterval(Duration.ofSeconds(1));
 
         try {
             ss.initialize();

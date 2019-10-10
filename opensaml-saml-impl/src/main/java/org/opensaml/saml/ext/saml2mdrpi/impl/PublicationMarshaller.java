@@ -17,12 +17,14 @@
 
 package org.opensaml.saml.ext.saml2mdrpi.impl;
 
-import org.joda.time.format.ISODateTimeFormat;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.AbstractSAMLObjectMarshaller;
 import org.opensaml.saml.ext.saml2mdrpi.Publication;
+import org.opensaml.saml.ext.saml2mdrpi.PublicationInfo;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.AttributeSupport;
 
 
 /**
@@ -46,8 +48,9 @@ public class PublicationMarshaller extends AbstractSAMLObjectMarshaller {
 
 
         if (info.getCreationInstant() != null) {
-            final String creationInstant = ISODateTimeFormat.dateTime().print(info.getCreationInstant());
-            domElement.setAttributeNS(null, Publication.CREATION_INSTANT_ATTRIB_NAME, creationInstant);
+            AttributeSupport.appendDateTimeAttribute(domElement, PublicationInfo.CREATION_INSTANT_ATTRIB_QNAME,
+                    info.getCreationInstant());
         }
     }
+    
 }

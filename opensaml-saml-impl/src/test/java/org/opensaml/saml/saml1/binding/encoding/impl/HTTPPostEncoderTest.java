@@ -18,11 +18,11 @@
 package org.opensaml.saml.saml1.binding.encoding.impl;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.util.List;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.DocumentType;
@@ -32,7 +32,6 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
@@ -58,11 +57,8 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
     private VelocityEngine velocityEngine;
 
     @BeforeMethod
-    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         velocityEngine = new VelocityEngine();
-        velocityEngine.setProperty(RuntimeConstants.INPUT_ENCODING, "UTF-8");
-        velocityEngine.setProperty(RuntimeConstants.OUTPUT_ENCODING, "UTF-8");
         velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         velocityEngine.setProperty("classpath.resource.loader.class",
                 "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
@@ -76,7 +72,7 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
                 .getBuilder(Response.DEFAULT_ELEMENT_NAME);
         Response samlMessage = requestBuilder.buildObject();
         samlMessage.setID("foo");
-        samlMessage.setIssueInstant(new DateTime(0));
+        samlMessage.setIssueInstant(Instant.ofEpochMilli(0));
         samlMessage.setVersion(SAMLVersion.VERSION_11);
 
         SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
@@ -85,7 +81,7 @@ public class HTTPPostEncoderTest extends XMLObjectBaseTestCase {
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
 
-        MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        MessageContext messageContext = new MessageContext();
         messageContext.setMessage(samlMessage);
         SAMLBindingSupport.setRelayState(messageContext, "relay");
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true)

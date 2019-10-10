@@ -19,14 +19,14 @@ package org.opensaml.saml.saml2.metadata.impl;
 
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.metadata.AffiliateMember;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.metadata.AffiliateMember}.
  */
-public class AffiliateMemberImpl extends AbstractSAMLObject implements AffiliateMember {
+public class AffiliateMemberImpl extends AbstractXMLObject implements AffiliateMember {
 
     /** ID of this member. */
     private String id;

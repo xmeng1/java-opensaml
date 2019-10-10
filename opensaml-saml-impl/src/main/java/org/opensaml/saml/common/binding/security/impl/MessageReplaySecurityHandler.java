@@ -17,17 +17,17 @@
 
 package org.opensaml.saml.common.binding.security.impl;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 
-import net.shibboleth.utilities.java.support.annotation.Duration;
-import net.shibboleth.utilities.java.support.annotation.constraint.NonNegative;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
-import org.joda.time.DateTime;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
@@ -51,14 +51,13 @@ public class MessageReplaySecurityHandler extends AbstractMessageHandler {
     /** Whether this rule is required to be met. */
     private boolean requiredRule;
     
-    /** Time in milliseconds to expire cache entries. Default value: (180) */
-    @Duration @NonNegative private long expires;
+    /** Time to expire cache entries. Default value: (3 minutes) */
+    @Nonnull private Duration expires;
 
     /** Constructor. */
     public MessageReplaySecurityHandler() {
-        super();
         requiredRule = true;
-        expires = 180 * 1000;
+        expires = Duration.ofMinutes(3);
     }
 
     /**
@@ -93,23 +92,25 @@ public class MessageReplaySecurityHandler extends AbstractMessageHandler {
     }
 
     /**
-     * Gets the lifetime in milliseconds of replay entries.
+     * Gets the lifetime of replay entries.
      * 
-     * @return lifetime in milliseconds of entries
+     * @return lifetime of entries
      */
-    @Duration @NonNegative public long getExpires() {
+    @Nonnull public Duration getExpires() {
         return expires;
     }
 
     /**
-     * Sets the lifetime in seconds of replay entries.
+     * Sets the lifetime of replay entries.
      * 
-     * @param exp lifetime in seconds of entries
+     * @param exp lifetime of entries
      */
-    @Duration public void setExpires(@Duration @NonNegative final long exp) {
+    public void setExpires(@Nonnull final Duration exp) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        Constraint.isNotNull(exp, "Lifetime cannot be null");
+        Constraint.isFalse(exp.isNegative(), "Lifetime cannot be negative");
         
-        expires = Constraint.isGreaterThanOrEqual(0, exp, "Expiration must be greater than or equal to 0");
+        expires = exp;
     }
 
     /** {@inheritDoc} */
@@ -117,7 +118,9 @@ public class MessageReplaySecurityHandler extends AbstractMessageHandler {
     protected void doInitialize() throws ComponentInitializationException {
         super.doInitialize();
         
-        Constraint.isNotNull(getReplayCache(), "ReplayCache cannot be null");
+        if (getReplayCache() == null) {
+            throw new ComponentInitializationException("ReplayCache cannot be null");
+        }
     }
 
     /** {@inheritDoc} */
@@ -138,26 +141,24 @@ public class MessageReplaySecurityHandler extends AbstractMessageHandler {
                 log.warn("{} Message contained no ID, replay check not possible", getLogPrefix());
                 throw new MessageHandlerException("SAML message from issuer " + entityID
                         + " did not contain an ID");
-            } else {
-                log.debug("{} Message contained no ID, rule is optional, skipping further processing", getLogPrefix());
-                return;
             }
+            log.debug("{} Message contained no ID, rule is optional, skipping further processing", getLogPrefix());
+            return;
         }
 
-        DateTime issueInstant = msgInfoContext.getMessageIssueInstant();
+        Instant issueInstant = msgInfoContext.getMessageIssueInstant();
         if (issueInstant == null) {
-            issueInstant = new DateTime();
+            issueInstant = Instant.now();
         }
         
         log.debug("{} Evaluating message replay for message ID '{}', issue instant '{}', entityID '{}'", 
                 getLogPrefix(), messageId, issueInstant, entityID);
         
-        if (!getReplayCache().check(getClass().getName(), messageId, issueInstant.getMillis() + expires)) {
+        if (!getReplayCache().check(getClass().getName(), messageId, issueInstant.plus(expires))) {
             log.warn("{} Replay detected of message '{}' from issuer '{}'", getLogPrefix(), messageId, entityID);
             throw new MessageHandlerException("Rejecting replayed message ID '" + messageId + "' from issuer "
                     + entityID);
         }
-
     }
 
 }

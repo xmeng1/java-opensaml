@@ -30,6 +30,7 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.metadata.resolver.filter.FilterException;
 import org.opensaml.saml.metadata.resolver.filter.MetadataFilter;
+import org.opensaml.saml.metadata.resolver.filter.MetadataFilterContext;
 import org.opensaml.saml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.RoleDescriptor;
@@ -141,7 +142,8 @@ public class EntityRoleFilter implements MetadataFilter {
 
     /** {@inheritDoc} */
     @Override
-    @Nullable public XMLObject filter(@Nullable final XMLObject metadata) throws FilterException {
+    @Nullable public XMLObject filter(@Nullable final XMLObject metadata, @Nonnull final MetadataFilterContext context)
+            throws FilterException {
         if (metadata == null) {
             return null;
         }

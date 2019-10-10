@@ -23,7 +23,6 @@ import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.context.navigate.ParentContextLookup;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.AttributeConsumingServiceContext;
 import org.opensaml.saml.common.messaging.context.SAMLMetadataContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
@@ -45,7 +44,7 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
     private SPSSODescriptor withACS;
     private SPSSODescriptor noACS;
     
-    private SAMLMetadataContext getMetadataContext(MessageContext<SAMLObject> message) {
+    private SAMLMetadataContext getMetadataContext(final MessageContext message) {
         return message.getSubcontext(SAMLPeerEntityContext.class, true).getSubcontext(SAMLMetadataContext.class, true);
     }
     
@@ -63,13 +62,13 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
     }
 
     @Test public void noMetadataDataContext() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         
         handler().invoke(messageContext);
     }
     
     @Test public void noSPSSODesc() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final SAMLMetadataContext metadataContext = getMetadataContext(messageContext);
         
         handler().invoke(messageContext);
@@ -77,7 +76,7 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
     }
     
     @Test public void authnNoIndex() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final SAMLMetadataContext metadataContext = getMetadataContext(messageContext);
         metadataContext.setRoleDescriptor(withACS);
         
@@ -92,12 +91,12 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
     }
 
     @Test public void authnWithIndex() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final SAMLMetadataContext metadataContext = getMetadataContext(messageContext);
         metadataContext.setRoleDescriptor(withACS);
         
         final AuthnRequest request = SAML2ActionTestingSupport.buildAuthnRequest();
-        request.setAttributeConsumingServiceIndex(new Integer(1));
+        request.setAttributeConsumingServiceIndex(Integer.valueOf(1));
         
         messageContext.setMessage(request);
         
@@ -109,12 +108,12 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
     }
 
     @Test public void authnBadIndex() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final SAMLMetadataContext metadataContext = getMetadataContext(messageContext);
         metadataContext.setRoleDescriptor(withACS);
         
         final AuthnRequest request = SAML2ActionTestingSupport.buildAuthnRequest();
-        request.setAttributeConsumingServiceIndex(new Integer(9));
+        request.setAttributeConsumingServiceIndex(Integer.valueOf(9));
         
         messageContext.setMessage(request);
         
@@ -126,7 +125,7 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
     }
 
     @Test public void authnNoACS() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final SAMLMetadataContext metadataContext = getMetadataContext(messageContext);
         metadataContext.setRoleDescriptor(noACS);
         
@@ -138,7 +137,7 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
     }
     
     @Test public void noAuthn() throws MessageHandlerException, ComponentInitializationException {
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
+        final MessageContext messageContext = new MessageContext();
         final SAMLMetadataContext metadataContext = getMetadataContext(messageContext);
         metadataContext.setRoleDescriptor(withACS);
         
@@ -156,13 +155,13 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
     @Test public void navigate() throws MessageHandlerException, ComponentInitializationException {
         final SAMLAddAttributeConsumingServiceHandler navigatedHandler = new SAMLAddAttributeConsumingServiceHandler();
         
-        navigatedHandler.setMetadataContextLookupStrategy(new ParentContextLookup<MessageContext, SAMLMetadataContext>());
+        navigatedHandler.setMetadataContextLookupStrategy(new ParentContextLookup<>(SAMLMetadataContext.class));
         final SAMLMetadataContext metadataContext = new SAMLMetadataContext();
-        final MessageContext<SAMLObject> messageContext = metadataContext.getSubcontext(MessageContext.class, true);
+        final MessageContext messageContext = metadataContext.getSubcontext(MessageContext.class, true);
         metadataContext.setRoleDescriptor(withACS);
         
         final AuthnRequest request = SAML2ActionTestingSupport.buildAuthnRequest();
-        request.setAttributeConsumingServiceIndex(new Integer(1));
+        request.setAttributeConsumingServiceIndex(Integer.valueOf(1));
         navigatedHandler.initialize();
         
         messageContext.setMessage(request);
@@ -172,5 +171,6 @@ public class SAMLAddAttributeConsumingServiceHandleTest extends XMLObjectBaseTes
         
         Assert.assertFalse(acs.isDefault());
         Assert.assertEquals(acs.getIndex(), 1);
-    }    
+    }
+    
 }

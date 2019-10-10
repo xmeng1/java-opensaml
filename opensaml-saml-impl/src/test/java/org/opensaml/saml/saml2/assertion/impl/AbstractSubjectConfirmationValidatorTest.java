@@ -17,11 +17,12 @@
 
 package org.opensaml.saml.saml2.assertion.impl;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import org.joda.time.DateTime;
 import org.opensaml.saml.common.assertion.AssertionValidationException;
 import org.opensaml.saml.common.assertion.ValidationContext;
 import org.opensaml.saml.common.assertion.ValidationResult;
@@ -156,8 +157,8 @@ public class AbstractSubjectConfirmationValidatorTest extends BaseAssertionValid
     @Test
     public void testInvalidNotBefore() throws AssertionValidationException {
         // Adjust them both just so they make sense
-        subjectConfirmation.getSubjectConfirmationData().setNotBefore(new DateTime().plusMinutes(30));
-        subjectConfirmation.getSubjectConfirmationData().setNotOnOrAfter(new DateTime().plusMinutes(60));
+        subjectConfirmation.getSubjectConfirmationData().setNotBefore(Instant.now().plus(30, ChronoUnit.MINUTES));
+        subjectConfirmation.getSubjectConfirmationData().setNotOnOrAfter(Instant.now().plus(60, ChronoUnit.MINUTES));
         
         ValidationContext validationContext = new ValidationContext(buildBasicStaticParameters());
         
@@ -178,8 +179,8 @@ public class AbstractSubjectConfirmationValidatorTest extends BaseAssertionValid
     @Test
     public void testInvalidNotOnOrAfter() throws AssertionValidationException {
         // Adjust them both just so they make sense
-        subjectConfirmation.getSubjectConfirmationData().setNotBefore(new DateTime().minusMinutes(60));
-        subjectConfirmation.getSubjectConfirmationData().setNotOnOrAfter(new DateTime().minusMinutes(30));
+        subjectConfirmation.getSubjectConfirmationData().setNotBefore(Instant.now().minus(60, ChronoUnit.MINUTES));
+        subjectConfirmation.getSubjectConfirmationData().setNotOnOrAfter(Instant.now().minus(30, ChronoUnit.MINUTES));
         
         ValidationContext validationContext = new ValidationContext(buildBasicStaticParameters());
         

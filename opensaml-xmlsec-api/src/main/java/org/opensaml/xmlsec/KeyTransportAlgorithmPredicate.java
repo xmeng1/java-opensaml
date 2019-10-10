@@ -17,14 +17,14 @@
 
 package org.opensaml.xmlsec;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
 import org.opensaml.security.credential.Credential;
-
-import com.google.common.base.Predicate;
 
 /**
  * An interface for predicates which allow evaluation of a candidate key transport algorithm relative to

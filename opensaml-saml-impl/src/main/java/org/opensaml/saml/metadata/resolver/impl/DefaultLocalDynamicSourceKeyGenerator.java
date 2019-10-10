@@ -24,14 +24,13 @@ import org.opensaml.saml.common.binding.artifact.SAMLArtifact;
 import org.opensaml.saml.common.binding.artifact.SAMLSourceIDArtifact;
 import org.opensaml.saml.criterion.ArtifactCriterion;
 
-import com.google.common.base.Function;
 import com.google.common.io.BaseEncoding;
 
 import net.shibboleth.utilities.java.support.codec.StringDigester;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 /**
- * A default implementation of {@link Function} for use as a source key generator 
+ * A default implementation of {@link EntityIDDigestGenerator} for use as a source key generator 
  * with {@link LocalDynamicMetadataResolver}.
  * 
  * <p>
@@ -68,7 +67,7 @@ public class DefaultLocalDynamicSourceKeyGenerator extends EntityIDDigestGenerat
     }
 
     /** {@inheritDoc} */
-    public String apply(@Nullable final CriteriaSet criteria) {
+    @Nullable public String apply(@Nullable final CriteriaSet criteria) {
         if (criteria == null) {
             return null;
         }

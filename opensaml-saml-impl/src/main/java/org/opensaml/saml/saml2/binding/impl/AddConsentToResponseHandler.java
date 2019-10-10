@@ -17,6 +17,8 @@
 
 package org.opensaml.saml.saml2.binding.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 
 import net.shibboleth.utilities.java.support.logic.Constraint;
@@ -28,8 +30,6 @@ import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.saml.common.messaging.context.SAMLConsentContext;
 import org.opensaml.saml.saml2.core.StatusResponseType;
 
-import com.google.common.base.Function;
-
 /**
  * MessageHandler to set the Consent attribute on a {@link StatusResponseType} message.
  */
@@ -40,7 +40,6 @@ public class AddConsentToResponseHandler extends AbstractMessageHandler {
 
     /** Constructor. */
     public AddConsentToResponseHandler() {
-        super();
         consentContextStrategy = new ChildContextLookup<>(SAMLConsentContext.class);
     }
     

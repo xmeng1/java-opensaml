@@ -19,12 +19,12 @@ package org.opensaml.saml.metadata.resolver.index.impl;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.criterion.EntityRoleCriterion;
-import org.opensaml.saml.metadata.resolver.index.MetadataIndex;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml.saml2.metadata.RoleDescriptor;
@@ -33,7 +33,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
@@ -85,7 +84,8 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
                 new FunctionDrivenMetadataIndex(new UppercaseEntityIdDescriptorFunction(), 
                         new SimpleStringCriteriaFunction());
         
-        MetadataIndexManager<EntityDescriptor> manager = new MetadataIndexManager(Collections.<MetadataIndex>singleton(functionIndex), extractionFunction);
+        MetadataIndexManager<EntityDescriptor> manager =
+                new MetadataIndexManager<>(Collections.singleton(functionIndex), extractionFunction);
         
         criteriaSet.clear();
         criteriaSet.add(critAEntity);
@@ -186,7 +186,8 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
                 new FunctionDrivenMetadataIndex(new UppercaseEntityIdDescriptorFunction(), 
                         new SimpleStringCriteriaFunction());
         
-        MetadataIndexManager<EntityDescriptor> manager = new MetadataIndexManager(Collections.<MetadataIndex>singleton(functionIndex), extractionFunction);
+        MetadataIndexManager<EntityDescriptor> manager =
+                new MetadataIndexManager<>(Collections.singleton(functionIndex), extractionFunction);
         
         manager.indexEntityDescriptor(a);
         manager.indexEntityDescriptor(b);
@@ -203,7 +204,8 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
     public void testSingleIndexWithMultipleResults() {
         RoleMetadataIndex roleIndex = new RoleMetadataIndex();
         
-        MetadataIndexManager<EntityDescriptor> manager = new MetadataIndexManager(Collections.<MetadataIndex>singleton(roleIndex), extractionFunction);
+        MetadataIndexManager<EntityDescriptor> manager =
+                new MetadataIndexManager<>(Collections.singleton(roleIndex), extractionFunction);
         
         manager.indexEntityDescriptor(a);
         manager.indexEntityDescriptor(b);
@@ -272,7 +274,8 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
                 new FunctionDrivenMetadataIndex(new UppercaseEntityIdDescriptorFunction(), 
                         new SimpleStringCriteriaFunction());
         
-        MetadataIndexManager<EntityDescriptor> manager = new MetadataIndexManager(Sets.newHashSet(roleIndex, functionIndex), extractionFunction);
+        MetadataIndexManager<EntityDescriptor> manager =
+                new MetadataIndexManager<>(Sets.newHashSet(roleIndex, functionIndex), extractionFunction);
         
         manager.indexEntityDescriptor(a);
         manager.indexEntityDescriptor(b);
@@ -296,7 +299,8 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
                 new FunctionDrivenMetadataIndex(new UppercaseEntityIdDescriptorFunction(), 
                         new SimpleStringCriteriaFunction());
         
-        MetadataIndexManager<EntityDescriptor> manager = new MetadataIndexManager(Sets.newHashSet(roleIndex, functionIndex), extractionFunction);
+        MetadataIndexManager<EntityDescriptor> manager =
+                new MetadataIndexManager<>(Sets.newHashSet(roleIndex, functionIndex), extractionFunction);
         
         manager.indexEntityDescriptor(a);
         manager.indexEntityDescriptor(b);
@@ -318,7 +322,8 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
                 new FunctionDrivenMetadataIndex(new ConstantEntityDescriptorFunction("All"),
                         new SimpleStringCriteriaFunction());
         
-        MetadataIndexManager<EntityDescriptor> manager = new MetadataIndexManager(Sets.newHashSet(roleIndex, functionIndex), extractionFunction);
+        MetadataIndexManager<EntityDescriptor> manager =
+                new MetadataIndexManager<>(Sets.newHashSet(roleIndex, functionIndex), extractionFunction);
         
         manager.indexEntityDescriptor(a);
         manager.indexEntityDescriptor(b);
@@ -348,7 +353,8 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
     
     @Test
     public void testNoIndexes() {
-        MetadataIndexManager<EntityDescriptor> manager = new MetadataIndexManager(Sets.<MetadataIndex>newHashSet(), extractionFunction);
+        MetadataIndexManager<EntityDescriptor> manager =
+                new MetadataIndexManager<>(Sets.newHashSet(), extractionFunction);
         
         manager.indexEntityDescriptor(a);
         
@@ -364,7 +370,8 @@ public class MetadataIndexManagerTest extends XMLObjectBaseTestCase {
                 new FunctionDrivenMetadataIndex(new UppercaseEntityIdDescriptorFunction(), 
                         new SimpleStringCriteriaFunction());
         
-        MetadataIndexManager<EntityDescriptor> manager = new MetadataIndexManager(Collections.<MetadataIndex>singleton(functionIndex), extractionFunction);
+        MetadataIndexManager<EntityDescriptor> manager =
+                new MetadataIndexManager<>(Collections.singleton(functionIndex), extractionFunction);
         
         manager.indexEntityDescriptor(a);
         

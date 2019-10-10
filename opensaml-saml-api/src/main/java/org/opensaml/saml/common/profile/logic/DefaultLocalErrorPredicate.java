@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,16 +38,13 @@ import org.opensaml.saml.saml2.core.AuthnRequest;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 import net.shibboleth.utilities.java.support.primitive.StringSupport;
 
 import org.opensaml.messaging.context.navigate.ChildContextLookup;
 import org.opensaml.messaging.context.navigate.MessageLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
 
 /**
  * Predicate that decides whether to handle an error by returning a SAML response to a requester
@@ -76,14 +74,15 @@ public class DefaultLocalErrorPredicate implements Predicate<ProfileRequestConte
     /** Constructor. */
     public DefaultLocalErrorPredicate() {
         // Default: outbound msg context -> SAMLBindingContext
-        bindingContextLookupStrategy = Functions.compose(
-                new ChildContextLookup<>(SAMLBindingContext.class), new OutboundMessageContextLookup());
+        bindingContextLookupStrategy =
+                new ChildContextLookup<>(SAMLBindingContext.class).compose(
+                        new OutboundMessageContextLookup());
         
         // Default: outbound msg context -> SAMLPeerEntityContext -> SAMLEndpointContext
-        endpointContextLookupStrategy = Functions.compose(
-                new ChildContextLookup<>(SAMLEndpointContext.class),
-                Functions.compose(new ChildContextLookup<>(SAMLPeerEntityContext.class),
-                        new OutboundMessageContextLookup()));
+        endpointContextLookupStrategy =
+                new ChildContextLookup<>(SAMLEndpointContext.class).compose(
+                        new ChildContextLookup<>(SAMLPeerEntityContext.class)).compose(
+                                new OutboundMessageContextLookup());
         
         eventContextLookupStrategy = new CurrentOrPreviousEventLookup();
         
@@ -132,7 +131,7 @@ public class DefaultLocalErrorPredicate implements Predicate<ProfileRequestConte
     
 // Checkstyle: CyclomaticComplexity OFF
     /** {@inheritDoc} */
-    public boolean apply(@Nullable final ProfileRequestContext input) {
+    public boolean test(@Nullable final ProfileRequestContext input) {
         
         if (input == null) {
             return true;
@@ -169,10 +168,9 @@ public class DefaultLocalErrorPredicate implements Predicate<ProfileRequestConte
         if (localEvents.contains(event)) {
             log.debug("Error event {} will be handled locally", event);
             return true;
-        } else {
-            log.debug("Error event {} will be handled with response", event);
-            return false;
         }
+        log.debug("Error event {} will be handled with response", event);
+        return false;
     }
 // Checkstyle: CyclomaticComplexity ON
 

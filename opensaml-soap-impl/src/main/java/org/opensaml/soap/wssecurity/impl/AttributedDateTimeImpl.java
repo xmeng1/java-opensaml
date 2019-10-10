@@ -17,13 +17,13 @@
 
 package org.opensaml.soap.wssecurity.impl;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+import java.time.Instant;
+
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.soap.wssecurity.AttributedDateTime;
 import org.opensaml.soap.wssecurity.IdBearing;
+
+import net.shibboleth.utilities.java.support.xml.DOMTypeSupport;
 
 /**
  * Implementation of {@link AttributedDateTime}.
@@ -31,11 +31,8 @@ import org.opensaml.soap.wssecurity.IdBearing;
  */
 public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements AttributedDateTime {
 
-    /** DateTime formatter. */
-    private DateTimeFormatter formatter;
-
     /** DateTime object. */
-    private DateTime dateTimeValue;
+    private Instant dateTimeValue;
 
     /** String dateTime representation. */
     private String stringValue;
@@ -56,20 +53,18 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
     public AttributedDateTimeImpl(final String namespaceURI, final String elementLocalName,
             final String namespacePrefix) {
         super(namespaceURI, elementLocalName, namespacePrefix);
-        formatter = ISODateTimeFormat.dateTime().withChronology(ISOChronology.getInstanceUTC());
         unknownAttributes = new AttributeMap(this);
     }
 
     /** {@inheritDoc} */
-    public DateTime getDateTime() {
+    public Instant getDateTime() {
         return dateTimeValue;
     }
 
     /** {@inheritDoc} */
-    public void setDateTime(final DateTime newDateTime) {
+    public void setDateTime(final Instant newDateTime) {
         dateTimeValue = newDateTime;
-        final String formattedDateTime = formatter.print(dateTimeValue);
-        stringValue = prepareForAssignment(stringValue, formattedDateTime);
+        stringValue = prepareForAssignment(stringValue, DOMTypeSupport.instantToString(dateTimeValue));
     }
 
     /** {@inheritDoc} */
@@ -79,7 +74,7 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
 
     /** {@inheritDoc} */
     public void setValue(final String newValue) {
-        dateTimeValue = new DateTime(newValue).withChronology(ISOChronology.getInstanceUTC());
+        dateTimeValue = DOMTypeSupport.stringToInstant(newValue);
         stringValue = prepareForAssignment(stringValue, newValue);
     }
 
@@ -101,19 +96,4 @@ public class AttributedDateTimeImpl extends AbstractWSSecurityObject implements 
         return unknownAttributes;
     }
     
-    /** {@inheritDoc} */
-    public DateTimeFormatter getDateTimeFormatter() {
-        return formatter;
-    }
-
-    /** {@inheritDoc} */
-    public void setDateTimeFormatter(final DateTimeFormatter newFormatter) {
-        if (newFormatter == null) {
-            throw new IllegalArgumentException("The specified DateTimeFormatter may not be null");
-        }
-        formatter = newFormatter;
-        // Explicitly cause the cached string representation to be reformatted when the formatter is changed
-        setDateTime(getDateTime());
-    }
-
 }

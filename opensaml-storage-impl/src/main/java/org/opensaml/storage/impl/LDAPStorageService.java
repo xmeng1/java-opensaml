@@ -126,7 +126,7 @@ public class LDAPStorageService extends AbstractStorageService implements Storag
     }
 
     /** {@inheritDoc} */
-    @Override @Nullable public StorageRecord read(@Nonnull @NotEmpty final String context,
+    @Override @Nullable public <T> StorageRecord<T> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key) throws IOException {
         SearchResult result = null;
         try {
@@ -137,13 +137,13 @@ public class LDAPStorageService extends AbstractStorageService implements Storag
                 throw new IOException(e);
             }
         }
-        StorageRecord record = null;
+        StorageRecord<T> record = null;
         if (result != null && result.size() > 0) {
             final LdapEntry entry = result.getEntry();
             if (entry != null) {
                 final LdapAttribute attr = entry.getAttribute(key);
                 if (attr != null) {
-                    record = new StorageRecord(attr.getStringValue(), null);
+                    record = new StorageRecord<>(attr.getStringValue(), null);
                 }
             }
         }
@@ -151,7 +151,7 @@ public class LDAPStorageService extends AbstractStorageService implements Storag
     }
 
     /** {@inheritDoc} */
-    @Override @Nonnull public Pair<Long,StorageRecord> read(@Nonnull @NotEmpty final String context,
+    @Override @Nonnull public <T> Pair<Long,StorageRecord<T>> read(@Nonnull @NotEmpty final String context,
             @Nonnull @NotEmpty final String key, @Positive final long version) throws IOException {
         throw new UnsupportedOperationException("Versioning not supported");
     }

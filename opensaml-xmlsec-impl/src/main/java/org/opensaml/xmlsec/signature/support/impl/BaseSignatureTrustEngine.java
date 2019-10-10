@@ -201,9 +201,8 @@ public abstract class BaseSignatureTrustEngine<TrustBasisType> implements Signat
                         if (evaluateTrust(kiCred, trustBasis)) {
                             log.debug("Successfully established trust of KeyInfo-derived credential");
                             return true;
-                        } else {
-                            log.debug("Failed to establish trust of KeyInfo-derived credential");
                         }
+                        log.debug("Failed to establish trust of KeyInfo-derived credential");
                     }
                 }
             } catch (final ResolverException e) {

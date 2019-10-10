@@ -17,14 +17,15 @@
 
 package org.opensaml.core.xml.schema;
 
+import java.time.Instant;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.namespace.QName;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.xml.XMLConstants;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.opensaml.core.xml.XMLObject;
 
 /**
@@ -33,42 +34,24 @@ import org.opensaml.core.xml.XMLObject;
 public interface XSDateTime extends XMLObject {
 
     /** Local name of the XSI type. */
-    public static final String TYPE_LOCAL_NAME = "dateTime"; 
+    @Nonnull @NotEmpty static final String TYPE_LOCAL_NAME = "dateTime"; 
         
     /** QName of the XSI type. */
-    public static final QName TYPE_NAME = new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
+    @Nonnull static final QName TYPE_NAME =
+            new QName(XMLConstants.XSD_NS, TYPE_LOCAL_NAME, XMLConstants.XSD_PREFIX);
     
     /**
      * Gets the dateTime value.
      * 
      * @return the dateTime value
      */
-    @Nullable public DateTime getValue();
+    @Nullable Instant getValue();
     
     /**
      * Sets the dateTime value.
      * 
      * @param newValue the dateTime value
      */
-    public void setValue(@Nullable final DateTime newValue);
+    void setValue(@Nullable final Instant newValue);
     
-    /**
-     * Get the {@link DateTimeFormatter} to be used when stringifying
-     * the {@link DateTime} value.
-     * 
-     * <p>Defaults to the formatter constructed by calling:
-     * <code>ISODateTimeFormat.dateTime().withChronology(org.joda.time.chrono.ISOChronology.getInstanceUTC())</code>
-     * </p>
-     * 
-     * @return the currently configured formatter
-     */
-    @Nonnull public DateTimeFormatter getDateTimeFormatter();
-    
-    /**
-     * Set the {@link DateTimeFormatter} to be used when stringifying
-     * the {@link DateTime} value.
-     * 
-     * @param newFormatter the new formatter
-     */
-    public void setDateTimeFormatter(@Nonnull final DateTimeFormatter newFormatter);
 }

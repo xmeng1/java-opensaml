@@ -34,7 +34,6 @@ import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLObjectBuilder;
 import org.opensaml.saml.common.SAMLTestSupport;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
@@ -45,7 +44,6 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
-import org.opensaml.saml.saml2.metadata.Endpoint;
 import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.security.credential.impl.CollectionCredentialResolver;
@@ -71,7 +69,7 @@ import org.testng.annotations.Test;
  */
 public class SAML2HTTPRedirectDeflateSignatureSecurityHandlerTest extends XMLObjectBaseTestCase {
     
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     private SAML2HTTPRedirectDeflateSignatureSecurityHandler handler;
     
@@ -204,7 +202,7 @@ public class SAML2HTTPRedirectDeflateSignatureSecurityHandlerTest extends XMLObj
         handler.setHttpServletRequest(buildServletRequest());
         handler.initialize();
         
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
         messageContext.setMessage(buildInboundSAMLMessage());
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setEntityId(issuer);
         messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
@@ -298,27 +296,28 @@ public class SAML2HTTPRedirectDeflateSignatureSecurityHandlerTest extends XMLObj
         //
         // Encode the "outbound" message context, with simple signature
         //
-        final SAMLObjectBuilder<Endpoint> endpointBuilder = (SAMLObjectBuilder<Endpoint>) builderFactory
-        .getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
-        Endpoint samlEndpoint = endpointBuilder.buildObject();
+        SAMLObjectBuilder<AssertionConsumerService> endpointBuilder =
+                (SAMLObjectBuilder<AssertionConsumerService>) builderFactory.<AssertionConsumerService>getBuilderOrThrow(
+                        AssertionConsumerService.DEFAULT_ELEMENT_NAME);
+        AssertionConsumerService samlEndpoint = endpointBuilder.buildObject();
         samlEndpoint.setLocation("http://example.org");
         samlEndpoint.setResponseLocation("http://example.org/response");
         
-        final MessageContext<SAMLObject> messageContext = new MessageContext<>();
-        messageContext.setMessage(buildInboundSAMLMessage());
-        SAMLBindingSupport.setRelayState(messageContext, expectedRelayValue);
-        messageContext.getSubcontext(SAMLPeerEntityContext.class, true)
+        final MessageContext mc = new MessageContext();
+        mc.setMessage(buildInboundSAMLMessage());
+        SAMLBindingSupport.setRelayState(mc, expectedRelayValue);
+        mc.getSubcontext(SAMLPeerEntityContext.class, true)
             .getSubcontext(SAMLEndpointContext.class, true).setEndpoint(samlEndpoint);
         
         final SignatureSigningParameters signingParameters = new SignatureSigningParameters();
         signingParameters.setSigningCredential(signingX509Cred);
         signingParameters.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
-        messageContext.getSubcontext(SecurityParametersContext.class, true).setSignatureSigningParameters(signingParameters);
+        mc.getSubcontext(SecurityParametersContext.class, true).setSignatureSigningParameters(signingParameters);
         
         final MockHttpServletResponse response = new MockHttpServletResponse();
         
         final HTTPRedirectDeflateEncoder encoder = new HTTPRedirectDeflateEncoder();
-        encoder.setMessageContext(messageContext);
+        encoder.setMessageContext(mc);
         encoder.setHttpServletResponse(response);
         
         try {

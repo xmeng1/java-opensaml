@@ -615,12 +615,11 @@ public class SimpleEncryptionTest extends XMLObjectBaseTestCase {
         if (! hasKeyInfo) {
             Assert.assertNull(encKey.getKeyInfo(), "Unexpected KeyInfo was present");
             return;
-        } else {
-            Assert.assertNotNull(encKey.getKeyInfo(), "KeyInfo was not present");
-            Assert.assertNotNull(encKey.getKeyInfo().getKeyNames().get(0), "KeyName was not present");
-            Assert.assertEquals(encKey.getKeyInfo().getKeyNames().get(0).getValue(), expectedKEKKeyNameAES, 
-                    "Unexpected KEK KeyName");
         }
+        Assert.assertNotNull(encKey.getKeyInfo(), "KeyInfo was not present");
+        Assert.assertNotNull(encKey.getKeyInfo().getKeyNames().get(0), "KeyName was not present");
+        Assert.assertEquals(encKey.getKeyInfo().getKeyNames().get(0).getValue(), expectedKEKKeyNameAES, 
+                "Unexpected KEK KeyName");
     }
  
     /**
@@ -636,39 +635,35 @@ public class SimpleEncryptionTest extends XMLObjectBaseTestCase {
         if (! hasKeyInfo) {
             Assert.assertNull(encKey.getKeyInfo(), "Unexpected KeyInfo was present");
             return;
-        } else {
-            Assert.assertNotNull(encKey.getKeyInfo(), "KeyInfo was not present");
-            Assert.assertNotNull(encKey.getKeyInfo().getKeyNames().get(0), "KeyName was not present");
-            Assert.assertEquals(encKey.getKeyInfo().getKeyNames().get(0).getValue(), expectedKEKKeyNameRSA, 
-                    "Unexpected KEK KeyName");
         }
+        Assert.assertNotNull(encKey.getKeyInfo(), "KeyInfo was not present");
+        Assert.assertNotNull(encKey.getKeyInfo().getKeyNames().get(0), "KeyName was not present");
+        Assert.assertEquals(encKey.getKeyInfo().getKeyNames().get(0).getValue(), expectedKEKKeyNameRSA, 
+                "Unexpected KEK KeyName");
     }
     
     private String getDigestMethod(EncryptedKey encryptedKey) {
         List<XMLObject> digestMethods = encryptedKey.getEncryptionMethod().getUnknownXMLObjects(DigestMethod.DEFAULT_ELEMENT_NAME);
         if (digestMethods != null && digestMethods.size() > 0) { 
             return ((DigestMethod)digestMethods.get(0)).getAlgorithm();
-        } else {
-            return null;
         }
+        return null;
     }
     
     private String getMGF(EncryptedKey encryptedKey) {
         List<XMLObject> mgfs = encryptedKey.getEncryptionMethod().getUnknownXMLObjects(MGF.DEFAULT_ELEMENT_NAME);
         if (mgfs != null && mgfs.size() > 0) {
             return ((MGF)mgfs.get(0)).getAlgorithm();
-        } else {
-            return null;
         }
+        return null;
     }
     
     private String getOAEPParams(EncryptedKey encryptedKey) {
         OAEPparams params = encryptedKey.getEncryptionMethod().getOAEPparams();
         if (params != null) {
             return params.getValue();
-        } else {
-            return null;
         }
+        return null;
     }
     
 }

@@ -27,13 +27,8 @@ import org.opensaml.messaging.pipeline.BasicMessagePipeline;
 
 /**
  * Basic implementation of {@link HttpServletMessagePipeline}.
- *
- * @param <OutboundMessageType> the outbound message type
- * @param <InboundMessageType> the inbound message type
  */
-public class BasicHttpServletMessagePipeline<InboundMessageType, OutboundMessageType> 
-        extends BasicMessagePipeline<InboundMessageType, OutboundMessageType>
-        implements HttpServletMessagePipeline<InboundMessageType, OutboundMessageType>{
+public class BasicHttpServletMessagePipeline extends BasicMessagePipeline implements HttpServletMessagePipeline{
     
     /**
      * Constructor.
@@ -41,18 +36,18 @@ public class BasicHttpServletMessagePipeline<InboundMessageType, OutboundMessage
      * @param newEncoder the message encoder instance
      * @param newDecoder the message decoder instance
      */
-    public BasicHttpServletMessagePipeline(@Nonnull final MessageEncoder<OutboundMessageType> newEncoder, 
-            @Nonnull final MessageDecoder<InboundMessageType> newDecoder) {
+    public BasicHttpServletMessagePipeline(@Nonnull final MessageEncoder newEncoder, 
+            @Nonnull final MessageDecoder newDecoder) {
         super(newEncoder, newDecoder);
     }
 
     /** {@inheritDoc} */
-    public HttpServletResponseMessageEncoder<OutboundMessageType> getEncoder() {
-        return (HttpServletResponseMessageEncoder<OutboundMessageType>) super.getEncoder();
+    public HttpServletResponseMessageEncoder getEncoder() {
+        return (HttpServletResponseMessageEncoder) super.getEncoder();
     }
 
     /** {@inheritDoc} */
-    protected void setEncoder(final MessageEncoder<OutboundMessageType> encoder) {
+    protected void setEncoder(final MessageEncoder encoder) {
         if (!(encoder instanceof HttpServletResponseMessageEncoder)) {
             throw new IllegalArgumentException("HttpServletResponseMessageEncoder is required");
         }
@@ -60,12 +55,12 @@ public class BasicHttpServletMessagePipeline<InboundMessageType, OutboundMessage
     }
 
     /** {@inheritDoc} */
-    public HttpServletRequestMessageDecoder<InboundMessageType> getDecoder() {
+    public HttpServletRequestMessageDecoder getDecoder() {
         return (HttpServletRequestMessageDecoder) super.getDecoder();
     }
 
     /** {@inheritDoc} */
-    protected void setDecoder(final MessageDecoder<InboundMessageType> decoder) {
+    protected void setDecoder(final MessageDecoder decoder) {
         if (!(decoder instanceof HttpServletRequestMessageDecoder)) {
             throw new IllegalArgumentException("HttpServletRequestMessageDecoder is required");
         }

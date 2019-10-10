@@ -21,14 +21,14 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 /** Unit test for {@link CheckMandatoryAuthentication}. */
 public class CheckMandatoryAuthenticationTest {
 
     @Test public void testAuthenticated() throws Exception {
         final CheckMandatoryAuthentication action = new CheckMandatoryAuthentication();
-        action.setAuthenticationLookupStrategy(new MockAuthenticated(true));
+        action.setAuthenticationLookupStrategy(FunctionSupport.constant(true));
         action.initialize();
 
         final MessageContext mc = new MessageContext();
@@ -37,25 +37,11 @@ public class CheckMandatoryAuthenticationTest {
 
     @Test(expectedExceptions=MessageHandlerException.class) public void testNotAuthenticated() throws Exception {
         final CheckMandatoryAuthentication action = new CheckMandatoryAuthentication();
-        action.setAuthenticationLookupStrategy(new MockAuthenticated(false));
+        action.setAuthenticationLookupStrategy(FunctionSupport.constant(false));
         action.initialize();
 
         final MessageContext mc = new MessageContext();
         action.invoke(mc);
     }
-    
-    private class MockAuthenticated implements Function<MessageContext,Boolean> {
 
-        final boolean authenticated;
-        
-        MockAuthenticated(final boolean flag) {
-            authenticated = flag;
-        }
-        
-        /** {@inheritDoc} */
-        public Boolean apply(MessageContext input) {
-            return authenticated;
-        }
-        
-    }
 }

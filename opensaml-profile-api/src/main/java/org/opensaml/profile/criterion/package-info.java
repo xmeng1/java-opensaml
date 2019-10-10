@@ -15,32 +15,8 @@
  * limitations under the License.
  */
 
-package org.opensaml.saml.metadata.resolver;
-
-import javax.annotation.Nullable;
-
-import org.joda.time.DateTime;
-import org.opensaml.core.xml.XMLObject;
-
 /**
- * Extended {@link BatchMetadataResolver}.
+ * Profile {@link net.shibboleth.utilities.java.support.resolver.Criterion} implementations.
  */
-public interface ExtendedBatchMetadataResolver extends BatchMetadataResolver {
-    
-    //TODO promote methods up and remove in 4.0.0
-    
-    /**
-     * Get the validUntil of of the metadata batch root element, if present.
-     *
-     * @return the validUntil date/time of the root element, or null if not available
-     */
-    @Nullable public DateTime getRootValidUntil();
 
-    /**
-     * Get the validity state of the metadata batch root element, as determined by {@link #isValid(XMLObject)}.
-     *
-     * @return true if root element is valid, false if not valid, null if indeterminate
-     */
-    @Nullable public Boolean isRootValid();
-
-}
+package org.opensaml.profile.criterion;

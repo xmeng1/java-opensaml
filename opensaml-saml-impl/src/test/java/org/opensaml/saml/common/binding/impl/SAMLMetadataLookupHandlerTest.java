@@ -24,7 +24,6 @@ import java.net.URL;
 import org.opensaml.core.xml.XMLObjectBaseTestCase;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.MessageHandlerException;
-import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLMetadataContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.messaging.context.SAMLPresenterEntityContext;
@@ -55,7 +54,7 @@ public class SAMLMetadataLookupHandlerTest extends XMLObjectBaseTestCase {
 
     private PredicateRoleDescriptorResolver roleResolver;
     private SAMLMetadataLookupHandler handler;
-    private MessageContext<SAMLObject> messageContext;
+    private MessageContext messageContext;
     
     @BeforeClass
     public void classSetUp() throws ResolverException, URISyntaxException, ComponentInitializationException {
@@ -75,7 +74,7 @@ public class SAMLMetadataLookupHandlerTest extends XMLObjectBaseTestCase {
     @BeforeMethod
     public void setUp() {
         handler = new SAMLMetadataLookupHandler();
-        messageContext = new MessageContext<>();
+        messageContext = new MessageContext();
     }
     
     @Test

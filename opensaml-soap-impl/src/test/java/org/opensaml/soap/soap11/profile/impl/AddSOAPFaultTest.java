@@ -19,10 +19,8 @@ package org.opensaml.soap.soap11.profile.impl;
 
 import java.util.Collections;
 
-import javax.annotation.Nullable;
-import javax.xml.namespace.QName;
-
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.logic.FunctionSupport;
 
 import org.opensaml.core.OpenSAMLInitBaseTestCase;
 import org.opensaml.core.xml.mock.SimpleXMLObject;
@@ -38,13 +36,12 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 
 /** {@link AddSOAPFault} unit test. */
 public class AddSOAPFaultTest extends OpenSAMLInitBaseTestCase {
     
-    private ProfileRequestContext<Object,Fault> prc;
+    private ProfileRequestContext prc;
     
     private AddSOAPFault action;
     
@@ -89,14 +86,8 @@ public class AddSOAPFaultTest extends OpenSAMLInitBaseTestCase {
     }
     
     @Test public void testCodeAndStringViaLookupWithDetailedErrors() throws ComponentInitializationException {
-        action.setFaultCodeLookupStrategy(new Function<ProfileRequestContext, QName>() {
-            @Nullable public QName apply(@Nullable ProfileRequestContext input) {
-                return FaultCode.CLIENT;
-            }});
-        action.setFaultStringLookupStrategy(new Function<ProfileRequestContext, String>() {
-            @Nullable public String apply(@Nullable ProfileRequestContext input) {
-                return "TheClientError";
-            }});
+        action.setFaultCodeLookupStrategy(FunctionSupport.constant(FaultCode.CLIENT));
+        action.setFaultStringLookupStrategy(FunctionSupport.constant("TheClientError"));
         
         action.setDetailedErrorsCondition(Predicates.<ProfileRequestContext>alwaysTrue());
         
@@ -122,14 +113,8 @@ public class AddSOAPFaultTest extends OpenSAMLInitBaseTestCase {
     }
     
     @Test public void testCodeAndStringViaLookupWithoutDetailedErrors() throws ComponentInitializationException {
-        action.setFaultCodeLookupStrategy(new Function<ProfileRequestContext, QName>() {
-            @Nullable public QName apply(@Nullable ProfileRequestContext input) {
-                return FaultCode.CLIENT;
-            }});
-        action.setFaultStringLookupStrategy(new Function<ProfileRequestContext, String>() {
-            @Nullable public String apply(@Nullable ProfileRequestContext input) {
-                return "TheClientError";
-            }});
+        action.setFaultCodeLookupStrategy(FunctionSupport.constant(FaultCode.CLIENT));
+        action.setFaultStringLookupStrategy(FunctionSupport.constant("TheClientError"));
         
         action.setDetailedErrorsCondition(Predicates.<ProfileRequestContext>alwaysFalse());
         
@@ -157,10 +142,7 @@ public class AddSOAPFaultTest extends OpenSAMLInitBaseTestCase {
         final Fault contextFault = SOAPSupport.buildSOAP11Fault(FaultCode.CLIENT, "TheClientError", "TheFaultActor", 
                 Collections.singletonList(XMLObjectSupport.buildXMLObject(SimpleXMLObject.ELEMENT_NAME)), null);
         
-        action.setContextFaultStrategy(new Function<ProfileRequestContext, Fault>() {
-            @Nullable public Fault apply(@Nullable ProfileRequestContext input) {
-                return contextFault;
-            }});
+        action.setContextFaultStrategy(FunctionSupport.constant(contextFault));
         
         action.setDetailedErrorsCondition(Predicates.<ProfileRequestContext>alwaysTrue());
         
@@ -189,10 +171,7 @@ public class AddSOAPFaultTest extends OpenSAMLInitBaseTestCase {
         final Fault contextFault = SOAPSupport.buildSOAP11Fault(FaultCode.CLIENT, "TheClientError", "TheFaultActor", 
                 Collections.singletonList(XMLObjectSupport.buildXMLObject(SimpleXMLObject.ELEMENT_NAME)), null);
         
-        action.setContextFaultStrategy(new Function<ProfileRequestContext, Fault>() {
-            @Nullable public Fault apply(@Nullable ProfileRequestContext input) {
-                return contextFault;
-            }});
+        action.setContextFaultStrategy(FunctionSupport.constant(contextFault));
         action.setDetailedErrorsCondition(Predicates.<ProfileRequestContext>alwaysFalse());
         
         action.initialize();

@@ -41,7 +41,7 @@ public class EncryptionPropertyImpl extends AbstractXMLObject implements
     private String id;
     
     /** Child elements from the &lt;any&gt; content model. */
-    private final IndexedXMLObjectChildrenList unknownChildren;
+    private final IndexedXMLObjectChildrenList<XMLObject> unknownChildren;
     
     /** "anyAttribute" attributes. */
     private final AttributeMap unknownAttributes;
@@ -89,7 +89,7 @@ public class EncryptionPropertyImpl extends AbstractXMLObject implements
 
     /** {@inheritDoc} */
     public List<XMLObject> getUnknownXMLObjects() {
-        return (List<XMLObject>) unknownChildren;
+        return unknownChildren;
     }
     /** {@inheritDoc} */
     public List<XMLObject> getUnknownXMLObjects(final QName typeOrName) {
@@ -100,7 +100,7 @@ public class EncryptionPropertyImpl extends AbstractXMLObject implements
     public List<XMLObject> getOrderedChildren() {
         final ArrayList<XMLObject> children = new ArrayList<>();
         
-        children.addAll((List<XMLObject>) unknownChildren);
+        children.addAll(unknownChildren);
         
         if (children.size() == 0) {
             return null;

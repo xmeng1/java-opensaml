@@ -34,6 +34,8 @@
 
 package org.opensaml.saml.common.binding;
 
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -45,7 +47,6 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
 import org.opensaml.profile.context.ProfileRequestContext;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
@@ -165,8 +166,8 @@ public class BindingDescriptor extends AbstractIdentifiableInitializableComponen
 
     /** {@inheritDoc} */
     @Override
-    public boolean apply(@Nullable final ProfileRequestContext input) {
-        return activationCondition.apply(input);
+    public boolean test(@Nullable final ProfileRequestContext input) {
+        return activationCondition.test(input);
     }
 
     /** {@inheritDoc} */

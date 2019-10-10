@@ -59,7 +59,7 @@ public class EvaluableEntityRoleEntityDescriptorCriterion implements EvaluableEn
     }
 
     /** {@inheritDoc} */
-    public boolean apply(final EntityDescriptor entityDescriptor) {
+    public boolean test(final EntityDescriptor entityDescriptor) {
         if (entityDescriptor == null) {
             return false;
         }

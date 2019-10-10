@@ -23,10 +23,11 @@ package org.opensaml.saml.saml1.core.impl;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml1.core.AuthenticationStatement;
@@ -46,7 +47,7 @@ public class AuthenticationStatementTest extends XMLObjectProviderBaseTestCase {
     private String expectedAuthenticationMethod;
 
     /** Expected value of AuthenticationInstant */
-    private DateTime expectedAuthenticationInstant;
+    private Instant expectedAuthenticationInstant;
 
     /**
      * Constructor
@@ -54,10 +55,7 @@ public class AuthenticationStatementTest extends XMLObjectProviderBaseTestCase {
     public AuthenticationStatementTest() {
         super();
         expectedAuthenticationMethod = "trustme";
-        //
-        // AuthenticationInstant="1970-01-02T01:01:02.123Z"
-        //
-        expectedAuthenticationInstant = new DateTime(1970, 1, 2, 1, 1, 2, 123, ISOChronology.getInstanceUTC());
+        expectedAuthenticationInstant = Instant.parse("1970-01-02T01:01:02.123Z");
 
         singleElementFile = "/org/opensaml/saml/saml1/impl/singleAuthenticationStatement.xml";
         singleElementOptionalAttributesFile = "/org/opensaml/saml/saml1/impl/singleAuthenticationStatementAttributes.xml";

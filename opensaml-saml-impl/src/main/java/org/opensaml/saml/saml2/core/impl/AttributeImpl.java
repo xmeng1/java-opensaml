@@ -21,16 +21,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.core.xml.util.XMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.Attribute;
 
 /**
  * Concrete implementation of {@link org.opensaml.saml.saml2.core.Attribute}.
  */
-public class AttributeImpl extends AbstractSAMLObject implements Attribute {
+public class AttributeImpl extends AbstractXMLObject implements Attribute {
 
     /** Name of the attribute. */
     private String name;

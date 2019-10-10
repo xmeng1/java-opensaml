@@ -26,16 +26,16 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.opensaml.core.xml.AbstractXMLObject;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.util.AttributeMap;
 import org.opensaml.core.xml.util.IndexedXMLObjectChildrenList;
-import org.opensaml.saml.common.AbstractSAMLObject;
 import org.opensaml.saml.saml2.core.AuthnContextDecl;
 
 /**
  * A concrete implementation of {@link org.opensaml.saml.saml2.core.AuthnContextDecl}.
  */
-public class AuthnContextDeclImpl extends AbstractSAMLObject implements AuthnContextDecl {
+public class AuthnContextDeclImpl extends AbstractXMLObject implements AuthnContextDecl {
 
     /** Child XMLObjects. */
     private IndexedXMLObjectChildrenList<XMLObject> unknownXMLObjects;

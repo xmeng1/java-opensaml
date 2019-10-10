@@ -16,7 +16,7 @@
  */
 
 /**
- * A set of {@link com.google.common.base.Function}s used to navigate and lookup data
+ * A set of functions used to navigate and lookup data
  * from a tree of {@link org.opensaml.messaging.context.BaseContext}s.
  */
 

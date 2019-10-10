@@ -28,11 +28,9 @@ import org.opensaml.messaging.decoder.MessageDecodingException;
 
 /**
  * Abstract implementation of {@link HttpClientResponseMessageDecoder}.
- * 
- * @param <MessageType> the message type of the message context on which to operate
  */
-public abstract class AbstractHttpClientResponseMessageDecoder<MessageType> extends AbstractMessageDecoder<MessageType>
-        implements HttpClientResponseMessageDecoder<MessageType> {
+public abstract class AbstractHttpClientResponseMessageDecoder extends AbstractMessageDecoder
+        implements HttpClientResponseMessageDecoder {
 
     /** The HTTP client response. */
     private HttpResponse response;
@@ -70,4 +68,5 @@ public abstract class AbstractHttpClientResponseMessageDecoder<MessageType> exte
             throw new ComponentInitializationException("HTTP client response cannot be null");
         }
     }
+
 }

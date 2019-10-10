@@ -17,9 +17,10 @@
 
 package org.opensaml.saml.common.messaging.context;
 
+import java.time.Instant;
+
 import javax.annotation.Nullable;
 
-import org.joda.time.DateTime;
 import org.opensaml.messaging.context.BaseContext;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.SAMLObject;
@@ -40,13 +41,13 @@ import net.shibboleth.utilities.java.support.primitive.StringSupport;
  * </p>
  *
  */
-public class SAMLMessageInfoContext extends BaseContext {
+public final class SAMLMessageInfoContext extends BaseContext {
 
     /** The ID of the message. */
     @Nullable @NotEmpty private String messageId;
 
     /** The issue instant of the message. */
-    @Nullable private DateTime issueInstant;
+    @Nullable private Instant issueInstant;
 
     /**
      * Gets the ID of the message.
@@ -74,7 +75,7 @@ public class SAMLMessageInfoContext extends BaseContext {
      * 
      * @return issue instant of the message
      */
-    @Nullable public DateTime getMessageIssueInstant() {
+    @Nullable public Instant getMessageIssueInstant() {
         if (issueInstant == null) {
             issueInstant = resolveIssueInstant();
         }
@@ -86,7 +87,7 @@ public class SAMLMessageInfoContext extends BaseContext {
      * 
      * @param messageIssueInstant issue instant of the message
      */
-    public void setMessageIssueInstant(@Nullable final DateTime messageIssueInstant) {
+    public void setMessageIssueInstant(@Nullable final Instant messageIssueInstant) {
         issueInstant = messageIssueInstant;
     }
 
@@ -127,7 +128,7 @@ public class SAMLMessageInfoContext extends BaseContext {
      * 
      * @return the message issue instant, or null if it can not be resolved
      */
-    @Nullable protected DateTime resolveIssueInstant() {
+    @Nullable protected Instant resolveIssueInstant() {
         final SAMLObject samlMessage = resolveSAMLMessage();
         //SAML 2 Request
         if (samlMessage instanceof org.opensaml.saml.saml2.core.RequestAbstractType) {

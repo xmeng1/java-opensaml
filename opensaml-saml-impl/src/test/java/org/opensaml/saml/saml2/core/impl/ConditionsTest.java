@@ -20,10 +20,11 @@ package org.opensaml.saml.saml2.core.impl;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.Assert;
+
+import java.time.Instant;
+
 import javax.xml.namespace.QName;
 
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.opensaml.core.xml.XMLObjectProviderBaseTestCase;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.AudienceRestriction;
@@ -38,10 +39,10 @@ import org.opensaml.saml.saml2.core.ProxyRestriction;
 public class ConditionsTest extends XMLObjectProviderBaseTestCase {
 
     /** Expected NotBefore value */
-    private DateTime expectedNotBefore;
+    private Instant expectedNotBefore;
 
     /** Expected NotOnOrAfter value */
-    private DateTime expectedNotOnOrAfter;
+    private Instant expectedNotOnOrAfter;
 
     /** Count of Condition subelements */
     private int conditionCount = 6;
@@ -58,8 +59,8 @@ public class ConditionsTest extends XMLObjectProviderBaseTestCase {
 
     @BeforeMethod
     protected void setUp() throws Exception {
-        expectedNotBefore = new DateTime(1984, 8, 26, 10, 01, 30, 43, ISOChronology.getInstanceUTC());
-        expectedNotOnOrAfter = new DateTime(1984, 8, 26, 10, 11, 30, 43, ISOChronology.getInstanceUTC());
+        expectedNotBefore = Instant.parse("1984-08-26T10:01:30.043Z");
+        expectedNotOnOrAfter = Instant.parse("1984-08-26T10:11:30.043Z");
     }
 
     /** {@inheritDoc} */
@@ -67,7 +68,7 @@ public class ConditionsTest extends XMLObjectProviderBaseTestCase {
     public void testSingleElementUnmarshall() {
         Conditions conditions = (Conditions) unmarshallElement(singleElementFile);
 
-        DateTime notBefore = conditions.getNotBefore();
+        Instant notBefore = conditions.getNotBefore();
         Assert.assertEquals(notBefore, expectedNotBefore, "NotBefore was " + notBefore + ", expected " + expectedNotBefore);
     }
 
@@ -76,10 +77,10 @@ public class ConditionsTest extends XMLObjectProviderBaseTestCase {
     public void testSingleElementOptionalAttributesUnmarshall() {
         Conditions conditions = (Conditions) unmarshallElement(singleElementOptionalAttributesFile);
 
-        DateTime notBefore = conditions.getNotBefore();
+        Instant notBefore = conditions.getNotBefore();
         Assert.assertEquals(notBefore, expectedNotBefore, "NotBefore was " + notBefore + ", expected " + expectedNotBefore);
 
-        DateTime notOnOrAfter = conditions.getNotOnOrAfter();
+        Instant notOnOrAfter = conditions.getNotOnOrAfter();
         Assert.assertEquals(notOnOrAfter, expectedNotOnOrAfter,
                 "NotOnOrAfter was " + notOnOrAfter + ", expected " + expectedNotOnOrAfter);
     }

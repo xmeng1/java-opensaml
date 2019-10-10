@@ -79,7 +79,7 @@ public final class Signer {
      * @return the SignerProvider
      * @throws SignatureException if a SignerProvider could not be loaded
      */
-    @Nonnull private static SignerProvider getSignerProvider() throws SignatureException {
+    @Nonnull private static synchronized SignerProvider getSignerProvider() throws SignatureException {
         if (signerInstance == null) {
             final ServiceLoader<SignerProvider> loader = ServiceLoader.load(SignerProvider.class);
             final Iterator<SignerProvider> iterator = loader.iterator();

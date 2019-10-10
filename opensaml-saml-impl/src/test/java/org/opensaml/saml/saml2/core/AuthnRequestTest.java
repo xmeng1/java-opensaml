@@ -19,8 +19,9 @@ package org.opensaml.saml.saml2.core;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
+
+import java.time.Instant;
+
 import org.opensaml.core.xml.schema.XSBooleanValue;
 import org.opensaml.saml.common.BaseComplexSAMLObjectTestCase;
 import org.opensaml.saml.common.SAMLVersion;
@@ -58,14 +59,14 @@ public class AuthnRequestTest extends BaseComplexSAMLObjectTestCase {
         Assert.assertEquals(request.getProviderName(), "SomeProvider", "ProviderName");
         Assert.assertEquals(request.getID(), "abe567de6", "ID");
         Assert.assertEquals(request.getVersion().toString(), SAMLVersion.VERSION_20.toString(), "Version");
-        Assert.assertEquals(request.getIssueInstant(), new DateTime(2005, 1, 31, 12, 0, 0, 0, ISOChronology.getInstanceUTC()), "IssueInstant");
+        Assert.assertEquals(request.getIssueInstant(), Instant.parse("2005-01-31T12:00:00.000Z"), "IssueInstant");
         Assert.assertEquals(request.getDestination(), "http://www.example.com/", "Destination");
         Assert.assertEquals(request.getConsent(), "urn:oasis:names:tc:SAML:2.0:consent:obtained", "Consent");
         Assert.assertEquals(request.getSubject().getNameID().getFormat(), "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress", "Subject/NameID/@NameIdFormat");
         Assert.assertEquals(request.getSubject().getNameID().getValue(), "j.doe@company.com", "Subject/NameID contents");
         Audience audience = request.getConditions().getAudienceRestrictions().get(0).getAudiences().get(0);
         Assert.assertEquals(audience.getAudienceURI(), "urn:foo:sp.example.org", "Conditions/AudienceRestriction[1]/Audience[1] contents");
-        AuthnContextClassRef classRef = (AuthnContextClassRef) request.getRequestedAuthnContext().getAuthnContextClassRefs().get(0);
+        AuthnContextClassRef classRef = request.getRequestedAuthnContext().getAuthnContextClassRefs().get(0);
         Assert.assertEquals(classRef.getAuthnContextClassRef(), "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport", "RequestedAuthnContext/AuthnContextClassRef[1] contents");
     }
 
@@ -105,7 +106,7 @@ public class AuthnRequestTest extends BaseComplexSAMLObjectTestCase {
         request.setProviderName("SomeProvider");
         request.setID("abe567de6");
         request.setVersion(SAMLVersion.VERSION_20);
-        request.setIssueInstant(new DateTime(2005, 1, 31, 12, 0, 0, 0, ISOChronology.getInstanceUTC()));
+        request.setIssueInstant(Instant.parse("2005-01-31T12:00:00.000Z"));
         request.setDestination("http://www.example.com/");
         request.setConsent("urn:oasis:names:tc:SAML:2.0:consent:obtained");
         

@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 
 import org.opensaml.profile.context.ProfileRequestContext;
 
-import com.google.common.base.Predicate;
+import net.shibboleth.utilities.java.support.logic.Predicate;
 
 /**
  * A predicate implementation that indicates whether the request is associated with a browser profile.
@@ -29,8 +29,7 @@ import com.google.common.base.Predicate;
 public class BrowserProfilePredicate implements Predicate<ProfileRequestContext> {
 
     /** {@inheritDoc} */
-    @Override
-    public boolean apply(@Nullable final ProfileRequestContext input) {
+    public boolean test(@Nullable final ProfileRequestContext input) {
         return input != null && input.isBrowserProfile();
     }
     
